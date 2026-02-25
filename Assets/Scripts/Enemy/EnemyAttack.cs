@@ -7,8 +7,9 @@ public class EnemyAttack : MonoBehaviour
 
     private EnemyCore core;
     private EnemyStats stats;
-    private float nextAttackTime;
+    private EnemyHealth health;
     private Animator animator;
+    private float nextAttackTime;
     private bool isAttacking;
     public bool IsAttacking => isAttacking;
 
@@ -17,10 +18,14 @@ public class EnemyAttack : MonoBehaviour
         core = GetComponent<EnemyCore>();
         stats = GetComponent<EnemyStats>();
         animator = GetComponentInChildren<Animator>();
+        health = GetComponent<EnemyHealth>();
     }
 
     public void Tick()
     {
+        if (health != null && health.IsDead)
+            return;
+
         if (core.Player == null)
             return;
 
@@ -51,18 +56,22 @@ public class EnemyAttack : MonoBehaviour
 
     public void DealDamage()
     {
+        if (health != null && health.IsDead)
+            return;
+
         if (core.Player == null)
             return;
 
         float sqrAttackRange = attackRange * attackRange;
 
-        // 🔥 Revalidar distancia al momento del impacto
-        float currentDistance = (core.Player.position - transform.position).sqrMagnitude;
+        float currentDistance =
+            (core.Player.position - transform.position).sqrMagnitude;
 
         if (currentDistance > sqrAttackRange)
-            return; // El player se alejó → no hay daño
+            return;
 
-        PlayerDamageReceiver receiver = core.Player.GetComponent<PlayerDamageReceiver>();
+        PlayerDamageReceiver receiver =
+            core.Player.GetComponent<PlayerDamageReceiver>();
 
         if (receiver == null)
             return;
@@ -80,5 +89,13 @@ public class EnemyAttack : MonoBehaviour
     public void EndAttack()
     {
         isAttacking = false;
+    }
+
+    public void CancelAttack()
+    {
+        isAttacking = false;
+
+        if (animator != null)
+            animator.ResetTrigger("Attack");
     }
 }

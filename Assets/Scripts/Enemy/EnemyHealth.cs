@@ -112,6 +112,9 @@ public class EnemyHealth : MonoBehaviour
         if (attack != null)
             attack.enabled = false;
 
+        if (attack != null)
+            attack.CancelAttack();
+
         if (agent != null)
             agent.enabled = false;
 
