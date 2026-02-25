@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73eb1edb05d06cf458f9634370362fe7, type: 3}
+  m_Name: Stormfall
+  m_EditorClassIdentifier: Assembly-CSharp::SkillDefinition
+  DisplayName: Stormfall
+  Description: Invoca rayos que caen alrededor del jugador.
+  Icon: {fileID: 21300000, guid: ee4840b181f6f8a40aa169bc6a6d3c5d, type: 3}
+  Rarity: 0
+  ExecutionPrefab: {fileID: 1476931289817332599, guid: 643cea1eb1fdf0242b5741ca03b10b06, type: 3}
+  ExecutorPrefab: {fileID: 7409702113566467514, guid: 1e5b3df6f40dfb44786c0c8600a000da, type: 3}
+  DamageType: 1
+  BaseDamage: 40
+  BaseCooldown: 1.8
+  BaseSpawnRadius: 6
+  BaseImpactRadius: 1.5
+  BaseRange: 0
+  BaseDuration: 0
+  BaseCount: 1
+  ScalesWithAttackSpeed: 0
+  CanCrit: 0
+  IsDamageOverTime: 0
+  CooldownStartsAfterDuration: 1
+  PossibleModifiers:
+  - {fileID: 11400000, guid: 9ba6562d84d15c247bd70957cf4a78a3, type: 2}
+  - {fileID: 11400000, guid: 38e21e5d8c78b2c43bc71286338a2c1e, type: 2}
+  - {fileID: 11400000, guid: f737182b5ee205a47ac07186b9fb9d9c, type: 2}
+  - {fileID: 11400000, guid: 976f3821f12e9bf43ad296c211856b98, type: 2}
+  - {fileID: 11400000, guid: f44a08a1fc5caae4d81bcd6f15cd1412, type: 2}
+  Evolutions: []
