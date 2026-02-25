@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class ExperiencePickup : MonoBehaviour
@@ -11,7 +12,8 @@ public class ExperiencePickup : MonoBehaviour
     private bool isAbsorbing;
     private float absorbTimer;
     private Vector3 startScale;
-    private FloatingPickup floating;
+    private PlayerStats playerStats;
+    private float attractRadius;
 
     public void Initialize(int xp)
     {
@@ -20,26 +22,57 @@ public class ExperiencePickup : MonoBehaviour
 
     void Start()
     {
-        player = FindFirstObjectByType<PlayerExperienceSystem>()?.transform;
+        var xpSystem = FindFirstObjectByType<PlayerExperienceSystem>();
+        if (xpSystem != null)
+        {
+            player = xpSystem.transform;
+            playerStats = player.GetComponent<PlayerStats>();
+        }
+
         startScale = transform.localScale;
-        floating = GetComponent<FloatingPickup>();
     }
 
     void Update()
     {
+        if (player == null)
+            return;
+
         if (isAbsorbing)
         {
             AbsorbEffect();
             return;
         }
 
-        if (isAttracted && player != null)
+        attractRadius = playerStats != null
+            ? playerStats.ExpAttractionRadius
+            : 2f;
+
+        float distance = Vector3.Distance(
+            transform.position,
+            player.position
+        );
+
+        if (distance <= attractRadius && !isAttracted)
+        {
+            isAttracted = true;
+
+            var floating = GetComponent<FloatingPickup>();
+            if (floating != null)
+                floating.DisableFloating();
+        }
+
+        if (isAttracted)
         {
             transform.position = Vector3.MoveTowards(
                 transform.position,
                 player.position,
                 attractSpeed * Time.deltaTime
             );
+        }
+
+        if (distance <= 0.3f)
+        {
+            StartAbsorb();
         }
     }
 
@@ -57,18 +90,11 @@ public class ExperiencePickup : MonoBehaviour
     public void Attract()
     {
         isAttracted = true;
-
-        if (floating != null)
-            floating.enabled = false;
     }
 
     private void StartAbsorb()
     {
-        isAbsorbing = true;
-        absorbTimer = 0f;
-
-        if (floating != null)
-            floating.enabled = false;
+        isAbsorbing = true; absorbTimer = 0f;
     }
 
     private void AbsorbEffect()
@@ -77,21 +103,21 @@ public class ExperiencePickup : MonoBehaviour
             return;
 
         absorbTimer += Time.deltaTime;
-
         float t = absorbTimer / absorbDuration;
 
-        // Movimiento rápido al centro
+        // Curva más natural
+        float curved = t * t;
+
         transform.position = Vector3.Lerp(
             transform.position,
             player.position,
-            t * 5f
+            curved * 6f
         );
 
-        // Escala hacia 0
         transform.localScale = Vector3.Lerp(
             startScale,
             Vector3.zero,
-            t
+            curved
         );
 
         if (absorbTimer >= absorbDuration)

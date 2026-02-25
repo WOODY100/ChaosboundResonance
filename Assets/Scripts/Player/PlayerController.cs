@@ -15,6 +15,7 @@ public class PlayerController : MonoBehaviour
     private PlayerInputActions inputActions;
     private Animator animator;
     private PlayerCombat combat;
+    private PlayerStats stats;
 
     private Vector2 moveInput;
     private Vector3 moveDirection;
@@ -29,6 +30,7 @@ public class PlayerController : MonoBehaviour
         controller = GetComponent<CharacterController>();
         animator = GetComponentInChildren<Animator>();
         combat = GetComponent<PlayerCombat>();
+        stats = GetComponent<PlayerStats>();
 
         inputActions = new PlayerInputActions();
         inputActions.Player.Move.performed += ctx => moveInput = ctx.ReadValue<Vector2>();
@@ -56,6 +58,16 @@ public class PlayerController : MonoBehaviour
 
         moveDirection = camForward * moveInput.y + camRight * moveInput.x;
 
+        // 🔥 Obtener velocidad dinámica
+        float dynamicSpeed = moveSpeed;
+
+        if (stats != null)
+        {
+            var modifierSystem = stats.GetComponent<PlayerModifierSystem>();
+            if (modifierSystem != null)
+                dynamicSpeed = modifierSystem.GetStat(StatType.MovementSpeed);
+        }
+
         if (moveDirection.magnitude > 0.1f)
         {
             moveDirection.Normalize();
@@ -71,10 +83,10 @@ public class PlayerController : MonoBehaviour
                 );
             }
 
-            controller.Move(moveDirection * moveSpeed * Time.deltaTime);
+            controller.Move(moveDirection * dynamicSpeed * Time.deltaTime);
         }
 
-        float currentSpeed = moveInput.magnitude * moveSpeed;
+        float currentSpeed = moveInput.magnitude * dynamicSpeed;
         animator.SetFloat("Speed", currentSpeed);
         Velocity = controller.velocity;
     }

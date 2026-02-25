@@ -38,6 +38,8 @@ public class PlayerModifierSystem : MonoBehaviour
 
     public void AddSource(ModifierLayer layer, ModifierSource source)
     {
+        Debug.Log($"AddSource called for {source.SourceID}");
+
         var target = GetLayer(layer);
         target[source.SourceID] = source;
         RecalculateAll();
@@ -73,8 +75,12 @@ public class PlayerModifierSystem : MonoBehaviour
 
     private void RecalculateAll()
     {
+        Debug.Log("RecalculateAll triggered");
+
         foreach (var statType in stats.Keys)
         {
+            Debug.Log($"{statType} now = {stats[statType].CurrentValue}");
+
             List<StatModifier> collected = new();
 
             CollectModifiers(metaSources, statType, collected);

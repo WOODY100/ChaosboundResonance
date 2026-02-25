@@ -48,7 +48,7 @@ public class EnemyReward : MonoBehaviour
                             out hit,
                             5f))
         {
-            spawnPosition = hit.point + Vector3.up * 0.3f; // pequeño offset
+            spawnPosition = hit.point + Vector3.up * 0.5f; // pequeño offset
         }
 
         GameObject orb = Instantiate(
