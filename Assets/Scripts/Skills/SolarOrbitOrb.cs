@@ -7,10 +7,19 @@ public class SolarOrbitOrb : MonoBehaviour, IOrbital
     [Header("Orbit Settings")]
     [SerializeField] private float baseAngularSpeed = 180f;
 
+    [Header("Chaotic Self Rotation")]
+    [SerializeField] private float chaosBaseSpeed = 360f;
+    [SerializeField] private float chaosVariation = 120f;
+    [SerializeField] private float wobbleAmount = 15f;
+
+    private Vector3 chaosAxis;
+    private float chaosSpeed;
+
     private RuntimeSkill skill;
     private Transform owner;
     private System.Action onFinished;
 
+    private float currentSelfRotationSpeed;
     private float currentAngle;
     private float lifetime;
     private float duration;
@@ -44,6 +53,8 @@ public class SolarOrbitOrb : MonoBehaviour, IOrbital
         duration = skill.Stats.FinalDuration;
         damage = skill.Stats.FinalDamage;
         damageType = skill.Definition.DamageType;
+        chaosAxis = Random.onUnitSphere;
+        chaosSpeed = chaosBaseSpeed + Random.Range(-chaosVariation, chaosVariation);
 
         smoothedCenter = owner.position;
 
@@ -91,6 +102,7 @@ public class SolarOrbitOrb : MonoBehaviour, IOrbital
         );
 
         RotateAroundOwner(smoothedCenter);
+        RotateChaotic();
     }
 
     private void RotateAroundOwner(Vector3 center)
@@ -108,11 +120,27 @@ public class SolarOrbitOrb : MonoBehaviour, IOrbital
         transform.position = center + offset;
     }
 
+    private void RotateChaotic()
+    {
+        // Rotación principal caótica
+        transform.Rotate(
+            chaosAxis,
+            chaosSpeed * Time.deltaTime,
+            Space.Self
+        );
+
+        // Wobble mágico (ligera oscilación)
+        float wobbleX = Mathf.Sin(Time.time * 7f) * wobbleAmount;
+        float wobbleZ = Mathf.Cos(Time.time * 5f) * wobbleAmount;
+
+        transform.localRotation *= Quaternion.Euler(wobbleX * Time.deltaTime, 0f, wobbleZ * Time.deltaTime);
+    }
+
     private void OnTriggerEnter(Collider other)
     {
-        EnemyHealth enemy = other.GetComponentInParent<EnemyHealth>();
+        IDamageable damageable = other.GetComponentInParent<IDamageable>();
 
-        if (enemy == null || enemy.IsDead)
+        if (damageable == null || damageable.IsDead)
             return;
 
         DamageData damageData = new DamageData(
@@ -120,6 +148,6 @@ public class SolarOrbitOrb : MonoBehaviour, IOrbital
             damageType
         );
 
-        enemy.TakeDamage(damageData);
+        damageable.TakeDamage(damageData);
     }
 }

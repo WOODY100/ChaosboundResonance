@@ -62,31 +62,25 @@ public class ArcBoltProjectile : MonoBehaviour, IProjectile
         if (!initialized || hasImpacted)
             return;
 
-        EnemyHealth enemy = other.GetComponentInParent<EnemyHealth>();
-        if (enemy == null)
+        IDamageable damageable = other.GetComponentInParent<IDamageable>();
+        if (damageable == null || damageable.IsDead)
             return;
 
-        hasImpacted = true;   // 🔒 bloquear múltiples impactos
+        hasImpacted = true;
 
         Vector3 hitPoint = other.ClosestPoint(transform.position);
 
-        ApplyDamage(enemy);
+        ApplyDamage(damageable);
 
         if (remainingPenetration > 0)
         {
             remainingPenetration--;
-            hasImpacted = false; // permitir siguiente penetración
+            hasImpacted = false;
             return;
         }
 
         if (impactVFX != null)
-        {
-            Instantiate(
-                impactVFX,
-                hitPoint,
-                Quaternion.identity
-            );
-        }
+            Instantiate(impactVFX, hitPoint, Quaternion.identity);
 
         Destroy(gameObject);
     }
@@ -94,7 +88,7 @@ public class ArcBoltProjectile : MonoBehaviour, IProjectile
     // =====================================================
     // DAMAGE LOGIC
     // =====================================================
-    private void ApplyDamage(EnemyHealth enemy)
+    private void ApplyDamage(IDamageable target)
     {
         float damage = skill.Stats.FinalDamage;
 
@@ -115,6 +109,6 @@ public class ArcBoltProjectile : MonoBehaviour, IProjectile
             skill.Definition.DamageType
         );
 
-        enemy.TakeDamage(damageData);
+        target.TakeDamage(damageData);
     }
 }

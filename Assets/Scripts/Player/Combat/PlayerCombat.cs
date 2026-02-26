@@ -31,6 +31,12 @@ public class PlayerCombat : MonoBehaviour
         animator = GetComponentInChildren<Animator>();
         stats = GetComponent<PlayerStats>();
 
+        if (stats == null)
+            Debug.LogError("PlayerStats NOT FOUND");
+
+        if (autoAttackCooldown == null)
+            Debug.LogError("CooldownComponent NOT ASSIGNED");
+
         autoAttackCooldown.SetBaseCooldown(0.9f);
     }
 
@@ -57,10 +63,10 @@ public class PlayerCombat : MonoBehaviour
 
     void UpdateTarget()
     {
-        EnemyHealth target = FindBestTarget();
+        IDamageable target = FindBestTarget();
 
         if (target != null)
-            CurrentTarget = target.transform;
+            CurrentTarget = ((MonoBehaviour)target).transform;
         else
             CurrentTarget = null;
     }
@@ -70,11 +76,9 @@ public class PlayerCombat : MonoBehaviour
         if (!autoAttackCooldown.IsReady)
             return;
 
-        EnemyHealth target = FindBestTarget();
+        IDamageable target = FindBestTarget();
         if (target == null)
-        {
             return;
-        }
 
         ExecuteAttack(target);
     }
@@ -84,14 +88,16 @@ public class PlayerCombat : MonoBehaviour
         if (!IsAttacking)
             return;
 
-        EnemyHealth newTarget = FindBestTarget();
+        IDamageable newTarget = FindBestTarget();
 
         if (newTarget == null)
             return;
 
+        Transform newTransform = ((MonoBehaviour)newTarget).transform;
+
         if (CurrentTarget == null)
         {
-            CurrentTarget = newTarget.transform;
+            CurrentTarget = newTransform;
             return;
         }
 
@@ -99,16 +105,15 @@ public class PlayerCombat : MonoBehaviour
             CurrentTarget.position - transform.position);
 
         float newDist = Vector3.SqrMagnitude(
-            newTarget.transform.position - transform.position);
+            newTransform.position - transform.position);
 
-        // Si el nuevo está significativamente más cerca → cambiar
         if (newDist + 0.1f < currentDist)
         {
-            CurrentTarget = newTarget.transform;
+            CurrentTarget = newTransform;
         }
     }
 
-    EnemyHealth FindBestTarget()
+    IDamageable FindBestTarget()
     {
         Collider[] hits = Physics.OverlapSphere(
             transform.position,
@@ -119,18 +124,20 @@ public class PlayerCombat : MonoBehaviour
         if (hits.Length == 0)
             return null;
 
-        EnemyHealth bestTarget = null;
+        IDamageable bestTarget = null;
         float bestScore = float.MinValue;
 
         bool surrounded = hits.Length > 4;
 
         foreach (Collider hit in hits)
         {
-            EnemyHealth enemy = hit.GetComponentInParent<EnemyHealth>();
-            if (enemy == null || enemy.IsDead)
+            IDamageable damageable = hit.GetComponentInParent<IDamageable>();
+            if (damageable == null || damageable.IsDead)
                 continue;
 
-            Vector3 toEnemy = enemy.transform.position - transform.position;
+            Transform enemyTransform = hit.GetComponentInParent<Transform>();
+
+            Vector3 toEnemy = enemyTransform.position - transform.position;
             toEnemy.y = 0f;
 
             float distance = toEnemy.magnitude;
@@ -140,23 +147,14 @@ public class PlayerCombat : MonoBehaviour
             Vector3 dir = toEnemy.normalized;
             float dot = Vector3.Dot(transform.forward, dir);
 
-            float score;
-
-            if (surrounded)
-            {
-                // 🔥 Modo radial: solo importa cercanía
-                score = 1f / distance;
-            }
-            else
-            {
-                // 🔥 Modo frontal normal
-                score = dot * 2f + (1f / distance);
-            }
+            float score = surrounded
+                ? 1f / distance
+                : dot * 2f + (1f / distance);
 
             if (score > bestScore)
             {
                 bestScore = score;
-                bestTarget = enemy;
+                bestTarget = damageable;
             }
         }
 
@@ -180,12 +178,12 @@ public class PlayerCombat : MonoBehaviour
         );
     }
 
-    void ExecuteAttack(EnemyHealth target)
+    void ExecuteAttack(IDamageable target)
     {
         autoAttackCooldown.Trigger();
 
         IsAttacking = true;
-        CurrentTarget = target.transform;
+        CurrentTarget = ((MonoBehaviour)target).transform;
 
         animator.SetTrigger("Attack");
     }
@@ -217,7 +215,7 @@ public class PlayerCombat : MonoBehaviour
             enemyLayer
         );
 
-        HashSet<EnemyHealth> damaged = new HashSet<EnemyHealth>();
+        HashSet<IDamageable> damaged = new HashSet<IDamageable>();
         float cosHalfAngle = Mathf.Cos(attackAngle * 0.5f * Mathf.Deg2Rad);
 
         for (int i = 0; i < hitCount; i++)
@@ -225,31 +223,33 @@ public class PlayerCombat : MonoBehaviour
             Collider hit = attackHits[i];
             if (hit == null) continue;
 
-            EnemyHealth enemy = hit.GetComponentInParent<EnemyHealth>();
-            if (enemy == null || enemy.IsDead || damaged.Contains(enemy)) continue;
+            IDamageable damageable = hit.GetComponentInParent<IDamageable>();
+            if (damageable == null || damageable.IsDead || damaged.Contains(damageable))
+                continue;
 
-            Vector3 toEnemy = enemy.transform.position - transform.position;
-            toEnemy.y = 0f;
+            Transform targetTransform = hit.GetComponentInParent<Transform>();
+            Vector3 toTarget = targetTransform.position - transform.position;
+            toTarget.y = 0f;
 
-            if (toEnemy.sqrMagnitude < 0.04f)
+            if (toTarget.sqrMagnitude < 0.04f)
             {
-                ApplyDamage(enemy);
-                damaged.Add(enemy);
+                ApplyDamage(damageable);
+                damaged.Add(damageable);
                 continue;
             }
 
-            toEnemy.Normalize();
-            float dot = Vector3.Dot(transform.forward, toEnemy);
+            toTarget.Normalize();
+            float dot = Vector3.Dot(transform.forward, toTarget);
 
             if (dot >= cosHalfAngle)
             {
-                ApplyDamage(enemy);
-                damaged.Add(enemy);
+                ApplyDamage(damageable);
+                damaged.Add(damageable);
             }
         }
     }
 
-    void ApplyDamage(EnemyHealth enemy)
+    void ApplyDamage(IDamageable target)
     {
         if (stats == null) return;
 
@@ -260,7 +260,7 @@ public class PlayerCombat : MonoBehaviour
             stats.CurrentDamageType
         );
 
-        enemy.TakeDamage(damage);
+        target.TakeDamage(damage);
     }
 
     // 🔥 Animation Event (solo libera animación, NO cooldown)

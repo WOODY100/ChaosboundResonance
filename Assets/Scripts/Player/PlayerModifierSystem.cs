@@ -24,7 +24,7 @@ public class PlayerModifierSystem : MonoBehaviour
         CreateStat(StatType.MovementSpeed, 6f);
         CreateStat(StatType.MaxHP, 100f);
         CreateStat(StatType.HPRegen, 0f);
-        CreateStat(StatType.ExpAttractionRadius, 1f);
+        CreateStat(StatType.ExpAttractionRadius, 1.1f);
     }
 
     private void CreateStat(StatType type, float baseValue)
@@ -38,8 +38,6 @@ public class PlayerModifierSystem : MonoBehaviour
 
     public void AddSource(ModifierLayer layer, ModifierSource source)
     {
-        Debug.Log($"AddSource called for {source.SourceID}");
-
         var target = GetLayer(layer);
         target[source.SourceID] = source;
         RecalculateAll();
@@ -75,12 +73,9 @@ public class PlayerModifierSystem : MonoBehaviour
 
     private void RecalculateAll()
     {
-        Debug.Log("RecalculateAll triggered");
 
         foreach (var statType in stats.Keys)
         {
-            Debug.Log($"{statType} now = {stats[statType].CurrentValue}");
-
             List<StatModifier> collected = new();
 
             CollectModifiers(metaSources, statType, collected);

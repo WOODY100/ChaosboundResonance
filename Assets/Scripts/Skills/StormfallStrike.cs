@@ -45,16 +45,16 @@ public class StormfallStrike : MonoBehaviour, IAreaStrike
 
         foreach (var hit in hits)
         {
-            EnemyHealth enemy =
-                hit.GetComponentInParent<EnemyHealth>();
+            IDamageable damageable =
+                hit.GetComponentInParent<IDamageable>();
 
-            if (enemy == null || enemy.IsDead)
+            if (damageable == null || damageable.IsDead)
                 continue;
 
             DamageData damageData =
                 new DamageData(damage, damageType);
 
-            enemy.TakeDamage(damageData);
+            damageable.TakeDamage(damageData);
         }
     }
 }

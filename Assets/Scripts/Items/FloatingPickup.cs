@@ -10,7 +10,6 @@ public class FloatingPickup : MonoBehaviour
 
     void Start() 
     {
-        transform.position += Vector3.up * 0.75f; // 🔥 ajuste visual
         startPos = transform.position; 
     }
     void Update()

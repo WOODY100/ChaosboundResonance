@@ -100,8 +100,6 @@ public class LevelUpManager : MonoBehaviour
 
     private void ApplyGlobalModifier(UpgradeEffect effect)
     {
-        Debug.Log($"GLOBAL APPLY: {effect.TargetStat} {effect.ModifierType} {effect.Value}");
-
         ModifierSource source =
             new ModifierSource("RunUpgrade_" + System.Guid.NewGuid());
 

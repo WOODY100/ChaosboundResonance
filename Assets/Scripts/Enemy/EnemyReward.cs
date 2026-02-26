@@ -41,14 +41,24 @@ public class EnemyReward : MonoBehaviour
 
         Vector3 spawnPosition = transform.position;
 
-        // Lanzamos raycast hacia abajo para encontrar el suelo
         RaycastHit hit;
-        if (Physics.Raycast(spawnPosition + Vector3.up * 2f,
+
+        // Lanzamos raycast desde arriba del enemigo
+        Vector3 rayOrigin = transform.position + Vector3.up * 5f;
+
+        if (Physics.Raycast(rayOrigin,
                             Vector3.down,
                             out hit,
-                            5f))
+                            20f,
+                            LayerMask.GetMask("Ground"))) // 🔥 filtrar solo suelo
         {
-            spawnPosition = hit.point + Vector3.up * 0.5f; // pequeño offset
+            spawnPosition = hit.point + Vector3.up * 0.25f;
+        }
+        else
+        {
+            // Fallback por si no detecta suelo
+            spawnPosition = transform.position;
+            spawnPosition.y = 0.5f;
         }
 
         GameObject orb = Instantiate(
@@ -57,9 +67,7 @@ public class EnemyReward : MonoBehaviour
             Quaternion.identity
         );
 
-        ExperiencePickup pickup =
-            orb.GetComponent<ExperiencePickup>();
-
+        ExperiencePickup pickup = orb.GetComponent<ExperiencePickup>();
         pickup?.Initialize(experienceReward);
     }
 }
