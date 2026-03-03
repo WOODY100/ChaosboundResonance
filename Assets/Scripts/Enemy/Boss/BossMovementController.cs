@@ -14,28 +14,38 @@ public class BossMovementController : MonoBehaviour
     [SerializeField] private float rotationSpeed = 5f;
     [SerializeField] private float chargeSpeed = 15f;
     [SerializeField] private float chargeDuration = 1.2f;
+    [SerializeField] private float chargeRecoveryDuration = 0.6f;
+    [SerializeField] private float chargeInertiaDeceleration = 25f;
 
+    private bool isChargeRecovering = false;
+    private float chargeRecoveryTimer = 0f;
     private bool isCharging = false;
     private float chargeTimer;
     private Vector3 chargeDirection;
     private float currentSpeed = 0f;
     private bool canMove = true;
     private bool isForcedMovement = false;
+    private bool isDead = false;
+    private bool rotationLocked = false;
 
-    public void SetCanMove(bool value)
+    public bool RotationLocked
     {
-        canMove = value;
+        get => rotationLocked;
+        set => rotationLocked = value;
     }
 
-    public void SetSpeedMultiplier(float multiplier)
-    {
-        maxMoveSpeed *= multiplier;
-    }
+    public System.Action OnChargeStart;
+    public System.Action OnChargeEnd;
 
+    public bool IsCharging => isCharging;
+    public System.Action OnChargeTick;
     private void Update()
     {
-        if (player == null)
+        if (isDead || player == null)
             return;
+
+        if (!isCharging && !rotationLocked)
+            RotateToPlayer();
 
         HandleMovement();
     }
@@ -46,6 +56,51 @@ public class BossMovementController : MonoBehaviour
             player = GameObject.FindGameObjectWithTag("Player")?.transform;
     }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (!isCharging)
+            return;
+
+        // 🔥 Si golpea player o entorno sólido
+        if (collision.gameObject.CompareTag("Player") ||
+            collision.gameObject.layer == LayerMask.NameToLayer("Environment"))
+        {
+            CancelChargeOnImpact();
+        }
+    }
+
+    private void CancelChargeOnImpact()
+    {
+        if (!isCharging)
+            return;
+
+        isCharging = false;
+
+        // 🔥 Forzar inercia inmediatamente
+        isChargeRecovering = true;
+        chargeRecoveryTimer = chargeRecoveryDuration;
+
+        OnChargeEnd?.Invoke();
+    }
+
+    public void SetCanMove(bool value)
+    {
+        canMove = value;
+    }
+
+    public void StopImmediately()
+    {
+        StopAllCoroutines();          // 🔥 mata cualquier ForceMove activo
+        isForcedMovement = false;
+        isCharging = false;
+        currentSpeed = 0f;
+    }
+
+    public void SetSpeedMultiplier(float multiplier)
+    {
+        maxMoveSpeed *= multiplier;
+    }
+
     public void SetPlayer(Transform target)
     {
         player = target;
@@ -53,6 +108,12 @@ public class BossMovementController : MonoBehaviour
 
     private void HandleMovement()
     {
+        if (isChargeRecovering)
+        {
+            HandleChargeRecovery();
+            return;
+        }
+
         if (isForcedMovement)
             return;
 
@@ -84,49 +145,58 @@ public class BossMovementController : MonoBehaviour
         animator.SetFloat("Speed", currentSpeed > 0.1f ? 1f : 0f);
     }
 
-    public void ForceMove(Vector3 direction, float speed, float duration)
+    public void ForceMove(Vector3 direction, float speed, float duration, Vector3 finalTargetPosition)
     {
-        StartCoroutine(ForceMoveRoutine(direction, speed, duration));
+        StartCoroutine(ForceMoveRoutine(direction, speed, duration, finalTargetPosition));
     }
 
-    private IEnumerator ForceMoveRoutine(Vector3 direction, float speed, float duration)
+    private IEnumerator ForceMoveRoutine(
+    Vector3 direction,
+    float speed,
+    float duration,
+    Vector3 finalTargetPosition)
     {
         isForcedMovement = true;
 
         float timer = 0f;
 
         Vector3 startPosition = transform.position;
-        Vector3 horizontalStart = startPosition;
-        horizontalStart.y = 0f;
+        startPosition.y = 0f;
 
-        float jumpHeight = 2.5f; // altura máxima del salto
+        Vector3 endPosition = finalTargetPosition;
+        endPosition.y = 0f;
+
+        float jumpHeight = 2.5f;
 
         while (timer < duration)
         {
-            float delta = Time.deltaTime;
-            timer += delta;
+            timer += Time.deltaTime;
+            float progress = timer / duration;
+            progress = Mathf.Clamp01(progress);
 
-            float progress = timer / duration; // 0 → 1
+            // 🔥 Interpolación horizontal PERFECTA
+            Vector3 horizontal = Vector3.Lerp(startPosition, endPosition, progress);
 
-            // Movimiento horizontal
-            Vector3 horizontalMove = direction * speed * delta;
-
-            // Altura parabólica (0 → altura → 0)
+            // 🔥 Altura parabólica alineada
             float height = Mathf.Sin(progress * Mathf.PI) * jumpHeight;
 
-            Vector3 newPosition = transform.position + horizontalMove;
-            newPosition.y = startPosition.y + height;
-
-            transform.position = newPosition;
+            transform.position = new Vector3(
+                horizontal.x,
+                startPosition.y + height,
+                horizontal.z
+            );
 
             yield return null;
         }
 
-        // Asegurar que termina en el suelo exacto
-        Vector3 finalPos = transform.position;
-        finalPos.y = startPosition.y;
-        transform.position = finalPos;
+        // 🔥 Posición final EXACTA
+        transform.position = new Vector3(
+            endPosition.x,
+            startPosition.y,
+            endPosition.z
+        );
 
+        currentSpeed = 0f;
         isForcedMovement = false;
     }
 
@@ -141,6 +211,28 @@ public class BossMovementController : MonoBehaviour
         animator.SetFloat("Speed", 0f);
     }
 
+    private void HandleChargeRecovery()
+    {
+        if (chargeRecoveryTimer <= 0f)
+        {
+            isChargeRecovering = false;
+            rotationLocked = false;
+            currentSpeed = 0f;
+            return;
+        }
+
+        // 🔥 Desaceleración fuerte pero no instantánea
+        currentSpeed = Mathf.MoveTowards(
+            currentSpeed,
+            0f,
+            chargeInertiaDeceleration * Time.deltaTime
+        );
+
+        transform.position += chargeDirection * currentSpeed * Time.deltaTime;
+
+        chargeRecoveryTimer -= Time.deltaTime;
+    }
+
     private void RotateTowards(Vector3 direction)
     {
         Quaternion targetRotation = Quaternion.LookRotation(direction);
@@ -149,6 +241,37 @@ public class BossMovementController : MonoBehaviour
             targetRotation,
             rotationSpeed * Time.deltaTime
         );
+    }
+
+    private void RotateToPlayer()
+    {
+        Vector3 direction = player.position - transform.position;
+        direction.y = 0f;
+
+        if (direction.sqrMagnitude < 0.01f)
+            return;
+
+        Quaternion targetRotation = Quaternion.LookRotation(direction);
+
+        transform.rotation = Quaternion.Slerp(
+            transform.rotation,
+            targetRotation,
+            rotationSpeed * Time.deltaTime
+        );
+    }
+
+    public void OnBossDeath()
+    {
+        isDead = true;
+
+        isCharging = false;
+        isForcedMovement = false;
+        currentSpeed = 0f;
+        GetComponent<Collider>().enabled = false;
+
+        StopAllCoroutines();
+
+        animator.SetFloat("Speed", 0f);
     }
 
     public void StartCharge()
@@ -162,12 +285,22 @@ public class BossMovementController : MonoBehaviour
         chargeDirection = (player.position - transform.position);
         chargeDirection.y = 0f;
         chargeDirection.Normalize();
+
+        // 🔥 Alinear inmediatamente
+        transform.rotation = Quaternion.LookRotation(chargeDirection);
+
+        OnChargeStart?.Invoke();
     }
 
     public void StopCharge()
     {
         isCharging = false;
-        currentSpeed = 0f;
+
+        // 🔥 Iniciar fase de inercia
+        isChargeRecovering = true;
+        chargeRecoveryTimer = chargeRecoveryDuration;
+
+        OnChargeEnd?.Invoke();
     }
 
     private void HandleCharge()
@@ -178,7 +311,10 @@ public class BossMovementController : MonoBehaviour
             return;
         }
 
-        transform.position += chargeDirection * chargeSpeed * Time.deltaTime;
+        currentSpeed = chargeSpeed;
+        transform.position += chargeDirection * currentSpeed * Time.deltaTime;
+
+        OnChargeTick?.Invoke();
 
         chargeTimer -= Time.deltaTime;
     }

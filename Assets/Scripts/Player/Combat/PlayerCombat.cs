@@ -1,6 +1,6 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class PlayerCombat : MonoBehaviour
 {
@@ -21,6 +21,7 @@ public class PlayerCombat : MonoBehaviour
 
     private Animator animator;
     private PlayerStats stats;
+    private PlayerController controller;
 
     private Coroutine rotationCoroutine;
 
@@ -30,6 +31,7 @@ public class PlayerCombat : MonoBehaviour
     {
         animator = GetComponentInChildren<Animator>();
         stats = GetComponent<PlayerStats>();
+        controller = GetComponent<PlayerController>();
 
         if (stats == null)
             Debug.LogError("PlayerStats NOT FOUND");
@@ -45,19 +47,22 @@ public class PlayerCombat : MonoBehaviour
         if (GameStateManager.Instance.CurrentState != GameState.Playing)
             return;
 
+        if (controller != null && controller.IsDashing)
+            return;
+
         if (CurrentTarget != null)
         {
             RotateTowards(CurrentTarget);
         }
 
         autoAttackCooldown.CooldownMultiplier =
-    1f / Mathf.Max(0.01f, stats.FinalAttackSpeed);
+            1f / Mathf.Max(0.01f, stats.FinalAttackSpeed);
 
         autoAttackCooldown.Tick(Time.deltaTime);
 
         animator.SetFloat("AttackSpeed", stats.FinalAttackSpeed);
 
-        UpdateTarget();       // 🔥 nuevo
+        UpdateTarget();
         HandleAutoAttack();
     }
 
@@ -300,5 +305,18 @@ public class PlayerCombat : MonoBehaviour
         Gizmos.color = Color.yellow;
         Gizmos.DrawRay(transform.position, leftRayDirection * attackRange);
         Gizmos.DrawRay(transform.position, rightRayDirection * attackRange);
+    }
+
+    public void CancelAttack()
+    {
+        if (!IsAttacking)
+            return;
+
+        StopAllCoroutines();
+
+        animator.ResetTrigger("Attack");
+
+        IsAttacking = false;
+        CurrentTarget = null;
     }
 }

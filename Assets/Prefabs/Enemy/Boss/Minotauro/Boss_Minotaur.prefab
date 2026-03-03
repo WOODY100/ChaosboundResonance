@@ -160,16 +160,29 @@ MonoBehaviour:
   animator: {fileID: 5985319794129961037}
   player: {fileID: 0}
   movement: {fileID: 7348215645966141985}
-  meleeRange: 3
+  meleeRange: 2
   midRange: 8
-  attackCooldown: 2
+  attackCooldown: 1.5
   stompCooldown: 5
   chargeCooldown: 6
   jumpCooldown: 8
   furyCooldown: 20
   currentPhase: 1
-  jumpWarningPrefab: {fileID: 8196028836721409550, guid: f270ce5687f7d65459de4c44a0b9e75f, type: 3}
-  jumpWarningDuration: 1.8
+  chargeGhostPrefab: {fileID: 452030302928183145, guid: 34e77973ab35fa24b888d17c3fd9d39c, type: 3}
+  ghostSpawnInterval: 0.04
+  jumpClip: {fileID: -203655887218126122, guid: 8f578f6d12656034b88871521c3719b1, type: 3}
+  jumpWarningPrefab: {fileID: 6619929815922055732, guid: 06bea63b856266b4c9f6a037f4793012, type: 3}
+  jumpImpactVFX: {fileID: 5139383056623360920, guid: 4d1ef90dcd31d3645a3a1c4341ab18eb, type: 3}
+  jumpImpactRadius: 3
+  jumpRecoveryDuration: 1.2
+  meleeRadius: 2
+  stompRadius: 3
+  chargeRadius: 1.5
+  jumpDamage: 50
+  meleeDamage: 25
+  stompDamage: 35
+  chargeDamage: 30
+  chargeDamageInterval: 0.3
 --- !u!114 &7348215645966141985
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -184,7 +197,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BossMovementController
   player: {fileID: 0}
   animator: {fileID: 5985319794129961037}
-  maxMoveSpeed: 4
+  maxMoveSpeed: 3.5
   acceleration: 5
   deceleration: 8
   rotationSpeed: 5

@@ -119,6 +119,10 @@ public abstract class BossControllerBase : MonoBehaviour
     public void OnDeath()
     {
         isDead = true;
+
+        if (movement != null)
+            movement.OnBossDeath();
+
         animator.SetTrigger("Die");
     }
     #endregion

@@ -6,6 +6,8 @@ public class PlayerDamageReceiver : MonoBehaviour
     [Header("Damage Settings")]
     [SerializeField] private float globalDamageCooldown = 0.5f;
 
+    public bool IsInvulnerable { get; set; }
+
     private PlayerHealth health;
     private float lastDamageTime;
 
@@ -16,6 +18,9 @@ public class PlayerDamageReceiver : MonoBehaviour
 
     public void ReceiveDamage(DamageData damageData)
     {
+        if (IsInvulnerable)
+            return;
+
         if (Time.time < lastDamageTime + globalDamageCooldown)
             return;
 

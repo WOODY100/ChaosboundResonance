@@ -19,7 +19,7 @@ public class PlayerModifierSystem : MonoBehaviour
 
     private void InitializeBaseStats()
     {
-        CreateStat(StatType.Damage, 10f);
+        CreateStat(StatType.Damage, 1f);
         CreateStat(StatType.AttackSpeed, 1f);
         CreateStat(StatType.MovementSpeed, 6f);
         CreateStat(StatType.MaxHP, 100f);
