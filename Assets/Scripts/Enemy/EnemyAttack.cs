@@ -32,9 +32,7 @@ public class EnemyAttack : MonoBehaviour
         if (isAttacking)
             return;
 
-        float sqrAttackRange = attackRange * attackRange;
-
-        if (core.DistanceToPlayer > sqrAttackRange)
+        if (core.DistanceToPlayer > attackRange)
             return;
 
         if (Time.time < nextAttackTime)
@@ -64,10 +62,7 @@ public class EnemyAttack : MonoBehaviour
 
         float sqrAttackRange = attackRange * attackRange;
 
-        float currentDistance =
-            (core.Player.position - transform.position).sqrMagnitude;
-
-        if (currentDistance > sqrAttackRange)
+        if (core.DistanceToPlayer > attackRange)
             return;
 
         PlayerDamageReceiver receiver =

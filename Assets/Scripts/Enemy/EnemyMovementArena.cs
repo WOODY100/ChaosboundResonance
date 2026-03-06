@@ -6,18 +6,16 @@ public class EnemyMovementArena : MonoBehaviour
     [SerializeField] private float separationStrength = 1.5f;
     [SerializeField] private float separationRadius = 1.2f;
     [SerializeField] private LayerMask enemyLayer;
+    [SerializeField] private LayerMask obstacleLayer;
 
+    private CapsuleCollider myCollider;
     private float baseSpeed;
     private float difficultyMultiplier = 1f;
     private float currentSpeed;
     private float sqrSeparationRadius;
     private Animator animator;
     private Transform player;
-
-    public void SetPlayer(Transform target)
-    {
-        player = target;
-    }
+    private EnemyCore core;
 
     void Awake()
     {
@@ -25,6 +23,13 @@ public class EnemyMovementArena : MonoBehaviour
         RecalculateSpeed();
         sqrSeparationRadius = separationRadius * separationRadius;
         animator = GetComponent<Animator>();
+        core = GetComponent<EnemyCore>();
+        myCollider = GetComponent<CapsuleCollider>();
+    }
+
+    public void SetPlayer(Transform target)
+    {
+        player = target;
     }
 
     void RecalculateSpeed()
@@ -49,10 +54,7 @@ public class EnemyMovementArena : MonoBehaviour
         if (player == null)
             return;
 
-        Vector3 toPlayer = player.position - transform.position;
-        toPlayer.y = 0f;
-
-        float distance = toPlayer.sqrMagnitude;
+        float distance = core.DistanceToPlayer;
 
         if (distance < 0.1f)
         {
@@ -60,7 +62,12 @@ public class EnemyMovementArena : MonoBehaviour
             return;
         }
 
+        // Dirección hacia el jugador
+        Vector3 toPlayer = player.position - transform.position;
+        toPlayer.y = 0f;
+
         Vector3 dirToPlayer = toPlayer.normalized;
+
         Vector3 separation = CalculateSeparation();
 
         float dynamicSeparation = separationStrength;
@@ -70,10 +77,10 @@ public class EnemyMovementArena : MonoBehaviour
 
         Vector3 finalDir = (dirToPlayer + separation * dynamicSeparation).normalized;
 
-        // 🔥 Movimiento inmediato
-        transform.position += finalDir * currentSpeed * Time.deltaTime;
+        // Movimiento
+        MoveWithCollision(finalDir);
 
-        // 🔥 Rotación suave pero rápida
+        // Rotación
         Quaternion targetRotation = Quaternion.LookRotation(finalDir);
         transform.rotation = Quaternion.Slerp(
             transform.rotation,
@@ -110,5 +117,24 @@ public class EnemyMovementArena : MonoBehaviour
 
         separation.y = 0f;
         return separation;
+    }
+
+    void MoveWithCollision(Vector3 direction)
+    {
+        float moveDistance = currentSpeed * Time.deltaTime;
+
+        Vector3 point1 = transform.position + Vector3.up * myCollider.radius;
+        Vector3 point2 = transform.position + Vector3.up * (myCollider.height - myCollider.radius);
+
+        if (!Physics.CapsuleCast(
+            point1,
+            point2,
+            myCollider.radius,
+            direction,
+            moveDistance,
+            obstacleLayer))
+        {
+            transform.position += direction * moveDistance;
+        }
     }
 }

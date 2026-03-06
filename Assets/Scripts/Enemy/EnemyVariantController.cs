@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 public class EnemyVariantController : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class EnemyVariantController : MonoBehaviour
 
     // 🔒 Temporal: control manual del modelo dinámico
     [SerializeField] private bool useDynamicModel = false;
+    [SerializeField] private Transform modelContainer;
 
     void Awake()
     {
@@ -65,19 +67,11 @@ public class EnemyVariantController : MonoBehaviour
 
     void SetupModel()
     {
-        if (variantData.modelPrefab == null)
+        if (variantData.modelPrefab == null || modelContainer == null)
             return;
 
-        // Busca el contenedor visual
-        Transform modelContainer = transform.Find("EnemyModel");
-        if (modelContainer == null)
-            return;
-
-        // Limpia hijos anteriores
         foreach (Transform child in modelContainer)
-        {
             Destroy(child.gameObject);
-        }
 
         GameObject model = Instantiate(
             variantData.modelPrefab,
@@ -86,5 +80,53 @@ public class EnemyVariantController : MonoBehaviour
 
         model.transform.localPosition = Vector3.zero;
         model.transform.localRotation = Quaternion.identity;
+        model.transform.localScale = Vector3.one;
+
+        AutoFitCollider(model);
+
+        StartCoroutine(RebindAnimatorNextFrame());
+    }
+
+    IEnumerator RebindAnimatorNextFrame()
+    {
+        yield return null;
+
+        Animator animator = GetComponent<Animator>();
+
+        if (animator != null)
+        {
+            animator.Rebind();
+            animator.Update(0f);
+        }
+    }
+
+    void AutoFitCollider(GameObject model)
+    {
+        CapsuleCollider capsule = GetComponent<CapsuleCollider>();
+        if (capsule == null)
+            return;
+
+        Renderer[] renderers = model.GetComponentsInChildren<Renderer>();
+
+        if (renderers.Length == 0)
+            return;
+
+        Bounds bounds = renderers[0].bounds;
+
+        foreach (Renderer r in renderers)
+            bounds.Encapsulate(r.bounds);
+
+        // altura total
+        float height = bounds.size.y;
+
+        // radio basado en el ancho
+        float radius = Mathf.Max(bounds.size.x, bounds.size.z) * 0.15f;
+
+        capsule.height = height;
+        capsule.radius = radius;
+
+        // centro relativo al Enemy_Base
+        Vector3 center = transform.InverseTransformPoint(bounds.center);
+        capsule.center = center;
     }
 }

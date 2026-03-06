@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class WallBaseRandomizer : MonoBehaviour
 {
@@ -9,11 +9,21 @@ public class WallBaseRandomizer : MonoBehaviour
         if (variants == null || variants.Length == 0)
             return;
 
-        int index = Random.Range(0, variants.Length);
-
+        // 🔧 Asegurar que todas estén activas primero
         for (int i = 0; i < variants.Length; i++)
         {
-            variants[i].SetActive(i == index);
+            if (variants[i] != null)
+                variants[i].SetActive(true);
+        }
+
+        // 🎲 Elegir una variante
+        int index = Random.Range(0, variants.Length);
+
+        // 🔒 Desactivar las demás
+        for (int i = 0; i < variants.Length; i++)
+        {
+            if (variants[i] != null)
+                variants[i].SetActive(i == index);
         }
     }
 }

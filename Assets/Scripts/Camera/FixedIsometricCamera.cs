@@ -7,7 +7,7 @@ public class FixedIsometricCamera : MonoBehaviour
 
     [Header("Camera Settings")]
     public float height = 20f;
-    public float distance = 20f;
+    public float distance = 17.5f;
     public float verticalAngle = 50f;
     public float horizontalAngle = 45f;
 

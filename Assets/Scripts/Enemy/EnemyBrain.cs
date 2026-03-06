@@ -75,6 +75,9 @@ public class EnemyBrain : MonoBehaviour, IEnemyTickable
 
             if (attack != null)
                 attack.Tick();
+
+            // 🔥 DETENER MOVIMIENTO
+            arenaMovement.SetSpeed(0f);
         }
         else
         {
