@@ -1,12 +1,10 @@
 using UnityEngine;
-using System.Collections.Generic;
 
 public class DungeonVisibilityManager : MonoBehaviour
 {
     public static DungeonVisibilityManager Instance;
 
     private Room currentRoom;
-    private Room previousRoom;
 
     void Awake()
     {
@@ -18,12 +16,13 @@ public class DungeonVisibilityManager : MonoBehaviour
         if (room == currentRoom)
             return;
 
-        previousRoom = currentRoom;
         currentRoom = room;
 
-        if (previousRoom != null)
-            previousRoom.SetWallsHidden(true);
+        Debug.Log("Entered room: " + room.name);
+    }
 
-        currentRoom.SetWallsHidden(true);
+    public Room GetCurrentRoom()
+    {
+        return currentRoom;
     }
 }

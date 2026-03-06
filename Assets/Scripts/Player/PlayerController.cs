@@ -29,6 +29,7 @@ public class PlayerController : MonoBehaviour
     private Animator animator;
     private PlayerCombat combat;
     private PlayerStats stats;
+    private Transform cameraTransform;
 
     private Vector2 moveInput;
     private Vector3 moveDirection;
@@ -36,6 +37,7 @@ public class PlayerController : MonoBehaviour
     private void Start()
     {
         EnemyManager.Instance.SetPlayer(transform);
+        cameraTransform = Camera.main.transform;
     }
 
     void Awake()
@@ -73,8 +75,8 @@ public class PlayerController : MonoBehaviour
 
     void HandleMovement()
     {
-        Vector3 camForward = Camera.main.transform.forward;
-        Vector3 camRight = Camera.main.transform.right;
+        Vector3 camForward = cameraTransform.forward;
+        Vector3 camRight = cameraTransform.right;
 
         camForward.y = 0f;
         camRight.y = 0f;
