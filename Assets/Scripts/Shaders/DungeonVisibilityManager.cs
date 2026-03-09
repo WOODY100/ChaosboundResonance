@@ -16,7 +16,14 @@ public class DungeonVisibilityManager : MonoBehaviour
         if (room == currentRoom)
             return;
 
+        if (currentRoom != null)
+        {
+            currentRoom.ShowWalls();
+        }
+
         currentRoom = room;
+
+        currentRoom.HideWalls();
 
         Debug.Log("Entered room: " + room.name);
     }
