@@ -1,101 +1,81 @@
 ﻿using UnityEngine;
 
-public class DungeonTestGenerator : MonoBehaviour
+public class DungeonStartCombatTest : MonoBehaviour
 {
     [Header("Prefabs")]
-    public GameObject roomPrefab;
-    public GameObject corridorEW;
+    public GameObject startRoom;
+    public GameObject combatRoom;
+
     public GameObject corridorNS;
+    public GameObject corridorEW;
 
     void Start()
     {
         // -------------------------
-        // SALA CENTRAL
+        // SPAWN START ROOM
         // -------------------------
 
-        GameObject centerRoom = Instantiate(roomPrefab, Vector3.zero, Quaternion.identity);
+        GameObject start = Instantiate(startRoom, Vector3.zero, Quaternion.identity);
+        start.name = "StartRoom";
 
         // -------------------------
-        // WEST
+        // SPAWN CORRIDOR (NORTH)
         // -------------------------
 
-        GameObject corridorWest = Instantiate(corridorEW);
+        GameObject corridor = Instantiate(corridorNS);
+        corridor.name = "Corridor_North";
+
         AlignPieces(
-            FindEntry(centerRoom, "EntryWest"),
-            FindEntry(corridorWest, "EntryEast")
-        );
-
-        GameObject roomWest = Instantiate(roomPrefab);
-        AlignPieces(
-            FindEntry(corridorWest, "EntryWest"),
-            FindEntry(roomWest, "EntryEast")
+            FindEntry(start, "EntryNorth"),
+            FindEntry(corridor, "EntrySouth")
         );
 
         // -------------------------
-        // EAST
+        // SPAWN COMBAT ROOM
         // -------------------------
 
-        GameObject corridorEast = Instantiate(corridorEW);
+        GameObject combat = Instantiate(combatRoom);
+        combat.name = "CombatRoom";
+
         AlignPieces(
-            FindEntry(centerRoom, "EntryEast"),
-            FindEntry(corridorEast, "EntryWest")
-        );
-
-        GameObject roomEast = Instantiate(roomPrefab);
-        AlignPieces(
-            FindEntry(corridorEast, "EntryEast"),
-            FindEntry(roomEast, "EntryWest")
-        );
-
-        // -------------------------
-        // NORTH
-        // -------------------------
-
-        GameObject corridorNorth = Instantiate(corridorNS);
-        AlignPieces(
-            FindEntry(centerRoom, "EntryNorth"),
-            FindEntry(corridorNorth, "EntrySouth")
-        );
-
-        GameObject roomNorth = Instantiate(roomPrefab);
-        AlignPieces(
-            FindEntry(corridorNorth, "EntryNorth"),
-            FindEntry(roomNorth, "EntrySouth")
-        );
-
-        // -------------------------
-        // SOUTH
-        // -------------------------
-
-        GameObject corridorSouth = Instantiate(corridorNS);
-        AlignPieces(
-            FindEntry(centerRoom, "EntrySouth"),
-            FindEntry(corridorSouth, "EntryNorth")
-        );
-
-        GameObject roomSouth = Instantiate(roomPrefab);
-        AlignPieces(
-            FindEntry(corridorSouth, "EntrySouth"),
-            FindEntry(roomSouth, "EntryNorth")
+            FindEntry(corridor, "EntryNorth"),
+            FindEntry(combat, "EntrySouth")
         );
     }
 
     // ----------------------------------
-    // ENCUENTRA ENTRY
+    // FIND ENTRY
     // ----------------------------------
 
     Transform FindEntry(GameObject obj, string entryName)
     {
         Transform entries = obj.transform.Find("Entries");
-        return entries.Find(entryName);
+
+        if (entries == null)
+        {
+            Debug.LogError($"Entries not found in {obj.name}");
+            return null;
+        }
+
+        Transform entry = entries.Find(entryName);
+
+        if (entry == null)
+        {
+            Debug.LogError($"{entryName} not found in {obj.name}");
+        }
+
+        return entry;
     }
 
     // ----------------------------------
-    // ALINEA PIEZAS SIN ROTAR
+    // ALIGN PIECES
     // ----------------------------------
 
     void AlignPieces(Transform entryA, Transform entryB)
     {
+        if (entryA == null || entryB == null)
+            return;
+
         Transform pieceRoot = entryB.root;
 
         Vector3 localOffset = entryB.position - pieceRoot.position;
