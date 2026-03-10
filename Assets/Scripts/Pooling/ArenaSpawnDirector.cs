@@ -27,8 +27,16 @@ public class ArenaSpawnDirector : MonoBehaviour
     private float arenaTimer;
     private float spawnTimer;
     private bool finalBossSpawned;
-
     private int activeEnemies;
+    private bool spawnActive;
+    private RoomDoors currentRoomDoors;
+
+    private List<Transform> spawnPoints = new List<Transform>();
+
+    public void RegisterSpawnPoints(List<Transform> points)
+    {
+        spawnPoints = points;
+    }
 
     public int ActiveEnemies => activeEnemies;
 
@@ -39,7 +47,7 @@ public class ArenaSpawnDirector : MonoBehaviour
 
     void Update()
     {
-        if (player == null)
+        if (player == null || !spawnActive)
             return;
 
         arenaTimer += Time.deltaTime;
@@ -48,6 +56,16 @@ public class ArenaSpawnDirector : MonoBehaviour
 
         HandleScaling(normalizedTime);
         HandleFinalBoss();
+    }
+
+    public void ActivateSpawning()
+    {
+        spawnActive = true;
+    }
+
+    public void SetRoomDoors(RoomDoors doors)
+    {
+        currentRoomDoors = doors;
     }
 
     void HandleScaling(float normalizedTime)
@@ -79,7 +97,7 @@ public class ArenaSpawnDirector : MonoBehaviour
 
         EnemyPool selectedPool = GetRandomWeightedPool();
 
-        Vector3 spawnPos = GetSpawnPosition();
+        Vector3 spawnPos = GetSpawnPoint();
 
         if (NavMesh.SamplePosition(spawnPos, out NavMeshHit hit, 5f, NavMesh.AllAreas))
         {
@@ -105,7 +123,7 @@ public class ArenaSpawnDirector : MonoBehaviour
         {
             finalBossSpawned = true;
 
-            Vector3 spawnPos = GetSpawnPosition();
+            Vector3 spawnPos = GetSpawnPoint();
 
             if (NavMesh.SamplePosition(spawnPos, out NavMeshHit hit, 5f, NavMesh.AllAreas))
             {
@@ -126,6 +144,15 @@ public class ArenaSpawnDirector : MonoBehaviour
         );
 
         return player.position + direction * radius;
+    }
+
+    Vector3 GetSpawnPoint()
+    {
+        if (spawnPoints == null || spawnPoints.Count == 0)
+            return player.position;
+
+        int index = Random.Range(0, spawnPoints.Count);
+        return spawnPoints[index].position;
     }
 
     EnemyPool GetRandomWeightedPool()
@@ -153,5 +180,10 @@ public class ArenaSpawnDirector : MonoBehaviour
     {
         enemy.OnDeath -= HandleEnemyDeath;
         activeEnemies--;
+
+        if (activeEnemies <= 0 && currentRoomDoors != null)
+        {
+            currentRoomDoors.OpenDoors();
+        }
     }
 }

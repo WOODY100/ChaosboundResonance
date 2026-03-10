@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 400000}
+  - component: {fileID: 3075292667171467398}
   m_Layer: 0
   m_Name: Table_B
   m_TagString: Untagged
@@ -36,6 +37,27 @@ Transform:
   - {fileID: 416632}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &3075292667171467398
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100000}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.4275064, y: 2, z: 3.1064422}
+  m_Center: {x: 0.006570339, y: 0.5, z: 0.0022360086}
 --- !u!1 &143964
 GameObject:
   m_ObjectHideFlags: 0
@@ -47,7 +69,6 @@ GameObject:
   - component: {fileID: 492530}
   - component: {fileID: 3365346}
   - component: {fileID: 2326516}
-  - component: {fileID: 6414546}
   m_Layer: 0
   m_Name: Leg_2
   m_TagString: Untagged
@@ -127,28 +148,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &6414546
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 143964}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 4300504, guid: fd75e63c14c4540438372a6844af68b6, type: 3}
 --- !u!1 &159924
 GameObject:
   m_ObjectHideFlags: 0
@@ -160,7 +159,6 @@ GameObject:
   - component: {fileID: 407622}
   - component: {fileID: 3331978}
   - component: {fileID: 2357178}
-  - component: {fileID: 6484076}
   m_Layer: 0
   m_Name: Leg_1
   m_TagString: Untagged
@@ -240,28 +238,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &6484076
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 159924}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 4300502, guid: fd75e63c14c4540438372a6844af68b6, type: 3}
 --- !u!1 &171096
 GameObject:
   m_ObjectHideFlags: 0
@@ -273,7 +249,6 @@ GameObject:
   - component: {fileID: 477298}
   - component: {fileID: 3379470}
   - component: {fileID: 2359340}
-  - component: {fileID: 6497876}
   m_Layer: 0
   m_Name: Leg_4
   m_TagString: Untagged
@@ -353,28 +328,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &6497876
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 171096}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 4300508, guid: fd75e63c14c4540438372a6844af68b6, type: 3}
 --- !u!1 &176460
 GameObject:
   m_ObjectHideFlags: 0
@@ -386,7 +339,6 @@ GameObject:
   - component: {fileID: 416632}
   - component: {fileID: 3318294}
   - component: {fileID: 2386596}
-  - component: {fileID: 6490662}
   m_Layer: 0
   m_Name: Table_Top
   m_TagString: Untagged
@@ -466,28 +418,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &6490662
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 176460}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 4300500, guid: fd75e63c14c4540438372a6844af68b6, type: 3}
 --- !u!1 &187282
 GameObject:
   m_ObjectHideFlags: 0
@@ -499,7 +429,6 @@ GameObject:
   - component: {fileID: 418312}
   - component: {fileID: 3306668}
   - component: {fileID: 2386676}
-  - component: {fileID: 6418786}
   m_Layer: 0
   m_Name: Leg_3
   m_TagString: Untagged
@@ -579,25 +508,3 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &6418786
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 187282}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 4300506, guid: fd75e63c14c4540438372a6844af68b6, type: 3}

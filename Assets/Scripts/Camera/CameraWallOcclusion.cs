@@ -29,8 +29,6 @@ public class CameraWallOcclusion : MonoBehaviour
 
         foreach (var hit in hits)
         {
-            Debug.Log("Hit: " + hit.collider.name);
-
             WallOccluder wall = hit.collider.GetComponent<WallOccluder>();
 
             if (wall != null)
