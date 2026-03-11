@@ -19,21 +19,24 @@ public class RoomTrigger : MonoBehaviour
         if (!other.CompareTag("Player") || triggered)
             return;
 
+        RoomCombatController combat = GetComponentInParent<RoomCombatController>();
+
+        if (combat == null)
+            return;
+
+        // Si ya fue completada no hacemos nada
+        if (combat.State == RoomState.Cleared)
+            return;
+
         triggered = true;
 
-        RoomDoors doors = GetComponentInParent<RoomDoors>();
-
-        if (doors != null)
-        {
-            doors.CloseDoorsExcept(entryDirection);
-            Debug.Log("Closing doors");
-        }
+        combat.StartCombat(entryDirection);
 
         ArenaSpawnDirector director = Object.FindAnyObjectByType<ArenaSpawnDirector>();
 
         if (director != null)
         {
-            director.SetRoomDoors(doors);
+            director.SetRoomDoors(GetComponentInParent<RoomDoors>());
             director.ActivateSpawning();
         }
     }

@@ -21,6 +21,7 @@ public class ArenaSpawnDirector : MonoBehaviour
     [Header("Spawn Area")]
     [SerializeField] private float minSpawnRadius = 12f;
     [SerializeField] private float maxSpawnRadius = 18f;
+    [SerializeField] private float spawnStartDelay = 1.5f;
 
     public float CurrentTime => arenaTimer;
     public float Duration => arenaDuration;
@@ -30,6 +31,8 @@ public class ArenaSpawnDirector : MonoBehaviour
     private int activeEnemies;
     private bool spawnActive;
     private RoomDoors currentRoomDoors;
+    private bool spawnPending;
+    private float delayTimer;
 
     private List<Transform> spawnPoints = new List<Transform>();
 
@@ -47,7 +50,24 @@ public class ArenaSpawnDirector : MonoBehaviour
 
     void Update()
     {
-        if (player == null || !spawnActive)
+        if (player == null)
+            return;
+
+        // Manejar delay inicial
+        if (spawnPending)
+        {
+            delayTimer -= Time.deltaTime;
+
+            if (delayTimer <= 0f)
+            {
+                spawnPending = false;
+                spawnActive = true;
+            }
+
+            return;
+        }
+
+        if (!spawnActive)
             return;
 
         arenaTimer += Time.deltaTime;
@@ -60,7 +80,8 @@ public class ArenaSpawnDirector : MonoBehaviour
 
     public void ActivateSpawning()
     {
-        spawnActive = true;
+        spawnPending = true;
+        delayTimer = spawnStartDelay;
     }
 
     public void SetRoomDoors(RoomDoors doors)

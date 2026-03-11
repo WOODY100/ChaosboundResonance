@@ -25,7 +25,6 @@ public class RoomSpawnPoints : MonoBehaviour
         if (director != null)
         {
             director.RegisterSpawnPoints(spawnPoints);
-            Debug.Log("Spawn points registered: " + spawnPoints.Count);
         }
     }
 }
