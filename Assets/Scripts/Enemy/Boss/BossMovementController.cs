@@ -7,26 +7,52 @@ public class BossMovementController : MonoBehaviour
     [SerializeField] private Transform player;
     [SerializeField] private Animator animator;
 
-    [Header("Movement Settings")]
+    [Header("Movement")]
     [SerializeField] private float maxMoveSpeed = 4f;
     [SerializeField] private float acceleration = 5f;
     [SerializeField] private float deceleration = 8f;
     [SerializeField] private float rotationSpeed = 5f;
+
+    [Header("Charge")]
     [SerializeField] private float chargeSpeed = 15f;
     [SerializeField] private float chargeDuration = 1.2f;
     [SerializeField] private float chargeRecoveryDuration = 0.6f;
     [SerializeField] private float chargeInertiaDeceleration = 25f;
 
-    private bool isChargeRecovering = false;
-    private float chargeRecoveryTimer = 0f;
-    private bool isCharging = false;
-    private float chargeTimer;
+    [Header("Steering")]
+    [SerializeField] private float steeringCheckDistance = 3.5f;
+    [SerializeField] private float obstacleMemoryTime = 0.6f;
+
+    [Header("Anti Stuck")]
+    [SerializeField] private float stuckCheckTime = 0.4f;
+    [SerializeField] private float stuckDistance = 0.15f;
+
+    [Header("Wall Repulsion")]
+    [SerializeField] private float wallRepulsionRadius = 2f;
+    [SerializeField] private float wallRepulsionStrength = 0.4f;
+
+    [SerializeField] private LayerMask obstacleLayer;
+
+    private CapsuleCollider capsule;
+
+    private Vector3 lastPosition;
+    private Vector3 lastTangent;
     private Vector3 chargeDirection;
-    private float currentSpeed = 0f;
+
+    private float stuckTimer;
+    private float obstacleMemoryTimer;
+    private float currentSpeed;
+
+    private bool isCharging;
+    private bool isChargeRecovering;
+    private bool isForcedMovement;
     private bool canMove = true;
-    private bool isForcedMovement = false;
-    private bool isDead = false;
-    private bool rotationLocked = false;
+    private bool isDead;
+
+    private float chargeTimer;
+    private float chargeRecoveryTimer;
+
+    private bool rotationLocked;
 
     public bool RotationLocked
     {
@@ -36,10 +62,19 @@ public class BossMovementController : MonoBehaviour
 
     public System.Action OnChargeStart;
     public System.Action OnChargeEnd;
+    public System.Action OnChargeTick;
 
     public bool IsCharging => isCharging;
-    public System.Action OnChargeTick;
-    private void Update()
+
+    void Awake()
+    {
+        capsule = GetComponent<CapsuleCollider>();
+
+        if (player == null)
+            player = GameObject.FindGameObjectWithTag("Player")?.transform;
+    }
+
+    void Update()
     {
         if (isDead || player == null)
             return;
@@ -48,65 +83,14 @@ public class BossMovementController : MonoBehaviour
             RotateToPlayer();
 
         HandleMovement();
+        CheckIfStuck();
     }
 
-    private void Awake()
-    {
-        if (player == null)
-            player = GameObject.FindGameObjectWithTag("Player")?.transform;
-    }
+    // --------------------------------------------------------
+    // MOVEMENT
+    // --------------------------------------------------------
 
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (!isCharging)
-            return;
-
-        // 🔥 Si golpea player o entorno sólido
-        if (collision.gameObject.CompareTag("Player") ||
-            collision.gameObject.layer == LayerMask.NameToLayer("Environment"))
-        {
-            CancelChargeOnImpact();
-        }
-    }
-
-    private void CancelChargeOnImpact()
-    {
-        if (!isCharging)
-            return;
-
-        isCharging = false;
-
-        // 🔥 Forzar inercia inmediatamente
-        isChargeRecovering = true;
-        chargeRecoveryTimer = chargeRecoveryDuration;
-
-        OnChargeEnd?.Invoke();
-    }
-
-    public void SetCanMove(bool value)
-    {
-        canMove = value;
-    }
-
-    public void StopImmediately()
-    {
-        StopAllCoroutines();          // 🔥 mata cualquier ForceMove activo
-        isForcedMovement = false;
-        isCharging = false;
-        currentSpeed = 0f;
-    }
-
-    public void SetSpeedMultiplier(float multiplier)
-    {
-        maxMoveSpeed *= multiplier;
-    }
-
-    public void SetPlayer(Transform target)
-    {
-        player = target;
-    }
-
-    private void HandleMovement()
+    void HandleMovement()
     {
         if (isChargeRecovering)
         {
@@ -123,10 +107,10 @@ public class BossMovementController : MonoBehaviour
             return;
         }
 
-        Vector3 direction = player.position - transform.position;
-        direction.y = 0f;
+        Vector3 dir = player.position - transform.position;
+        dir.y = 0;
 
-        float distance = direction.magnitude;
+        float distance = dir.magnitude;
 
         if (!canMove || distance < 1.5f)
         {
@@ -134,188 +118,332 @@ public class BossMovementController : MonoBehaviour
             return;
         }
 
-        direction.Normalize();
+        dir.Normalize();
+
+        dir = GetSteeredDirection(dir);
+        dir += GetWallRepulsion();
+
+        dir.Normalize();
 
         Accelerate();
 
-        transform.position += direction * currentSpeed * Time.deltaTime;
-
-        RotateTowards(direction);
+        MoveWithCollision(dir);
+        RotateTowards(dir);
 
         animator.SetFloat("Speed", currentSpeed > 0.1f ? 1f : 0f);
     }
 
-    public void ForceMove(Vector3 direction, float speed, float duration, Vector3 finalTargetPosition)
+    public void ForceMove(Vector3 direction, float speed, float duration, Vector3 target)
     {
-        StartCoroutine(ForceMoveRoutine(direction, speed, duration, finalTargetPosition));
+        StartCoroutine(ForceMoveRoutine(direction, speed, duration, target));
     }
 
-    private IEnumerator ForceMoveRoutine(
-    Vector3 direction,
-    float speed,
-    float duration,
-    Vector3 finalTargetPosition)
+    IEnumerator ForceMoveRoutine(Vector3 direction, float speed, float duration, Vector3 target)
     {
         isForcedMovement = true;
 
         float timer = 0f;
 
-        Vector3 startPosition = transform.position;
-        startPosition.y = 0f;
-
-        Vector3 endPosition = finalTargetPosition;
-        endPosition.y = 0f;
+        Vector3 start = transform.position;
+        start.y = 0;
+        target.y = 0;
 
         float jumpHeight = 2.5f;
 
         while (timer < duration)
         {
             timer += Time.deltaTime;
-            float progress = timer / duration;
-            progress = Mathf.Clamp01(progress);
 
-            // 🔥 Interpolación horizontal PERFECTA
-            Vector3 horizontal = Vector3.Lerp(startPosition, endPosition, progress);
+            float t = Mathf.Clamp01(timer / duration);
 
-            // 🔥 Altura parabólica alineada
-            float height = Mathf.Sin(progress * Mathf.PI) * jumpHeight;
+            Vector3 horizontal = Vector3.Lerp(start, target, t);
+
+            float height = Mathf.Sin(t * Mathf.PI) * jumpHeight;
 
             transform.position = new Vector3(
                 horizontal.x,
-                startPosition.y + height,
+                start.y + height,
                 horizontal.z
             );
 
             yield return null;
         }
 
-        // 🔥 Posición final EXACTA
-        transform.position = new Vector3(
-            endPosition.x,
-            startPosition.y,
-            endPosition.z
-        );
+        transform.position = new Vector3(target.x, start.y, target.z);
 
-        currentSpeed = 0f;
+        currentSpeed = 0;
         isForcedMovement = false;
     }
 
-    private void Accelerate()
-    {
-        currentSpeed = Mathf.MoveTowards(currentSpeed, maxMoveSpeed, acceleration * Time.deltaTime);
-    }
+    // --------------------------------------------------------
+    // COLLISION MOVE
+    // --------------------------------------------------------
 
-    private void Decelerate()
+    void MoveWithCollision(Vector3 direction)
     {
-        currentSpeed = Mathf.MoveTowards(currentSpeed, 0f, deceleration * Time.deltaTime);
-        animator.SetFloat("Speed", 0f);
-    }
+        float moveDistance = currentSpeed * Time.deltaTime;
 
-    private void HandleChargeRecovery()
-    {
-        if (chargeRecoveryTimer <= 0f)
+        float radius = capsule.radius * 0.9f;
+
+        Vector3 point1 = transform.position + Vector3.up * radius;
+        Vector3 point2 = transform.position + Vector3.up * (capsule.height - radius);
+
+        if (Physics.CapsuleCast(point1, point2, radius, direction,
+            out RaycastHit hit, moveDistance, obstacleLayer))
         {
-            isChargeRecovering = false;
-            rotationLocked = false;
-            currentSpeed = 0f;
-            return;
+            float safeDistance = hit.distance - 0.02f;
+
+            if (safeDistance > 0)
+                transform.position += direction * safeDistance;
+
+            Vector3 slide = Vector3.ProjectOnPlane(direction, hit.normal);
+
+            if (slide.sqrMagnitude > 0.001f)
+                transform.position += slide.normalized * moveDistance * 0.5f;
+        }
+        else
+        {
+            transform.position += direction * moveDistance;
+        }
+    }
+
+    // --------------------------------------------------------
+    // STEERING
+    // --------------------------------------------------------
+
+    Vector3 GetSteeredDirection(Vector3 desiredDir)
+    {
+        Vector3 origin = transform.position + Vector3.up * capsule.height * 0.5f;
+
+        if (Physics.Raycast(origin, desiredDir, out RaycastHit hit, steeringCheckDistance, obstacleLayer))
+        {
+            Vector3 tangent = Vector3.Cross(hit.normal, Vector3.up);
+
+            Vector3 toPlayer = (player.position - transform.position).normalized;
+
+            if (Vector3.Dot(tangent, toPlayer) < 0)
+                tangent = -tangent;
+
+            lastTangent = tangent;
+            obstacleMemoryTimer = obstacleMemoryTime;
+
+            return tangent;
         }
 
-        // 🔥 Desaceleración fuerte pero no instantánea
-        currentSpeed = Mathf.MoveTowards(
-            currentSpeed,
-            0f,
-            chargeInertiaDeceleration * Time.deltaTime
-        );
+        if (obstacleMemoryTimer > 0)
+        {
+            obstacleMemoryTimer -= Time.deltaTime;
+            return lastTangent;
+        }
 
-        transform.position += chargeDirection * currentSpeed * Time.deltaTime;
-
-        chargeRecoveryTimer -= Time.deltaTime;
+        return desiredDir;
     }
 
-    private void RotateTowards(Vector3 direction)
+    // --------------------------------------------------------
+    // WALL REPULSION
+    // --------------------------------------------------------
+
+    Vector3 GetWallRepulsion()
     {
-        Quaternion targetRotation = Quaternion.LookRotation(direction);
-        transform.rotation = Quaternion.Slerp(
-            transform.rotation,
-            targetRotation,
-            rotationSpeed * Time.deltaTime
-        );
+        Vector3 repulsion = Vector3.zero;
+
+        Collider[] hits = Physics.OverlapSphere(transform.position, wallRepulsionRadius, obstacleLayer);
+
+        foreach (var hit in hits)
+        {
+            Vector3 closest = hit.ClosestPoint(transform.position);
+            Vector3 dir = transform.position - closest;
+
+            float dist = dir.magnitude;
+
+            if (dist > 0.001f)
+                repulsion += dir.normalized / dist;
+        }
+
+        return repulsion * wallRepulsionStrength;
     }
 
-    private void RotateToPlayer()
-    {
-        Vector3 direction = player.position - transform.position;
-        direction.y = 0f;
+    // --------------------------------------------------------
+    // ANTI STUCK
+    // --------------------------------------------------------
 
-        if (direction.sqrMagnitude < 0.01f)
+    void CheckIfStuck()
+    {
+        if (isForcedMovement || isCharging || !canMove)
             return;
 
-        Quaternion targetRotation = Quaternion.LookRotation(direction);
+        stuckTimer += Time.deltaTime;
 
-        transform.rotation = Quaternion.Slerp(
-            transform.rotation,
-            targetRotation,
-            rotationSpeed * Time.deltaTime
-        );
+        if (stuckTimer < stuckCheckTime)
+            return;
+
+        float movedDistance = Vector3.Distance(transform.position, lastPosition);
+
+        if (movedDistance < stuckDistance)
+        {
+            EscapeCorner();
+        }
+
+        lastPosition = transform.position;
+        stuckTimer = 0f;
     }
 
-    public void OnBossDeath()
+    void EscapeCorner()
     {
-        isDead = true;
+        Vector3 randomDir = Random.insideUnitSphere;
+        randomDir.y = 0;
 
-        isCharging = false;
-        isForcedMovement = false;
-        currentSpeed = 0f;
-        GetComponent<Collider>().enabled = false;
+        randomDir.Normalize();
 
-        StopAllCoroutines();
-
-        animator.SetFloat("Speed", 0f);
+        transform.position += randomDir * 0.8f;
     }
+
+    // --------------------------------------------------------
+    // CHARGE
+    // --------------------------------------------------------
 
     public void StartCharge()
     {
-        if (player == null)
-            return;
+        if (player == null) return;
 
         isCharging = true;
         chargeTimer = chargeDuration;
 
-        chargeDirection = (player.position - transform.position);
-        chargeDirection.y = 0f;
-        chargeDirection.Normalize();
+        chargeDirection = (player.position - transform.position).normalized;
+        chargeDirection.y = 0;
 
-        // 🔥 Alinear inmediatamente
         transform.rotation = Quaternion.LookRotation(chargeDirection);
 
         OnChargeStart?.Invoke();
     }
 
-    public void StopCharge()
+    void HandleCharge()
     {
-        isCharging = false;
-
-        // 🔥 Iniciar fase de inercia
-        isChargeRecovering = true;
-        chargeRecoveryTimer = chargeRecoveryDuration;
-
-        OnChargeEnd?.Invoke();
-    }
-
-    private void HandleCharge()
-    {
-        if (chargeTimer <= 0f)
+        if (chargeTimer <= 0)
         {
             StopCharge();
             return;
         }
 
         currentSpeed = chargeSpeed;
-        transform.position += chargeDirection * currentSpeed * Time.deltaTime;
+
+        Vector3 dir = GetSteeredDirection(chargeDirection);
+        MoveWithCollision(dir);
 
         OnChargeTick?.Invoke();
 
         chargeTimer -= Time.deltaTime;
+    }
+
+    public void StopCharge()
+    {
+        isCharging = false;
+        isChargeRecovering = true;
+        chargeRecoveryTimer = chargeRecoveryDuration;
+
+        OnChargeEnd?.Invoke();
+    }
+
+    void HandleChargeRecovery()
+    {
+        if (chargeRecoveryTimer <= 0)
+        {
+            isChargeRecovering = false;
+            rotationLocked = false;
+            currentSpeed = 0;
+            return;
+        }
+
+        currentSpeed = Mathf.MoveTowards(
+            currentSpeed,
+            0,
+            chargeInertiaDeceleration * Time.deltaTime
+        );
+
+        MoveWithCollision(chargeDirection);
+
+        chargeRecoveryTimer -= Time.deltaTime;
+    }
+
+    // --------------------------------------------------------
+    // HELPERS
+    // --------------------------------------------------------
+
+    void Accelerate()
+    {
+        currentSpeed = Mathf.MoveTowards(currentSpeed, maxMoveSpeed, acceleration * Time.deltaTime);
+    }
+
+    void Decelerate()
+    {
+        currentSpeed = Mathf.MoveTowards(currentSpeed, 0, deceleration * Time.deltaTime);
+        animator.SetFloat("Speed", 0);
+    }
+
+    void RotateTowards(Vector3 dir)
+    {
+        Quaternion target = Quaternion.LookRotation(dir);
+
+        transform.rotation = Quaternion.Slerp(
+            transform.rotation,
+            target,
+            rotationSpeed * Time.deltaTime
+        );
+    }
+
+    void RotateToPlayer()
+    {
+        Vector3 dir = player.position - transform.position;
+        dir.y = 0;
+
+        if (dir.sqrMagnitude < 0.01f)
+            return;
+
+        Quaternion target = Quaternion.LookRotation(dir);
+
+        transform.rotation = Quaternion.Slerp(
+            transform.rotation,
+            target,
+            rotationSpeed * Time.deltaTime
+        );
+    }
+
+    // --------------------------------------------------------
+    // STATE
+    // --------------------------------------------------------
+
+    public void StopImmediately()
+    {
+        StopAllCoroutines();
+        isForcedMovement = false;
+        isCharging = false;
+        currentSpeed = 0;
+    }
+
+    public void SetCanMove(bool value)
+    {
+        canMove = value;
+    }
+
+    public void SetPlayer(Transform target)
+    {
+        player = target;
+    }
+
+    public void SetSpeedMultiplier(float multiplier)
+    {
+        maxMoveSpeed *= multiplier;
+    }
+
+    public void OnBossDeath()
+    {
+        isDead = true;
+
+        StopAllCoroutines();
+
+        currentSpeed = 0;
+        animator.SetFloat("Speed", 0);
+
+        GetComponent<Collider>().enabled = false;
     }
 }

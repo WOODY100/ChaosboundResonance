@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1611375139775918035}
   - component: {fileID: 7420511632419198841}
   - component: {fileID: 7936926316668471758}
-  - component: {fileID: 4653028819009506746}
+  - component: {fileID: 3253011891657780489}
   m_Layer: 0
   m_Name: Cave_Platform_J
   m_TagString: Untagged
@@ -59,6 +59,11 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -81,12 +86,14 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &4653028819009506746
-MeshCollider:
+--- !u!65 &3253011891657780489
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -103,7 +110,6 @@ MeshCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 7451201463073314063, guid: a5245c24a77253e44ae71aac7d41138c, type: 3}
+  serializedVersion: 3
+  m_Size: {x: 2.4760847, y: 3.3586843, z: 3.2216983}
+  m_Center: {x: -0.06975967, y: -1.2807609, z: -0.08592701}

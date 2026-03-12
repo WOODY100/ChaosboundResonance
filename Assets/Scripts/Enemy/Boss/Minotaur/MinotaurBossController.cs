@@ -236,7 +236,7 @@ public class MinotaurBossController : BossControllerBase
     {
         movement.StopImmediately();
 
-        Vector3 impactPosition = transform.position;
+        Vector3 impactPosition = jumpTargetPosition;
         impactPosition.y = 0f;
 
         if (currentWarningScript != null)
@@ -261,14 +261,18 @@ public class MinotaurBossController : BossControllerBase
         {
             if (hit.CompareTag("Player"))
             {
-                IDamageable damageable = hit.GetComponent<IDamageable>();
-                if (damageable != null)
+                PlayerDamageReceiver receiver = hit.GetComponent<PlayerDamageReceiver>();
+
+                if (receiver != null)
                 {
-                    DamageData dmg = new DamageData(
-                        jumpDamage,
-                        DamageType.Physical
-                    );
-                    damageable.TakeDamage(dmg);
+                    DamageData dmg = new DamageData
+                    {
+                        amount = jumpDamage,
+                        type = DamageType.Physical,
+                        source = gameObject
+                    };
+
+                    receiver.ReceiveDamage(dmg);
                 }
             }
         }
