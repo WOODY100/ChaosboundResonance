@@ -30,6 +30,8 @@ public class MinotaurBossController : BossControllerBase
     private GameObject currentJumpWarning;
     private JumpWarning_Bestial currentWarningScript;
     private BossMovementController movementController;
+    private Mesh bakedMesh;
+    private Collider[] hitBuffer = new Collider[20];
 
     // Impacto
     private const float totalFrames = 114f;
@@ -315,10 +317,12 @@ public class MinotaurBossController : BossControllerBase
         Vector3 center = transform.position;
         center.y = 0f;
 
-        Collider[] hits = Physics.OverlapSphere(center, radius);
+        int count = Physics.OverlapSphereNonAlloc(center, radius, hitBuffer);
 
-        foreach (var hit in hits)
+        for (int i = 0; i < count; i++)
         {
+            Collider hit = hitBuffer[i];
+
             if (hit.CompareTag("Player"))
             {
                 PlayerDamageReceiver receiver = hit.GetComponent<PlayerDamageReceiver>();
@@ -366,10 +370,12 @@ public class MinotaurBossController : BossControllerBase
         Vector3 center = transform.position;
         center.y = 0f;
 
-        Collider[] hits = Physics.OverlapSphere(center, chargeRadius);
+        int count = Physics.OverlapSphereNonAlloc(center, chargeRadius, hitBuffer);
 
-        foreach (var hit in hits)
+        for (int i = 0; i < count; i++)
         {
+            Collider hit = hitBuffer[i];
+
             PlayerDamageReceiver receiver =
                 hit.GetComponent<PlayerDamageReceiver>();
 

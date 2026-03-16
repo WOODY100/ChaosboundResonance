@@ -29,7 +29,7 @@ public class EnemyPool : MonoBehaviour
     {
         if (pool.Count == 0)
         {
-            CreateNewInstance();
+            ExpandPool(10);
         }
 
         GameObject obj = pool.Dequeue();
@@ -45,5 +45,13 @@ public class EnemyPool : MonoBehaviour
     {
         obj.SetActive(false);
         pool.Enqueue(obj);
+    }
+
+    void ExpandPool(int amount)
+    {
+        for (int i = 0; i < amount; i++)
+        {
+            CreateNewInstance();
+        }
     }
 }

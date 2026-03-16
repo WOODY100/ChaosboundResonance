@@ -33,6 +33,8 @@ public class BossMovementController : MonoBehaviour
 
     [SerializeField] private LayerMask obstacleLayer;
 
+    private Collider[] repulsionBuffer = new Collider[16];
+
     private CapsuleCollider capsule;
 
     private Vector3 lastPosition;
@@ -247,10 +249,17 @@ public class BossMovementController : MonoBehaviour
     {
         Vector3 repulsion = Vector3.zero;
 
-        Collider[] hits = Physics.OverlapSphere(transform.position, wallRepulsionRadius, obstacleLayer);
+        int count = Physics.OverlapSphereNonAlloc(
+            transform.position,
+            wallRepulsionRadius,
+            repulsionBuffer,
+            obstacleLayer
+        );
 
-        foreach (var hit in hits)
+        for (int i = 0; i < count; i++)
         {
+            Collider hit = repulsionBuffer[i];
+
             Vector3 closest = hit.ClosestPoint(transform.position);
             Vector3 dir = transform.position - closest;
 

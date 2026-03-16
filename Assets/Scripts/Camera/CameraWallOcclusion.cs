@@ -7,7 +7,9 @@ public class CameraWallOcclusion : MonoBehaviour
     [SerializeField] private LayerMask wallLayer;
     [SerializeField] private float sphereRadius = 1f;
 
-    private List<WallOccluder> hiddenWalls = new List<WallOccluder>();
+    private List<WallOccluder> hiddenWalls = new List<WallOccluder>(32);
+
+    private RaycastHit[] hitBuffer = new RaycastHit[32];
 
     void LateUpdate()
     {
@@ -16,10 +18,11 @@ public class CameraWallOcclusion : MonoBehaviour
         Vector3 dir = player.position - transform.position;
         float dist = dir.magnitude;
 
-        RaycastHit[] hits = Physics.SphereCastAll(
+        int hitCount = Physics.SphereCastNonAlloc(
             transform.position,
             sphereRadius,
             dir.normalized,
+            hitBuffer,
             dist,
             wallLayer,
             QueryTriggerInteraction.Ignore
@@ -27,8 +30,10 @@ public class CameraWallOcclusion : MonoBehaviour
 
         Debug.DrawLine(transform.position, player.position, Color.red);
 
-        foreach (var hit in hits)
+        for (int i = 0; i < hitCount; i++)
         {
+            RaycastHit hit = hitBuffer[i];
+
             WallOccluder wall = hit.collider.GetComponent<WallOccluder>();
 
             if (wall != null)

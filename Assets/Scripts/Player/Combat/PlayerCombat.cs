@@ -120,22 +120,27 @@ public class PlayerCombat : MonoBehaviour
 
     IDamageable FindBestTarget()
     {
-        Collider[] hits = Physics.OverlapSphere(
+        int hitCount = Physics.OverlapSphereNonAlloc(
             transform.position,
             attackRange,
+            attackHits,
             enemyLayer
         );
 
-        if (hits.Length == 0)
+        if (hitCount == 0)
             return null;
 
         IDamageable bestTarget = null;
         float bestScore = float.MinValue;
 
-        bool surrounded = hits.Length > 4;
+        bool surrounded = hitCount > 4;
 
-        foreach (Collider hit in hits)
+        for (int i = 0; i < hitCount; i++)
         {
+            Collider hit = attackHits[i];
+            if (hit == null)
+                continue;
+
             IDamageable damageable = hit.GetComponentInParent<IDamageable>();
             if (damageable == null || damageable.IsDead)
                 continue;
@@ -149,7 +154,7 @@ public class PlayerCombat : MonoBehaviour
             if (distance <= 0.01f)
                 continue;
 
-            Vector3 dir = toEnemy.normalized;
+            Vector3 dir = toEnemy / distance;
             float dot = Vector3.Dot(transform.forward, dir);
 
             float score = surrounded

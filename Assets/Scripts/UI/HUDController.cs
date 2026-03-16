@@ -10,16 +10,25 @@ public class HUDController : MonoBehaviour
 
     private PlayerHealth playerHealth;
     private ArenaSpawnDirector arena;
-    
+    private int lastSecond = -1;
+
     void Update()
     {
-        if (arena != null && timerText != null)
-        {
-            float time = arena.CurrentTime;
-            int minutes = Mathf.FloorToInt(time / 60f);
-            int seconds = Mathf.FloorToInt(time % 60f);
-            timerText.text = $"{minutes:00}:{seconds:00}";
-        }
+        if (arena == null || timerText == null)
+            return;
+
+        float time = arena.CurrentTime;
+        int totalSeconds = Mathf.FloorToInt(time);
+
+        if (totalSeconds == lastSecond)
+            return;
+
+        lastSecond = totalSeconds;
+
+        int minutes = totalSeconds / 60;
+        int seconds = totalSeconds % 60;
+
+        timerText.text = minutes.ToString("00") + ":" + seconds.ToString("00");
     }
 
     public void ShowHUD()
