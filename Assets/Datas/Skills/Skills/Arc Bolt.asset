@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Arc Bolt
   m_EditorClassIdentifier: Assembly-CSharp::SkillDefinition
   DisplayName: Arc Bolt
-  Description: "Dispara un rayo arcano al enemigo m\xE1s cercano."
+  Description: Dispara un rayo arcano alrededor del jugador.
   Icon: {fileID: 21300000, guid: 1b3f4025e07700d459feb426d651c492, type: 3}
   Rarity: 0
   ExecutionPrefab: {fileID: 3005108400605144813, guid: 65f088b08ea010641be9167152f2d5c8, type: 3}
@@ -29,6 +29,7 @@ MonoBehaviour:
   ScalesWithAttackSpeed: 1
   CanCrit: 1
   IsDamageOverTime: 0
+  CooldownStartsAfterDuration: 0
   PossibleModifiers:
   - {fileID: 11400000, guid: 811bbffdb6e3bbb469178c1e865543df, type: 2}
   - {fileID: 11400000, guid: c016576c42a5eb14a8af0e0a4b05d929, type: 2}

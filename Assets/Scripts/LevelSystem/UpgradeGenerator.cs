@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -33,8 +33,65 @@ public class UpgradeGenerator : MonoBehaviour
             safety++;
         }
 
+        // 🚨 FALLBACK TOTAL (si no salió nada)
+        if (options.Count == 0)
+        {
+            Debug.LogWarning("⚠️ No options generated. Using FULL fallback.");
+
+            options.Add(CreateFallback(StatType.Damage, 0.1f));
+            options.Add(CreateFallback(StatType.AttackSpeed, 0.1f));
+            options.Add(CreateFallback(StatType.MovementSpeed, 0.1f));
+
+            return options;
+        }
+
+        // 🧱 Rellenar si faltan opciones
+        while (options.Count < 3)
+        {
+            var fallback = CreateFallback(StatType.Damage, 0.05f);
+
+            if (!ContainsSimilarOption(options, fallback))
+                options.Add(fallback);
+            else
+                break;
+        }
+
         return options;
     }
+
+    private UpgradeOption CreateFallback(StatType stat, float value)
+    {
+        UpgradeOption option = new UpgradeOption();
+
+        option.Effects.Add(new UpgradeEffect
+        {
+            EffectType = UpgradeEffectType.GlobalModifier,
+            TargetStat = stat,
+            ModifierType = ModifierType.Percent, // 🔥 AQUÍ está el % real
+            Value = value
+        });
+
+        return option;
+    }
+
+    private bool ContainsSimilarOption(List<UpgradeOption> options, UpgradeOption newOption)
+    {
+        foreach (var option in options)
+        {
+            foreach (var effect in option.Effects)
+            {
+                foreach (var newEffect in newOption.Effects)
+                {
+                    if (effect.TargetStat == newEffect.TargetStat &&
+                        effect.ModifierType == newEffect.ModifierType)
+                        return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
 
     private UpgradeOption GenerateSingleOption(
         PlayerSkillLoadout loadout,
@@ -66,10 +123,11 @@ public class UpgradeGenerator : MonoBehaviour
         if (allowNewSkill)
         {
             pool.Add((() => GenerateNewSkillOption(loadout, existingOptions), newSkillWeight));
-            pool.Add((() => GenerateModifierOption(loadout, existingOptions), modifierWeight));
-            pool.Add((() => GenerateGlobalOption(existingOptions), globalModifierWeight));
-
         }
+
+        // SIEMPRE deben existir estas
+        pool.Add((() => GenerateModifierOption(loadout, existingOptions), modifierWeight));
+        pool.Add((() => GenerateGlobalOption(existingOptions), globalModifierWeight));
 
         float totalWeight = pool.Sum(p => p.weight);
         float roll = Random.value * totalWeight;
@@ -80,7 +138,12 @@ public class UpgradeGenerator : MonoBehaviour
         {
             cumulative += entry.weight;
             if (roll <= cumulative)
-                return entry.generator();
+            {
+                var result = entry.generator();
+
+                if (result != null)
+                    return result;
+            }
         }
 
         return null;

@@ -37,6 +37,7 @@ public class SkillStats
     public float PercentRange;
     public float PercentDuration;
     public float PercentTickRate;
+    public float SpawnZoneChance;
 
     public int ExtraCount;
     public int PenetrationCount;
@@ -49,6 +50,7 @@ public class SkillStats
     public bool GrantsExplosion;
     public bool GrantsChaining;
     public bool GrantsSplit;
+    public bool SpawnZoneOnHit;
 
     // =========================
     // FINAL CACHED VALUES
@@ -90,7 +92,7 @@ public class SkillStats
         FinalDuration = Mathf.Max(0f, BaseDuration * (1f + PercentDuration));
 
         // TICK RATE
-        FinalTickRate = Mathf.Max(0.01f, BaseTickRate * (1f + PercentTickRate));
+        FinalTickRate = Mathf.Max(0.3f, BaseTickRate / (1f + PercentTickRate));
 
         // COUNT
         FinalCount = Mathf.Max(0, BaseCount + ExtraCount);

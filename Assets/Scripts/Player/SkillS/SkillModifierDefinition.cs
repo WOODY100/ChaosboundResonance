@@ -1,5 +1,12 @@
 using UnityEngine;
 
+[System.Serializable]
+public struct ModifierEntry
+{
+    public SkillModifierType Type;
+    public float Value;
+}
+
 [CreateAssetMenu(menuName = "Skills/Skill Modifier")]
 public class SkillModifierDefinition : ScriptableObject
 {
@@ -13,9 +20,12 @@ public class SkillModifierDefinition : ScriptableObject
 
     public SkillRarity Rarity;
 
-    [Header("Modifier")]
+    [Header("Single Modifier (Legacy)")]
     public SkillModifierType ModifierType;
     public float Value;
+
+    [Header("Multi Modifier (New)")]
+    public ModifierEntry[] Modifiers;
 
     public bool IsStackable = true;
 }

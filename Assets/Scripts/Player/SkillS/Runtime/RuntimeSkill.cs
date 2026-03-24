@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class RuntimeSkill
@@ -101,7 +101,7 @@ public class RuntimeSkill
         stats.PercentDamage = 0f;
         stats.FinalDamageMultiplier = 1f;
         stats.CriticalChance = 0f;
-        stats.CriticalMultiplier = 0f;
+        stats.CriticalMultiplier = 1f;
         stats.PercentTickRate = 0f;
 
         // =========================
@@ -135,7 +135,7 @@ public class RuntimeSkill
         // =========================
         foreach (var mod in appliedModifiers)
         {
-            ApplyModifierToStats(mod);
+            ApplyModifierToStatsFlexible(mod);
         }
 
         // =========================
@@ -156,63 +156,63 @@ public class RuntimeSkill
     // MODIFIER LOGIC
     // ===============================
 
-    private void ApplyModifierToStats(SkillModifierDefinition modifier)
+    private void ApplySingleModifier(SkillModifierType type, float value)
     {
-        switch (modifier.ModifierType)
+        switch (type)
         {
             // DAMAGE
             case SkillModifierType.FlatDamage:
-                stats.FlatDamage += modifier.Value;
+                stats.FlatDamage += value;
                 break;
 
             case SkillModifierType.PercentDamage:
-                stats.PercentDamage += modifier.Value;
+                stats.PercentDamage += value;
                 break;
 
             case SkillModifierType.CriticalChance:
-                stats.CriticalChance += modifier.Value;
+                stats.CriticalChance += value;
                 break;
 
             case SkillModifierType.CriticalMultiplier:
-                stats.CriticalMultiplier += modifier.Value;
+                stats.CriticalMultiplier += value;
                 break;
 
             // TEMPO
             case SkillModifierType.CooldownPercent:
-                stats.PercentCooldownReduction += modifier.Value;
+                stats.PercentCooldownReduction += value;
                 break;
 
             case SkillModifierType.TickRatePercent:
-                stats.PercentTickRate += modifier.Value;
+                stats.PercentTickRate += value;
                 break;
 
             // AREA
             case SkillModifierType.SpawnRadiusPercent:
-                stats.PercentSpawnRadius += modifier.Value;
+                stats.PercentSpawnRadius += value;
                 break;
 
             case SkillModifierType.ImpactRadiusPercent:
-                stats.PercentImpactRadius += modifier.Value;
+                stats.PercentImpactRadius += value;
                 break;
 
             case SkillModifierType.RangePercent:
-                stats.PercentRange += modifier.Value;
+                stats.PercentRange += value;
                 break;
 
             case SkillModifierType.DurationPercent:
-                stats.PercentDuration += modifier.Value;
+                stats.PercentDuration += value;
                 break;
 
             case SkillModifierType.ExtraCount:
-                stats.ExtraCount += Mathf.RoundToInt(modifier.Value);
+                stats.ExtraCount += Mathf.RoundToInt(value);
                 break;
 
             case SkillModifierType.Penetration:
-                stats.PenetrationCount += Mathf.RoundToInt(modifier.Value);
+                stats.PenetrationCount += Mathf.RoundToInt(value);
                 break;
 
             case SkillModifierType.ChainCount:
-                stats.ChainCount += Mathf.RoundToInt(modifier.Value);
+                stats.ChainCount += Mathf.RoundToInt(value);
                 break;
 
             // SPECIAL
@@ -224,8 +224,15 @@ public class RuntimeSkill
                 stats.GrantsExplosion = true;
                 break;
 
+            case SkillModifierType.SpawnZoneOnHit:
+                stats.SpawnZoneOnHit = true;
+                stats.SpawnZoneChance += value;
+                break;
+
             default:
-                Debug.LogWarning($"Unhandled modifier type: {modifier.ModifierType}");
+                case SkillModifierType.ApplyPoison:
+                case SkillModifierType.ApplyBurn:
+                case SkillModifierType.ApplyShock:
                 break;
         }
     }
@@ -270,6 +277,23 @@ public class RuntimeSkill
         {
             CurrentCooldown = 0f;
             OnCooldownFinished?.Invoke(this);
+        }
+    }
+
+    private void ApplyModifierToStatsFlexible(SkillModifierDefinition modifier)
+    {
+        // 🔥 NUEVO SISTEMA (multi-modifier)
+        if (modifier.Modifiers != null && modifier.Modifiers.Length > 0)
+        {
+            foreach (var entry in modifier.Modifiers)
+            {
+                ApplySingleModifier(entry.Type, entry.Value);
+            }
+        }
+        else
+        {
+            // 🔹 LEGACY
+            ApplySingleModifier(modifier.ModifierType, modifier.Value);
         }
     }
 }

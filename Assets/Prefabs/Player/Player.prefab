@@ -53,6 +53,7 @@ GameObject:
   - component: {fileID: 8707897206081142168}
   - component: {fileID: -6910256223853014656}
   - component: {fileID: 3967080049449003311}
+  - component: {fileID: 755046934357331053}
   - component: {fileID: 1864340752066512939}
   m_Layer: 3
   m_Name: Player
@@ -267,6 +268,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea8d76c249c417447aa56fbcfca4ccc3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProjectileExecutor
+--- !u!114 &755046934357331053
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1545538594216743131}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4095a844f5cc394facb232ea1eba98a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PersistentZoneExecutor
 --- !u!114 &1864340752066512939
 MonoBehaviour:
   m_ObjectHideFlags: 0
