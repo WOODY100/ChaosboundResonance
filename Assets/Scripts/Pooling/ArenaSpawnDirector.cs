@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.AI;
 using System.Collections.Generic;
 
@@ -35,6 +35,7 @@ public class ArenaSpawnDirector : MonoBehaviour
     private float delayTimer;
 
     private List<Transform> spawnPoints = new List<Transform>();
+    private List<Transform> currentSpawnPoints;
 
     public void RegisterSpawnPoints(List<Transform> points)
     {
@@ -70,12 +71,32 @@ public class ArenaSpawnDirector : MonoBehaviour
         if (!spawnActive)
             return;
 
+        if (spawnActive && activeEnemies == 0 && !spawnPending)
+        {
+            if (currentRoomDoors != null)
+            {
+                currentRoomDoors.OpenDoors();
+                spawnActive = false;
+            }
+        }
+
         arenaTimer += Time.deltaTime;
 
         float normalizedTime = Mathf.Clamp01(arenaTimer / arenaDuration);
 
         HandleScaling(normalizedTime);
         HandleFinalBoss();
+    }
+
+    public void StartArena(RoomSpawnPoints room, RoomDoors doors)
+    {
+        ResetArena(); // 🔥 CLAVE
+
+        currentSpawnPoints = room.spawnPoints;
+        currentRoomDoors = doors;
+
+        spawnPending = true;
+        delayTimer = spawnStartDelay;
     }
 
     public void ActivateSpawning()
@@ -169,11 +190,11 @@ public class ArenaSpawnDirector : MonoBehaviour
 
     Vector3 GetSpawnPoint()
     {
-        if (spawnPoints == null || spawnPoints.Count == 0)
+        if (currentSpawnPoints == null || currentSpawnPoints.Count == 0)
             return player.position;
 
-        int index = Random.Range(0, spawnPoints.Count);
-        return spawnPoints[index].position;
+        int index = Random.Range(0, currentSpawnPoints.Count);
+        return currentSpawnPoints[index].position;
     }
 
     EnemyPool GetRandomWeightedPool()
@@ -206,5 +227,17 @@ public class ArenaSpawnDirector : MonoBehaviour
         {
             currentRoomDoors.OpenDoors();
         }
+    }
+
+    public void ResetArena()
+    {
+        spawnActive = false;
+        spawnPending = false;
+
+        arenaTimer = 0f;
+        spawnTimer = 0f;
+
+        finalBossSpawned = false;
+        activeEnemies = 0;
     }
 }

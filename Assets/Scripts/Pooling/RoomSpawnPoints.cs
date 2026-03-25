@@ -24,7 +24,7 @@ public class RoomSpawnPoints : MonoBehaviour
 
         if (director != null)
         {
-            director.RegisterSpawnPoints(spawnPoints);
+            //director.RegisterSpawnPoints(spawnPoints);
         }
     }
 }

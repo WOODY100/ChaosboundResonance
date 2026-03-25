@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class RoomCombatController : MonoBehaviour
 {
@@ -20,6 +20,15 @@ public class RoomCombatController : MonoBehaviour
 
         if (doors != null)
             doors.CloseDoorsExcept(entryDirection);
+
+        // 🔥 NUEVO
+        var spawnPoints = GetComponent<RoomSpawnPoints>();
+        var director = Object.FindAnyObjectByType<ArenaSpawnDirector>();
+
+        if (director != null && spawnPoints != null)
+        {
+            director.StartArena(spawnPoints, doors);
+        }
     }
 
     public void EndCombat()

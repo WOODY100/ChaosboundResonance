@@ -898,7 +898,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db133df3ee000b8428e9c4e5d5fbdace, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ArenaSpawnDirector
-  enemyGroups: []
+  enemyGroups:
+  - pool: {fileID: 1561704052}
+    spawnWeight: 1
+  - pool: {fileID: 1371118988}
+    spawnWeight: 2
+  - pool: {fileID: 1153270646}
+    spawnWeight: 3
   bossPool: {fileID: 1388978195}
   player: {fileID: 1116892602}
   arenaDuration: 300
@@ -1388,9 +1394,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   startRoom: {fileID: 3916519840097979996, guid: a1c8a4ac5e2d99646befc5580d5cec96, type: 3}
-  combatRoom: {fileID: 9034477422614015543, guid: 070083ee86b9e5241813d78db5ac097b, type: 3}
+  combatRooms:
+  - {fileID: 9034477422614015543, guid: 070083ee86b9e5241813d78db5ac097b, type: 3}
+  - {fileID: 1447040110255981884, guid: 0388202170c3aa34295a93d1b6df0510, type: 3}
+  - {fileID: 6320453392045250447, guid: c713433b69ab284468261126272387e4, type: 3}
+  neutralRooms:
+  - {fileID: 7920396809084408331, guid: 15dbf5f2409bada40852006af6833146, type: 3}
+  - {fileID: 4426849296080912172, guid: 24011f48249b83b4080d18122988199d, type: 3}
+  - {fileID: 4426849296080912172, guid: 99f484c1ade08ae41993da2ee7a21b88, type: 3}
+  miniBossRoom: {fileID: 9034477422614015543, guid: e49842b077ee6bb4e9b37f949c3a237b, type: 3}
+  bossRoom: {fileID: 9034477422614015543, guid: a650da951430750459721515754ee62a, type: 3}
   corridorNS: {fileID: 444763425743373435, guid: 3af9fae942befb848b7ddfcda7372d07, type: 3}
   corridorEW: {fileID: 2637868333044943359, guid: 14f8906f6e7dbfa47879cd3ff9fb9a2d, type: 3}
+  mainPathLength: 4
 --- !u!4 &2057588554
 Transform:
   m_ObjectHideFlags: 0

@@ -18966,6 +18966,7 @@ GameObject:
   - component: {fileID: 6856847511180165986}
   - component: {fileID: 7022937456405051791}
   - component: {fileID: 3942271025067650595}
+  - component: {fileID: 8370882978915836559}
   m_Layer: 0
   m_Name: Room_Combat_A
   m_TagString: Untagged
@@ -19065,6 +19066,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2605a82ab64ae964c888b45abf5d709a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+--- !u!114 &8370882978915836559
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9034477422614015543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af30576a0d035774f9487bd47ce4538a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoomFogController
+  fogRenderers:
+  - {fileID: 6532680707842361740}
+  - {fileID: 6644259459306732338}
+  - {fileID: 3566867652887445200}
+  fogColor: {r: 0.27058825, g: 0.27058825, b: 0.27058825, a: 0.5}
 --- !u!1 &9051761749351598232
 GameObject:
   m_ObjectHideFlags: 0
@@ -22300,6 +22318,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1050156475666878922}
     m_Modifications:
+    - target: {fileID: 1804278098785727257, guid: 6bfa6baacd7b8f942b02bd437d9232ca, type: 3}
+      propertyPath: tileDensity
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2780830625574264505, guid: 6bfa6baacd7b8f942b02bd437d9232ca, type: 3}
+      propertyPath: tileDensity
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6083868383180849244, guid: 6bfa6baacd7b8f942b02bd437d9232ca, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -22344,11 +22370,30 @@ PrefabInstance:
       propertyPath: m_Name
       value: Fog
       objectReference: {fileID: 0}
+    - target: {fileID: 7469088679556944400, guid: 6bfa6baacd7b8f942b02bd437d9232ca, type: 3}
+      propertyPath: tileDensity
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6bfa6baacd7b8f942b02bd437d9232ca, type: 3}
+--- !u!23 &3566867652887445200 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 390009688814304433, guid: 6bfa6baacd7b8f942b02bd437d9232ca, type: 3}
+  m_PrefabInstance: {fileID: 3812746259019809377}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &6532680707842361740 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 7944674066104749037, guid: 6bfa6baacd7b8f942b02bd437d9232ca, type: 3}
+  m_PrefabInstance: {fileID: 3812746259019809377}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &6644259459306732338 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 7556123470062614867, guid: 6bfa6baacd7b8f942b02bd437d9232ca, type: 3}
+  m_PrefabInstance: {fileID: 3812746259019809377}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &6955711261605282365 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6083868383180849244, guid: 6bfa6baacd7b8f942b02bd437d9232ca, type: 3}
