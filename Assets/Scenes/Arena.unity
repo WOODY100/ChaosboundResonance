@@ -1218,6 +1218,79 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyPool
   enemyPrefab: {fileID: 9107703072713531257, guid: f046d6d28badd864d8c992dc80556882, type: 3}
   initialSize: 60
+--- !u!1 &1642907009
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1642907011}
+  - component: {fileID: 1642907010}
+  m_Layer: 0
+  m_Name: RoomSelector
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1642907010
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1642907009}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64fc3099008164841a6b7e5c29ffdca9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoomSelector
+  neutralRooms:
+  - {fileID: 4426849296080912172, guid: fa3f88f5c7757e64a8170ff2451791cd, type: 3}
+  - {fileID: 3916519840097979996, guid: 1efc6d53cdd8f954998fcf0bb19606eb, type: 3}
+  - {fileID: 4426849296080912172, guid: ea258bb700226f54999ae985c786ebaa, type: 3}
+  - {fileID: 4426849296080912172, guid: 3f9aaf3733a15384abe72bd97ca8e99a, type: 3}
+  - {fileID: 4426849296080912172, guid: 9c261205e6fd95f4fb9517ed7cde1d55, type: 3}
+  - {fileID: 4426849296080912172, guid: 9c19b69ae2b57c44fab969b30d254941, type: 3}
+  - {fileID: 7920396809084408331, guid: 15dbf5f2409bada40852006af6833146, type: 3}
+  - {fileID: 4426849296080912172, guid: 9d128403cd76dc04ca3258bc5be15228, type: 3}
+  - {fileID: 4426849296080912172, guid: 1691008aa2f4cc04882ee704b268609f, type: 3}
+  - {fileID: 4426849296080912172, guid: de77e5f930ea14c4aa286bbbecbec534, type: 3}
+  - {fileID: 4426849296080912172, guid: aee00c567a12560428995e7a5e5cd40e, type: 3}
+  - {fileID: 4426849296080912172, guid: 456e5b04b2c16c746998739c91da3804, type: 3}
+  - {fileID: 4426849296080912172, guid: 479d248992e59194382c2cb3402b64a7, type: 3}
+  - {fileID: 4426849296080912172, guid: 24011f48249b83b4080d18122988199d, type: 3}
+  - {fileID: 4426849296080912172, guid: 99f484c1ade08ae41993da2ee7a21b88, type: 3}
+  combatRooms:
+  - {fileID: 9034477422614015543, guid: 070083ee86b9e5241813d78db5ac097b, type: 3}
+  - {fileID: 1447040110255981884, guid: 0388202170c3aa34295a93d1b6df0510, type: 3}
+  - {fileID: 6320453392045250447, guid: c713433b69ab284468261126272387e4, type: 3}
+  miniBossRooms:
+  - {fileID: 581198028471038665, guid: 7413d49b2d29b73488e17b090109b84b, type: 3}
+  - {fileID: 581198028471038665, guid: 522f59ee8c48f424c90bb35fd173b7da, type: 3}
+  bossRooms:
+  - {fileID: 9034477422614015543, guid: a650da951430750459721515754ee62a, type: 3}
+  - {fileID: 9034477422614015543, guid: 32abdb86f890c034e98cc00182e681e2, type: 3}
+  - {fileID: 9034477422614015543, guid: 4a81be5d7e74f0941a172540947c920d, type: 3}
+  - {fileID: 9034477422614015543, guid: 4e222a71e963d3a4fa4637d5ded04966, type: 3}
+  - {fileID: 9034477422614015543, guid: e49842b077ee6bb4e9b37f949c3a237b, type: 3}
+--- !u!4 &1642907011
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1642907009}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 5.17963, y: 9.14959, z: 6.87306}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2039682789
 GameObject:
   m_ObjectHideFlags: 0
@@ -1237,7 +1310,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!64 &2039682790
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1375,7 +1448,7 @@ GameObject:
   - component: {fileID: 2057588554}
   - component: {fileID: 2057588553}
   m_Layer: 0
-  m_Name: DungeonTestGenerator
+  m_Name: DungeonGenerator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1394,19 +1467,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   startRoom: {fileID: 3916519840097979996, guid: a1c8a4ac5e2d99646befc5580d5cec96, type: 3}
-  combatRooms:
-  - {fileID: 9034477422614015543, guid: 070083ee86b9e5241813d78db5ac097b, type: 3}
-  - {fileID: 1447040110255981884, guid: 0388202170c3aa34295a93d1b6df0510, type: 3}
-  - {fileID: 6320453392045250447, guid: c713433b69ab284468261126272387e4, type: 3}
-  neutralRooms:
-  - {fileID: 7920396809084408331, guid: 15dbf5f2409bada40852006af6833146, type: 3}
-  - {fileID: 4426849296080912172, guid: 24011f48249b83b4080d18122988199d, type: 3}
-  - {fileID: 4426849296080912172, guid: 99f484c1ade08ae41993da2ee7a21b88, type: 3}
-  miniBossRoom: {fileID: 9034477422614015543, guid: e49842b077ee6bb4e9b37f949c3a237b, type: 3}
-  bossRoom: {fileID: 9034477422614015543, guid: a650da951430750459721515754ee62a, type: 3}
   corridorNS: {fileID: 444763425743373435, guid: 3af9fae942befb848b7ddfcda7372d07, type: 3}
   corridorEW: {fileID: 2637868333044943359, guid: 14f8906f6e7dbfa47879cd3ff9fb9a2d, type: 3}
-  mainPathLength: 4
+  roomSelector: {fileID: 1642907010}
 --- !u!4 &2057588554
 Transform:
   m_ObjectHideFlags: 0
@@ -1435,3 +1498,4 @@ SceneRoots:
   - {fileID: 1116892601}
   - {fileID: 791279966}
   - {fileID: 2057588554}
+  - {fileID: 1642907011}
