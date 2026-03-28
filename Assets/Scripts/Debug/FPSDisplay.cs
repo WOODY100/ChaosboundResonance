@@ -16,7 +16,7 @@ public class FPSDisplay : MonoBehaviour
         deltaTime += (Time.unscaledDeltaTime - deltaTime) * 0.1f;
     }
 
-    void OnGUI()
+    /*void OnGUI()
     {
         int w = Screen.width;
         int h = Screen.height;
@@ -50,5 +50,5 @@ public class FPSDisplay : MonoBehaviour
         string text = $"FPS: {fps:0} | Time: {timeText}{enemiesText}";
 
         GUI.Label(rect, text, style);
-    }
+    }*/
 }

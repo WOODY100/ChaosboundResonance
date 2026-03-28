@@ -12,7 +12,7 @@ public class HUDController : MonoBehaviour
     private ArenaSpawnDirector arena;
     private int lastSecond = -1;
 
-    void Update()
+    /*void Update()
     {
         if (arena == null || timerText == null)
             return;
@@ -29,7 +29,7 @@ public class HUDController : MonoBehaviour
         int seconds = totalSeconds % 60;
 
         timerText.text = minutes.ToString("00") + ":" + seconds.ToString("00");
-    }
+    }*/
 
     public void ShowHUD()
     {

@@ -4,57 +4,85 @@ using System.Collections.Generic;
 
 public class ArenaSpawnDirector : MonoBehaviour
 {
-    [Header("References")]
+    // ----------------------------------
+    // ENUMS / CONTEXT
+    // ----------------------------------
+
+    public enum EncounterType
+    {
+        None,
+        Combat,
+        MiniBoss,
+        Boss
+    }
+
+    public class SpawnContext
+    {
+        public EncounterType encounterType;
+        public int dungeonTier;
+    }
+
+    // ----------------------------------
+    // REFERENCES
+    // ----------------------------------
+
+    [Header("Enemy Pools")]
     [SerializeField] private List<ArenaEnemyGroup> enemyGroups;
+    [SerializeField] private EnemyPool miniBossPool;
     [SerializeField] private EnemyPool bossPool;
+
+    [Header("References")]
     [SerializeField] private Transform player;
 
-    [Header("Run Duration")]
-    [SerializeField] private float arenaDuration = 1500f; // 25 minutos
-    [SerializeField] private float finalBossTime = 1450f;
-
-    [Header("Scaling")]
-    [SerializeField] private AnimationCurve spawnRateOverTime;
-    [SerializeField] private AnimationCurve maxEnemiesOverTime;
-    [SerializeField] private AnimationCurve speedMultiplierOverTime;
+    // ----------------------------------
+    // SPAWN AREA
+    // ----------------------------------
 
     [Header("Spawn Area")]
-    [SerializeField] private float minSpawnRadius = 12f;
-    [SerializeField] private float maxSpawnRadius = 18f;
     [SerializeField] private float spawnStartDelay = 1.5f;
 
-    public float CurrentTime => arenaTimer;
-    public float Duration => arenaDuration;
-    private float arenaTimer;
-    private float spawnTimer;
-    private bool finalBossSpawned;
+    private List<Transform> currentSpawnPoints;
+    private RoomDoors currentRoomDoors;
+
+    // ----------------------------------
+    // STATE
+    // ----------------------------------
+
+    private SpawnContext currentContext;
+
     private int activeEnemies;
     private bool spawnActive;
-    private RoomDoors currentRoomDoors;
     private bool spawnPending;
     private float delayTimer;
 
-    private List<Transform> spawnPoints = new List<Transform>();
-    private List<Transform> currentSpawnPoints;
-
-    public void RegisterSpawnPoints(List<Transform> points)
-    {
-        spawnPoints = points;
-    }
-
     public int ActiveEnemies => activeEnemies;
 
-    private void Start()
+    // ----------------------------------
+    // ENTRY POINT
+    // ----------------------------------
+
+    public void StartEncounter(RoomSpawnPoints room, RoomDoors doors, SpawnContext context)
     {
-        EnemyBrain.ResetAttackSlots();
+        ResetArena();
+
+        currentSpawnPoints = room.spawnPoints;
+        currentRoomDoors = doors;
+        currentContext = context;
+
+        spawnPending = true;
+        delayTimer = spawnStartDelay;
     }
+
+    // ----------------------------------
+    // UPDATE
+    // ----------------------------------
 
     void Update()
     {
-        if (player == null)
+        if (player == null || currentContext == null)
             return;
 
-        // Manejar delay inicial
+        // Delay inicial
         if (spawnPending)
         {
             delayTimer -= Time.deltaTime;
@@ -63,6 +91,8 @@ public class ArenaSpawnDirector : MonoBehaviour
             {
                 spawnPending = false;
                 spawnActive = true;
+
+                ExecuteEncounter();
             }
 
             return;
@@ -71,7 +101,8 @@ public class ArenaSpawnDirector : MonoBehaviour
         if (!spawnActive)
             return;
 
-        if (spawnActive && activeEnemies == 0 && !spawnPending)
+        // Abrir puertas cuando no hay enemigos
+        if (activeEnemies <= 0)
         {
             if (currentRoomDoors != null)
             {
@@ -79,58 +110,71 @@ public class ArenaSpawnDirector : MonoBehaviour
                 spawnActive = false;
             }
         }
-
-        arenaTimer += Time.deltaTime;
-
-        float normalizedTime = Mathf.Clamp01(arenaTimer / arenaDuration);
-
-        HandleScaling(normalizedTime);
-        HandleFinalBoss();
     }
 
-    public void StartArena(RoomSpawnPoints room, RoomDoors doors)
+    // ----------------------------------
+    // ENCOUNTER EXECUTION
+    // ----------------------------------
+
+    void ExecuteEncounter()
     {
-        ResetArena(); // 🔥 CLAVE
+        switch (currentContext.encounterType)
+        {
+            case EncounterType.Combat:
+                SpawnCombat();
+                break;
 
-        currentSpawnPoints = room.spawnPoints;
-        currentRoomDoors = doors;
+            case EncounterType.MiniBoss:
+                SpawnMiniBoss();
+                break;
 
-        spawnPending = true;
-        delayTimer = spawnStartDelay;
+            case EncounterType.Boss:
+                SpawnBossEncounter();
+                break;
+        }
     }
 
-    public void ActivateSpawning()
+    // ----------------------------------
+    // SPAWN TYPES
+    // ----------------------------------
+
+    void SpawnCombat()
     {
-        spawnPending = true;
-        delayTimer = spawnStartDelay;
+        int count = 3 + currentContext.dungeonTier * 2;
+
+        for (int i = 0; i < count; i++)
+        {
+            SpawnBasicEnemy(1f);
+        }
     }
 
-    public void SetRoomDoors(RoomDoors doors)
+    void SpawnMiniBoss()
     {
-        currentRoomDoors = doors;
+        SpawnFromPool(miniBossPool);
+
+        int adds = currentContext.dungeonTier;
+
+        for (int i = 0; i < adds; i++)
+        {
+            SpawnBasicEnemy(1f);
+        }
     }
 
-    void HandleScaling(float normalizedTime)
+    void SpawnBossEncounter()
     {
-        if (finalBossSpawned)
-            return;
+        SpawnFromPool(bossPool);
 
-        int maxEnemies = Mathf.RoundToInt(maxEnemiesOverTime.Evaluate(normalizedTime));
-        float spawnRate = spawnRateOverTime.Evaluate(normalizedTime);
-        float speedMultiplier = speedMultiplierOverTime.Evaluate(normalizedTime);
+        int adds = currentContext.dungeonTier * 2;
 
-        spawnTimer -= Time.deltaTime;
-
-        if (spawnTimer > 0f)
-            return;
-
-        spawnTimer = 1f / Mathf.Max(spawnRate, 0.01f);
-
-        if (activeEnemies >= maxEnemies)
-            return;
-
-        SpawnBasicEnemy(speedMultiplier);
+        for (int i = 0; i < adds; i++)
+        {
+            SpawnBasicEnemy(1f);
+        }
     }
+
+    // ----------------------------------
+    // SPAWN HELPERS
+    // ----------------------------------
 
     void SpawnBasicEnemy(float speedMultiplier)
     {
@@ -156,37 +200,27 @@ public class ArenaSpawnDirector : MonoBehaviour
         }
     }
 
-    void HandleFinalBoss()
+    void SpawnFromPool(EnemyPool pool)
     {
-        if (finalBossSpawned || bossPool == null)
+        if (pool == null)
             return;
 
-        if (arenaTimer >= finalBossTime)
+        Vector3 spawnPos = GetSpawnPoint();
+
+        if (NavMesh.SamplePosition(spawnPos, out NavMeshHit hit, 5f, NavMesh.AllAreas))
         {
-            finalBossSpawned = true;
+            GameObject enemy = pool.Get(hit.position, Quaternion.identity);
 
-            Vector3 spawnPos = GetSpawnPoint();
+            EnemyHealth health = enemy.GetComponent<EnemyHealth>();
+            health.OnDeath += HandleEnemyDeath;
 
-            if (NavMesh.SamplePosition(spawnPos, out NavMeshHit hit, 5f, NavMesh.AllAreas))
-            {
-                bossPool.Get(hit.position, Quaternion.identity);
-            }
+            activeEnemies++;
         }
     }
 
-    Vector3 GetSpawnPosition()
-    {
-        float angle = Random.Range(0f, 360f);
-        float radius = Random.Range(minSpawnRadius, maxSpawnRadius);
-
-        Vector3 direction = new Vector3(
-            Mathf.Cos(angle * Mathf.Deg2Rad),
-            0f,
-            Mathf.Sin(angle * Mathf.Deg2Rad)
-        );
-
-        return player.position + direction * radius;
-    }
+    // ----------------------------------
+    // SPAWN POINTS
+    // ----------------------------------
 
     Vector3 GetSpawnPoint()
     {
@@ -218,6 +252,10 @@ public class ArenaSpawnDirector : MonoBehaviour
         return enemyGroups[0].pool;
     }
 
+    // ----------------------------------
+    // EVENTS
+    // ----------------------------------
+
     void HandleEnemyDeath(EnemyHealth enemy)
     {
         enemy.OnDeath -= HandleEnemyDeath;
@@ -229,15 +267,16 @@ public class ArenaSpawnDirector : MonoBehaviour
         }
     }
 
+    // ----------------------------------
+    // RESET
+    // ----------------------------------
+
     public void ResetArena()
     {
         spawnActive = false;
         spawnPending = false;
 
-        arenaTimer = 0f;
-        spawnTimer = 0f;
-
-        finalBossSpawned = false;
         activeEnemies = 0;
+        currentContext = null;
     }
 }

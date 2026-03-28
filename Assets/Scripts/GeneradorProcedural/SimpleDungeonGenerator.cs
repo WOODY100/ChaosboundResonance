@@ -69,6 +69,7 @@ public class SimpleDungeonGenerator : MonoBehaviour
         GameObject start = Instantiate(startRoom, Vector3.zero, Quaternion.identity);
         spawnedObjects.Add(start);
         start.name = "Start";
+        ResetEntries(start);
 
         currentRoom = start;
         currentGridPos = Vector2Int.zero;
@@ -119,6 +120,7 @@ public class SimpleDungeonGenerator : MonoBehaviour
 
                 GameObject nextRoom = Instantiate(nextRoomPrefab);
                 spawnedObjects.Add(nextRoom);
+                ResetEntries(nextRoom);
 
                 if (!DungeonConnectionUtility.TryConnectSpecific(exitEntry, nextRoom, out _))
                 {
@@ -145,6 +147,10 @@ public class SimpleDungeonGenerator : MonoBehaviour
             }
         }
 
+        // 🔥 FINALIZAR PUERTAS
+        FinalizeDoors();
+        Debug.Log("FinalizeDoors ejecutado");
+
         // 🔥🔥🔥 AQUÍ VA LA VALIDACIÓN FINAL
         if (placedRooms < dungeonPlan.Count)
         {
@@ -153,6 +159,21 @@ public class SimpleDungeonGenerator : MonoBehaviour
         }
 
         return true;
+    }
+
+    void FinalizeDoors()
+    {
+        foreach (var room in occupied.Values)
+        {
+            if (room == null) continue;
+
+            RoomDoors doors = room.GetComponent<RoomDoors>();
+
+            if (doors != null)
+            {
+                doors.UpdateDoorsFromEntries();
+            }
+        }
     }
 
     void Shuffle<T>(List<T> list)
@@ -237,6 +258,7 @@ public class SimpleDungeonGenerator : MonoBehaviour
 
             GameObject combatRoom = Instantiate(combatPrefab);
             spawnedObjects.Add(combatRoom);
+            ResetEntries(combatRoom);
 
             if (!DungeonConnectionUtility.TryConnectSpecific(exitEntry, combatRoom, out _))
             {
@@ -252,6 +274,16 @@ public class SimpleDungeonGenerator : MonoBehaviour
     // ----------------------------------
     // GRID UTILS
     // ----------------------------------
+
+    void ResetEntries(GameObject room)
+    {
+        var entries = room.GetComponentsInChildren<DungeonEntry>();
+
+        foreach (var entry in entries)
+        {
+            entry.occupied = false;
+        }
+    }
 
     Vector2Int GetOffset(EntryDirection dir)
     {

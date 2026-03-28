@@ -10,6 +10,11 @@ public enum EntryDirection
 
 public class DungeonEntry : MonoBehaviour
 {
+    void Awake()
+    {
+        occupied = false;
+    }
+
     public EntryDirection direction;
     public bool occupied;
 

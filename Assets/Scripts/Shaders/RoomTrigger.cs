@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public enum RoomEntryDirection
 {
@@ -30,14 +30,7 @@ public class RoomTrigger : MonoBehaviour
 
         triggered = true;
 
+        // ✅ SOLO esto
         combat.StartCombat(entryDirection);
-
-        ArenaSpawnDirector director = Object.FindAnyObjectByType<ArenaSpawnDirector>();
-
-        if (director != null)
-        {
-            director.SetRoomDoors(GetComponentInParent<RoomDoors>());
-            director.ActivateSpawning();
-        }
     }
 }
