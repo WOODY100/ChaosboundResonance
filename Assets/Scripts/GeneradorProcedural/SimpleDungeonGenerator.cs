@@ -6,21 +6,32 @@ public class SimpleDungeonGenerator : MonoBehaviour
 {
     [Header("Prefabs")]
     public GameObject startRoom;
-
     public GameObject corridorNS;
     public GameObject corridorEW;
 
     [Header("References")]
     public RoomSelector roomSelector;
+    public RoomPool roomPool;
 
-    private GameObject currentRoom;
+    [Header("Debug")]
+    public bool useFixedSeed = false;
+    public int fixedSeed = 12345;
+
+    System.Random rng;
+    Vector2Int bossPosition;
+
+    List<(GameObject room, Vector2Int pos, EntryDirection dir, float score)> miniBossCandidates
+        = new List<(GameObject, Vector2Int, EntryDirection, float)>();
 
     List<RoomType> dungeonPlan;
     List<GameObject> spawnedObjects = new List<GameObject>();
+    List<RoomDoors> cachedDoors = new List<RoomDoors>();
+    List<Vector2Int> frontier = new List<Vector2Int>();
 
-    // 🔥 GRID DE OCUPACIÓN
+    HashSet<Vector2Int> reservedPositions = new HashSet<Vector2Int>();
+
     Dictionary<Vector2Int, GameObject> occupied = new Dictionary<Vector2Int, GameObject>();
-    Vector2Int currentGridPos = Vector2Int.zero;
+    Dictionary<GameObject, GameObject> instanceToPrefab = new Dictionary<GameObject, GameObject>();
 
     void Start()
     {
@@ -29,15 +40,13 @@ public class SimpleDungeonGenerator : MonoBehaviour
 
     IEnumerator GenerateWithRetry()
     {
-        int maxAttempts = 5;
+        int maxAttempts = 20;
 
         for (int i = 0; i < maxAttempts; i++)
         {
             ClearDungeon();
 
-            bool success = GenerateDungeon();
-
-            if (success)
+            if (GenerateDungeon())
             {
                 Debug.Log("Dungeon generada correctamente");
                 yield break;
@@ -54,288 +63,412 @@ public class SimpleDungeonGenerator : MonoBehaviour
     {
         foreach (var obj in spawnedObjects)
         {
-            if (obj != null)
-                Destroy(obj);
+            if (obj != null && instanceToPrefab.ContainsKey(obj))
+                roomPool.Return(obj, instanceToPrefab[obj]);
         }
 
         spawnedObjects.Clear();
+        instanceToPrefab.Clear();
         occupied.Clear();
+        cachedDoors.Clear();
+        miniBossCandidates.Clear();
+        reservedPositions.Clear();
+        frontier.Clear();
     }
 
     bool GenerateDungeon()
     {
-        dungeonPlan = DungeonPlanGenerator.GeneratePlan();
+        int seed = useFixedSeed ? fixedSeed : Random.Range(0, 999999);
+        rng = new System.Random(seed);
 
-        GameObject start = Instantiate(startRoom, Vector3.zero, Quaternion.identity);
-        spawnedObjects.Add(start);
-        start.name = "Start";
-        ResetEntries(start);
+        Debug.Log($"[GEN] Seed: {seed}");
 
-        currentRoom = start;
-        currentGridPos = Vector2Int.zero;
-        occupied[currentGridPos] = start;
+        dungeonPlan = DungeonPlanGenerator.GeneratePlan(rng);
 
-        int placedRooms = 1; // start
+        Debug.Log($"[GEN] Plan: {string.Join(", ", dungeonPlan)}");
+
+        // =========================
+        // 🟢 MAIN PATH GARANTIZADO
+        // =========================
+
+        Vector2Int currentPos = Vector2Int.zero;
+        GameObject currentRoom = Spawn(startRoom, Vector3.zero);
+
+        occupied[currentPos] = currentRoom;
 
         for (int i = 1; i < dungeonPlan.Count; i++)
         {
-            bool roomPlaced = false; // 🔥 RESET POR ITERACIÓN
-
             RoomType roomType = dungeonPlan[i];
 
-            List<DungeonEntry> validEntries = GetAllValidEntries(currentRoom, currentGridPos);
-            Shuffle(validEntries);
+            bool placed = false;
 
-            foreach (var entry in validEntries)
+            var entries = GetAllValidEntries(currentRoom, currentPos);
+            Shuffle(entries);
+
+            foreach (var entry in entries)
             {
-                Vector2Int nextGridPos = currentGridPos + GetOffset(entry.direction);
+                Vector2Int nextPos = currentPos + GetOffset(entry.direction);
 
-                if (occupied.ContainsKey(nextGridPos))
+                if (occupied.ContainsKey(nextPos))
                     continue;
 
-                GameObject corridor = GetCorridor(entry.direction);
-                spawnedObjects.Add(corridor);
+                GameObject corridor = Spawn(GetCorridorPrefab(entry.direction));
 
                 if (!DungeonConnectionUtility.TryConnectSpecific(entry, corridor, out var corridorEntry))
                 {
-                    Destroy(corridor);
+                    Return(corridor);
                     continue;
                 }
 
-                DungeonEntry exitEntry = GetOtherEntry(corridor, corridorEntry);
-
+                var exitEntry = GetOtherEntry(corridor, corridorEntry);
                 if (exitEntry == null)
                 {
-                    Destroy(corridor);
+                    Return(corridor);
                     continue;
                 }
 
-                GameObject nextRoomPrefab = roomSelector.GetRoom(roomType, exitEntry.direction);
+                var neededDir = DungeonConnectionUtility.Opposite(entry.direction);
 
-                if (nextRoomPrefab == null)
+                GameObject prefab = roomSelector.GetRoom(roomType, neededDir, 0);
+
+                if (prefab == null || !HasEntry(prefab, neededDir))
                 {
-                    Destroy(corridor);
+                    Return(corridor);
                     continue;
                 }
 
-                GameObject nextRoom = Instantiate(nextRoomPrefab);
-                spawnedObjects.Add(nextRoom);
-                ResetEntries(nextRoom);
+                GameObject nextRoom = Spawn(prefab);
 
                 if (!DungeonConnectionUtility.TryConnectSpecific(exitEntry, nextRoom, out _))
                 {
-                    Destroy(nextRoom);
-                    Destroy(corridor);
+                    Return(nextRoom);
+                    Return(corridor);
                     continue;
                 }
 
-                // ✅ SUCCESS
-                occupied[nextGridPos] = nextRoom;
-                currentGridPos = nextGridPos;
+                // 🔥 CONFIRMAR COLOCACIÓN
+                occupied[nextPos] = nextRoom;
+
+                currentPos = nextPos;
                 currentRoom = nextRoom;
 
-                TrySpawnBranch(nextRoom, currentGridPos, roomType);
+                if (roomType == RoomType.Boss)
+                    bossPosition = nextPos;
 
-                placedRooms++;
-                roomPlaced = true;
+                placed = true;
                 break;
             }
 
-            if (!roomPlaced)
+            // 🔥 SI FALLA (muy raro), fuerza fallback lineal
+            if (!placed)
             {
-                Debug.LogWarning($"No se pudo colocar room tipo {roomType}");
+                Debug.LogWarning($"⚠️ Forzando colocación lineal en step {i}");
+
+                Vector2Int forcedPos = currentPos + Vector2Int.right;
+
+                GameObject forcedRoom = Spawn(roomSelector.GetRoom(roomType, EntryDirection.West, 0));
+
+                occupied[forcedPos] = forcedRoom;
+
+                currentPos = forcedPos;
+                currentRoom = forcedRoom;
             }
         }
 
-        // 🔥 FINALIZAR PUERTAS
-        FinalizeDoors();
-        Debug.Log("FinalizeDoors ejecutado");
+        // =========================
+        // 🟠 BRANCHES (MINIBOSS)
+        // =========================
 
-        // 🔥🔥🔥 AQUÍ VA LA VALIDACIÓN FINAL
-        if (placedRooms < dungeonPlan.Count)
+        var snapshot = new List<KeyValuePair<Vector2Int, GameObject>>(occupied);
+
+        foreach (var kvp in snapshot)
         {
-            Debug.LogWarning($"Dungeon incompleta: {placedRooms}/{dungeonPlan.Count}");
+            if (kvp.Key == bossPosition)
+                continue;
+
+            if (rng.NextDouble() > 0.4f)
+                continue;
+
+            var entries = GetAllValidEntries(kvp.Value, kvp.Key);
+
+            foreach (var entry in entries)
+            {
+                Vector2Int branchPos = kvp.Key + GetOffset(entry.direction);
+
+                if (occupied.ContainsKey(branchPos))
+                    continue;
+
+                if (TrySpawnMiniBoss(kvp.Value, kvp.Key, entry.direction))
+                    break;
+            }
+        }
+
+        Debug.Log($"🔥 Rooms generadas: {occupied.Count}");
+
+        FinalizeDoors();
+
+        return true; // 🔥 GARANTIZADO
+    }
+
+    void SpawnMiniBoss()
+    {
+        miniBossCandidates.Sort((a, b) => b.score.CompareTo(a.score));
+
+        foreach (var c in miniBossCandidates)
+        {
+            if (TrySpawnMiniBoss(c.room, c.pos, c.dir))
+                return;
+        }
+
+        TryForceMiniBoss();
+    }
+
+    bool TrySpawnMiniBoss(GameObject room, Vector2Int pos, EntryDirection dir)
+    {
+        Vector2Int branchPos = pos + GetOffset(dir);
+
+        if (occupied.ContainsKey(branchPos))
+            return false;
+
+        var entry = GetEntryByDirection(room, dir);
+        if (entry == null)
+            return false;
+
+        var neededDir = DungeonConnectionUtility.Opposite(dir);
+
+        GameObject prefab = roomSelector.GetRoom(RoomType.MiniBoss, neededDir, 0);
+        if (prefab == null)
+            return false;
+
+        GameObject corridor = Spawn(GetCorridorPrefab(dir));
+
+        if (!DungeonConnectionUtility.TryConnectSpecific(entry, corridor, out var corridorEntry))
+        {
+            Return(corridor);
             return false;
         }
+
+        var exit = GetOtherEntry(corridor, corridorEntry);
+        if (exit == null)
+        {
+            Return(corridor);
+            return false;
+        }
+
+        GameObject roomObj = Spawn(prefab);
+
+        if (!DungeonConnectionUtility.TryConnectSpecific(exit, roomObj, out _))
+        {
+            Return(roomObj);
+            Return(corridor);
+            return false;
+        }
+
+        occupied[branchPos] = roomObj;
+
+        Debug.Log($"🔥 MiniBoss SPAWNED en {branchPos} desde {pos} dir {dir}");
 
         return true;
     }
 
-    void FinalizeDoors()
+    bool TryForceMiniBoss()
     {
-        foreach (var room in occupied.Values)
+        foreach (var kvp in occupied)
         {
-            if (room == null) continue;
+            if (kvp.Key == bossPosition)
+                continue;
 
-            RoomDoors doors = room.GetComponent<RoomDoors>();
+            var entries = GetAllValidEntries(kvp.Value, kvp.Key);
 
-            if (doors != null)
+            foreach (var e in entries)
             {
-                doors.UpdateDoorsFromEntries();
+                if (TrySpawnMiniBoss(kvp.Value, kvp.Key, e.direction))
+                {
+                    Debug.Log($"🔥 MiniBoss SPAWNED (fallback) en {kvp.Key}");
+                    return true;
+                }
             }
         }
+
+        return false;
+    }
+
+    void TrySpawnBranch(GameObject room, Vector2Int pos)
+    {
+        if (rng.NextDouble() > 0.5f) return;
+
+        var entries = GetAllValidEntries(room, pos);
+
+        foreach (var e in entries)
+        {
+            Vector2Int branchPos = pos + GetOffset(e.direction);
+
+            if (occupied.ContainsKey(branchPos))
+                continue;
+
+            GameObject corridor = Spawn(GetCorridorPrefab(e.direction));
+
+            if (!DungeonConnectionUtility.TryConnectSpecific(e, corridor, out var corridorEntry))
+            {
+                Return(corridor);
+                continue;
+            }
+
+            var exit = GetOtherEntry(corridor, corridorEntry);
+            if (exit == null)
+            {
+                Return(corridor);
+                continue;
+            }
+
+            var neededDir = DungeonConnectionUtility.Opposite(e.direction);
+
+            GameObject prefab = roomSelector.GetRoom(RoomType.Combat, neededDir, 0);
+            if (prefab == null)
+            {
+                Return(corridor);
+                continue;
+            }
+
+            GameObject newRoom = Spawn(prefab);
+
+            if (!DungeonConnectionUtility.TryConnectSpecific(exit, newRoom, out _))
+            {
+                Return(newRoom);
+                Return(corridor);
+                continue;
+            }
+
+            occupied[branchPos] = newRoom;
+        }
+    }
+
+    GameObject Spawn(GameObject prefab, Vector3 pos = default)
+    {
+        GameObject obj = roomPool.Get(prefab);
+        obj.transform.position = pos;
+
+        spawnedObjects.Add(obj);
+        instanceToPrefab[obj] = prefab;
+
+        RegisterRoom(obj);
+        ResetEntries(obj);
+
+        return obj;
+    }
+
+    void Return(GameObject obj)
+    {
+        if (obj != null && instanceToPrefab.ContainsKey(obj))
+        {
+            roomPool.Return(obj, instanceToPrefab[obj]);
+            instanceToPrefab.Remove(obj);
+        }
+    }
+
+    bool HasFutureSpace(Vector2Int pos)
+    {
+        foreach (EntryDirection dir in System.Enum.GetValues(typeof(EntryDirection)))
+        {
+            if (!occupied.ContainsKey(pos + GetOffset(dir)))
+                return true;
+        }
+        return false;
+    }
+
+    void FinalizeDoors()
+    {
+        foreach (var d in cachedDoors)
+            d?.UpdateDoorsFromEntries();
+    }
+
+    void RegisterRoom(GameObject room)
+    {
+        var doors = room.GetComponent<RoomDoors>();
+        if (doors != null)
+            cachedDoors.Add(doors);
+    }
+
+    void ResetEntries(GameObject room)
+    {
+        foreach (var e in room.GetComponentsInChildren<DungeonEntry>())
+            e.occupied = false;
     }
 
     void Shuffle<T>(List<T> list)
     {
         for (int i = 0; i < list.Count; i++)
         {
-            int rand = Random.Range(i, list.Count);
-            (list[i], list[rand]) = (list[rand], list[i]);
+            int r = rng.Next(i, list.Count);
+            (list[i], list[r]) = (list[r], list[i]);
         }
     }
 
-    List<DungeonEntry> GetAllValidEntries(GameObject room, Vector2Int currentPos)
+    GameObject GetCorridorPrefab(EntryDirection dir)
     {
-        var entries = room.GetComponentsInChildren<DungeonEntry>();
-
-        List<DungeonEntry> valid = new List<DungeonEntry>();
-
-        foreach (var e in entries)
-        {
-            if (e.occupied) continue;
-
-            Vector2Int nextPos = currentPos + GetOffset(e.direction);
-
-            if (!occupied.ContainsKey(nextPos))
-                valid.Add(e);
-        }
-
-        return valid;
-    }
-
-    // ----------------------------------
-    // BRANCH
-    // ----------------------------------
-
-    void TrySpawnBranch(GameObject room, Vector2Int roomPos, RoomType roomType)
-    {
-        if (Random.value > 0.5f) return;
-
-        // ❌ No branching en bosses
-        if (roomType == RoomType.Boss || roomType == RoomType.MiniBoss)
-            return;
-
-        var entries = room.GetComponentsInChildren<DungeonEntry>();
-
-        foreach (var entry in entries)
-        {
-            if (entry.occupied) continue;
-
-            // Solo laterales
-            if (entry.direction != EntryDirection.East && entry.direction != EntryDirection.West)
-                continue;
-
-            Vector2Int branchPos = roomPos + GetOffset(entry.direction);
-
-            if (occupied.ContainsKey(branchPos))
-                continue;
-
-            GameObject corridor = Instantiate(corridorEW);
-            spawnedObjects.Add(corridor);
-
-            if (!DungeonConnectionUtility.TryConnectSpecific(entry, corridor, out var corridorEntry))
-            {
-                Destroy(corridor);
-                continue;
-            }
-
-            DungeonEntry exitEntry = GetOtherEntry(corridor, corridorEntry);
-
-            if (exitEntry == null)
-            {
-                Destroy(corridor);
-                continue;
-            }
-
-            GameObject combatPrefab = roomSelector.GetRoom(RoomType.Combat, exitEntry.direction);
-
-            if (combatPrefab == null)
-            {
-                Destroy(corridor);
-                continue;
-            }
-
-            GameObject combatRoom = Instantiate(combatPrefab);
-            spawnedObjects.Add(combatRoom);
-            ResetEntries(combatRoom);
-
-            if (!DungeonConnectionUtility.TryConnectSpecific(exitEntry, combatRoom, out _))
-            {
-                Destroy(combatRoom);
-                Destroy(corridor);
-                continue;
-            }
-
-            occupied[branchPos] = combatRoom;
-        }
-    }
-
-    // ----------------------------------
-    // GRID UTILS
-    // ----------------------------------
-
-    void ResetEntries(GameObject room)
-    {
-        var entries = room.GetComponentsInChildren<DungeonEntry>();
-
-        foreach (var entry in entries)
-        {
-            entry.occupied = false;
-        }
+        return (dir == EntryDirection.North || dir == EntryDirection.South) ? corridorNS : corridorEW;
     }
 
     Vector2Int GetOffset(EntryDirection dir)
     {
-        switch (dir)
+        return dir switch
         {
-            case EntryDirection.North: return new Vector2Int(0, 1);
-            case EntryDirection.South: return new Vector2Int(0, -1);
-            case EntryDirection.East: return new Vector2Int(1, 0);
-            case EntryDirection.West: return new Vector2Int(-1, 0);
-            default: return Vector2Int.zero;
-        }
+            EntryDirection.North => new Vector2Int(0, 1),
+            EntryDirection.South => new Vector2Int(0, -1),
+            EntryDirection.East => new Vector2Int(1, 0),
+            EntryDirection.West => new Vector2Int(-1, 0),
+            _ => Vector2Int.zero
+        };
     }
 
-    DungeonEntry GetValidEntry(GameObject room, Vector2Int currentPos)
+    DungeonEntry GetOtherEntry(GameObject room, DungeonEntry used)
     {
-        var entries = room.GetComponentsInChildren<DungeonEntry>();
-
-        List<DungeonEntry> valid = new List<DungeonEntry>();
-
-        foreach (var e in entries)
-        {
-            if (e.occupied) continue;
-
-            Vector2Int nextPos = currentPos + GetOffset(e.direction);
-
-            if (!occupied.ContainsKey(nextPos))
-                valid.Add(e);
-        }
-
-        if (valid.Count == 0) return null;
-
-        return valid[Random.Range(0, valid.Count)];
-    }
-
-    DungeonEntry GetOtherEntry(GameObject room, DungeonEntry usedEntry)
-    {
-        var entries = room.GetComponentsInChildren<DungeonEntry>();
-
-        foreach (var e in entries)
-        {
-            if (e != usedEntry)
+        foreach (var e in room.GetComponentsInChildren<DungeonEntry>())
+            if (e != used)
                 return e;
-        }
 
         return null;
     }
 
-    GameObject GetCorridor(EntryDirection dir)
+    List<DungeonEntry> GetAllValidEntries(GameObject room, Vector2Int pos)
     {
-        if (dir == EntryDirection.North || dir == EntryDirection.South)
-            return Instantiate(corridorNS);
-        else
-            return Instantiate(corridorEW);
+        List<DungeonEntry> list = new();
+
+        foreach (var e in room.GetComponentsInChildren<DungeonEntry>())
+        {
+            if (e.occupied) continue;
+
+            Vector2Int next = pos + GetOffset(e.direction);
+            if (!occupied.ContainsKey(next))
+                list.Add(e);
+        }
+
+        return list;
+    }
+
+    bool HasEntry(GameObject prefab, EntryDirection dir)
+    {
+        foreach (var e in prefab.GetComponentsInChildren<DungeonEntry>())
+            if (e.direction == dir)
+                return true;
+
+        return false;
+    }
+
+    bool CanPlaceRoomChain(GameObject room, DungeonEntry entry, RoomType type, int remaining)
+    {
+        var needed = DungeonConnectionUtility.Opposite(entry.direction);
+        var prefab = roomSelector.GetRoom(type, needed, remaining);
+
+        return prefab != null && HasEntry(prefab, needed);
+    }
+
+    DungeonEntry GetEntryByDirection(GameObject room, EntryDirection dir)
+    {
+        foreach (var e in room.GetComponentsInChildren<DungeonEntry>())
+            if (e.direction == dir)
+                return e;
+
+        return null;
     }
 }

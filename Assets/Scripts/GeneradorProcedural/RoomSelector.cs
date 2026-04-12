@@ -39,7 +39,7 @@ public class RoomSelector : MonoBehaviour
     // -------------------------
     // GENERATE KEY (Ej: "NS", "SEW")
     // -------------------------
-    public GameObject GetRoom(RoomType type, EntryDirection requiredEntrance)
+    public GameObject GetRoom(RoomType type, EntryDirection requiredEntrance, int remainingRooms)
     {
         List<GameObject> pool = GetPool(type);
 
@@ -69,10 +69,21 @@ public class RoomSelector : MonoBehaviour
                 continue;
 
             // 🔥 REGLAS POR TIPO
-            if (type == RoomType.Neutral && doorCount < 2)
-                continue;
+            if (type == RoomType.Neutral)
+            {
+                // 🔥 NO permitir dead ends hasta el final
+                if (remainingRooms > 1 && doorCount < 2)
+                    continue;
+
+                // 🔥 NO permitir 2 doors muy temprano
+                if (remainingRooms > 3 && doorCount < 3)
+                    continue;
+            }
 
             if (type == RoomType.Combat && doorCount < 1)
+                continue;
+
+            if (type == RoomType.MiniBoss && doorCount < 1)
                 continue;
 
             // MiniBoss/Boss pueden ser dead end

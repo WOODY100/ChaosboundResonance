@@ -3,22 +3,21 @@ using UnityEngine;
 
 public static class DungeonPlanGenerator
 {
-    public static List<RoomType> GeneratePlan()
+    public static List<RoomType> GeneratePlan(System.Random rng)
     {
         List<RoomType> plan = new List<RoomType>();
 
-        // 🔹 Cantidades fijas
+        // 🔹 Contenido base
         AddRooms(plan, RoomType.Combat, 3);
         AddRooms(plan, RoomType.Neutral, 4);
-        AddRooms(plan, RoomType.MiniBoss, 1);
 
-        // 🔹 Shuffle controlado
-        Shuffle(plan);
+        // 🔹 Mezcla
+        Shuffle(plan, rng);
 
         // 🔹 Reglas estructurales
         EnforceRules(plan);
 
-        // 🔹 Insertar Start y Boss
+        // 🔹 Estructura final fija
         plan.Insert(0, RoomType.Start);
         plan.Add(RoomType.Boss);
 
@@ -31,18 +30,17 @@ public static class DungeonPlanGenerator
             plan.Add(type);
     }
 
-    static void Shuffle(List<RoomType> list)
+    static void Shuffle(List<RoomType> list, System.Random rng)
     {
         for (int i = 0; i < list.Count; i++)
         {
-            int rand = Random.Range(i, list.Count);
+            int rand = rng.Next(i, list.Count);
             (list[i], list[rand]) = (list[rand], list[i]);
         }
     }
 
     static void EnforceRules(List<RoomType> plan)
     {
-        // 🔹 Regla 1: evitar demasiadas neutrales seguidas
         int maxNeutralChain = 2;
 
         for (int i = 0; i < plan.Count - maxNeutralChain; i++)
@@ -51,34 +49,27 @@ public static class DungeonPlanGenerator
                 plan[i + 1] == RoomType.Neutral &&
                 plan[i + 2] == RoomType.Neutral)
             {
-                // Buscar un Combat para intercambiar
                 int swapIndex = FindSwapIndex(plan, RoomType.Combat, i + 2);
-                if (swapIndex != -1)
+
+                if (swapIndex >= 0 && swapIndex < plan.Count)
                 {
                     (plan[i + 2], plan[swapIndex]) = (plan[swapIndex], plan[i + 2]);
                 }
-            }
-        }
-
-        // 🔹 Regla 2: MiniBoss no muy temprano
-        int miniBossIndex = plan.IndexOf(RoomType.MiniBoss);
-        if (miniBossIndex < 2)
-        {
-            int swapIndex = FindSwapIndex(plan, RoomType.Combat, miniBossIndex);
-            if (swapIndex != -1)
-            {
-                (plan[miniBossIndex], plan[swapIndex]) = (plan[swapIndex], plan[miniBossIndex]);
             }
         }
     }
 
     static int FindSwapIndex(List<RoomType> plan, RoomType target, int start)
     {
+        if (start < 0 || start >= plan.Count)
+            return -1;
+
         for (int i = start; i < plan.Count; i++)
         {
             if (plan[i] == target)
                 return i;
         }
+
         return -1;
     }
 }

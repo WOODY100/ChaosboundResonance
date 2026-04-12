@@ -141,11 +141,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c94770bcc094ed541a023f6cd1b56583, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
-  moveSpeed: 6
+  moveSpeed: 2
   rotationSpeed: 15
   dashDistance: 5
   dashDuration: 0.18
   dashCooldown: 1
+  gravity: -20
+  groundCheckDistance: 1.5
 --- !u!114 &4092326677262735991
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -280,6 +282,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4095a844f5cc394facb232ea1eba98a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PersistentZoneExecutor
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!114 &1864340752066512939
 MonoBehaviour:
   m_ObjectHideFlags: 0

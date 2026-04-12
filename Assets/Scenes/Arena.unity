@@ -424,6 +424,7 @@ Transform:
   - {fileID: 1561704051}
   - {fileID: 1371118987}
   - {fileID: 1153270645}
+  - {fileID: 2126491662}
   - {fileID: 1388978196}
   m_Father: {fileID: 1178673296}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -905,165 +906,9 @@ MonoBehaviour:
     spawnWeight: 2
   - pool: {fileID: 1153270646}
     spawnWeight: 3
+  miniBossPool: {fileID: 2126491663}
   bossPool: {fileID: 1388978195}
   player: {fileID: 1116892602}
-  arenaDuration: 300
-  finalBossTime: 250
-  spawnRateOverTime:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0.8
-      inSlope: 3.5
-      outSlope: 3.5
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.2
-      value: 1.5
-      inSlope: 3.9166665
-      outSlope: 3.9166665
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.5
-      value: 2.8
-      inSlope: 4.1666665
-      outSlope: 4.1666665
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.8
-      value: 4
-      inSlope: 5.75
-      outSlope: 5.75
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 5.5
-      inSlope: 7.5000005
-      outSlope: 7.5000005
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  maxEnemiesOverTime:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 15
-      inSlope: 66.666664
-      outSlope: 66.666664
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.3
-      value: 35
-      inSlope: 91.666664
-      outSlope: 91.666664
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.6
-      value: 70
-      inSlope: 108.33333
-      outSlope: 108.33333
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.85
-      value: 95
-      inSlope: 100.00001
-      outSlope: 100.00001
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 110
-      inSlope: 100.000015
-      outSlope: 100.000015
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  speedMultiplierOverTime:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 1
-      inSlope: 0.37499994
-      outSlope: 0.37499994
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.4
-      value: 1.15
-      inSlope: 0.5208334
-      outSlope: 0.5208334
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.7
-      value: 1.35
-      inSlope: 0.9583335
-      outSlope: 0.9583335
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.9
-      value: 1.6
-      inSlope: 1.6249995
-      outSlope: 1.6249995
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 1.8
-      inSlope: 1.9999988
-      outSlope: 1.9999988
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  minSpawnRadius: 12
-  maxSpawnRadius: 18
   spawnStartDelay: 1.5
 --- !u!4 &1263816275
 Transform:
@@ -1172,6 +1017,119 @@ Transform:
   m_Children: []
   m_Father: {fileID: 759621118}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1523725085
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1523725087}
+  - component: {fileID: 1523725086}
+  m_Layer: 0
+  m_Name: RoomPoolManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1523725086
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1523725085}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89c8cfb3dfb41fd4ca74f8690c7a2826, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoomPool
+  pools:
+  - prefab: {fileID: 3916519840097979996, guid: a1c8a4ac5e2d99646befc5580d5cec96, type: 3}
+    initialSize: 1
+  - prefab: {fileID: 4426849296080912172, guid: fa3f88f5c7757e64a8170ff2451791cd, type: 3}
+    initialSize: 6
+  - prefab: {fileID: 3916519840097979996, guid: 1efc6d53cdd8f954998fcf0bb19606eb, type: 3}
+    initialSize: 6
+  - prefab: {fileID: 4426849296080912172, guid: ea258bb700226f54999ae985c786ebaa, type: 3}
+    initialSize: 6
+  - prefab: {fileID: 4426849296080912172, guid: 3f9aaf3733a15384abe72bd97ca8e99a, type: 3}
+    initialSize: 6
+  - prefab: {fileID: 4426849296080912172, guid: 9c261205e6fd95f4fb9517ed7cde1d55, type: 3}
+    initialSize: 6
+  - prefab: {fileID: 4426849296080912172, guid: 9c19b69ae2b57c44fab969b30d254941, type: 3}
+    initialSize: 6
+  - prefab: {fileID: 7920396809084408331, guid: 15dbf5f2409bada40852006af6833146, type: 3}
+    initialSize: 6
+  - prefab: {fileID: 4426849296080912172, guid: 9d128403cd76dc04ca3258bc5be15228, type: 3}
+    initialSize: 6
+  - prefab: {fileID: 4426849296080912172, guid: 1691008aa2f4cc04882ee704b268609f, type: 3}
+    initialSize: 6
+  - prefab: {fileID: 4426849296080912172, guid: aee00c567a12560428995e7a5e5cd40e, type: 3}
+    initialSize: 6
+  - prefab: {fileID: 4426849296080912172, guid: 456e5b04b2c16c746998739c91da3804, type: 3}
+    initialSize: 6
+  - prefab: {fileID: 4426849296080912172, guid: 479d248992e59194382c2cb3402b64a7, type: 3}
+    initialSize: 6
+  - prefab: {fileID: 4426849296080912172, guid: 24011f48249b83b4080d18122988199d, type: 3}
+    initialSize: 6
+  - prefab: {fileID: 4426849296080912172, guid: 99f484c1ade08ae41993da2ee7a21b88, type: 3}
+    initialSize: 6
+  - prefab: {fileID: 9034477422614015543, guid: 070083ee86b9e5241813d78db5ac097b, type: 3}
+    initialSize: 10
+  - prefab: {fileID: 1447040110255981884, guid: 0388202170c3aa34295a93d1b6df0510, type: 3}
+    initialSize: 10
+  - prefab: {fileID: 6320453392045250447, guid: c713433b69ab284468261126272387e4, type: 3}
+    initialSize: 10
+  - prefab: {fileID: 2637868333044943359, guid: 14f8906f6e7dbfa47879cd3ff9fb9a2d, type: 3}
+    initialSize: 20
+  - prefab: {fileID: 444763425743373435, guid: 3af9fae942befb848b7ddfcda7372d07, type: 3}
+    initialSize: 20
+  - prefab: {fileID: 6320453392045250447, guid: c713433b69ab284468261126272387e4, type: 3}
+    initialSize: 10
+  - prefab: {fileID: 581198028471038665, guid: 792cc0b9d9c88284cb716c99913e0aaa, type: 3}
+    initialSize: 10
+  - prefab: {fileID: 581198028471038665, guid: 522f59ee8c48f424c90bb35fd173b7da, type: 3}
+    initialSize: 10
+  - prefab: {fileID: 581198028471038665, guid: 38965c6be67534046a3e477b380d4132, type: 3}
+    initialSize: 10
+  - prefab: {fileID: 9034477422614015543, guid: 32abdb86f890c034e98cc00182e681e2, type: 3}
+    initialSize: 10
+  - prefab: {fileID: 9034477422614015543, guid: a650da951430750459721515754ee62a, type: 3}
+    initialSize: 10
+  - prefab: {fileID: 9034477422614015543, guid: 32abdb86f890c034e98cc00182e681e2, type: 3}
+    initialSize: 10
+  - prefab: {fileID: 9034477422614015543, guid: a650da951430750459721515754ee62a, type: 3}
+    initialSize: 10
+  - prefab: {fileID: 9034477422614015543, guid: 4a81be5d7e74f0941a172540947c920d, type: 3}
+    initialSize: 10
+  - prefab: {fileID: 9034477422614015543, guid: 4e222a71e963d3a4fa4637d5ded04966, type: 3}
+    initialSize: 10
+  - prefab: {fileID: 581198028471038665, guid: 7413d49b2d29b73488e17b090109b84b, type: 3}
+    initialSize: 10
+  - prefab: {fileID: 9034477422614015543, guid: e49842b077ee6bb4e9b37f949c3a237b, type: 3}
+    initialSize: 10
+  - prefab: {fileID: 4426849296080912172, guid: de77e5f930ea14c4aa286bbbecbec534, type: 3}
+    initialSize: 10
+  - prefab: {fileID: 581198028471038665, guid: 8b4651d77e9d85f41837faa62f048f8e, type: 3}
+    initialSize: 10
+--- !u!4 &1523725087
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1523725085}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -85.47643, y: -48.81251, z: 111.20023}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1561704050
 GameObject:
   m_ObjectHideFlags: 0
@@ -1270,6 +1228,9 @@ MonoBehaviour:
   miniBossRooms:
   - {fileID: 581198028471038665, guid: 7413d49b2d29b73488e17b090109b84b, type: 3}
   - {fileID: 581198028471038665, guid: 522f59ee8c48f424c90bb35fd173b7da, type: 3}
+  - {fileID: 581198028471038665, guid: 792cc0b9d9c88284cb716c99913e0aaa, type: 3}
+  - {fileID: 581198028471038665, guid: 38965c6be67534046a3e477b380d4132, type: 3}
+  - {fileID: 581198028471038665, guid: 8b4651d77e9d85f41837faa62f048f8e, type: 3}
   bossRooms:
   - {fileID: 9034477422614015543, guid: a650da951430750459721515754ee62a, type: 3}
   - {fileID: 9034477422614015543, guid: 32abdb86f890c034e98cc00182e681e2, type: 3}
@@ -1470,6 +1431,9 @@ MonoBehaviour:
   corridorNS: {fileID: 444763425743373435, guid: 3af9fae942befb848b7ddfcda7372d07, type: 3}
   corridorEW: {fileID: 2637868333044943359, guid: 14f8906f6e7dbfa47879cd3ff9fb9a2d, type: 3}
   roomSelector: {fileID: 1642907010}
+  roomPool: {fileID: 1523725086}
+  useFixedSeed: 0
+  fixedSeed: 162723
 --- !u!4 &2057588554
 Transform:
   m_ObjectHideFlags: 0
@@ -1485,6 +1449,52 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2126491661
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2126491662}
+  - component: {fileID: 2126491663}
+  m_Layer: 0
+  m_Name: Pool_MiniBoss
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2126491662
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2126491661}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 759621118}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2126491663
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2126491661}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52965d8b88e27a64baeaf55c3ad62d62, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyPool
+  enemyPrefab: {fileID: 398206900497037025, guid: 088fafd3af246ff45b65bf21c8f596cf, type: 3}
+  initialSize: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -1499,3 +1509,4 @@ SceneRoots:
   - {fileID: 791279966}
   - {fileID: 2057588554}
   - {fileID: 1642907011}
+  - {fileID: 1523725087}

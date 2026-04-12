@@ -17,6 +17,13 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float dashDuration = 0.18f;
     [SerializeField] private float dashCooldown = 1f;
 
+    [Header("Gravity")]
+    [SerializeField] float gravity = -20f;
+    [SerializeField] float groundCheckDistance = 1.5f;
+    [SerializeField] LayerMask groundLayer;
+
+    float verticalVelocity;
+
     public bool IsDashing => isDashing;
 
     private bool isDashing;
@@ -59,6 +66,8 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        ApplyGravity(); // 🔥 NUEVO
+
         if (dashCooldownTimer > 0f)
             dashCooldownTimer -= Time.deltaTime;
 
@@ -71,6 +80,47 @@ public class PlayerController : MonoBehaviour
 
         if (!isDashing)
             HandleMovement();
+
+        if (dashCooldownTimer > 0f)
+            dashCooldownTimer -= Time.deltaTime;
+
+        if (dashPressed && dashCooldownTimer <= 0f && !isDashing)
+        {
+            StartCoroutine(Dash());
+        }
+
+        dashPressed = false;
+
+        if (!isDashing)
+            HandleMovement();
+    }
+
+    void ApplyGravity()
+    {
+        if (controller.isGrounded && verticalVelocity < 0)
+        {
+            verticalVelocity = -2f; // mantiene pegado al suelo
+        }
+        else
+        {
+            verticalVelocity += gravity * Time.deltaTime;
+        }
+
+        // 🔥 Raycast para ajustar altura exacta del terreno
+        Ray ray = new Ray(transform.position + Vector3.up * 0.5f, Vector3.down);
+
+        if (Physics.Raycast(ray, out RaycastHit hit, groundCheckDistance, groundLayer))
+        {
+            float targetY = hit.point.y;
+
+            Vector3 pos = transform.position;
+            pos.y = Mathf.Lerp(pos.y, targetY, Time.deltaTime * 15f);
+
+            transform.position = pos;
+        }
+
+        // 🔥 aplicar gravedad real
+        controller.Move(Vector3.up * verticalVelocity * Time.deltaTime);
     }
 
     void HandleMovement()

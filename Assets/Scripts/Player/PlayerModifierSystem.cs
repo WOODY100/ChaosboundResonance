@@ -21,7 +21,7 @@ public class PlayerModifierSystem : MonoBehaviour
     {
         CreateStat(StatType.Damage, 10f);
         CreateStat(StatType.AttackSpeed, 1f);
-        CreateStat(StatType.MovementSpeed, 6f);
+        CreateStat(StatType.MovementSpeed, 4f);
         CreateStat(StatType.MaxHP, 100f);
         CreateStat(StatType.HPRegen, 0f);
         CreateStat(StatType.ExpAttractionRadius, 1.1f);
