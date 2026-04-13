@@ -162,16 +162,9 @@ public class SimpleDungeonGenerator : MonoBehaviour
             // 🔥 SI FALLA (muy raro), fuerza fallback lineal
             if (!placed)
             {
-                Debug.LogWarning($"⚠️ Forzando colocación lineal en step {i}");
-
-                Vector2Int forcedPos = currentPos + Vector2Int.right;
-
-                GameObject forcedRoom = Spawn(roomSelector.GetRoom(roomType, EntryDirection.West, 0));
-
-                occupied[forcedPos] = forcedRoom;
-
-                currentPos = forcedPos;
-                currentRoom = forcedRoom;
+                Debug.LogError($"💀 No se pudo colocar {roomType} en step {i}");
+                Debug.LogError($"💀 Seed fallida: {seed}");
+                return false;
             }
         }
 

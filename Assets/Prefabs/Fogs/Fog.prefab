@@ -29,7 +29,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0.7071068, z: -0, w: -0.7071068}
   m_LocalPosition: {x: 0, y: 0.9, z: 0}
-  m_LocalScale: {x: 4, y: 1, z: 4}
+  m_LocalScale: {x: 3, y: 1, z: 3}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6083868383180849244}
@@ -107,6 +107,7 @@ MonoBehaviour:
   speed: 0.03
   noiseStrength: 0.01
   noiseSpeed: 0.035
+  tileDensity: 1
 --- !u!1 &2109626454172150213
 GameObject:
   m_ObjectHideFlags: 0
@@ -136,7 +137,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0.3, z: 0}
-  m_LocalScale: {x: 4, y: 1, z: 4}
+  m_LocalScale: {x: 3, y: 1, z: 3}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6083868383180849244}
@@ -214,6 +215,7 @@ MonoBehaviour:
   speed: 0.01
   noiseStrength: 0.003
   noiseSpeed: 0.01
+  tileDensity: 1
 --- !u!1 &6417525130046884341
 GameObject:
   m_ObjectHideFlags: 0
@@ -243,7 +245,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: 0, y: 0.6, z: 0}
-  m_LocalScale: {x: 4, y: 1, z: 4}
+  m_LocalScale: {x: 3, y: 1, z: 3}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6083868383180849244}
@@ -321,6 +323,7 @@ MonoBehaviour:
   speed: 0.02
   noiseStrength: 0.006
   noiseSpeed: 0.02
+  tileDensity: 1
 --- !u!1 &6930330779447626212
 GameObject:
   m_ObjectHideFlags: 0
@@ -347,8 +350,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 691795014666456283}
   - {fileID: 7592815630698727406}
