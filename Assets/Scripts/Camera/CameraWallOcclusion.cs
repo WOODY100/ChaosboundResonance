@@ -7,23 +7,24 @@ public class CameraWallOcclusion : MonoBehaviour
     [SerializeField] private LayerMask wallLayer;
     [SerializeField] private float sphereRadius = 1f;
 
-    private List<WallOccluder> hiddenWalls = new List<WallOccluder>(32);
-
-    private RaycastHit[] hitBuffer = new RaycastHit[32];
+    private readonly List<WallOccluder> hiddenWalls = new List<WallOccluder>(32);
+    private readonly RaycastHit[] hitBuffer = new RaycastHit[32];
 
     void LateUpdate()
     {
+        if (player == null) return;
+
         ShowHiddenWalls();
 
-        Vector3 dir = player.position - transform.position;
-        float dist = dir.magnitude;
+        Vector3 direction = player.position - transform.position;
+        float distance = direction.magnitude;
 
         int hitCount = Physics.SphereCastNonAlloc(
             transform.position,
             sphereRadius,
-            dir.normalized,
+            direction.normalized,
             hitBuffer,
-            dist,
+            distance,
             wallLayer,
             QueryTriggerInteraction.Ignore
         );
@@ -32,11 +33,9 @@ public class CameraWallOcclusion : MonoBehaviour
 
         for (int i = 0; i < hitCount; i++)
         {
-            RaycastHit hit = hitBuffer[i];
+            WallOccluder wall = hitBuffer[i].collider.GetComponent<WallOccluder>();
 
-            WallOccluder wall = hit.collider.GetComponent<WallOccluder>();
-
-            if (wall != null)
+            if (wall != null && !hiddenWalls.Contains(wall))
             {
                 wall.HideWall();
                 hiddenWalls.Add(wall);
@@ -44,9 +43,9 @@ public class CameraWallOcclusion : MonoBehaviour
         }
     }
 
-    void ShowHiddenWalls()
+    private void ShowHiddenWalls()
     {
-        foreach (var wall in hiddenWalls)
+        foreach (WallOccluder wall in hiddenWalls)
         {
             if (wall != null)
                 wall.ShowWall();
