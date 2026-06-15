@@ -7,6 +7,11 @@ public class RoomCombatController : MonoBehaviour
     [Header("Room Config")]
     [SerializeField] private RoomType roomType;
 
+    [Header("Auto Start")]
+    [SerializeField] private bool autoStartOnPlay = false;
+    [SerializeField] private RoomEntryDirection autoEntryDirection = RoomEntryDirection.South;
+    [SerializeField] private float autoStartDelay = 0.5f;
+
     private RoomDoors doors;
 
     private void Awake()
@@ -14,8 +19,27 @@ public class RoomCombatController : MonoBehaviour
         doors = GetComponent<RoomDoors>();
     }
 
+    private void Start()
+    {
+        Debug.Log($"[{name}] Start() ejecutado");
+
+        if (autoStartOnPlay)
+        {
+            Debug.Log($"[{name}] AutoStart activado");
+            Invoke(nameof(AutoStartCombat), autoStartDelay);
+        }
+    }
+
+    private void AutoStartCombat()
+    {
+        Debug.Log($"[{name}] AutoStartCombat()");
+        StartCombat(autoEntryDirection);
+    }
+
     public void StartCombat(RoomEntryDirection entryDirection)
     {
+        Debug.Log($"[{name}] StartCombat()");
+
         if (State != RoomState.Idle)
             return;
 
@@ -27,15 +51,24 @@ public class RoomCombatController : MonoBehaviour
         var spawnPoints = GetComponent<RoomSpawnPoints>();
         var director = Object.FindAnyObjectByType<ArenaSpawnDirector>();
 
+        Debug.Log($"[{name}] Director: {director}");
+        Debug.Log($"[{name}] SpawnPoints: {spawnPoints}");
+
         if (director != null && spawnPoints != null)
         {
+            Debug.Log($"[{name}] Calling director.StartEncounter()");
+
             var context = new ArenaSpawnDirector.SpawnContext
             {
                 encounterType = GetEncounterType(roomType),
-                dungeonTier = GetDungeonTier() // 🔥 importante
+                dungeonTier = GetDungeonTier()
             };
 
             director.StartEncounter(spawnPoints, doors, context);
+        }
+        else
+        {
+            Debug.LogWarning($"[{name}] Missing director or spawn points.");
         }
     }
 
@@ -49,10 +82,6 @@ public class RoomCombatController : MonoBehaviour
         if (doors != null)
             doors.UpdateDoorsFromEntries();
     }
-
-    // ----------------------------------
-    // HELPERS
-    // ----------------------------------
 
     ArenaSpawnDirector.EncounterType GetEncounterType(RoomType type)
     {
@@ -74,9 +103,7 @@ public class RoomCombatController : MonoBehaviour
 
     int GetDungeonTier()
     {
-        // 🔥 Placeholder (después lo conectas a tu meta progresión real)
         int metaLevel = 1;
-
         return Mathf.Clamp(metaLevel / 10 + 1, 1, 10);
     }
 }

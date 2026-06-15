@@ -1294,7 +1294,7 @@ MonoBehaviour:
   - {fileID: 5181578743507081252}
   - {fileID: 4716732064413002394}
   - {fileID: 3224607223764643704}
-  fogColor: {r: 0.61251396, g: 0.40236738, b: 0.6226415, a: 1}
+  fogColor: {r: 0.6415094, g: 0.6415094, b: 0.6415094, a: 1}
 --- !u!114 &7434855070042757345
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6512,7 +6512,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1804278098785727257, guid: 6bfa6baacd7b8f942b02bd437d9232ca, type: 3}
       propertyPath: noiseSpeed
-      value: 0.01
+      value: 0.005
       objectReference: {fileID: 0}
     - target: {fileID: 1804278098785727257, guid: 6bfa6baacd7b8f942b02bd437d9232ca, type: 3}
       propertyPath: direction.y
@@ -6520,31 +6520,35 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1804278098785727257, guid: 6bfa6baacd7b8f942b02bd437d9232ca, type: 3}
       propertyPath: tileDensity
-      value: 0.5
+      value: 0.25
       objectReference: {fileID: 0}
     - target: {fileID: 1804278098785727257, guid: 6bfa6baacd7b8f942b02bd437d9232ca, type: 3}
       propertyPath: noiseStrength
-      value: 0.003
+      value: 0.002
       objectReference: {fileID: 0}
     - target: {fileID: 2780830625574264505, guid: 6bfa6baacd7b8f942b02bd437d9232ca, type: 3}
       propertyPath: speed
-      value: 0.02
+      value: 0.015
       objectReference: {fileID: 0}
     - target: {fileID: 2780830625574264505, guid: 6bfa6baacd7b8f942b02bd437d9232ca, type: 3}
       propertyPath: noiseSpeed
-      value: 0.02
+      value: 0.01
       objectReference: {fileID: 0}
     - target: {fileID: 2780830625574264505, guid: 6bfa6baacd7b8f942b02bd437d9232ca, type: 3}
-      propertyPath: direction.y
+      propertyPath: direction.x
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2780830625574264505, guid: 6bfa6baacd7b8f942b02bd437d9232ca, type: 3}
+      propertyPath: direction.y
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2780830625574264505, guid: 6bfa6baacd7b8f942b02bd437d9232ca, type: 3}
       propertyPath: tileDensity
-      value: 0.5
+      value: 0.25
       objectReference: {fileID: 0}
     - target: {fileID: 2780830625574264505, guid: 6bfa6baacd7b8f942b02bd437d9232ca, type: 3}
       propertyPath: noiseStrength
-      value: 0.006
+      value: 0.004
       objectReference: {fileID: 0}
     - target: {fileID: 5592984755905511472, guid: 6bfa6baacd7b8f942b02bd437d9232ca, type: 3}
       propertyPath: m_LocalScale.x
@@ -6612,15 +6616,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7469088679556944400, guid: 6bfa6baacd7b8f942b02bd437d9232ca, type: 3}
       propertyPath: speed
-      value: 0.03
+      value: 0.02
+      objectReference: {fileID: 0}
+    - target: {fileID: 7469088679556944400, guid: 6bfa6baacd7b8f942b02bd437d9232ca, type: 3}
+      propertyPath: noiseSpeed
+      value: 0.015
+      objectReference: {fileID: 0}
+    - target: {fileID: 7469088679556944400, guid: 6bfa6baacd7b8f942b02bd437d9232ca, type: 3}
+      propertyPath: direction.x
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 7469088679556944400, guid: 6bfa6baacd7b8f942b02bd437d9232ca, type: 3}
       propertyPath: tileDensity
-      value: 0.5
+      value: 0.25
       objectReference: {fileID: 0}
     - target: {fileID: 7469088679556944400, guid: 6bfa6baacd7b8f942b02bd437d9232ca, type: 3}
       propertyPath: noiseStrength
-      value: 0.01
+      value: 0.006
       objectReference: {fileID: 0}
     - target: {fileID: 7592815630698727406, guid: 6bfa6baacd7b8f942b02bd437d9232ca, type: 3}
       propertyPath: m_LocalScale.x
@@ -11224,6 +11236,26 @@ PrefabInstance:
     - target: {fileID: 3327437344390276158, guid: d1e5b64052f5f6d40a97b9d4dad8b423, type: 3}
       propertyPath: m_Name
       value: LVL_01_O_med_straight_SEW (11)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4605762324132081999, guid: d1e5b64052f5f6d40a97b9d4dad8b423, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 5026941990825360851, guid: d1e5b64052f5f6d40a97b9d4dad8b423, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 5643105074531248567, guid: d1e5b64052f5f6d40a97b9d4dad8b423, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 6582737333118915778, guid: d1e5b64052f5f6d40a97b9d4dad8b423, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 8477051299939773979, guid: d1e5b64052f5f6d40a97b9d4dad8b423, type: 3}
+      propertyPath: m_Layer
+      value: 9
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -17201,6 +17233,26 @@ PrefabInstance:
     - target: {fileID: 3327437344390276158, guid: d1e5b64052f5f6d40a97b9d4dad8b423, type: 3}
       propertyPath: m_Name
       value: LVL_01_O_med_straight_SEW (12)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4605762324132081999, guid: d1e5b64052f5f6d40a97b9d4dad8b423, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 5026941990825360851, guid: d1e5b64052f5f6d40a97b9d4dad8b423, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 5643105074531248567, guid: d1e5b64052f5f6d40a97b9d4dad8b423, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 6582737333118915778, guid: d1e5b64052f5f6d40a97b9d4dad8b423, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 8477051299939773979, guid: d1e5b64052f5f6d40a97b9d4dad8b423, type: 3}
+      propertyPath: m_Layer
+      value: 9
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

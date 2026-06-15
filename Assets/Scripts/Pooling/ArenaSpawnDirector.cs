@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.AI;
 using System.Collections.Generic;
 
 public class ArenaSpawnDirector : MonoBehaviour
@@ -140,7 +139,7 @@ public class ArenaSpawnDirector : MonoBehaviour
 
     void SpawnCombat()
     {
-        int count = 3 + currentContext.dungeonTier * 2;
+        int count = 20 + currentContext.dungeonTier * 2;
 
         for (int i = 0; i < count; i++)
         {
@@ -185,19 +184,16 @@ public class ArenaSpawnDirector : MonoBehaviour
 
         Vector3 spawnPos = GetSpawnPoint();
 
-        if (NavMesh.SamplePosition(spawnPos, out NavMeshHit hit, 5f, NavMesh.AllAreas))
-        {
-            GameObject enemy = selectedPool.Get(hit.position, Quaternion.identity);
+        GameObject enemy = selectedPool.Get(spawnPos, Quaternion.identity);
 
-            EnemyHealth health = enemy.GetComponent<EnemyHealth>();
-            health.OnDeath += HandleEnemyDeath;
+        EnemyHealth health = enemy.GetComponent<EnemyHealth>();
+        health.OnDeath += HandleEnemyDeath;
 
-            EnemyMovementArena movement = enemy.GetComponent<EnemyMovementArena>();
-            if (movement != null)
-                movement.SetDifficultyMultiplier(speedMultiplier);
+        EnemyMovementArena movement = enemy.GetComponent<EnemyMovementArena>();
+        if (movement != null)
+            movement.SetDifficultyMultiplier(speedMultiplier);
 
-            activeEnemies++;
-        }
+        activeEnemies++;
     }
 
     void SpawnFromPool(EnemyPool pool)
@@ -207,15 +203,12 @@ public class ArenaSpawnDirector : MonoBehaviour
 
         Vector3 spawnPos = GetSpawnPoint();
 
-        if (NavMesh.SamplePosition(spawnPos, out NavMeshHit hit, 5f, NavMesh.AllAreas))
-        {
-            GameObject enemy = pool.Get(hit.position, Quaternion.identity);
+        GameObject enemy = pool.Get(spawnPos, Quaternion.identity);
 
-            EnemyHealth health = enemy.GetComponent<EnemyHealth>();
-            health.OnDeath += HandleEnemyDeath;
+        EnemyHealth health = enemy.GetComponent<EnemyHealth>();
+        health.OnDeath += HandleEnemyDeath;
 
-            activeEnemies++;
-        }
+        activeEnemies++;
     }
 
     // ----------------------------------
