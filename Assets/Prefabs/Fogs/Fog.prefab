@@ -105,9 +105,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FogDrift
   direction: {x: 1, y: -1}
   speed: 0.03
-  noiseStrength: 0.01
-  noiseSpeed: 0.05
-  tileDensity: 1.5
+  noiseStrength: 0.015
+  noiseSpeed: 0.03
+  tileDensity: 0.7
 --- !u!1 &2109626454172150213
 GameObject:
   m_ObjectHideFlags: 0
@@ -321,9 +321,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FogDrift
   direction: {x: -1, y: 1}
   speed: 0.02
-  noiseStrength: 0.006
-  noiseSpeed: 0.03
-  tileDensity: 1.5
+  noiseStrength: 0.01
+  noiseSpeed: 0.02
+  tileDensity: 1
 --- !u!1 &6930330779447626212
 GameObject:
   m_ObjectHideFlags: 0
@@ -333,6 +333,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6083868383180849244}
+  - component: {fileID: 2588596555642197003}
   m_Layer: 0
   m_Name: Fog
   m_TagString: Untagged
@@ -358,3 +359,20 @@ Transform:
   - {fileID: 5592984755905511472}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2588596555642197003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6930330779447626212}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af30576a0d035774f9487bd47ce4538a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoomFogController
+  fogRenderers:
+  - {fileID: 7944674066104749037}
+  - {fileID: 7556123470062614867}
+  - {fileID: 390009688814304433}
+  fogColor: {r: 0.6981132, g: 0.6981132, b: 0.6981132, a: 1}
