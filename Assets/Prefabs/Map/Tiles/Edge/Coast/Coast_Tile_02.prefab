@@ -45,7 +45,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1789977182702583466}
-  - component: {fileID: 2025311016719539256}
   m_Layer: 0
   m_Name: Coast_Tile_02
   m_TagString: Untagged
@@ -72,18 +71,6 @@ Transform:
   - {fileID: 4310698037307826945}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2025311016719539256
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1766241749739405014}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 63877a618332132448f8b06de14bf4f3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: '::'
 --- !u!1 &3060475244847536328
 GameObject:
   m_ObjectHideFlags: 0
@@ -981,6 +968,14 @@ PrefabInstance:
     - target: {fileID: 5580846980104841247, guid: 4787de20ed0ab9d42861c5a543536768, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6802305086189232962, guid: 4787de20ed0ab9d42861c5a543536768, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7167092631139383904, guid: 4787de20ed0ab9d42861c5a543536768, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8874482817214650892, guid: 4787de20ed0ab9d42861c5a543536768, type: 3}
       propertyPath: m_Name

@@ -2,23 +2,28 @@
 
 public class EnemyReward : MonoBehaviour
 {
+    [Header("Rewards")]
     [SerializeField] private int experienceReward = 5;
     [SerializeField] private int goldReward = 1;
+
+    [Header("Prefabs")]
     [SerializeField] private GameObject experienceOrbPrefab;
 
     private EnemyHealth health;
 
-    void Awake()
+    private static readonly int GroundLayer = 1 << 6; // Layer "Ground"
+
+    private void Awake()
     {
         health = GetComponent<EnemyHealth>();
     }
 
-    void OnEnable()
+    private void OnEnable()
     {
         health.OnDeath += GiveReward;
     }
 
-    void OnDisable()
+    private void OnDisable()
     {
         health.OnDeath -= GiveReward;
     }
@@ -29,7 +34,7 @@ public class EnemyReward : MonoBehaviour
         goldReward = gold;
     }
 
-    void GiveReward(EnemyHealth enemy)
+    private void GiveReward(EnemyHealth enemy)
     {
         SpawnXPOrb();
     }
@@ -39,35 +44,36 @@ public class EnemyReward : MonoBehaviour
         if (experienceOrbPrefab == null)
             return;
 
-        Vector3 spawnPosition = transform.position;
+        Vector3 spawnPosition = GetSpawnPosition();
 
-        RaycastHit hit;
-
-        // Lanzamos raycast desde arriba del enemigo
-        Vector3 rayOrigin = transform.position + Vector3.up * 5f;
-
-        if (Physics.Raycast(rayOrigin,
-                            Vector3.down,
-                            out hit,
-                            20f,
-                            LayerMask.GetMask("Ground"))) // 🔥 filtrar solo suelo
-        {
-            spawnPosition = hit.point + Vector3.up * 0.25f;
-        }
-        else
-        {
-            // Fallback por si no detecta suelo
-            spawnPosition = transform.position;
-            spawnPosition.y = 0.5f;
-        }
-
-        GameObject orb = Instantiate(
+        ExperiencePickup pickup = PoolManager.Instance.Get<ExperiencePickup>(
             experienceOrbPrefab,
             spawnPosition,
             Quaternion.identity
         );
 
-        ExperiencePickup pickup = orb.GetComponent<ExperiencePickup>();
-        pickup?.Initialize(experienceReward);
+        if (pickup != null)
+        {
+            pickup.Initialize(experienceReward);
+        }
+    }
+
+    private Vector3 GetSpawnPosition()
+    {
+        Vector3 rayOrigin = transform.position + Vector3.up * 5f;
+
+        if (Physics.Raycast(rayOrigin,
+                            Vector3.down,
+                            out RaycastHit hit,
+                            20f,
+                            GroundLayer))
+        {
+            return hit.point + Vector3.up * 0.25f;
+        }
+
+        Vector3 fallback = transform.position;
+        fallback.y = 0.5f;
+
+        return fallback;
     }
 }

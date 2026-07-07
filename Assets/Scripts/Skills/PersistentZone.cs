@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class PersistentZone : MonoBehaviour
+public class PersistentZone : PooledBehaviour
 {
     private RuntimeSkill skill;
 
@@ -15,47 +15,61 @@ public class PersistentZone : MonoBehaviour
 
     public System.Action<PersistentZone> OnZoneEnded;
 
-    [SerializeField] private float baseSize = 1f;
+    [Header("Visual")]
+    [SerializeField] private float visualHeight = 0.18f;
 
-    private Collider[] hits = new Collider[100];
-    private Dictionary<Collider, IDamageable> cache = new Dictionary<Collider, IDamageable>();
-    private Dictionary<IDamageable, float> accumulatedDamage = new Dictionary<IDamageable, float>();
+    [SerializeField] private float baseSize = 1f;
+    [SerializeField] private LayerMask enemyLayer;
+
+    private readonly Collider[] hits = new Collider[100];
+    private readonly Dictionary<Collider, IDamageable> cache = new();
+    private readonly Dictionary<IDamageable, float> accumulatedDamage = new();
 
     private float visualTimer;
-    private float visualInterval = 0.5f;
+    private readonly float visualInterval = 0.5f;
 
-    [SerializeField] private LayerMask enemyLayer;
+    private ParticleSystem particle;
+
+    protected override void Awake()
+    {
+        base.Awake();
+        particle = GetComponentInChildren<ParticleSystem>();
+    }
 
     public void Initialize(RuntimeSkill runtimeSkill)
     {
+        ResetPooledState();
+
         skill = runtimeSkill;
 
         duration = skill.Stats.FinalDuration;
         radius = skill.Stats.FinalImpactRadius;
         tickRate = Mathf.Max(0.1f, skill.Stats.FinalTickRate);
-
         damage = skill.Stats.FinalDamage;
 
-        // 🔥 ESCALA VISUAL
         transform.localScale = Vector3.one * (radius * 2f / baseSize);
 
-        // 🔥 PARTICLES (ahora sí correcto)
-        var ps = GetComponentInChildren<ParticleSystem>();
+        Vector3 pos = transform.position;
+        pos.y += visualHeight;
+        transform.position = pos;
 
-        if (ps != null)
+        if (particle != null)
         {
-            var main = ps.main;
+            ParticleSystem.MainModule main = particle.main;
 
             main.duration = duration;
             main.startLifetime = duration;
 
-            ps.Clear();
-            ps.Play();
+            particle.Clear();
+            particle.Play();
         }
     }
 
     private void Update()
     {
+        if (skill == null)
+            return;
+
         timer += Time.deltaTime;
         tickTimer += Time.deltaTime;
 
@@ -78,11 +92,7 @@ public class PersistentZone : MonoBehaviour
 
         if (timer >= duration)
         {
-            ApplyAccumulatedDamage();
-
-            OnZoneEnded?.Invoke(this);
-
-            Destroy(gameObject);
+            EndZone();
         }
     }
 
@@ -109,16 +119,15 @@ public class PersistentZone : MonoBehaviour
                 cache[col] = damageable;
             }
 
-            if (damageable == null || ((MonoBehaviour)damageable).gameObject.activeInHierarchy == false)
+            if (damageable == null ||
+                ((MonoBehaviour)damageable).gameObject.activeInHierarchy == false)
             {
                 cache.Remove(col);
                 continue;
             }
 
             if (!accumulatedDamage.ContainsKey(damageable))
-            {
                 accumulatedDamage[damageable] = 0f;
-            }
 
             accumulatedDamage[damageable] += damage;
         }
@@ -128,7 +137,7 @@ public class PersistentZone : MonoBehaviour
     {
         foreach (var pair in accumulatedDamage)
         {
-            var target = pair.Key;
+            IDamageable target = pair.Key;
             float totalDamage = pair.Value;
 
             if (target == null)
@@ -144,4 +153,36 @@ public class PersistentZone : MonoBehaviour
         accumulatedDamage.Clear();
     }
 
+    public void ForceEnd()
+    {
+        EndZone();
+    }
+
+    private void EndZone()
+    {
+        ApplyAccumulatedDamage();
+
+        OnZoneEnded?.Invoke(this);
+        OnZoneEnded = null;
+
+        ReturnToPool();
+    }
+
+    protected override void ResetPooledState()
+    {
+        skill = null;
+
+        duration = 0f;
+        tickRate = 0f;
+        timer = 0f;
+        tickTimer = 0f;
+        damage = 0f;
+        radius = 0f;
+        visualTimer = 0f;
+
+        cache.Clear();
+        accumulatedDamage.Clear();
+
+        OnZoneEnded = null;
+    }
 }

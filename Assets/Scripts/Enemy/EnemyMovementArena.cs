@@ -19,6 +19,8 @@ public class EnemyMovementArena : MonoBehaviour
     private Animator animator;
     private Transform player;
     private EnemyCore core;
+    
+    private static readonly Collider[] separationHits = new Collider[32];
 
     void Awake()
     {
@@ -104,23 +106,31 @@ public class EnemyMovementArena : MonoBehaviour
 
     Vector3 CalculateSeparation()
     {
-        Collider[] hits = Physics.OverlapSphere(transform.position, separationRadius, enemyLayer);
+        int hitCount = Physics.OverlapSphereNonAlloc(
+            transform.position,
+            separationRadius,
+            separationHits,
+            GameLayers.Enemy
+        );
 
         Vector3 separation = Vector3.zero;
 
-        foreach (var hit in hits)
+        for (int i = 0; i < hitCount; i++)
         {
-            if (hit.transform == transform)
+            Collider hit = separationHits[i];
+
+            if (hit == null || hit.transform == transform)
                 continue;
 
             Vector3 diff = transform.position - hit.transform.position;
+            diff.y = 0f;
+
             float sqrDist = diff.sqrMagnitude;
 
             if (sqrDist > 0.001f)
                 separation += diff.normalized / sqrDist;
         }
 
-        separation.y = 0f;
         return separation;
     }
 

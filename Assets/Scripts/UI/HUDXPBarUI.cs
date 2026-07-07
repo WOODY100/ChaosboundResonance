@@ -40,6 +40,11 @@ public class HUDXPBarUI : MonoBehaviour
         targetFill = current / max;
 
         if (xpText != null)
-            xpText.text = $"{Mathf.FloorToInt(current)} / {Mathf.FloorToInt(max)}";
+        {
+            xpText.SetText("{0} / {1}",
+                Mathf.FloorToInt(current),
+                Mathf.FloorToInt(max)
+            );
+        }
     }
 }

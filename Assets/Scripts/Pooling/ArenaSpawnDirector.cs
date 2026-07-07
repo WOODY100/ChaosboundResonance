@@ -3,10 +3,6 @@ using System.Collections.Generic;
 
 public class ArenaSpawnDirector : MonoBehaviour
 {
-    // ----------------------------------
-    // ENUMS / CONTEXT
-    // ----------------------------------
-
     public enum EncounterType
     {
         None,
@@ -15,39 +11,27 @@ public class ArenaSpawnDirector : MonoBehaviour
         Boss
     }
 
-    public class SpawnContext
-    {
-        public EncounterType encounterType;
-        public int dungeonTier;
-    }
+    [Header("Debug")]
+    [SerializeField] private bool autoStartOpenWorld = true;
+    [SerializeField] private int debugDungeonTier = 1;
 
-    // ----------------------------------
-    // REFERENCES
-    // ----------------------------------
-
-    [Header("Enemy Pools")]
+    [Header("Enemy Prefabs")]
     [SerializeField] private List<ArenaEnemyGroup> enemyGroups;
-    [SerializeField] private EnemyPool miniBossPool;
-    [SerializeField] private EnemyPool bossPool;
+    [SerializeField] private GameObject miniBossPrefab;
+    [SerializeField] private GameObject bossPrefab;
 
     [Header("References")]
     [SerializeField] private Transform player;
 
-    // ----------------------------------
-    // SPAWN AREA
-    // ----------------------------------
-
-    [Header("Spawn Area")]
+    [Header("Open World Spawn")]
     [SerializeField] private float spawnStartDelay = 1.5f;
+    [SerializeField] private float minSpawnDistance = 14f;
+    [SerializeField] private float maxSpawnDistance = 22f;
+    [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private int spawnPositionAttempts = 12;
 
-    private List<Transform> currentSpawnPoints;
-    private RoomDoors currentRoomDoors;
-
-    // ----------------------------------
-    // STATE
-    // ----------------------------------
-
-    private SpawnContext currentContext;
+    private EncounterType currentEncounterType = EncounterType.None;
+    private int currentDungeonTier;
 
     private int activeEnemies;
     private bool spawnActive;
@@ -56,32 +40,36 @@ public class ArenaSpawnDirector : MonoBehaviour
 
     public int ActiveEnemies => activeEnemies;
 
-    // ----------------------------------
-    // ENTRY POINT
-    // ----------------------------------
+    private void Start()
+    {
+        if (player == null && EnemyManager.Instance != null)
+            player = EnemyManager.Instance.Player;
 
-    public void StartEncounter(RoomSpawnPoints room, RoomDoors doors, SpawnContext context)
+        if (autoStartOpenWorld)
+        {
+            StartOpenWorldEncounter(EncounterType.Boss, debugDungeonTier);
+        }
+    }
+
+    public void StartOpenWorldEncounter(EncounterType encounterType, int dungeonTier)
     {
         ResetArena();
 
-        currentSpawnPoints = room.spawnPoints;
-        currentRoomDoors = doors;
-        currentContext = context;
+        currentEncounterType = encounterType;
+        currentDungeonTier = dungeonTier;
 
         spawnPending = true;
         delayTimer = spawnStartDelay;
     }
 
-    // ----------------------------------
-    // UPDATE
-    // ----------------------------------
-
-    void Update()
+    private void Update()
     {
-        if (player == null || currentContext == null)
+        if (player == null && EnemyManager.Instance != null)
+            player = EnemyManager.Instance.Player;
+
+        if (player == null || currentEncounterType == EncounterType.None)
             return;
 
-        // Delay inicial
         if (spawnPending)
         {
             delayTimer -= Time.deltaTime;
@@ -90,7 +78,6 @@ public class ArenaSpawnDirector : MonoBehaviour
             {
                 spawnPending = false;
                 spawnActive = true;
-
                 ExecuteEncounter();
             }
 
@@ -100,24 +87,13 @@ public class ArenaSpawnDirector : MonoBehaviour
         if (!spawnActive)
             return;
 
-        // Abrir puertas cuando no hay enemigos
         if (activeEnemies <= 0)
-        {
-            if (currentRoomDoors != null)
-            {
-                currentRoomDoors.OpenDoors();
-                spawnActive = false;
-            }
-        }
+            spawnActive = false;
     }
 
-    // ----------------------------------
-    // ENCOUNTER EXECUTION
-    // ----------------------------------
-
-    void ExecuteEncounter()
+    private void ExecuteEncounter()
     {
-        switch (currentContext.encounterType)
+        switch (currentEncounterType)
         {
             case EncounterType.Combat:
                 SpawnCombat();
@@ -133,143 +109,153 @@ public class ArenaSpawnDirector : MonoBehaviour
         }
     }
 
-    // ----------------------------------
-    // SPAWN TYPES
-    // ----------------------------------
-
-    void SpawnCombat()
+    private void SpawnCombat()
     {
-        int count = 20 + currentContext.dungeonTier * 2;
+        int count = 120 + currentDungeonTier * 4;
 
         for (int i = 0; i < count; i++)
-        {
             SpawnBasicEnemy(1f);
-        }
     }
 
-    void SpawnMiniBoss()
+    private void SpawnMiniBoss()
     {
-        SpawnFromPool(miniBossPool);
+        SpawnFromPrefab(miniBossPrefab);
 
-        int adds = currentContext.dungeonTier;
+        int adds = currentDungeonTier;
 
         for (int i = 0; i < adds; i++)
-        {
             SpawnBasicEnemy(1f);
-        }
     }
 
-    void SpawnBossEncounter()
+    private void SpawnBossEncounter()
     {
-        SpawnFromPool(bossPool);
+        SpawnFromPrefab(bossPrefab);
 
-        int adds = currentContext.dungeonTier * 2;
+        int adds = currentDungeonTier * 2;
 
         for (int i = 0; i < adds; i++)
-        {
             SpawnBasicEnemy(1f);
-        }
     }
 
-    // ----------------------------------
-    // SPAWN HELPERS
-    // ----------------------------------
-
-    void SpawnBasicEnemy(float speedMultiplier)
+    private void SpawnBasicEnemy(float speedMultiplier)
     {
-        if (enemyGroups == null || enemyGroups.Count == 0)
+        GameObject prefab = GetRandomWeightedPrefab();
+
+        if (prefab == null)
             return;
 
-        EnemyPool selectedPool = GetRandomWeightedPool();
+        GameObject enemy = SpawnFromPrefab(prefab);
 
-        Vector3 spawnPos = GetSpawnPoint();
-
-        GameObject enemy = selectedPool.Get(spawnPos, Quaternion.identity);
-
-        EnemyHealth health = enemy.GetComponent<EnemyHealth>();
-        health.OnDeath += HandleEnemyDeath;
+        if (enemy == null)
+            return;
 
         EnemyMovementArena movement = enemy.GetComponent<EnemyMovementArena>();
+
         if (movement != null)
             movement.SetDifficultyMultiplier(speedMultiplier);
-
-        activeEnemies++;
     }
 
-    void SpawnFromPool(EnemyPool pool)
+    private GameObject SpawnFromPrefab(GameObject prefab)
     {
-        if (pool == null)
-            return;
+        if (prefab == null)
+            return null;
 
-        Vector3 spawnPos = GetSpawnPoint();
+        Vector3 spawnPos = GetOpenWorldSpawnPosition();
 
-        GameObject enemy = pool.Get(spawnPos, Quaternion.identity);
+        GameObject enemy = PoolManager.Instance.Get(
+            prefab,
+            spawnPos,
+            Quaternion.identity
+        );
 
         EnemyHealth health = enemy.GetComponent<EnemyHealth>();
-        health.OnDeath += HandleEnemyDeath;
+
+        if (health != null)
+        {
+            health.OnDeath -= HandleEnemyDeath;
+            health.OnDeath += HandleEnemyDeath;
+        }
 
         activeEnemies++;
+
+        return enemy;
     }
 
-    // ----------------------------------
-    // SPAWN POINTS
-    // ----------------------------------
-
-    Vector3 GetSpawnPoint()
+    private Vector3 GetOpenWorldSpawnPosition()
     {
-        if (currentSpawnPoints == null || currentSpawnPoints.Count == 0)
-            return player.position;
+        for (int i = 0; i < spawnPositionAttempts; i++)
+        {
+            Vector2 dir = Random.insideUnitCircle.normalized;
+            float distance = Random.Range(minSpawnDistance, maxSpawnDistance);
 
-        int index = Random.Range(0, currentSpawnPoints.Count);
-        return currentSpawnPoints[index].position;
+            Vector3 candidate = player.position + new Vector3(
+                dir.x * distance,
+                0f,
+                dir.y * distance
+            );
+
+            Vector3 rayOrigin = candidate + Vector3.up * 20f;
+
+            if (Physics.Raycast(rayOrigin, Vector3.down, out RaycastHit hit, 50f, groundLayer))
+            {
+                return hit.point;
+            }
+        }
+
+        Vector2 fallbackDir = Random.insideUnitCircle.normalized;
+
+        return player.position + new Vector3(
+            fallbackDir.x * minSpawnDistance,
+            0f,
+            fallbackDir.y * minSpawnDistance
+        );
     }
 
-    EnemyPool GetRandomWeightedPool()
+    private GameObject GetRandomWeightedPrefab()
     {
+        if (enemyGroups == null || enemyGroups.Count == 0)
+            return null;
+
         float totalWeight = 0f;
 
-        foreach (var group in enemyGroups)
-            totalWeight += group.spawnWeight;
+        foreach (ArenaEnemyGroup group in enemyGroups)
+        {
+            if (group.enemyPrefab != null)
+                totalWeight += group.spawnWeight;
+        }
+
+        if (totalWeight <= 0f)
+            return null;
 
         float randomValue = Random.Range(0f, totalWeight);
         float cumulative = 0f;
 
-        foreach (var group in enemyGroups)
+        foreach (ArenaEnemyGroup group in enemyGroups)
         {
+            if (group.enemyPrefab == null)
+                continue;
+
             cumulative += group.spawnWeight;
 
             if (randomValue <= cumulative)
-                return group.pool;
+                return group.enemyPrefab;
         }
 
-        return enemyGroups[0].pool;
+        return enemyGroups[0].enemyPrefab;
     }
 
-    // ----------------------------------
-    // EVENTS
-    // ----------------------------------
-
-    void HandleEnemyDeath(EnemyHealth enemy)
+    private void HandleEnemyDeath(EnemyHealth enemy)
     {
         enemy.OnDeath -= HandleEnemyDeath;
-        activeEnemies--;
-
-        if (activeEnemies <= 0 && currentRoomDoors != null)
-        {
-            currentRoomDoors.OpenDoors();
-        }
+        activeEnemies = Mathf.Max(0, activeEnemies - 1);
     }
-
-    // ----------------------------------
-    // RESET
-    // ----------------------------------
 
     public void ResetArena()
     {
         spawnActive = false;
         spawnPending = false;
-
         activeEnemies = 0;
-        currentContext = null;
+        currentEncounterType = EncounterType.None;
+        currentDungeonTier = 0;
     }
 }

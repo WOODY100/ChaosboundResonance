@@ -219,7 +219,7 @@ public class MinotaurBossController : BossControllerBase
         if (jumpWarningPrefab == null)
             return;
 
-        currentJumpWarning = Instantiate(
+        currentJumpWarning = PoolManager.Instance.Get(
             jumpWarningPrefab,
             jumpTargetPosition + Vector3.up * 0.05f,
             Quaternion.identity
@@ -248,35 +248,55 @@ public class MinotaurBossController : BossControllerBase
 
         if (currentJumpWarning != null)
         {
-            Destroy(currentJumpWarning);
+            PooledObject warningPool = currentJumpWarning.GetComponent<PooledObject>();
+
+            if (warningPool != null)
+                warningPool.ReturnToPool();
+            else
+                Destroy(currentJumpWarning);
+
             currentJumpWarning = null;
         }
 
         // 🔹 1. Spawn VFX
         if (jumpImpactVFX != null)
-            Instantiate(jumpImpactVFX, impactPosition, Quaternion.identity);
+        {
+            PoolManager.Instance.Get(
+                jumpImpactVFX,
+                impactPosition,
+                Quaternion.identity
+            );
+        }
 
         // 🔹 2. Daño plano radial
-        Collider[] hits = Physics.OverlapSphere(impactPosition, jumpImpactRadius);
+        int count = Physics.OverlapSphereNonAlloc(
+            impactPosition,
+            jumpImpactRadius,
+            hitBuffer,
+            GameLayers.Player
+        );
 
-        foreach (var hit in hits)
+        for (int i = 0; i < count; i++)
         {
-            if (hit.CompareTag("Player"))
+            Collider hit = hitBuffer[i];
+
+            if (hit == null)
+                continue;
+
+            PlayerDamageReceiver receiver =
+                hit.GetComponent<PlayerDamageReceiver>();
+
+            if (receiver == null)
+                continue;
+
+            DamageData dmg = new DamageData
             {
-                PlayerDamageReceiver receiver = hit.GetComponent<PlayerDamageReceiver>();
+                amount = jumpDamage,
+                type = DamageType.Physical,
+                source = gameObject
+            };
 
-                if (receiver != null)
-                {
-                    DamageData dmg = new DamageData
-                    {
-                        amount = jumpDamage,
-                        type = DamageType.Physical,
-                        source = gameObject
-                    };
-
-                    receiver.ReceiveDamage(dmg);
-                }
-            }
+            receiver.ReceiveDamage(dmg);
         }
 
         // 🔹 3. Sensación de peso
@@ -409,7 +429,7 @@ public class MinotaurBossController : BossControllerBase
         Mesh bakedMesh = new Mesh();
         original.BakeMesh(bakedMesh);
 
-        GameObject ghost = Instantiate(
+        GameObject ghost = PoolManager.Instance.Get(
             chargeGhostPrefab,
             original.transform.position,
             original.transform.rotation

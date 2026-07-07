@@ -31,6 +31,8 @@ public class LevelUpOptionUI : MonoBehaviour,
 
     private UpgradeOption currentOption;
     private Action<UpgradeOption> onClick;
+    private RectTransform rectTransform;
+    private Vector3 originalLocalScale;
 
     private void Update()
     {
@@ -46,7 +48,9 @@ public class LevelUpOptionUI : MonoBehaviour,
 
     private void Awake()
     {
-        originalScale = transform.localScale;
+        rectTransform = GetComponent<RectTransform>();
+        originalLocalScale = transform.localScale;
+        originalScale = originalLocalScale;
         button = GetComponent<Button>();
     }
 
@@ -85,9 +89,10 @@ public class LevelUpOptionUI : MonoBehaviour,
         }
     }
 
-    public void Initialize(UpgradeOption option,
-                       Action<UpgradeOption> callback)
+    public void Initialize(UpgradeOption option, Action<UpgradeOption> callback)
     {
+        ResetVisualState();
+
         currentOption = option;
         onClick = callback;
 
@@ -101,7 +106,6 @@ public class LevelUpOptionUI : MonoBehaviour,
 
         ApplyRarityVisual(rarity);
 
-        button.onClick.RemoveAllListeners();
         button.onClick.AddListener(() => onClick?.Invoke(currentOption));
     }
 
@@ -215,5 +219,25 @@ public class LevelUpOptionUI : MonoBehaviour,
             default:
                 return Color.white;
         }
+    }
+
+    private void ResetVisualState()
+    {
+        isHovered = false;
+        isInteractable = true;
+
+        transform.localScale = originalLocalScale;
+
+        if (button != null)
+        {
+            button.interactable = true;
+            button.onClick.RemoveAllListeners();
+        }
+
+        if (frameOverlay != null)
+            frameOverlay.color = baseFrameColor;
+
+        if (bottomOrnament != null)
+            bottomOrnament.color = baseFrameColor;
     }
 }

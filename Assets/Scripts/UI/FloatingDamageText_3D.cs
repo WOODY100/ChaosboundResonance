@@ -1,7 +1,7 @@
 using UnityEngine;
 using TMPro;
 
-public class FloatingDamageText : MonoBehaviour
+public class FloatingDamageText : PooledBehaviour
 {
     [Header("Motion")]
     [SerializeField] private float floatSpeed = 2.5f;
@@ -17,31 +17,51 @@ public class FloatingDamageText : MonoBehaviour
     [SerializeField] private Color criticalColor = new Color(1f, 0.3f, 0.1f);
 
     private TextMeshPro textMesh;
-    private float timer;
     private Transform cameraTransform;
 
+    private float timer;
     private Vector3 initialScale;
     private Color currentColor;
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
+
         textMesh = GetComponent<TextMeshPro>();
-        cameraTransform = Camera.main.transform;
         initialScale = transform.localScale;
+
+        if (Camera.main != null)
+            cameraTransform = Camera.main.transform;
+    }
+
+    protected override void ResetPooledState()
+    {
+        timer = 0f;
+        transform.localScale = initialScale;
+
+        if (textMesh != null)
+        {
+            Color c = textMesh.color;
+            c.a = 1f;
+            textMesh.color = c;
+        }
+
+        if (cameraTransform == null && Camera.main != null)
+            cameraTransform = Camera.main.transform;
     }
 
     public void Initialize(float damage, bool isCritical)
     {
+        ResetPooledState();
+
         textMesh.text = Mathf.RoundToInt(damage).ToString();
 
-        // Color
         currentColor = isCritical ? criticalColor : normalColor;
+        currentColor.a = 1f;
         textMesh.color = currentColor;
 
-        // Scale punch
         transform.localScale = initialScale * appearScaleMultiplier;
 
-        // Pequeña variación lateral
         transform.position += new Vector3(
             Random.Range(-0.25f, 0.25f),
             0f,
@@ -51,14 +71,11 @@ public class FloatingDamageText : MonoBehaviour
 
     private void Update()
     {
-        // Movimiento vertical
         transform.position += Vector3.up * floatSpeed * Time.deltaTime;
 
-        // Siempre mirar a cámara
         if (cameraTransform != null)
             transform.forward = cameraTransform.forward;
 
-        // Recuperar escala suavemente
         transform.localScale = Vector3.Lerp(
             transform.localScale,
             initialScale,
@@ -67,11 +84,9 @@ public class FloatingDamageText : MonoBehaviour
 
         timer += Time.deltaTime;
 
-        // Fade
         if (timer >= fadeStartTime)
         {
-            float fadeProgress =
-                (timer - fadeStartTime) / (lifetime - fadeStartTime);
+            float fadeProgress = (timer - fadeStartTime) / (lifetime - fadeStartTime);
 
             Color c = currentColor;
             c.a = Mathf.Lerp(1f, 0f, fadeProgress);
@@ -79,6 +94,6 @@ public class FloatingDamageText : MonoBehaviour
         }
 
         if (timer >= lifetime)
-            Destroy(gameObject);
+            ReturnToPool();
     }
 }

@@ -77,6 +77,7 @@ GameObject:
   - component: {fileID: 8044076977500986214}
   - component: {fileID: 7348215645966141985}
   - component: {fileID: 854049702313215581}
+  - component: {fileID: -6019622996297451601}
   m_Layer: 6
   m_Name: Boss_Minotaur
   m_TagString: Untagged
@@ -206,9 +207,11 @@ MonoBehaviour:
   chargeRecoveryDuration: 0.6
   chargeInertiaDeceleration: 25
   steeringCheckDistance: 3.5
-  steeringAngle: 45
-  steeringRays: 5
   obstacleMemoryTime: 0.8
+  stuckCheckTime: 0.4
+  stuckDistance: 0.15
+  wallRepulsionRadius: 2
+  wallRepulsionStrength: 0.4
   obstacleLayer:
     serializedVersion: 2
     m_Bits: 1536
@@ -226,6 +229,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BossHealth
   maxHealth: 1000
   currentHealth: 0
+--- !u!114 &-6019622996297451601
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 398206900497037025}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 18a179446157da545a43d83cc8878e9b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PooledObject
 --- !u!1 &419555066001712287
 GameObject:
   m_ObjectHideFlags: 0

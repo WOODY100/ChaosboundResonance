@@ -42,19 +42,25 @@ public class LevelUpUI : MonoBehaviour
     private void ShowOptions(List<UpgradeOption> options)
     {
         Debug.Log("OPTIONS COUNT: " + options.Count);
+
         panelRoot.SetActive(true);
         SetNormalInstruction();
 
-        foreach (Transform child in optionsContainer)
-            Destroy(child.gameObject);
-        
-        spawnedOptions.Clear();
+        selectionLocked = false;
 
-        foreach (var option in options)
+        EnsureOptionInstances(3);
+
+        for (int i = 0; i < spawnedOptions.Count; i++)
         {
-            var instance = Instantiate(optionPrefab, optionsContainer);
-            instance.Initialize(option, OnOptionSelected);
-            spawnedOptions.Add(instance);
+            bool shouldShow = i < options.Count;
+
+            spawnedOptions[i].gameObject.SetActive(shouldShow);
+
+            if (shouldShow)
+            {
+                spawnedOptions[i].Initialize(options[i], OnOptionSelected);
+                spawnedOptions[i].SetInteractable(true);
+            }
         }
     }
 
@@ -122,5 +128,15 @@ public class LevelUpUI : MonoBehaviour
     private void OnCancelPressed()
     {
         levelUpManager.CancelReplaceMode();
+    }
+
+    private void EnsureOptionInstances(int requiredCount)
+    {
+        while (spawnedOptions.Count < requiredCount)
+        {
+            LevelUpOptionUI instance = Instantiate(optionPrefab, optionsContainer);
+            instance.gameObject.SetActive(false);
+            spawnedOptions.Add(instance);
+        }
     }
 }

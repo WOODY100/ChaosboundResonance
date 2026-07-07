@@ -1,15 +1,56 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-public class StormfallStrike : MonoBehaviour, IAreaStrike
+public class StormfallStrike : PooledBehaviour, IAreaStrike
 {
-    [SerializeField] private GameObject lightningImpactPrefab;
+    [Header("Visual")]
+    [SerializeField] private GameObject lightningImpact;
+
+    [Header("Timing")]
     [SerializeField] private float beamLifetime = 0.18f;
+    [SerializeField] private float totalLifetime = 1.2f;
 
     private RuntimeSkill skill;
     private float damage;
     private DamageType damageType;
 
+    private Coroutine activeRoutine;
+    private ParticleSystem[] particleSystems;
+
+    private static readonly Collider[] hitBuffer = new Collider[64];
+    private const int EnemyLayerMask = 1 << 6;
+
+    protected override void Awake()
+    {
+        base.Awake();
+
+        particleSystems = GetComponentsInChildren<ParticleSystem>(true);
+
+        if (lightningImpact == null)
+            lightningImpact = transform.Find("LightningImpact")?.gameObject;
+    }
+
+    protected override void ResetPooledState()
+    {
+        if (lightningImpact != null)
+            lightningImpact.SetActive(true);
+
+        if (particleSystems != null)
+        {
+            foreach (ParticleSystem ps in particleSystems)
+            {
+                if (ps == null)
+                    continue;
+
+                ps.Clear(true);
+                ps.Play(true);
+            }
+        }
+
+        skill = null;
+        damage = 0f;
+        activeRoutine = null;
+    }
 
     public void Initialize(RuntimeSkill runtimeSkill)
     {
@@ -17,44 +58,65 @@ public class StormfallStrike : MonoBehaviour, IAreaStrike
         damage = skill.Stats.FinalDamage;
         damageType = skill.Definition.DamageType;
 
-        StartCoroutine(StrikeRoutine());
+        if (activeRoutine != null)
+            StopCoroutine(activeRoutine);
+
+        activeRoutine = StartCoroutine(StrikeRoutine());
     }
 
     private IEnumerator StrikeRoutine()
     {
         ApplyDamage();
 
-        Transform beam = transform.Find("LightningImpact");
+        yield return new WaitForSeconds(beamLifetime);
 
-        if (beam != null)
-            Destroy(beam.gameObject, beamLifetime);
+        if (lightningImpact != null)
+            lightningImpact.SetActive(false);
 
-        // Esperar a que GroundImpact termine
-        yield return new WaitForSeconds(1.2f);
+        yield return new WaitForSeconds(totalLifetime - beamLifetime);
 
-        Destroy(gameObject);
+        ReturnToPool();
     }
 
     private void ApplyDamage()
     {
-        Collider[] hits = Physics.OverlapSphere(
+        int hitCount = Physics.OverlapSphereNonAlloc(
             transform.position,
             skill.Stats.FinalImpactRadius,
-            LayerMask.GetMask("Enemy")
+            hitBuffer,
+            GameLayers.Enemy
         );
 
-        foreach (var hit in hits)
+        for (int i = 0; i < hitCount; i++)
         {
-            IDamageable damageable =
-                hit.GetComponentInParent<IDamageable>();
+            Collider hit = hitBuffer[i];
+
+            if (hit == null)
+                continue;
+
+            IDamageable damageable = hit.GetComponentInParent<IDamageable>();
 
             if (damageable == null || damageable.IsDead)
                 continue;
 
-            DamageData damageData =
-                new DamageData(damage, damageType);
-
-            damageable.TakeDamage(damageData);
+            damageable.TakeDamage(new DamageData(
+                damage,
+                damageType
+            ));
         }
+    }
+
+    protected override void OnDisable()
+    {
+        base.OnDisable();
+
+        if (activeRoutine != null)
+        {
+            StopCoroutine(activeRoutine);
+            activeRoutine = null;
+        }
+
+        if (lightningImpact != null)
+            lightningImpact.SetActive(true);
     }
 }

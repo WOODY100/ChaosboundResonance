@@ -11,6 +11,8 @@ GameObject:
   - component: {fileID: 2824782567845576919}
   - component: {fileID: 5184443497099945080}
   - component: {fileID: 8703295727894614093}
+  - component: {fileID: 3800039965783248062}
+  - component: {fileID: 8657675756160669518}
   m_Layer: 0
   m_Name: ArcBoltImpactVFX
   m_TagString: Untagged
@@ -43,7 +45,7 @@ ParticleSystem:
   serializedVersion: 8
   lengthInSec: 2
   simulationSpeed: 2
-  stopAction: 2
+  stopAction: 3
   cullingMode: 3
   ringBufferMode: 0
   ringBufferLoopRange: {x: 0, y: 1}
@@ -5028,3 +5030,27 @@ ParticleSystemRenderer:
   m_MeshWeighting1: 1
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
+--- !u!114 &3800039965783248062
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8853014331026729633}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 18a179446157da545a43d83cc8878e9b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PooledObject
+--- !u!114 &8657675756160669518
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8853014331026729633}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8249ab2fa45db964f93a5e1d615e3096, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'

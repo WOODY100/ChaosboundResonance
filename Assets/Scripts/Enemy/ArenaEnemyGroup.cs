@@ -3,7 +3,8 @@ using UnityEngine;
 [System.Serializable]
 public class ArenaEnemyGroup
 {
-    public EnemyPool pool;
-    [Range(0.1f, 10f)]
+    public GameObject enemyPrefab;
+
+    [Min(0f)]
     public float spawnWeight = 1f;
 }

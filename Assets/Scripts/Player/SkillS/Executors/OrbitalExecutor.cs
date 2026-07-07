@@ -5,8 +5,8 @@ public class OrbitalExecutor : MonoBehaviour, ISkillExecutor
     private RuntimeSkill skill;
     private Transform owner;
 
-    private int activeOrbs = 0;
-    private bool isActive = false;
+    private int activeOrbs;
+    private bool isActive;
 
     public void Initialize(RuntimeSkill runtimeSkill, Transform skillOwner)
     {
@@ -26,11 +26,8 @@ public class OrbitalExecutor : MonoBehaviour, ISkillExecutor
 
         ActivateOrbit();
 
-        // 🔥 Si el cooldown NO depende de duración, iniciarlo aquí
         if (!skill.Definition.CooldownStartsAfterDuration)
-        {
             skill.StartCooldown(skill.Stats.FinalCooldown);
-        }
     }
 
     private void ActivateOrbit()
@@ -50,7 +47,7 @@ public class OrbitalExecutor : MonoBehaviour, ISkillExecutor
         {
             float startAngle = randomOffset + (i * angleStep);
 
-            GameObject orbObj = Instantiate(
+            GameObject orbObj = PoolManager.Instance.Get(
                 skill.Definition.ExecutionPrefab,
                 owner.position,
                 Quaternion.identity
@@ -61,6 +58,10 @@ public class OrbitalExecutor : MonoBehaviour, ISkillExecutor
             if (orb != null)
             {
                 orb.Initialize(skill, owner, startAngle, OnSingleOrbFinished);
+            }
+            else
+            {
+                OnSingleOrbFinished();
             }
         }
     }
@@ -73,11 +74,8 @@ public class OrbitalExecutor : MonoBehaviour, ISkillExecutor
         {
             isActive = false;
 
-            // 🔥 Si depende de duración, iniciarlo aquí
             if (skill.Definition.CooldownStartsAfterDuration)
-            {
                 skill.StartCooldown(skill.Stats.FinalCooldown);
-            }
         }
     }
 }

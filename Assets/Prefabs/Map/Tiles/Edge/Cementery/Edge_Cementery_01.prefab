@@ -2350,7 +2350,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4620734339160699399}
-  - component: {fileID: 296146453308151867}
   m_Layer: 0
   m_Name: Edge_Cementery_01
   m_TagString: Untagged
@@ -2377,18 +2376,6 @@ Transform:
   - {fileID: 8000358078368156946}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &296146453308151867
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1039108247317628220}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 63877a618332132448f8b06de14bf4f3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: '::'
 --- !u!1 &1043777084161092237
 GameObject:
   m_ObjectHideFlags: 0
@@ -7874,7 +7861,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2850850657083640136}
-  - component: {fileID: 2576051171957537534}
   - component: {fileID: 8187700071874074805}
   m_Layer: 0
   m_Name: Floor_C
@@ -7901,18 +7887,6 @@ Transform:
   - {fileID: 8883032814912112467}
   m_Father: {fileID: 3039041695815015793}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2576051171957537534
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4309484842068048487}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 63877a618332132448f8b06de14bf4f3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: '::'
 --- !u!114 &8187700071874074805
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11187,7 +11161,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8973308196885199150}
-  - component: {fileID: 8694235597249202840}
   - component: {fileID: 3078021261975562451}
   m_Layer: 0
   m_Name: Floor_C (1)
@@ -11213,18 +11186,6 @@ Transform:
   - {fileID: 2328649722444658485}
   m_Father: {fileID: 3039041695815015793}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8694235597249202840
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6978754730335717889}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 63877a618332132448f8b06de14bf4f3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: '::'
 --- !u!114 &3078021261975562451
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11826,7 +11787,6 @@ GameObject:
   - component: {fileID: 5836339201109531324}
   - component: {fileID: 3289265088969384074}
   - component: {fileID: 9122419554748128371}
-  - component: {fileID: 3168856990250188401}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_straight_small
   m_TagString: Untagged
@@ -11906,28 +11866,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &3168856990250188401
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7396474420786948271}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: -2174867727407298721, guid: 059d89586835a374abddc961c6d66f23, type: 3}
 --- !u!1 &7454330242070658442
 GameObject:
   m_ObjectHideFlags: 0

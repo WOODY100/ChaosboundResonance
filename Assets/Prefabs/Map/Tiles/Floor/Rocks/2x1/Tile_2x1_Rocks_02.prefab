@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 5104309681117020837}
   - component: {fileID: 1187634102652892578}
   - component: {fileID: 8959560164691554757}
-  - component: {fileID: 5334776672341359896}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_8 (1)
   m_TagString: Untagged
@@ -91,27 +90,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &5334776672341359896
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 26135430966918855}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 0.11667909, z: 1}
-  m_Center: {x: -0.5, y: 0.058339544, z: 0.5}
 --- !u!1 &56422791202538550
 GameObject:
   m_ObjectHideFlags: 0
@@ -123,7 +101,6 @@ GameObject:
   - component: {fileID: 5920872106454667136}
   - component: {fileID: 5374222801048388345}
   - component: {fileID: 7144234506576296773}
-  - component: {fileID: 8574641095069267465}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_broken_2 (3)
   m_TagString: Untagged
@@ -203,28 +180,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &8574641095069267465
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 56422791202538550}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: -3694851809820135826, guid: 19fc3bd5359ed5147b1643828a34edda, type: 3}
 --- !u!1 &209661746117131650
 GameObject:
   m_ObjectHideFlags: 0
@@ -416,7 +371,6 @@ GameObject:
   - component: {fileID: 3859006724605036808}
   - component: {fileID: 7987269803561990864}
   - component: {fileID: 4342174283804457736}
-  - component: {fileID: 8514555417110258085}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_5 (1)
   m_TagString: Untagged
@@ -496,28 +450,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &8514555417110258085
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 341426196779898898}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 3297873092199725415, guid: 94b224876f0a6a647b6fce683f98da35, type: 3}
 --- !u!1 &342518256385157740
 GameObject:
   m_ObjectHideFlags: 0
@@ -709,7 +641,6 @@ GameObject:
   - component: {fileID: 3981245831173886582}
   - component: {fileID: 7633084486733502019}
   - component: {fileID: 3094760085854527660}
-  - component: {fileID: 2797596968672193673}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_broken_4
   m_TagString: Untagged
@@ -789,28 +720,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &2797596968672193673
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 473084975215260410}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: -2247645064512130413, guid: 7d5fc87d7a6da184c8af21c53ca2a8da, type: 3}
 --- !u!1 &598648806466102738
 GameObject:
   m_ObjectHideFlags: 0
@@ -822,7 +731,6 @@ GameObject:
   - component: {fileID: 1705426116519283095}
   - component: {fileID: 1684652779647504588}
   - component: {fileID: 4902694398209336691}
-  - component: {fileID: 4636551922042923615}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_8 (4)
   m_TagString: Untagged
@@ -902,27 +810,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &4636551922042923615
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 598648806466102738}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 0.11667909, z: 1}
-  m_Center: {x: -0.5, y: 0.058339544, z: 0.5}
 --- !u!1 &832461235354080889
 GameObject:
   m_ObjectHideFlags: 0
@@ -934,7 +821,6 @@ GameObject:
   - component: {fileID: 2379542713550877667}
   - component: {fileID: 8720096991605547140}
   - component: {fileID: 5240073646292223848}
-  - component: {fileID: 427651704225926924}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_broken_3 (1)
   m_TagString: Untagged
@@ -1014,27 +900,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &427651704225926924
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 832461235354080889}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.8120552, y: 0.056193035, z: 0.9999999}
-  m_Center: {x: -0.40602753, y: 0.028096484, z: 0.49999994}
 --- !u!1 &863965581179637927
 GameObject:
   m_ObjectHideFlags: 0
@@ -1046,7 +911,6 @@ GameObject:
   - component: {fileID: 8278211515049577676}
   - component: {fileID: 4208901979202821262}
   - component: {fileID: 485979271068026341}
-  - component: {fileID: 1053196942409694904}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_5 (1)
   m_TagString: Untagged
@@ -1126,28 +990,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &1053196942409694904
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 863965581179637927}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 3297873092199725415, guid: 94b224876f0a6a647b6fce683f98da35, type: 3}
 --- !u!1 &885969883649162539
 GameObject:
   m_ObjectHideFlags: 0
@@ -1159,7 +1001,6 @@ GameObject:
   - component: {fileID: 2867945565634128307}
   - component: {fileID: 5952401675011301844}
   - component: {fileID: 512164517407942987}
-  - component: {fileID: 3843398087830375117}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_5 (3)
   m_TagString: Untagged
@@ -1239,28 +1080,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &3843398087830375117
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 885969883649162539}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 3297873092199725415, guid: 94b224876f0a6a647b6fce683f98da35, type: 3}
 --- !u!1 &900089258444004521
 GameObject:
   m_ObjectHideFlags: 0
@@ -1362,7 +1181,6 @@ GameObject:
   - component: {fileID: 2087027762825826456}
   - component: {fileID: 7445727811861186330}
   - component: {fileID: 4611859433967570288}
-  - component: {fileID: 3527340512959067089}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_broken_2 (1)
   m_TagString: Untagged
@@ -1442,28 +1260,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &3527340512959067089
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 911868967272026748}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: -3694851809820135826, guid: 19fc3bd5359ed5147b1643828a34edda, type: 3}
 --- !u!1 &916990223774654315
 GameObject:
   m_ObjectHideFlags: 0
@@ -1475,7 +1271,6 @@ GameObject:
   - component: {fileID: 7563297123217243664}
   - component: {fileID: 1913448332524046435}
   - component: {fileID: 383512117223163129}
-  - component: {fileID: 8045097705192840187}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_4
   m_TagString: Untagged
@@ -1555,28 +1350,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &8045097705192840187
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 916990223774654315}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: -9117520818990435331, guid: 06df2f71c25e6f64f8b7ae94228e8c86, type: 3}
 --- !u!1 &922132996812713835
 GameObject:
   m_ObjectHideFlags: 0
@@ -1588,7 +1361,6 @@ GameObject:
   - component: {fileID: 3974971833492697266}
   - component: {fileID: 1385737432034414241}
   - component: {fileID: 4931619193768824795}
-  - component: {fileID: 7953645510832400280}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_broken_3 (1)
   m_TagString: Untagged
@@ -1668,27 +1440,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &7953645510832400280
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 922132996812713835}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.8120552, y: 0.056193035, z: 0.9999999}
-  m_Center: {x: -0.40602753, y: 0.028096484, z: 0.49999994}
 --- !u!1 &947868315657006514
 GameObject:
   m_ObjectHideFlags: 0
@@ -1700,7 +1451,6 @@ GameObject:
   - component: {fileID: 1310380707556329501}
   - component: {fileID: 2554813497337681014}
   - component: {fileID: 7614435970847260516}
-  - component: {fileID: 2312555421885756599}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_8 (3)
   m_TagString: Untagged
@@ -1780,27 +1530,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &2312555421885756599
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 947868315657006514}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 0.11667909, z: 1}
-  m_Center: {x: -0.5, y: 0.058339544, z: 0.5}
 --- !u!1 &959918460831681192
 GameObject:
   m_ObjectHideFlags: 0
@@ -1812,7 +1541,6 @@ GameObject:
   - component: {fileID: 7693012683033505550}
   - component: {fileID: 4576492363207449052}
   - component: {fileID: 7559285310962359037}
-  - component: {fileID: 3146876508977435987}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_broken_2 (1)
   m_TagString: Untagged
@@ -1892,28 +1620,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &3146876508977435987
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 959918460831681192}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: -3694851809820135826, guid: 19fc3bd5359ed5147b1643828a34edda, type: 3}
 --- !u!1 &1047298125851733166
 GameObject:
   m_ObjectHideFlags: 0
@@ -2015,7 +1721,6 @@ GameObject:
   - component: {fileID: 3242361965553593310}
   - component: {fileID: 8925662313969982764}
   - component: {fileID: 5518912943168261507}
-  - component: {fileID: 6528574141191384341}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_6
   m_TagString: Untagged
@@ -2095,27 +1800,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &6528574141191384341
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1171395171778458091}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 0.092992745, z: 1.0000002}
-  m_Center: {x: -0.5, y: 0.046496343, z: 0.5000001}
 --- !u!1 &1239891009209410615
 GameObject:
   m_ObjectHideFlags: 0
@@ -2127,7 +1811,6 @@ GameObject:
   - component: {fileID: 6360316647240852891}
   - component: {fileID: 7465573442522389157}
   - component: {fileID: 2706211587095739278}
-  - component: {fileID: 1196846911838800744}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_8 (6)
   m_TagString: Untagged
@@ -2207,27 +1890,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &1196846911838800744
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1239891009209410615}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 0.11667909, z: 1}
-  m_Center: {x: -0.5, y: 0.058339544, z: 0.5}
 --- !u!1 &1288657134289019230
 GameObject:
   m_ObjectHideFlags: 0
@@ -2239,7 +1901,6 @@ GameObject:
   - component: {fileID: 7567948369973330267}
   - component: {fileID: 2194797691025220958}
   - component: {fileID: 5240419824888347973}
-  - component: {fileID: 7909571171008460001}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_6
   m_TagString: Untagged
@@ -2319,27 +1980,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &7909571171008460001
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1288657134289019230}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 0.092992745, z: 1.0000002}
-  m_Center: {x: -0.5, y: 0.046496343, z: 0.5000001}
 --- !u!1 &1350873977513927365
 GameObject:
   m_ObjectHideFlags: 0
@@ -2441,7 +2081,6 @@ GameObject:
   - component: {fileID: 7924897720184098953}
   - component: {fileID: 8011042637185627350}
   - component: {fileID: 4005652909326109306}
-  - component: {fileID: 3010230614641196705}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_8 (7)
   m_TagString: Untagged
@@ -2521,27 +2160,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &3010230614641196705
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1359310098231411332}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 0.11667909, z: 1}
-  m_Center: {x: -0.5, y: 0.058339544, z: 0.5}
 --- !u!1 &1403531241090390122
 GameObject:
   m_ObjectHideFlags: 0
@@ -2733,7 +2351,6 @@ GameObject:
   - component: {fileID: 7549788213264615132}
   - component: {fileID: 7393952006637237855}
   - component: {fileID: 7384554865458575}
-  - component: {fileID: 3119813021027226257}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_8 (2)
   m_TagString: Untagged
@@ -2813,27 +2430,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &3119813021027226257
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1507268291183992775}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 0.11667909, z: 1}
-  m_Center: {x: -0.5, y: 0.058339544, z: 0.5}
 --- !u!1 &1575649498558316906
 GameObject:
   m_ObjectHideFlags: 0
@@ -2935,7 +2531,6 @@ GameObject:
   - component: {fileID: 6318068250353207811}
   - component: {fileID: 1246946182548897190}
   - component: {fileID: 7862255419371479575}
-  - component: {fileID: 4359056588306732795}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_8 (7)
   m_TagString: Untagged
@@ -3015,27 +2610,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &4359056588306732795
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1606924318464334212}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 0.11667909, z: 1}
-  m_Center: {x: -0.5, y: 0.058339544, z: 0.5}
 --- !u!1 &1608128837446282146
 GameObject:
   m_ObjectHideFlags: 0
@@ -3047,7 +2621,6 @@ GameObject:
   - component: {fileID: 1861125486261919731}
   - component: {fileID: 8942652705154255451}
   - component: {fileID: 7589798717089338790}
-  - component: {fileID: 2961823029203673136}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_broken_2 (3)
   m_TagString: Untagged
@@ -3127,28 +2700,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &2961823029203673136
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1608128837446282146}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: -3694851809820135826, guid: 19fc3bd5359ed5147b1643828a34edda, type: 3}
 --- !u!1 &1642593890538272391
 GameObject:
   m_ObjectHideFlags: 0
@@ -3160,7 +2711,6 @@ GameObject:
   - component: {fileID: 9135105356612977454}
   - component: {fileID: 5583603314304745479}
   - component: {fileID: 6778078623457479751}
-  - component: {fileID: 612788909539523947}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_8
   m_TagString: Untagged
@@ -3240,27 +2790,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &612788909539523947
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1642593890538272391}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 0.11667909, z: 1}
-  m_Center: {x: -0.5, y: 0.058339544, z: 0.5}
 --- !u!1 &1660900895906228890
 GameObject:
   m_ObjectHideFlags: 0
@@ -3305,7 +2834,6 @@ GameObject:
   - component: {fileID: 6024548525299650415}
   - component: {fileID: 6013177847380428203}
   - component: {fileID: 1459012454959430727}
-  - component: {fileID: 4019922870858501954}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_broken_5 (3)
   m_TagString: Untagged
@@ -3385,28 +2913,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &4019922870858501954
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1676259887646749072}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 2856705889963441908, guid: 2d94c9baa82181f43be7985c8250a286, type: 3}
 --- !u!1 &1691937612922570868
 GameObject:
   m_ObjectHideFlags: 0
@@ -3418,7 +2924,6 @@ GameObject:
   - component: {fileID: 683233439475454318}
   - component: {fileID: 4243031684686325014}
   - component: {fileID: 7166824547273703637}
-  - component: {fileID: 7183430025427418873}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_4
   m_TagString: Untagged
@@ -3498,28 +3003,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &7183430025427418873
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1691937612922570868}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: -9117520818990435331, guid: 06df2f71c25e6f64f8b7ae94228e8c86, type: 3}
 --- !u!1 &1745116785602100987
 GameObject:
   m_ObjectHideFlags: 0
@@ -3621,7 +3104,6 @@ GameObject:
   - component: {fileID: 6628351466323817405}
   - component: {fileID: 6787461067047307783}
   - component: {fileID: 4210884324555188819}
-  - component: {fileID: 8250769572806972755}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_broken_1
   m_TagString: Untagged
@@ -3701,27 +3183,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &8250769572806972755
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1810574687333381003}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.77761436, y: 0.092992745, z: 1}
-  m_Center: {x: -0.38880718, y: 0.046496343, z: 0.5}
 --- !u!1 &1860806382543985090
 GameObject:
   m_ObjectHideFlags: 0
@@ -3733,7 +3194,6 @@ GameObject:
   - component: {fileID: 8897361570025758966}
   - component: {fileID: 2668605702596401557}
   - component: {fileID: 5882328203230576583}
-  - component: {fileID: 6840835823897163273}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_5 (3)
   m_TagString: Untagged
@@ -3813,28 +3273,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &6840835823897163273
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1860806382543985090}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 3297873092199725415, guid: 94b224876f0a6a647b6fce683f98da35, type: 3}
 --- !u!1 &1877273516738884947
 GameObject:
   m_ObjectHideFlags: 0
@@ -3846,7 +3284,6 @@ GameObject:
   - component: {fileID: 5611244324718638429}
   - component: {fileID: 2587690403978098997}
   - component: {fileID: 7025957964016081915}
-  - component: {fileID: 7319691004178353465}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_broken_5 (1)
   m_TagString: Untagged
@@ -3926,28 +3363,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &7319691004178353465
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1877273516738884947}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 2856705889963441908, guid: 2d94c9baa82181f43be7985c8250a286, type: 3}
 --- !u!1 &1922485738016741013
 GameObject:
   m_ObjectHideFlags: 0
@@ -3999,7 +3414,6 @@ GameObject:
   - component: {fileID: 1123546558886349958}
   - component: {fileID: 7335264733235719481}
   - component: {fileID: 562706552132002403}
-  - component: {fileID: 4401892919280457271}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_6 (1)
   m_TagString: Untagged
@@ -4079,27 +3493,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &4401892919280457271
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1986291184694893099}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 0.092992745, z: 1.0000002}
-  m_Center: {x: -0.5, y: 0.046496343, z: 0.5000001}
 --- !u!1 &2091314457882148553
 GameObject:
   m_ObjectHideFlags: 0
@@ -4201,7 +3594,6 @@ GameObject:
   - component: {fileID: 2257566196261236122}
   - component: {fileID: 5473512476021340920}
   - component: {fileID: 7701326712112190316}
-  - component: {fileID: 4262915652397808340}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_8 (6)
   m_TagString: Untagged
@@ -4281,27 +3673,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &4262915652397808340
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2092175422427235068}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 0.11667909, z: 1}
-  m_Center: {x: -0.5, y: 0.058339544, z: 0.5}
 --- !u!1 &2255513734153512906
 GameObject:
   m_ObjectHideFlags: 0
@@ -4493,7 +3864,6 @@ GameObject:
   - component: {fileID: 571102651222398557}
   - component: {fileID: 9142532192076949854}
   - component: {fileID: 606843416461232241}
-  - component: {fileID: 4037539282287865299}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_8 (3)
   m_TagString: Untagged
@@ -4573,27 +3943,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &4037539282287865299
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2519638210310296969}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 0.11667909, z: 1}
-  m_Center: {x: -0.5, y: 0.058339544, z: 0.5}
 --- !u!1 &2568847025915480512
 GameObject:
   m_ObjectHideFlags: 0
@@ -4814,7 +4163,6 @@ GameObject:
   - component: {fileID: 6866037739690363142}
   - component: {fileID: 7544957966037316900}
   - component: {fileID: 374125373715538706}
-  - component: {fileID: 5848228863409720190}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_broken_3
   m_TagString: Untagged
@@ -4894,27 +4242,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &5848228863409720190
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2887095389863961781}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.8120552, y: 0.056193035, z: 0.9999999}
-  m_Center: {x: -0.40602753, y: 0.028096484, z: 0.49999994}
 --- !u!1 &3057347339633170478
 GameObject:
   m_ObjectHideFlags: 0
@@ -5067,7 +4394,6 @@ GameObject:
   - component: {fileID: 9153351691951751769}
   - component: {fileID: 3417930455361566787}
   - component: {fileID: 2663748385653724230}
-  - component: {fileID: 8192864852982062072}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_broken_8
   m_TagString: Untagged
@@ -5147,28 +4473,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &8192864852982062072
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3134638324110218030}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: -5183559269454325689, guid: 31052da31feea3a43ac0f01e609dd187, type: 3}
 --- !u!1 &3136044594546126518
 GameObject:
   m_ObjectHideFlags: 0
@@ -5270,7 +4574,6 @@ GameObject:
   - component: {fileID: 7316659886614959804}
   - component: {fileID: 1102972299501554231}
   - component: {fileID: 5096520080763517279}
-  - component: {fileID: 3991260758119418154}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_broken_5 (3)
   m_TagString: Untagged
@@ -5350,28 +4653,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &3991260758119418154
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3138183251981674423}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 2856705889963441908, guid: 2d94c9baa82181f43be7985c8250a286, type: 3}
 --- !u!1 &3264506527082336315
 GameObject:
   m_ObjectHideFlags: 0
@@ -5473,7 +4754,6 @@ GameObject:
   - component: {fileID: 2712439900315343815}
   - component: {fileID: 2653040046309262658}
   - component: {fileID: 2210953147309533277}
-  - component: {fileID: 5726905376203038432}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_broken_3
   m_TagString: Untagged
@@ -5553,27 +4833,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &5726905376203038432
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3335690638519421157}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.8120552, y: 0.056193035, z: 0.9999999}
-  m_Center: {x: -0.40602753, y: 0.028096484, z: 0.49999994}
 --- !u!1 &3388352266326537147
 GameObject:
   m_ObjectHideFlags: 0
@@ -5675,7 +4934,6 @@ GameObject:
   - component: {fileID: 6672393466653835549}
   - component: {fileID: 638982344287766434}
   - component: {fileID: 1575565054609383774}
-  - component: {fileID: 3520883824508684609}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_broken_6
   m_TagString: Untagged
@@ -5755,28 +5013,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &3520883824508684609
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3505699350473241261}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: -9152841625248946642, guid: 29fa2da32ea9f534bb2c4b2044054bcd, type: 3}
 --- !u!1 &3506702231211827004
 GameObject:
   m_ObjectHideFlags: 0
@@ -5786,7 +5022,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6140154049808982649}
-  - component: {fileID: 8014760570789174818}
   - component: {fileID: 705979555613738560}
   m_Layer: 10
   m_Name: Floor_A (1)
@@ -5812,18 +5047,6 @@ Transform:
   - {fileID: 3948435089757919269}
   m_Father: {fileID: 6231457740977123573}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8014760570789174818
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3506702231211827004}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 63877a618332132448f8b06de14bf4f3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: '::'
 --- !u!114 &705979555613738560
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5858,7 +5081,6 @@ GameObject:
   - component: {fileID: 8383258123492204270}
   - component: {fileID: 3931112128038035566}
   - component: {fileID: 5039704296848427109}
-  - component: {fileID: 327714605089700573}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_broken_5 (2)
   m_TagString: Untagged
@@ -5938,28 +5160,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &327714605089700573
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3564885975452704703}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 2856705889963441908, guid: 2d94c9baa82181f43be7985c8250a286, type: 3}
 --- !u!1 &3585224884462687359
 GameObject:
   m_ObjectHideFlags: 0
@@ -6126,7 +5326,6 @@ GameObject:
   - component: {fileID: 8163388439576549486}
   - component: {fileID: 6861599283980238162}
   - component: {fileID: 7541616924823879473}
-  - component: {fileID: 6448866880673305042}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_5
   m_TagString: Untagged
@@ -6206,28 +5405,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &6448866880673305042
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4045902409191394103}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 3297873092199725415, guid: 94b224876f0a6a647b6fce683f98da35, type: 3}
 --- !u!1 &4315508120178672197
 GameObject:
   m_ObjectHideFlags: 0
@@ -6239,7 +5416,6 @@ GameObject:
   - component: {fileID: 7249325758213387822}
   - component: {fileID: 8268022792955169940}
   - component: {fileID: 1332942210900152071}
-  - component: {fileID: 8621211556386281975}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_8
   m_TagString: Untagged
@@ -6319,27 +5495,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &8621211556386281975
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4315508120178672197}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 0.11667909, z: 1}
-  m_Center: {x: -0.5, y: 0.058339544, z: 0.5}
 --- !u!1 &4327371491350169297
 GameObject:
   m_ObjectHideFlags: 0
@@ -6621,7 +5776,6 @@ GameObject:
   - component: {fileID: 5002508491834153096}
   - component: {fileID: 2393914186348940147}
   - component: {fileID: 8792664411041735778}
-  - component: {fileID: 2819379575379289613}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_6 (1)
   m_TagString: Untagged
@@ -6701,27 +5855,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &2819379575379289613
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4660402574240700022}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 0.092992745, z: 1.0000002}
-  m_Center: {x: -0.5, y: 0.046496343, z: 0.5000001}
 --- !u!1 &4673847544919854197
 GameObject:
   m_ObjectHideFlags: 0
@@ -6733,7 +5866,6 @@ GameObject:
   - component: {fileID: 4568552733341968962}
   - component: {fileID: 6826035018056067368}
   - component: {fileID: 5935825744907310308}
-  - component: {fileID: 4969476391048397677}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_5 (2)
   m_TagString: Untagged
@@ -6813,28 +5945,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &4969476391048397677
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4673847544919854197}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 3297873092199725415, guid: 94b224876f0a6a647b6fce683f98da35, type: 3}
 --- !u!1 &4678469997897504396
 GameObject:
   m_ObjectHideFlags: 0
@@ -6846,7 +5956,6 @@ GameObject:
   - component: {fileID: 4634913336371948735}
   - component: {fileID: 5292137846619924545}
   - component: {fileID: 8538942982696496989}
-  - component: {fileID: 745705063269555111}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_broken_2 (2)
   m_TagString: Untagged
@@ -6926,28 +6035,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &745705063269555111
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4678469997897504396}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: -3694851809820135826, guid: 19fc3bd5359ed5147b1643828a34edda, type: 3}
 --- !u!1 &4762790301289231560
 GameObject:
   m_ObjectHideFlags: 0
@@ -6959,7 +6046,6 @@ GameObject:
   - component: {fileID: 5942479090621354246}
   - component: {fileID: 1554924071063316026}
   - component: {fileID: 2386314744040056217}
-  - component: {fileID: 7237672897887929509}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_5 (2)
   m_TagString: Untagged
@@ -7039,28 +6125,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &7237672897887929509
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4762790301289231560}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 3297873092199725415, guid: 94b224876f0a6a647b6fce683f98da35, type: 3}
 --- !u!1 &4811946797822062601
 GameObject:
   m_ObjectHideFlags: 0
@@ -7070,7 +6134,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2888237243644793495}
-  - component: {fileID: 1116562655399541071}
   - component: {fileID: 4339231928098547080}
   m_Layer: 10
   m_Name: Floor_A
@@ -7096,18 +6159,6 @@ Transform:
   - {fileID: 7677317256380927943}
   m_Father: {fileID: 6231457740977123573}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1116562655399541071
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4811946797822062601}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 63877a618332132448f8b06de14bf4f3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: '::'
 --- !u!114 &4339231928098547080
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7142,7 +6193,6 @@ GameObject:
   - component: {fileID: 6854565967578066004}
   - component: {fileID: 8244744480986246941}
   - component: {fileID: 1768300490726409956}
-  - component: {fileID: 5052489452946896762}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_broken_2 (2)
   m_TagString: Untagged
@@ -7222,28 +6272,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &5052489452946896762
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4818929018808276602}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: -3694851809820135826, guid: 19fc3bd5359ed5147b1643828a34edda, type: 3}
 --- !u!1 &4877517371472564491
 GameObject:
   m_ObjectHideFlags: 0
@@ -7329,7 +6357,6 @@ GameObject:
   - component: {fileID: 8076430237626664581}
   - component: {fileID: 3998763033356194640}
   - component: {fileID: 4111787530037554032}
-  - component: {fileID: 7732710692834572046}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_broken_5 (2)
   m_TagString: Untagged
@@ -7409,28 +6436,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &7732710692834572046
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5019972546688160196}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 2856705889963441908, guid: 2d94c9baa82181f43be7985c8250a286, type: 3}
 --- !u!1 &5121153469318906135
 GameObject:
   m_ObjectHideFlags: 0
@@ -7442,7 +6447,6 @@ GameObject:
   - component: {fileID: 4869874732811495714}
   - component: {fileID: 5032679133088665941}
   - component: {fileID: 3824559923547539269}
-  - component: {fileID: 5280538461146776133}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_8 (2)
   m_TagString: Untagged
@@ -7522,27 +6526,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &5280538461146776133
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5121153469318906135}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 0.11667909, z: 1}
-  m_Center: {x: -0.5, y: 0.058339544, z: 0.5}
 --- !u!1 &5156093682108300500
 GameObject:
   m_ObjectHideFlags: 0
@@ -7554,7 +6537,6 @@ GameObject:
   - component: {fileID: 7387818059250655225}
   - component: {fileID: 6458087992160366324}
   - component: {fileID: 3229672251252288953}
-  - component: {fileID: 2921025437223387715}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_8 (9)
   m_TagString: Untagged
@@ -7634,27 +6616,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &2921025437223387715
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5156093682108300500}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 0.11667909, z: 1}
-  m_Center: {x: -0.5, y: 0.058339544, z: 0.5}
 --- !u!1 &5187771627143132888
 GameObject:
   m_ObjectHideFlags: 0
@@ -7666,7 +6627,6 @@ GameObject:
   - component: {fileID: 7296563811506044026}
   - component: {fileID: 239764308064106330}
   - component: {fileID: 6528103583346206426}
-  - component: {fileID: 4288222263590400992}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_6 (4)
   m_TagString: Untagged
@@ -7746,27 +6706,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &4288222263590400992
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5187771627143132888}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 0.092992745, z: 1.0000002}
-  m_Center: {x: -0.5, y: 0.046496343, z: 0.5000001}
 --- !u!1 &5533197009799966317
 GameObject:
   m_ObjectHideFlags: 0
@@ -7868,7 +6807,6 @@ GameObject:
   - component: {fileID: 3373306535523226255}
   - component: {fileID: 2409603212820605381}
   - component: {fileID: 5805484252918976604}
-  - component: {fileID: 8071033260290957304}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_broken_6 (1)
   m_TagString: Untagged
@@ -7948,28 +6886,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &8071033260290957304
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5634261057407799054}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: -9152841625248946642, guid: 29fa2da32ea9f534bb2c4b2044054bcd, type: 3}
 --- !u!1 &5681349817072695296
 GameObject:
   m_ObjectHideFlags: 0
@@ -8018,7 +6934,6 @@ GameObject:
   - component: {fileID: 1746517445803124739}
   - component: {fileID: 4734512349957948991}
   - component: {fileID: 3220260737822806449}
-  - component: {fileID: 3578379713493032215}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_6 (2)
   m_TagString: Untagged
@@ -8098,27 +7013,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &3578379713493032215
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5701619341136512232}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 0.092992745, z: 1.0000002}
-  m_Center: {x: -0.5, y: 0.046496343, z: 0.5000001}
 --- !u!1 &5801479774102939488
 GameObject:
   m_ObjectHideFlags: 0
@@ -8130,7 +7024,6 @@ GameObject:
   - component: {fileID: 6767273835078396210}
   - component: {fileID: 727856411902608456}
   - component: {fileID: 5938338723504388573}
-  - component: {fileID: 9105634827184586086}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_broken_5
   m_TagString: Untagged
@@ -8210,28 +7103,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &9105634827184586086
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5801479774102939488}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 2856705889963441908, guid: 2d94c9baa82181f43be7985c8250a286, type: 3}
 --- !u!1 &5875791670617065381
 GameObject:
   m_ObjectHideFlags: 0
@@ -8243,7 +7114,6 @@ GameObject:
   - component: {fileID: 8589222513878899054}
   - component: {fileID: 7891349686981603264}
   - component: {fileID: 419713548699445122}
-  - component: {fileID: 4715395703699162921}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_8 (5)
   m_TagString: Untagged
@@ -8323,27 +7193,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &4715395703699162921
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5875791670617065381}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 0.11667909, z: 1}
-  m_Center: {x: -0.5, y: 0.058339544, z: 0.5}
 --- !u!1 &5953172201704828964
 GameObject:
   m_ObjectHideFlags: 0
@@ -8355,7 +7204,6 @@ GameObject:
   - component: {fileID: 2108329053007547738}
   - component: {fileID: 5751722342163118257}
   - component: {fileID: 311576685614522581}
-  - component: {fileID: 2059057220303803506}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_6 (4)
   m_TagString: Untagged
@@ -8435,27 +7283,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &2059057220303803506
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5953172201704828964}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 0.092992745, z: 1.0000002}
-  m_Center: {x: -0.5, y: 0.046496343, z: 0.5000001}
 --- !u!1 &5976948187294068389
 GameObject:
   m_ObjectHideFlags: 0
@@ -8467,7 +7294,6 @@ GameObject:
   - component: {fileID: 788705840475557851}
   - component: {fileID: 4392255515078777571}
   - component: {fileID: 3545362053356098922}
-  - component: {fileID: 4752299430556731320}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_broken_1
   m_TagString: Untagged
@@ -8547,27 +7373,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &4752299430556731320
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5976948187294068389}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.77761436, y: 0.092992745, z: 1}
-  m_Center: {x: -0.38880718, y: 0.046496343, z: 0.5}
 --- !u!1 &6129172100775994388
 GameObject:
   m_ObjectHideFlags: 0
@@ -8669,7 +7474,6 @@ GameObject:
   - component: {fileID: 2907830340946582924}
   - component: {fileID: 1860717333949167630}
   - component: {fileID: 8707296539806171066}
-  - component: {fileID: 6105081161096293289}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_broken_2
   m_TagString: Untagged
@@ -8749,28 +7553,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &6105081161096293289
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6130773090969861796}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: -3694851809820135826, guid: 19fc3bd5359ed5147b1643828a34edda, type: 3}
 --- !u!1 &6298610119733973427
 GameObject:
   m_ObjectHideFlags: 0
@@ -8925,7 +7707,6 @@ GameObject:
   - component: {fileID: 5949135812077626274}
   - component: {fileID: 4563201970046688783}
   - component: {fileID: 6972495551588271178}
-  - component: {fileID: 548185010124698374}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_broken_5 (1)
   m_TagString: Untagged
@@ -9005,28 +7786,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &548185010124698374
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6364994711290207651}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 2856705889963441908, guid: 2d94c9baa82181f43be7985c8250a286, type: 3}
 --- !u!1 &6425270118324624277
 GameObject:
   m_ObjectHideFlags: 0
@@ -9128,7 +7887,6 @@ GameObject:
   - component: {fileID: 2340968577609975896}
   - component: {fileID: 6281793253870421265}
   - component: {fileID: 6848449268503252578}
-  - component: {fileID: 808379883922157954}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_6 (3)
   m_TagString: Untagged
@@ -9208,27 +7966,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &808379883922157954
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6514435538849135099}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 0.092992745, z: 1.0000002}
-  m_Center: {x: -0.5, y: 0.046496343, z: 0.5000001}
 --- !u!1 &6519847052229182074
 GameObject:
   m_ObjectHideFlags: 0
@@ -9240,7 +7977,6 @@ GameObject:
   - component: {fileID: 1112041817892061028}
   - component: {fileID: 4116113630561236610}
   - component: {fileID: 939075106975757263}
-  - component: {fileID: 6562681749553980225}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_broken_5
   m_TagString: Untagged
@@ -9320,28 +8056,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &6562681749553980225
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6519847052229182074}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 2856705889963441908, guid: 2d94c9baa82181f43be7985c8250a286, type: 3}
 --- !u!1 &6548500606453496806
 GameObject:
   m_ObjectHideFlags: 0
@@ -9353,7 +8067,6 @@ GameObject:
   - component: {fileID: 1765890192190508524}
   - component: {fileID: 5509539956754680581}
   - component: {fileID: 5414906225221684192}
-  - component: {fileID: 6701289913963154450}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_8 (9)
   m_TagString: Untagged
@@ -9433,27 +8146,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &6701289913963154450
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6548500606453496806}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 0.11667909, z: 1}
-  m_Center: {x: -0.5, y: 0.058339544, z: 0.5}
 --- !u!1 &6580764272740607202
 GameObject:
   m_ObjectHideFlags: 0
@@ -9465,7 +8157,6 @@ GameObject:
   - component: {fileID: 1828733923549099738}
   - component: {fileID: 4205237415450795195}
   - component: {fileID: 3918395661795454824}
-  - component: {fileID: 6642963008184111377}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_8 (8)
   m_TagString: Untagged
@@ -9545,27 +8236,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &6642963008184111377
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6580764272740607202}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 0.11667909, z: 1}
-  m_Center: {x: -0.5, y: 0.058339544, z: 0.5}
 --- !u!1 &6719299293945186427
 GameObject:
   m_ObjectHideFlags: 0
@@ -9667,7 +8337,6 @@ GameObject:
   - component: {fileID: 1751725077655396458}
   - component: {fileID: 8515979073420831919}
   - component: {fileID: 7080202013195455077}
-  - component: {fileID: 7927965308601274058}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_8 (1)
   m_TagString: Untagged
@@ -9747,27 +8416,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &7927965308601274058
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6831856401850199669}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 0.11667909, z: 1}
-  m_Center: {x: -0.5, y: 0.058339544, z: 0.5}
 --- !u!1 &7041427276699970697
 GameObject:
   m_ObjectHideFlags: 0
@@ -9779,7 +8427,6 @@ GameObject:
   - component: {fileID: 1401074214310557491}
   - component: {fileID: 4579648741633346520}
   - component: {fileID: 2746162700937537202}
-  - component: {fileID: 8286011304027784941}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_8 (5)
   m_TagString: Untagged
@@ -9859,27 +8506,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &8286011304027784941
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7041427276699970697}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 0.11667909, z: 1}
-  m_Center: {x: -0.5, y: 0.058339544, z: 0.5}
 --- !u!1 &7119749068116517285
 GameObject:
   m_ObjectHideFlags: 0
@@ -9981,7 +8607,6 @@ GameObject:
   - component: {fileID: 1638854812095380331}
   - component: {fileID: 1644756271979806290}
   - component: {fileID: 1199718341955934501}
-  - component: {fileID: 5645943626748120423}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_5
   m_TagString: Untagged
@@ -10061,28 +8686,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &5645943626748120423
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7207567030272573107}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 3297873092199725415, guid: 94b224876f0a6a647b6fce683f98da35, type: 3}
 --- !u!1 &7364825952294844951
 GameObject:
   m_ObjectHideFlags: 0
@@ -10184,7 +8787,6 @@ GameObject:
   - component: {fileID: 7747232052450461146}
   - component: {fileID: 2467489042421533206}
   - component: {fileID: 168315146547320446}
-  - component: {fileID: 4065295414207241538}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_broken_8
   m_TagString: Untagged
@@ -10264,28 +8866,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &4065295414207241538
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7480895657768237742}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: -5183559269454325689, guid: 31052da31feea3a43ac0f01e609dd187, type: 3}
 --- !u!1 &7501997323736369520
 GameObject:
   m_ObjectHideFlags: 0
@@ -10551,7 +9131,6 @@ GameObject:
   - component: {fileID: 7632752472927478225}
   - component: {fileID: 6624906422071432049}
   - component: {fileID: 7743991946752247346}
-  - component: {fileID: 3577446322786203431}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_6 (2)
   m_TagString: Untagged
@@ -10631,27 +9210,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &3577446322786203431
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7612675814433124019}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 0.092992745, z: 1.0000002}
-  m_Center: {x: -0.5, y: 0.046496343, z: 0.5000001}
 --- !u!1 &7619407708701311722
 GameObject:
   m_ObjectHideFlags: 0
@@ -10697,7 +9255,6 @@ GameObject:
   - component: {fileID: 2745511519545429654}
   - component: {fileID: 3700539815734707496}
   - component: {fileID: 6684414091529134339}
-  - component: {fileID: 369700149885698586}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_8 (4)
   m_TagString: Untagged
@@ -10777,27 +9334,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &369700149885698586
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7688511592062001955}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 0.11667909, z: 1}
-  m_Center: {x: -0.5, y: 0.058339544, z: 0.5}
 --- !u!1 &7721143345242042019
 GameObject:
   m_ObjectHideFlags: 0
@@ -10989,7 +9525,6 @@ GameObject:
   - component: {fileID: 7721980575480068977}
   - component: {fileID: 4123474268279153163}
   - component: {fileID: 6723966479486764043}
-  - component: {fileID: 2743296797864916308}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_broken_1 (1)
   m_TagString: Untagged
@@ -11069,27 +9604,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &2743296797864916308
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7818200594853582628}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.77761436, y: 0.092992745, z: 1}
-  m_Center: {x: -0.38880718, y: 0.046496343, z: 0.5}
 --- !u!1 &7937267479878914611
 GameObject:
   m_ObjectHideFlags: 0
@@ -11101,7 +9615,6 @@ GameObject:
   - component: {fileID: 7237787058158996853}
   - component: {fileID: 4122769429940156715}
   - component: {fileID: 7543564068127387851}
-  - component: {fileID: 7796726283852136691}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_broken_6 (1)
   m_TagString: Untagged
@@ -11181,28 +9694,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &7796726283852136691
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7937267479878914611}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: -9152841625248946642, guid: 29fa2da32ea9f534bb2c4b2044054bcd, type: 3}
 --- !u!1 &7940014798979577634
 GameObject:
   m_ObjectHideFlags: 0
@@ -11254,7 +9745,6 @@ GameObject:
   - component: {fileID: 2015631490959553961}
   - component: {fileID: 3885862135516260107}
   - component: {fileID: 8467776303173203914}
-  - component: {fileID: 2590051529566528366}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_broken_4
   m_TagString: Untagged
@@ -11334,28 +9824,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &2590051529566528366
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8013688622384162173}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: -2247645064512130413, guid: 7d5fc87d7a6da184c8af21c53ca2a8da, type: 3}
 --- !u!1 &8043254344842831586
 GameObject:
   m_ObjectHideFlags: 0
@@ -11637,7 +10105,6 @@ GameObject:
   - component: {fileID: 2244625388950379139}
   - component: {fileID: 4928760826019388081}
   - component: {fileID: 2460523209611063255}
-  - component: {fileID: 7577224330992173157}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_broken_2
   m_TagString: Untagged
@@ -11717,28 +10184,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &7577224330992173157
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8152909756075124489}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: -3694851809820135826, guid: 19fc3bd5359ed5147b1643828a34edda, type: 3}
 --- !u!1 &8223524540932770756
 GameObject:
   m_ObjectHideFlags: 0
@@ -11781,7 +10226,6 @@ GameObject:
   - component: {fileID: 1665607122853496240}
   - component: {fileID: 6361586329653839956}
   - component: {fileID: 3961010900906533767}
-  - component: {fileID: 901859477908588678}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_broken_6
   m_TagString: Untagged
@@ -11861,28 +10305,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &901859477908588678
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8424600579648375569}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: -9152841625248946642, guid: 29fa2da32ea9f534bb2c4b2044054bcd, type: 3}
 --- !u!1 &8726126666301172505
 GameObject:
   m_ObjectHideFlags: 0
@@ -11984,7 +10406,6 @@ GameObject:
   - component: {fileID: 2327511203135378449}
   - component: {fileID: 4037563537432322042}
   - component: {fileID: 8172535883243814133}
-  - component: {fileID: 28842848562377043}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_8 (8)
   m_TagString: Untagged
@@ -12064,27 +10485,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &28842848562377043
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8757533227741495591}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 0.11667909, z: 1}
-  m_Center: {x: -0.5, y: 0.058339544, z: 0.5}
 --- !u!1 &8767796351492155821
 GameObject:
   m_ObjectHideFlags: 0
@@ -12186,7 +10586,6 @@ GameObject:
   - component: {fileID: 5932718495865073502}
   - component: {fileID: 104804941374049261}
   - component: {fileID: 1000661539807402275}
-  - component: {fileID: 5185404753019955222}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_broken_1 (1)
   m_TagString: Untagged
@@ -12266,27 +10665,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &5185404753019955222
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8939613065865466520}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.77761436, y: 0.092992745, z: 1}
-  m_Center: {x: -0.38880718, y: 0.046496343, z: 0.5}
 --- !u!1 &9161061162341218799
 GameObject:
   m_ObjectHideFlags: 0
@@ -12298,7 +10676,6 @@ GameObject:
   - component: {fileID: 9188166930172673122}
   - component: {fileID: 3720749379991318659}
   - component: {fileID: 7827281435810851556}
-  - component: {fileID: 7424843026879497262}
   m_Layer: 0
   m_Name: P_MOD_Floor_01_O_singlestone_6 (3)
   m_TagString: Untagged
@@ -12378,24 +10755,3 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &7424843026879497262
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9161061162341218799}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 0.092992745, z: 1.0000002}
-  m_Center: {x: -0.5, y: 0.046496343, z: 0.5000001}

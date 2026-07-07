@@ -2,12 +2,24 @@ using UnityEngine;
 
 public class FloatingDamageManager : MonoBehaviour
 {
-    public static FloatingDamageManager Instance;
+    public static FloatingDamageManager Instance { get; private set; }
 
     [SerializeField] private GameObject floatingTextPrefab;
 
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetStatic()
+    {
+        Instance = null;
+    }
+
     private void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         Instance = this;
     }
 
@@ -18,18 +30,13 @@ public class FloatingDamageManager : MonoBehaviour
 
         Vector3 spawnPosition = position + Vector3.up * 1.5f;
 
-        GameObject obj = Instantiate(
+        FloatingDamageText text = PoolManager.Instance.Get<FloatingDamageText>(
             floatingTextPrefab,
             spawnPosition,
             Quaternion.identity
         );
 
-        FloatingDamageText text =
-            obj.GetComponent<FloatingDamageText>();
-
         if (text != null)
-        {
             text.Initialize(damage, isCritical);
-        }
     }
 }

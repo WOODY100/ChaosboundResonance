@@ -24,8 +24,11 @@ public class HUDLevelUI : MonoBehaviour
 
     private void UpdateLevelText(int level)
     {
+        if (levelText == null)
+            return;
+
+        levelText.SetText("{0}", level);
         StartCoroutine(LevelPulse());
-        levelText.text = $"{level}";
     }
 
     private IEnumerator LevelPulse()

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
-public class ArcBoltProjectile : MonoBehaviour, IProjectile
+public class ArcBoltProjectile : PooledBehaviour, IProjectile
 {
     [SerializeField] private GameObject impactVFX;
 
@@ -16,53 +16,73 @@ public class ArcBoltProjectile : MonoBehaviour, IProjectile
     private Rigidbody rb;
 
     private int remainingPenetration;
+    private bool initialized;
+    private bool hasImpacted;
+    private float lifetimeTimer;
 
-    private bool initialized = false;
-    private bool hasImpacted = false;
-
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         rb = GetComponent<Rigidbody>();
     }
 
-    // =====================================================
-    // INITIALIZATION
-    // =====================================================
+    protected override void ResetPooledState()
+    {
+        initialized = false;
+        hasImpacted = false;
+        lifetimeTimer = 0f;
+        remainingPenetration = 0;
+        skill = null;
+        playerStats = null;
+
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+        }
+    }
+
+    private void Update()
+    {
+        if (!initialized)
+            return;
+
+        lifetimeTimer += Time.deltaTime;
+
+        if (lifetimeTimer >= maxLifetime)
+            ReturnToPool();
+    }
+
     public void Initialize(
         RuntimeSkill runtimeSkill,
         Vector3 direction,
         PlayerStats ownerStats)
     {
+        ResetPooledState();
+
         skill = runtimeSkill;
         playerStats = ownerStats;
 
         float attackSpeedMultiplier = 1f;
 
         if (skill.Definition.ScalesWithAttackSpeed && playerStats != null)
-        {
             attackSpeedMultiplier = playerStats.FinalAttackSpeed;
-        }
 
         float finalSpeed = baseSpeed * attackSpeedMultiplier;
 
         rb.linearVelocity = direction * finalSpeed;
-
         remainingPenetration = skill.Stats.PenetrationCount;
 
         initialized = true;
-
-        Destroy(gameObject, maxLifetime);
     }
 
-    // =====================================================
-    // COLLISION
-    // =====================================================
     private void OnTriggerEnter(Collider other)
     {
         if (!initialized || hasImpacted)
             return;
 
         IDamageable damageable = other.GetComponentInParent<IDamageable>();
+
         if (damageable == null || damageable.IsDead)
             return;
 
@@ -79,36 +99,40 @@ public class ArcBoltProjectile : MonoBehaviour, IProjectile
             return;
         }
 
-        if (impactVFX != null)
-            Instantiate(impactVFX, hitPoint, Quaternion.identity);
-
-        Destroy(gameObject);
+        SpawnImpactVFX(hitPoint);
+        ReturnToPool();
     }
 
-    // =====================================================
-    // DAMAGE LOGIC
-    // =====================================================
+    private void SpawnImpactVFX(Vector3 hitPoint)
+    {
+        if (impactVFX == null)
+            return;
+
+        PoolManager.Instance.Get(
+            impactVFX,
+            hitPoint,
+            Quaternion.identity
+        );
+    }
+
     private void ApplyDamage(IDamageable target)
     {
         float damage = skill.Stats.FinalDamage;
 
-        // Critical
         if (skill.Stats.CriticalChance > 0f &&
             Random.value < skill.Stats.CriticalChance)
         {
             float critMultiplier =
                 skill.Stats.CriticalMultiplier > 0f
-                ? skill.Stats.CriticalMultiplier
-                : 2f;
+                    ? skill.Stats.CriticalMultiplier
+                    : 2f;
 
             damage *= critMultiplier;
         }
 
-        DamageData damageData = new DamageData(
+        target.TakeDamage(new DamageData(
             damage,
             skill.Definition.DamageType
-        );
-
-        target.TakeDamage(damageData);
+        ));
     }
 }

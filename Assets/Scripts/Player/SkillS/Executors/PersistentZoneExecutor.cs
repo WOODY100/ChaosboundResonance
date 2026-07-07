@@ -7,13 +7,12 @@ public class PersistentZoneExecutor : MonoBehaviour, ISkillExecutor
     private RuntimeSkill skill;
     private Transform player;
 
-    private bool isExecuting = false;
+    private bool isExecuting;
 
-    private List<Vector3> usedPositions = new List<Vector3>();
-
-    private List<GameObject> activeZones = new List<GameObject>();
+    private readonly List<GameObject> activeZones = new();
 
     private static readonly Collider[] enemyBuffer = new Collider[32];
+
     [SerializeField] private LayerMask enemyLayer;
 
     public void Initialize(RuntimeSkill runtimeSkill, Transform playerTransform)
@@ -40,13 +39,6 @@ public class PersistentZoneExecutor : MonoBehaviour, ISkillExecutor
         StartCoroutine(ExecuteSequence());
     }
 
-    private void OnAllZonesFinished()
-    {
-        isExecuting = false;
-
-        skill.StartCooldown(skill.Stats.FinalCooldown);
-    }
-
     private IEnumerator ExecuteSequence()
     {
         isExecuting = true;
@@ -60,22 +52,43 @@ public class PersistentZoneExecutor : MonoBehaviour, ISkillExecutor
         {
             Vector3 pos = GetSmartPosition(radius);
 
-            GameObject zone = SpawnZoneAt(pos);
+            PersistentZone zoneComponent = SpawnZoneAt(pos);
 
-            var zoneComponent = zone.GetComponent<PersistentZone>();
+            if (zoneComponent != null)
+            {
+                zoneComponent.OnZoneEnded += (z) =>
+                {
+                    remainingZones--;
 
-            zoneComponent.OnZoneEnded += (z) =>
+                    activeZones.Remove(z.gameObject);
+
+                    if (remainingZones <= 0)
+                    {
+                        OnAllZonesFinished();
+                    }
+                };
+            }
+            else
             {
                 remainingZones--;
+            }
 
-                if (remainingZones <= 0)
-                {
-                    OnAllZonesFinished();
-                }
-            };
-
-            yield return new WaitForSeconds(0.08f); // 🔥 delay sexy
+            yield return new WaitForSeconds(0.08f);
         }
+
+        if (remainingZones <= 0)
+        {
+            OnAllZonesFinished();
+        }
+    }
+
+    private void OnAllZonesFinished()
+    {
+        if (!isExecuting)
+            return;
+
+        isExecuting = false;
+        skill.StartCooldown(skill.Stats.FinalCooldown);
     }
 
     private Vector3 GetSmartPosition(float radius)
@@ -87,20 +100,16 @@ public class PersistentZoneExecutor : MonoBehaviour, ISkillExecutor
             enemyLayer
         );
 
-        // 🔥 70% de probabilidad de usar enemigos
         if (count > 0 && Random.value < 0.7f)
         {
             Collider target = enemyBuffer[Random.Range(0, count)];
 
             Vector3 basePos = target.transform.position;
-
-            // 🔥 pequeño offset para evitar stacking exacto
             Vector2 offset = Random.insideUnitCircle * Random.Range(0.8f, 1.8f);
 
             return basePos + new Vector3(offset.x, 0f, offset.y);
         }
 
-        // 🔥 fallback random (tipo Stormfall)
         Vector2 randomCircle = Random.insideUnitCircle * radius;
 
         return player.position + new Vector3(randomCircle.x, 0f, randomCircle.y);
@@ -111,9 +120,9 @@ public class PersistentZoneExecutor : MonoBehaviour, ISkillExecutor
         return skill.Stats.FinalCount + 2;
     }
 
-    private GameObject SpawnZoneAt(Vector3 position)
+    private PersistentZone SpawnZoneAt(Vector3 position)
     {
-        CleanupNulls();
+        CleanupInactiveZones();
 
         if (activeZones.Count >= GetMaxZones())
         {
@@ -122,23 +131,30 @@ public class PersistentZoneExecutor : MonoBehaviour, ISkillExecutor
 
         Quaternion rotation = Quaternion.Euler(90f, player.eulerAngles.y, 0f);
 
-        GameObject zone = Instantiate(
+        GameObject zoneObj = PoolManager.Instance.Get(
             skill.Definition.ExecutionPrefab,
             position,
             rotation
         );
 
-        var zoneComponent = zone.GetComponent<PersistentZone>();
+        if (zoneObj == null)
+            return null;
+
+        PersistentZone zoneComponent = zoneObj.GetComponent<PersistentZone>();
+
+        if (zoneComponent == null)
+            return null;
+
         zoneComponent.Initialize(skill);
 
-        activeZones.Add(zone);
+        activeZones.Add(zoneObj);
 
-        return zone; // 🔥 importante
+        return zoneComponent;
     }
 
-    private void CleanupNulls()
+    private void CleanupInactiveZones()
     {
-        activeZones.RemoveAll(z => z == null);
+        activeZones.RemoveAll(z => z == null || !z.activeInHierarchy);
     }
 
     private void RemoveOldestZone()
@@ -147,10 +163,24 @@ public class PersistentZoneExecutor : MonoBehaviour, ISkillExecutor
             return;
 
         GameObject oldest = activeZones[0];
-
-        if (oldest != null)
-            Destroy(oldest);
-
         activeZones.RemoveAt(0);
+
+        if (oldest == null)
+            return;
+
+        PersistentZone zone = oldest.GetComponent<PersistentZone>();
+
+        if (zone != null)
+        {
+            zone.ForceEnd();
+            return;
+        }
+
+        PooledObject pooledObject = oldest.GetComponent<PooledObject>();
+
+        if (pooledObject != null)
+            pooledObject.ReturnToPool();
+        else
+            Destroy(oldest);
     }
 }

@@ -7,6 +7,26 @@ public class SlashVFX : MonoBehaviour
     [SerializeField] private ParticleSystem slashAlp;
     [SerializeField] private ParticleSystem dust;
 
+    private ParticleSystem[] particles;
+
+    private void Awake()
+    {
+        particles = new ParticleSystem[3];
+
+        particles[0] = slashAdd;
+        particles[1] = slashAlp;
+        particles[2] = dust;
+    }
+
+    private void OnEnable()
+    {
+        foreach (ParticleSystem ps in particles)
+        {
+            ps.Clear(true);
+            ps.Play(true);
+        }
+    }
+
     public void SetColor(Color color)
     {
         SetCustomDataColor(slashAdd, color);

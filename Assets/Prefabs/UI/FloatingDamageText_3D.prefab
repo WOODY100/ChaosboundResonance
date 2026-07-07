@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 6198774868638805530}
   - component: {fileID: 7227779660214898434}
   - component: {fileID: 4413090743105457689}
+  - component: {fileID: 2936958710566309441}
   m_Layer: 0
   m_Name: FloatingDamageText_3D
   m_TagString: Untagged
@@ -197,3 +198,19 @@ MonoBehaviour:
   floatSpeed: 2
   lifetime: 0.8
   fadeStartTime: 0.4
+  appearScaleMultiplier: 1.4
+  scaleRecoverSpeed: 10
+  normalColor: {r: 1, g: 0.9, b: 0.4, a: 1}
+  criticalColor: {r: 1, g: 0.3, b: 0.1, a: 1}
+--- !u!114 &2936958710566309441
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3569538772174495346}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 18a179446157da545a43d83cc8878e9b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PooledObject

@@ -1,13 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using System.Linq;
 
 public class UpgradeGenerator : MonoBehaviour
 {
     [SerializeField] private SkillDatabase database;
-
     [SerializeField] private List<GlobalUpgradeDefinition> globalUpgrades;
-
 
     [Header("Weights")]
     [SerializeField] private float newSkillWeight = 1f;
@@ -16,6 +13,11 @@ public class UpgradeGenerator : MonoBehaviour
 
     [Range(0f, 1f)]
     [SerializeField] private float newSkillChanceWhenFull = 0.25f;
+
+    private readonly List<SkillDefinition> availableSkills = new();
+    private readonly List<RuntimeSkill> ownedSkills = new();
+    private readonly List<SkillModifierDefinition> filteredModifiers = new();
+    private readonly List<GlobalUpgradeDefinition> filteredGlobals = new();
 
     public List<UpgradeOption> GenerateOptions(PlayerSkillLoadout loadout)
     {
@@ -33,22 +35,17 @@ public class UpgradeGenerator : MonoBehaviour
             safety++;
         }
 
-        // 🚨 FALLBACK TOTAL (si no salió nada)
         if (options.Count == 0)
         {
-            Debug.LogWarning("⚠️ No options generated. Using FULL fallback.");
-
             options.Add(CreateFallback(StatType.Damage, 0.1f));
             options.Add(CreateFallback(StatType.AttackSpeed, 0.1f));
             options.Add(CreateFallback(StatType.MovementSpeed, 0.1f));
-
             return options;
         }
 
-        // 🧱 Rellenar si faltan opciones
         while (options.Count < 3)
         {
-            var fallback = CreateFallback(StatType.Damage, 0.05f);
+            UpgradeOption fallback = CreateFallback(StatType.Damage, 0.05f);
 
             if (!ContainsSimilarOption(options, fallback))
                 options.Add(fallback);
@@ -67,7 +64,7 @@ public class UpgradeGenerator : MonoBehaviour
         {
             EffectType = UpgradeEffectType.GlobalModifier,
             TargetStat = stat,
-            ModifierType = ModifierType.Percent, // 🔥 AQUÍ está el % real
+            ModifierType = ModifierType.Percent,
             Value = value
         });
 
@@ -76,11 +73,11 @@ public class UpgradeGenerator : MonoBehaviour
 
     private bool ContainsSimilarOption(List<UpgradeOption> options, UpgradeOption newOption)
     {
-        foreach (var option in options)
+        foreach (UpgradeOption option in options)
         {
-            foreach (var effect in option.Effects)
+            foreach (UpgradeEffect effect in option.Effects)
             {
-                foreach (var newEffect in newOption.Effects)
+                foreach (UpgradeEffect newEffect in newOption.Effects)
                 {
                     if (effect.TargetStat == newEffect.TargetStat &&
                         effect.ModifierType == newEffect.ModifierType)
@@ -92,7 +89,6 @@ public class UpgradeGenerator : MonoBehaviour
         return false;
     }
 
-
     private UpgradeOption GenerateSingleOption(
         PlayerSkillLoadout loadout,
         List<UpgradeOption> existingOptions)
@@ -100,16 +96,12 @@ public class UpgradeGenerator : MonoBehaviour
         bool hasFreeSlot = loadout.HasFreeSlot();
 
         if (hasFreeSlot)
-        {
             return GenerateWeightedOption(loadout, existingOptions, true);
-        }
-        else
-        {
-            if (Random.value <= newSkillChanceWhenFull)
-                return GenerateNewSkillOption(loadout, existingOptions);
 
-            return GenerateWeightedOption(loadout, existingOptions, false);
-        }
+        if (Random.value <= newSkillChanceWhenFull)
+            return GenerateNewSkillOption(loadout, existingOptions);
+
+        return GenerateWeightedOption(loadout, existingOptions, false);
     }
 
     private UpgradeOption GenerateWeightedOption(
@@ -117,58 +109,65 @@ public class UpgradeGenerator : MonoBehaviour
         List<UpgradeOption> existingOptions,
         bool allowNewSkill)
     {
-        List<(System.Func<UpgradeOption> generator, float weight)> pool =
-            new List<(System.Func<UpgradeOption>, float)>();
+        float totalWeight = modifierWeight + globalModifierWeight;
+
+        if (allowNewSkill)
+            totalWeight += newSkillWeight;
+
+        float roll = Random.value * totalWeight;
+        float cumulative = 0f;
 
         if (allowNewSkill)
         {
-            pool.Add((() => GenerateNewSkillOption(loadout, existingOptions), newSkillWeight));
-        }
+            cumulative += newSkillWeight;
 
-        // SIEMPRE deben existir estas
-        pool.Add((() => GenerateModifierOption(loadout, existingOptions), modifierWeight));
-        pool.Add((() => GenerateGlobalOption(existingOptions), globalModifierWeight));
-
-        float totalWeight = pool.Sum(p => p.weight);
-        float roll = Random.value * totalWeight;
-
-        float cumulative = 0f;
-
-        foreach (var entry in pool)
-        {
-            cumulative += entry.weight;
             if (roll <= cumulative)
             {
-                var result = entry.generator();
-
-                if (result != null)
-                    return result;
+                UpgradeOption option = GenerateNewSkillOption(loadout, existingOptions);
+                if (option != null)
+                    return option;
             }
         }
 
-        return null;
-    }
+        cumulative += modifierWeight;
 
-    // ===========================
-    // NEW SKILL
-    // ===========================
+        if (roll <= cumulative)
+        {
+            UpgradeOption option = GenerateModifierOption(loadout, existingOptions);
+            if (option != null)
+                return option;
+        }
+
+        return GenerateGlobalOption(existingOptions);
+    }
 
     private UpgradeOption GenerateNewSkillOption(
         PlayerSkillLoadout loadout,
         List<UpgradeOption> existingOptions)
     {
-        List<SkillDefinition> available =
-            database.AllSkills
-            .Where(s =>
-                !SkillAlreadyOwned(loadout, s) &&
-                !SkillAlreadyInOptions(existingOptions, s))
-            .ToList();
+        availableSkills.Clear();
 
-        if (available.Count == 0)
+        foreach (SkillDefinition skill in database.AllSkills)
+        {
+            if (skill == null)
+                continue;
+
+            if (SkillAlreadyOwned(loadout, skill))
+                continue;
+
+            if (SkillAlreadyInOptions(existingOptions, skill))
+                continue;
+
+            availableSkills.Add(skill);
+        }
+
+        if (availableSkills.Count == 0)
             return null;
 
-        SkillDefinition selected =
-            GetWeightedByRarity(available, s => s.Rarity);
+        SkillDefinition selected = GetWeightedByRarity(
+            availableSkills,
+            s => s.Rarity
+        );
 
         UpgradeOption option = new UpgradeOption();
         option.SkillDefinition = selected;
@@ -181,24 +180,24 @@ public class UpgradeGenerator : MonoBehaviour
         return option;
     }
 
-    // ===========================
-    // MODIFIER
-    // ===========================
-
     private UpgradeOption GenerateModifierOption(
         PlayerSkillLoadout loadout,
         List<UpgradeOption> existingOptions)
     {
-        List<RuntimeSkill> owned =
-            loadout.GetAllSkills()
-            .Where(s => s != null)
-            .ToList();
+        ownedSkills.Clear();
 
-        if (owned.Count == 0)
+        RuntimeSkill[] allSkills = loadout.GetAllSkills();
+
+        for (int i = 0; i < allSkills.Length; i++)
+        {
+            if (allSkills[i] != null)
+                ownedSkills.Add(allSkills[i]);
+        }
+
+        if (ownedSkills.Count == 0)
             return null;
 
-        RuntimeSkill randomSkill =
-            owned[Random.Range(0, owned.Count)];
+        RuntimeSkill randomSkill = ownedSkills[Random.Range(0, ownedSkills.Count)];
 
         List<SkillModifierDefinition> possible =
             randomSkill.Definition.PossibleModifiers;
@@ -206,19 +205,28 @@ public class UpgradeGenerator : MonoBehaviour
         if (possible == null || possible.Count == 0)
             return null;
 
-        List<SkillModifierDefinition> filtered =
-            possible.Where(m =>
-                !ModifierAlreadyInOptions(existingOptions, m))
-            .ToList();
+        filteredModifiers.Clear();
 
-        if (filtered.Count == 0)
+        for (int i = 0; i < possible.Count; i++)
+        {
+            SkillModifierDefinition modifier = possible[i];
+
+            if (modifier == null)
+                continue;
+
+            if (!ModifierAlreadyInOptions(existingOptions, modifier))
+                filteredModifiers.Add(modifier);
+        }
+
+        if (filteredModifiers.Count == 0)
             return null;
 
-        SkillModifierDefinition modifier =
-            GetWeightedByRarity(filtered, m => m.Rarity);
+        SkillModifierDefinition selected = GetWeightedByRarity(
+            filteredModifiers,
+            m => m.Rarity
+        );
 
-        int slotIndex = System.Array.IndexOf(
-            loadout.GetAllSkills(), randomSkill);
+        int slotIndex = System.Array.IndexOf(allSkills, randomSkill);
 
         UpgradeOption option = new UpgradeOption();
 
@@ -226,114 +234,37 @@ public class UpgradeGenerator : MonoBehaviour
         {
             EffectType = UpgradeEffectType.SkillModifier,
             TargetSlotIndex = slotIndex,
-            SkillModifier = modifier
+            SkillModifier = selected
         });
 
         return option;
     }
 
-    // ===========================
-    // UTILITIES
-    // ===========================
-
-    private T GetWeightedByRarity<T>(
-        List<T> items,
-        System.Func<T, SkillRarity> raritySelector)
-    {
-        float totalWeight = 0f;
-        Dictionary<T, float> weights = new Dictionary<T, float>();
-
-        foreach (var item in items)
-        {
-            float weight = GetRarityWeight(raritySelector(item));
-            weights[item] = weight;
-            totalWeight += weight;
-        }
-
-        float roll = Random.value * totalWeight;
-        float cumulative = 0f;
-
-        foreach (var pair in weights)
-        {
-            cumulative += pair.Value;
-            if (roll <= cumulative)
-                return pair.Key;
-        }
-
-        return items[0];
-    }
-
-    private float GetRarityWeight(SkillRarity rarity)
-    {
-        switch (rarity)
-        {
-            case SkillRarity.Common: return 60f;
-            case SkillRarity.Rare: return 25f;
-            case SkillRarity.Epic: return 10f;
-            case SkillRarity.Legendary: return 5f;
-        }
-
-        return 1f;
-    }
-
-    private bool SkillAlreadyOwned(
-        PlayerSkillLoadout loadout,
-        SkillDefinition skill)
-    {
-        foreach (var s in loadout.GetAllSkills())
-        {
-            if (s != null && s.Definition == skill)
-                return true;
-        }
-
-        return false;
-    }
-
-    private bool SkillAlreadyInOptions(
-        List<UpgradeOption> options,
-        SkillDefinition skill)
-    {
-        foreach (var option in options)
-        {
-            if (option.SkillDefinition == skill)
-                return true;
-        }
-
-        return false;
-    }
-
-    private bool ModifierAlreadyInOptions(
-        List<UpgradeOption> options,
-        SkillModifierDefinition modifier)
-    {
-        foreach (var option in options)
-        {
-            foreach (var effect in option.Effects)
-            {
-                if (effect.SkillModifier == modifier)
-                    return true;
-            }
-        }
-
-        return false;
-    }
-
-    private UpgradeOption GenerateGlobalOption(
-    List<UpgradeOption> existingOptions)
+    private UpgradeOption GenerateGlobalOption(List<UpgradeOption> existingOptions)
     {
         if (globalUpgrades == null || globalUpgrades.Count == 0)
             return null;
 
-        List<GlobalUpgradeDefinition> filtered =
-            globalUpgrades
-            .Where(g => !GlobalAlreadyInOptions(existingOptions, g))
-            .ToList();
+        filteredGlobals.Clear();
 
-        if (filtered.Count == 0)
+        for (int i = 0; i < globalUpgrades.Count; i++)
+        {
+            GlobalUpgradeDefinition global = globalUpgrades[i];
+
+            if (global == null)
+                continue;
+
+            if (!GlobalAlreadyInOptions(existingOptions, global))
+                filteredGlobals.Add(global);
+        }
+
+        if (filteredGlobals.Count == 0)
             return null;
 
-        GlobalUpgradeDefinition selected =
-            GetWeightedByRarity(filtered, g => g.Rarity);
+        GlobalUpgradeDefinition selected = GetWeightedByRarity(
+            filteredGlobals,
+            g => g.Rarity
+        );
 
         UpgradeOption option = new UpgradeOption();
 
@@ -349,13 +280,88 @@ public class UpgradeGenerator : MonoBehaviour
         return option;
     }
 
-    private bool GlobalAlreadyInOptions(
-    List<UpgradeOption> options,
-    GlobalUpgradeDefinition global)
+    private T GetWeightedByRarity<T>(
+        List<T> items,
+        System.Func<T, SkillRarity> raritySelector)
     {
-        foreach (var option in options)
+        float totalWeight = 0f;
+
+        for (int i = 0; i < items.Count; i++)
+            totalWeight += GetRarityWeight(raritySelector(items[i]));
+
+        float roll = Random.value * totalWeight;
+        float cumulative = 0f;
+
+        for (int i = 0; i < items.Count; i++)
         {
-            foreach (var effect in option.Effects)
+            cumulative += GetRarityWeight(raritySelector(items[i]));
+
+            if (roll <= cumulative)
+                return items[i];
+        }
+
+        return items[0];
+    }
+
+    private float GetRarityWeight(SkillRarity rarity)
+    {
+        switch (rarity)
+        {
+            case SkillRarity.Common: return 60f;
+            case SkillRarity.Rare: return 25f;
+            case SkillRarity.Epic: return 10f;
+            case SkillRarity.Legendary: return 5f;
+            default: return 1f;
+        }
+    }
+
+    private bool SkillAlreadyOwned(PlayerSkillLoadout loadout, SkillDefinition skill)
+    {
+        RuntimeSkill[] skills = loadout.GetAllSkills();
+
+        for (int i = 0; i < skills.Length; i++)
+        {
+            if (skills[i] != null && skills[i].Definition == skill)
+                return true;
+        }
+
+        return false;
+    }
+
+    private bool SkillAlreadyInOptions(List<UpgradeOption> options, SkillDefinition skill)
+    {
+        foreach (UpgradeOption option in options)
+        {
+            if (option.SkillDefinition == skill)
+                return true;
+        }
+
+        return false;
+    }
+
+    private bool ModifierAlreadyInOptions(
+        List<UpgradeOption> options,
+        SkillModifierDefinition modifier)
+    {
+        foreach (UpgradeOption option in options)
+        {
+            foreach (UpgradeEffect effect in option.Effects)
+            {
+                if (effect.SkillModifier == modifier)
+                    return true;
+            }
+        }
+
+        return false;
+    }
+
+    private bool GlobalAlreadyInOptions(
+        List<UpgradeOption> options,
+        GlobalUpgradeDefinition global)
+    {
+        foreach (UpgradeOption option in options)
+        {
+            foreach (UpgradeEffect effect in option.Effects)
             {
                 if (effect.GlobalDefinition == global)
                     return true;

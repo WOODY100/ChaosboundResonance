@@ -67,13 +67,13 @@ public class AreaStrikeExecutor : MonoBehaviour, ISkillExecutor
 
     private void SpawnStrike(Vector3 position)
     {
-        GameObject strikeObj =
-            Instantiate(skill.Definition.ExecutionPrefab,
-                        position,
-                        Quaternion.identity);
+        GameObject strikeObj = PoolManager.Instance.Get(
+            skill.Definition.ExecutionPrefab,
+            position,
+            Quaternion.identity
+        );
 
-        IAreaStrike strike =
-            strikeObj.GetComponent<IAreaStrike>();
+        IAreaStrike strike = strikeObj.GetComponent<IAreaStrike>();
 
         if (strike != null)
             strike.Initialize(skill);

@@ -280,6 +280,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2247601315963509468}
   - component: {fileID: 8742594931438760019}
+  - component: {fileID: 7739629290681258281}
   m_Layer: 0
   m_Name: JumpWarning_Bestial
   m_TagString: Untagged
@@ -322,3 +323,15 @@ MonoBehaviour:
   pulseSpeed: 4
   ringPulseStrength: 0.15
   symbolRotationSpeed: 30
+--- !u!114 &7739629290681258281
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6619929815922055732}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 18a179446157da545a43d83cc8878e9b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PooledObject

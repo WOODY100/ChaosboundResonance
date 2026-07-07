@@ -16,6 +16,7 @@ public class FogDriftLocal : MonoBehaviour
     private Renderer rend;
     private Vector2 offset;
     private Vector3 baseScale;
+    private Material materialInstance;
 
     private Light lightComp;
     private float baseIntensity;
@@ -28,6 +29,11 @@ public class FogDriftLocal : MonoBehaviour
         baseScale = transform.localScale;
 
         lightComp = GetComponentInChildren<Light>();
+
+        if (rend != null)
+        {
+            materialInstance = rend.material;
+        }
 
         if (lightComp != null)
         {
@@ -48,7 +54,11 @@ public class FogDriftLocal : MonoBehaviour
         // 🌫 Movimiento orgánico
         offset.x = Mathf.Sin(time * speedX) * 0.05f;
         offset.y = Mathf.Cos(time * speedY) * 0.05f;
-        rend.material.SetTextureOffset("_BaseMap", offset); // ⚠️ CAMBIO AQUÍ
+
+        if (materialInstance != null)
+        {
+            materialInstance.SetTextureOffset("_BaseMap", offset);
+        } // ⚠️ CAMBIO AQUÍ
 
         // 🔥 Pulso (escala)
         float pulse = 1 + Mathf.Sin(time * pulseSpeed) * pulseAmount;

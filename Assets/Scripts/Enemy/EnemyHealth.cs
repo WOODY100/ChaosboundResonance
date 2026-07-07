@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -16,14 +17,16 @@ public class EnemyHealth : MonoBehaviour, IDamageable
     private NavMeshAgent agent;
     private Collider mainCollider;
 
-    private EnemyPool pool;
     private EnemyBrain brain;
     private EnemyAttack attack;
     private EnemyMovementArena movement;
     private EnemyStats stats;
     private Animator animator;
+    private PooledObject pooledObject;
 
-    void Awake()
+    private Coroutine deathRoutine;
+
+    private void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
         mainCollider = GetComponent<Collider>();
@@ -31,29 +34,38 @@ public class EnemyHealth : MonoBehaviour, IDamageable
         brain = GetComponent<EnemyBrain>();
         attack = GetComponent<EnemyAttack>();
         movement = GetComponent<EnemyMovementArena>();
-        pool = GetComponentInParent<EnemyPool>();
         stats = GetComponent<EnemyStats>();
         animator = GetComponentInChildren<Animator>();
-
+        pooledObject = GetComponent<PooledObject>();
 
         Initialize(maxHealth);
     }
 
-    void OnEnable()
+    private void OnEnable()
     {
+        if (deathRoutine != null)
+        {
+            StopCoroutine(deathRoutine);
+            deathRoutine = null;
+        }
+
         Initialize(maxHealth);
 
         if (animator != null)
+        {
             animator.ResetTrigger("Die");
+            animator.Play("Idle", 0, 0f);
+        }
     }
 
-    // 🔹 Preparado para pooling
     public void Initialize(float healthValue)
     {
         IsDead = false;
 
         if (stats != null)
             CurrentHealth = stats.CurrentHealth;
+        else
+            CurrentHealth = healthValue;
 
         if (agent != null)
             agent.enabled = true;
@@ -76,14 +88,12 @@ public class EnemyHealth : MonoBehaviour, IDamageable
         if (IsDead)
             return;
 
-        float finalDamage =
-            DamageProcessor.CalculateDamage(this, damageData);
+        float finalDamage = DamageProcessor.CalculateDamage(this, damageData);
 
         if (finalDamage <= 0f)
             return;
 
         CurrentHealth -= finalDamage;
-
         OnDamageTaken?.Invoke(finalDamage);
 
         FloatingDamageManager.Instance?.ShowDamage(
@@ -93,27 +103,24 @@ public class EnemyHealth : MonoBehaviour, IDamageable
         );
 
         if (CurrentHealth <= 0f)
-        {
             Die();
-        }
     }
 
-    void Die()
+    private void Die()
     {
         if (IsDead)
             return;
 
         IsDead = true;
 
-        // 🔒 Detener sistemas
         if (brain != null)
             brain.enabled = false;
 
         if (attack != null)
-            attack.enabled = false;
-
-        if (attack != null)
+        {
             attack.CancelAttack();
+            attack.enabled = false;
+        }
 
         if (agent != null)
             agent.enabled = false;
@@ -124,20 +131,37 @@ public class EnemyHealth : MonoBehaviour, IDamageable
         if (movement != null)
             movement.enabled = false;
 
-        // 🎬 Animación
         if (animator != null)
             animator.SetTrigger("Die");
 
         OnDeath?.Invoke(this);
 
-        StartCoroutine(DeathRoutine());
+        deathRoutine = StartCoroutine(DeathRoutine());
     }
 
-    System.Collections.IEnumerator DeathRoutine()
+    private IEnumerator DeathRoutine()
     {
-        // Duración animación (ajústalo si quieres)
         yield return new WaitForSeconds(3f);
+        ReturnToPool();
+    }
 
-        pool.Return(gameObject);
+    private void ReturnToPool()
+    {
+        if (pooledObject == null)
+            pooledObject = GetComponent<PooledObject>();
+
+        if (pooledObject != null)
+            pooledObject.ReturnToPool();
+        else
+            gameObject.SetActive(false);
+    }
+
+    private void OnDisable()
+    {
+        if (deathRoutine != null)
+        {
+            StopCoroutine(deathRoutine);
+            deathRoutine = null;
+        }
     }
 }

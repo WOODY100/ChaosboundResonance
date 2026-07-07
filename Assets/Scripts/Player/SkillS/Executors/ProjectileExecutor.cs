@@ -117,7 +117,7 @@ public class ProjectileExecutor : MonoBehaviour, ISkillExecutor
         Vector3 direction =
             (target.position - owner.position).normalized;
 
-        GameObject projectileObj = Instantiate(
+        GameObject projectileObj = PoolManager.Instance.Get(
             skill.Definition.ExecutionPrefab,
             owner.position,
             Quaternion.LookRotation(direction)

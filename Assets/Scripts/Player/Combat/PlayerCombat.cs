@@ -201,16 +201,19 @@ public class PlayerCombat : MonoBehaviour
     // 🔥 Animation Event
     public void SpawnSlash()
     {
-        if (slashPrefab == null) return;
+        if (slashPrefab == null)
+            return;
 
-        GameObject slash = Instantiate(
+        GameObject slash = PoolManager.Instance.Get(
             slashPrefab,
             attackSpawnPoint.position,
-            attackSpawnPoint.rotation,
-            transform
+            attackSpawnPoint.rotation
         );
 
+        slash.transform.SetParent(transform);
+
         SlashVFX vfx = slash.GetComponent<SlashVFX>();
+
         if (vfx != null && stats != null)
             vfx.SetColor(DamageVisuals.GetColor(stats.CurrentDamageType));
     }
