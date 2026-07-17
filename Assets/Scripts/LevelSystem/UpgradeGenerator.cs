@@ -21,11 +21,28 @@ public class UpgradeGenerator : MonoBehaviour
 
     public List<UpgradeOption> GenerateOptions(PlayerSkillLoadout loadout)
     {
+        if (loadout == null)
+        {
+            Debug.LogError("UpgradeGenerator: Loadout is null.");
+            return new List<UpgradeOption>();
+        }
+
+        if (database == null)
+        {
+            Debug.LogError("UpgradeGenerator: SkillDatabase not assigned.");
+            return new List<UpgradeOption>
+            {
+                CreateFallback(StatType.Damage,0.1f),
+                CreateFallback(StatType.AttackSpeed,0.1f),
+                CreateFallback(StatType.MovementSpeed,0.1f)
+            };
+        }
+
         List<UpgradeOption> options = new List<UpgradeOption>();
 
         int safety = 0;
 
-        while (options.Count < 3 && safety < 20)
+        while (options.Count < 3 && safety < 50)
         {
             UpgradeOption option = GenerateSingleOption(loadout, options);
 
@@ -158,6 +175,12 @@ public class UpgradeGenerator : MonoBehaviour
             if (SkillAlreadyInOptions(existingOptions, skill))
                 continue;
 
+            if (skill.ExecutorPrefab == null)
+                continue;
+
+            if (skill.ExecutionPrefab == null)
+                continue;
+
             availableSkills.Add(skill);
         }
 
@@ -199,7 +222,7 @@ public class UpgradeGenerator : MonoBehaviour
 
         RuntimeSkill randomSkill = ownedSkills[Random.Range(0, ownedSkills.Count)];
 
-        List<SkillModifierDefinition> possible =
+        IReadOnlyList<SkillModifierDefinition> possible =
             randomSkill.Definition.PossibleModifiers;
 
         if (possible == null || possible.Count == 0)

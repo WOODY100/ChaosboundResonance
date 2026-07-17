@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public interface IOrbital
@@ -6,6 +7,6 @@ public interface IOrbital
         RuntimeSkill skill,
         Transform owner,
         float startAngle,
-        System.Action onFinished
+        Action onFinished
     );
 }

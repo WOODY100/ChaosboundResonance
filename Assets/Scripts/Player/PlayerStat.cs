@@ -2,8 +2,13 @@ using System.Collections.Generic;
 
 public class PlayerStat
 {
-    public float BaseValue;
+    public float BaseValue { get; private set; }
     public float CurrentValue { get; private set; }
+
+    internal void SetBaseValue(float value)
+    {
+        BaseValue = value;
+    }
 
     public void Recalculate(List<StatModifier> modifiers)
     {

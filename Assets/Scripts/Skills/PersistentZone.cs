@@ -40,17 +40,24 @@ public class PersistentZone : PooledBehaviour
     {
         ResetPooledState();
 
+        if (runtimeSkill == null)
+        {
+            Debug.LogError("PersistentZone initialized with null RuntimeSkill.");
+            ReturnToPool();
+            return;
+        }
+
         skill = runtimeSkill;
-
-        duration = skill.Stats.FinalDuration;
-        radius = skill.Stats.FinalImpactRadius;
+        radius = Mathf.Max(0.1f, skill.Stats.FinalImpactRadius);
         tickRate = Mathf.Max(0.1f, skill.Stats.FinalTickRate);
-        damage = skill.Stats.FinalDamage;
+        duration = Mathf.Max(0.01f, skill.Stats.FinalDuration);
+        damage = Mathf.Max(0f, skill.Stats.FinalDamage);
 
-        transform.localScale = Vector3.one * (radius * 2f / baseSize);
+        float safeBaseSize = Mathf.Max(0.01f, baseSize);
+        transform.localScale = Vector3.one * (radius * 2f / safeBaseSize);
 
         Vector3 pos = transform.position;
-        pos.y += visualHeight;
+        pos.y = Mathf.Max(pos.y, visualHeight);
         transform.position = pos;
 
         if (particle != null)
@@ -119,8 +126,10 @@ public class PersistentZone : PooledBehaviour
                 cache[col] = damageable;
             }
 
-            if (damageable == null ||
-                ((MonoBehaviour)damageable).gameObject.activeInHierarchy == false)
+            MonoBehaviour targetBehaviour = damageable as MonoBehaviour;
+
+            if (targetBehaviour == null ||
+                !targetBehaviour.gameObject.activeInHierarchy)
             {
                 cache.Remove(col);
                 continue;
@@ -135,6 +144,9 @@ public class PersistentZone : PooledBehaviour
 
     private void ApplyAccumulatedDamage()
     {
+        if (skill == null)
+            return;
+
         foreach (var pair in accumulatedDamage)
         {
             IDamageable target = pair.Key;
@@ -182,6 +194,12 @@ public class PersistentZone : PooledBehaviour
 
         cache.Clear();
         accumulatedDamage.Clear();
+
+        transform.localScale = Vector3.one;
+
+        Vector3 pos = transform.position;
+        pos.y = 0f;
+        transform.position = pos;
 
         OnZoneEnded = null;
     }

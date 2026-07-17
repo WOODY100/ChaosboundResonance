@@ -18,7 +18,6 @@ public class StormfallStrike : PooledBehaviour, IAreaStrike
     private ParticleSystem[] particleSystems;
 
     private static readonly Collider[] hitBuffer = new Collider[64];
-    private const int EnemyLayerMask = 1 << 6;
 
     protected override void Awake()
     {
@@ -32,6 +31,8 @@ public class StormfallStrike : PooledBehaviour, IAreaStrike
 
     protected override void ResetPooledState()
     {
+        damageType = DamageType.Physical;
+
         if (lightningImpact != null)
             lightningImpact.SetActive(true);
 
@@ -47,6 +48,9 @@ public class StormfallStrike : PooledBehaviour, IAreaStrike
             }
         }
 
+        transform.localScale = Vector3.one;
+        transform.rotation = Quaternion.identity;
+
         skill = null;
         damage = 0f;
         activeRoutine = null;
@@ -54,12 +58,25 @@ public class StormfallStrike : PooledBehaviour, IAreaStrike
 
     public void Initialize(RuntimeSkill runtimeSkill)
     {
-        skill = runtimeSkill;
-        damage = skill.Stats.FinalDamage;
-        damageType = skill.Definition.DamageType;
-
         if (activeRoutine != null)
+        {
             StopCoroutine(activeRoutine);
+            activeRoutine = null;
+        }
+
+        ResetPooledState();
+
+        if (runtimeSkill == null)
+        {
+            Debug.LogError("StormfallStrike initialized with null RuntimeSkill.");
+            ReturnToPool();
+            return;
+        }
+
+        skill = runtimeSkill;
+
+        damage = Mathf.Max(0f, skill.Stats.FinalDamage);
+        damageType = skill.Definition.DamageType;
 
         activeRoutine = StartCoroutine(StrikeRoutine());
     }
@@ -73,16 +90,27 @@ public class StormfallStrike : PooledBehaviour, IAreaStrike
         if (lightningImpact != null)
             lightningImpact.SetActive(false);
 
-        yield return new WaitForSeconds(totalLifetime - beamLifetime);
+        float remainingLifetime = Mathf.Max(
+            0f,
+            totalLifetime - beamLifetime);
+
+        yield return new WaitForSeconds(remainingLifetime);
 
         ReturnToPool();
     }
 
     private void ApplyDamage()
     {
+        if (skill == null)
+            return;
+
+        float radius = Mathf.Max(
+            0.1f,
+            skill.Stats.FinalImpactRadius);
+
         int hitCount = Physics.OverlapSphereNonAlloc(
             transform.position,
-            skill.Stats.FinalImpactRadius,
+            radius,
             hitBuffer,
             GameLayers.Enemy
         );
@@ -116,7 +144,6 @@ public class StormfallStrike : PooledBehaviour, IAreaStrike
             activeRoutine = null;
         }
 
-        if (lightningImpact != null)
-            lightningImpact.SetActive(true);
+        ResetPooledState();
     }
 }

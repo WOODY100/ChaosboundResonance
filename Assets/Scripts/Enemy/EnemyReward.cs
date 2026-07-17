@@ -11,7 +11,8 @@ public class EnemyReward : MonoBehaviour
 
     private EnemyHealth health;
 
-    private static readonly int GroundLayer = 1 << 6; // Layer "Ground"
+    [SerializeField]
+    private LayerMask groundLayer;
 
     private void Awake()
     {
@@ -66,8 +67,10 @@ public class EnemyReward : MonoBehaviour
                             Vector3.down,
                             out RaycastHit hit,
                             20f,
-                            GroundLayer))
+                            groundLayer))
         {
+            Debug.Log($"Hit: {hit.collider.name} Layer: {LayerMask.LayerToName(hit.collider.gameObject.layer)}");
+
             return hit.point + Vector3.up * 0.25f;
         }
 

@@ -36,6 +36,7 @@ public class PlayerController : MonoBehaviour
     private Animator animator;
     private PlayerCombat combat;
     private PlayerStats stats;
+    private PlayerInteractor interactor;
     private Transform cameraTransform;
 
     private Vector2 moveInput;
@@ -47,39 +48,41 @@ public class PlayerController : MonoBehaviour
         cameraTransform = Camera.main.transform;
     }
 
-    void Awake()
+    private void Awake()
     {
         controller = GetComponent<CharacterController>();
         animator = GetComponentInChildren<Animator>();
         combat = GetComponent<PlayerCombat>();
         stats = GetComponent<PlayerStats>();
         damageReceiver = GetComponent<PlayerDamageReceiver>();
+        interactor = GetComponentInChildren<PlayerInteractor>();
 
         inputActions = new PlayerInputActions();
-        inputActions.Player.Dash.performed += ctx => dashPressed = true;
-        inputActions.Player.Move.performed += ctx => moveInput = ctx.ReadValue<Vector2>();
-        inputActions.Player.Move.canceled += ctx => moveInput = Vector2.zero;
+
+        inputActions.Player.Move.performed += OnMovePerformed;
+        inputActions.Player.Move.canceled += OnMoveCanceled;
+        inputActions.Player.Dash.performed += OnDashPerformed;
+        inputActions.Player.Interact.performed += OnInteractPerformed;
     }
 
-    void OnEnable() => inputActions.Enable();
-    void OnDisable() => inputActions.Disable();
-
-    void Update()
+    private void OnEnable()
     {
-        ApplyGravity(); // 🔥 NUEVO
+        inputActions.Enable();
+    }
 
-        if (dashCooldownTimer > 0f)
-            dashCooldownTimer -= Time.deltaTime;
+    private void OnDisable()
+    {
+        inputActions.Disable();
 
-        if (dashPressed && dashCooldownTimer <= 0f && !isDashing)
-        {
-            StartCoroutine(Dash());
-        }
+        inputActions.Player.Move.performed -= OnMovePerformed;
+        inputActions.Player.Move.canceled -= OnMoveCanceled;
+        inputActions.Player.Dash.performed -= OnDashPerformed;
+        inputActions.Player.Interact.performed -= OnInteractPerformed;
+    }
 
-        dashPressed = false;
-
-        if (!isDashing)
-            HandleMovement();
+    private void Update()
+    {
+        ApplyGravity();
 
         if (dashCooldownTimer > 0f)
             dashCooldownTimer -= Time.deltaTime;
@@ -95,18 +98,37 @@ public class PlayerController : MonoBehaviour
             HandleMovement();
     }
 
-    void ApplyGravity()
+    private void OnMovePerformed(InputAction.CallbackContext context)
+    {
+        moveInput = context.ReadValue<Vector2>();
+    }
+
+    private void OnMoveCanceled(InputAction.CallbackContext context)
+    {
+        moveInput = Vector2.zero;
+    }
+
+    private void OnDashPerformed(InputAction.CallbackContext context)
+    {
+        dashPressed = true;
+    }
+
+    private void OnInteractPerformed(InputAction.CallbackContext context)
+    {
+        interactor?.TryInteract();
+    }
+
+    private void ApplyGravity()
     {
         if (controller.isGrounded && verticalVelocity < 0)
         {
-            verticalVelocity = -2f; // mantiene pegado al suelo
+            verticalVelocity = -2f;
         }
         else
         {
             verticalVelocity += gravity * Time.deltaTime;
         }
 
-        // 🔥 Raycast para ajustar altura exacta del terreno
         Ray ray = new Ray(transform.position + Vector3.up * 0.5f, Vector3.down);
 
         if (Physics.Raycast(ray, out RaycastHit hit, groundCheckDistance, groundLayer))
@@ -119,11 +141,10 @@ public class PlayerController : MonoBehaviour
             transform.position = pos;
         }
 
-        // 🔥 aplicar gravedad real
         controller.Move(Vector3.up * verticalVelocity * Time.deltaTime);
     }
 
-    void HandleMovement()
+    private void HandleMovement()
     {
         Vector3 camForward = cameraTransform.forward;
         Vector3 camRight = cameraTransform.right;
@@ -136,14 +157,16 @@ public class PlayerController : MonoBehaviour
 
         moveDirection = camForward * moveInput.y + camRight * moveInput.x;
 
-        // 🔥 Obtener velocidad dinámica
         float dynamicSpeed = moveSpeed;
 
         if (stats != null)
         {
             var modifierSystem = stats.GetComponent<PlayerModifierSystem>();
+
             if (modifierSystem != null)
+            {
                 dynamicSpeed = modifierSystem.GetStat(StatType.MovementSpeed);
+            }
         }
 
         if (moveDirection.magnitude > 0.1f)
@@ -165,7 +188,9 @@ public class PlayerController : MonoBehaviour
         }
 
         float currentSpeed = moveInput.magnitude * dynamicSpeed;
+
         animator.SetFloat("Speed", currentSpeed);
+
         Velocity = controller.velocity;
     }
 
@@ -186,15 +211,17 @@ public class PlayerController : MonoBehaviour
 
         animator.SetTrigger("Dash");
 
-        // 🔥 Invulnerabilidad
         if (damageReceiver != null)
+        {
             damageReceiver.IsInvulnerable = true;
+        }
 
-        // Dirección actual
         Vector3 dashDir = moveDirection;
 
         if (dashDir.magnitude < 0.1f)
+        {
             dashDir = transform.forward;
+        }
 
         dashDir.Normalize();
 
@@ -206,6 +233,7 @@ public class PlayerController : MonoBehaviour
         while (timer < dashDuration)
         {
             timer += Time.deltaTime;
+
             float t = timer / dashDuration;
 
             Vector3 newPos = Vector3.Lerp(startPos, targetPos, t);
@@ -216,9 +244,10 @@ public class PlayerController : MonoBehaviour
             yield return null;
         }
 
-        // 🔥 Restaurar vulnerabilidad
         if (damageReceiver != null)
+        {
             damageReceiver.IsInvulnerable = false;
+        }
 
         Physics.IgnoreLayerCollision(playerLayer, enemyLayer, false);
 

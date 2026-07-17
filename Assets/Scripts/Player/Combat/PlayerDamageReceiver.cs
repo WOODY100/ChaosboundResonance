@@ -11,17 +11,23 @@ public class PlayerDamageReceiver : MonoBehaviour
     private PlayerHealth health;
     private float lastDamageTime;
 
-    void Awake()
+    private void Awake()
     {
         health = GetComponent<PlayerHealth>();
+
+        if (health == null)
+            Debug.LogError($"{name} requires PlayerHealth.");
     }
 
     public void ReceiveDamage(DamageData damageData)
     {
+        if (health == null)
+            return;
+
         if (IsInvulnerable)
             return;
 
-        if (Time.time < lastDamageTime + globalDamageCooldown)
+        if (!CanReceiveDamage())
             return;
 
         lastDamageTime = Time.time;
@@ -29,11 +35,33 @@ public class PlayerDamageReceiver : MonoBehaviour
         ApplyDamage(damageData);
     }
 
-    void ApplyDamage(DamageData damageData)
+    private void ApplyDamage(DamageData damageData)
     {
         if (health == null)
             return;
 
-        health.TakeDamage(damageData.amount);
+        float finalDamage = CalculateFinalDamage(damageData);
+
+        health.TakeDamage(finalDamage);
+    }
+
+    private float CalculateFinalDamage(DamageData damageData)
+    {
+        return damageData.amount;
+    }
+
+    private bool CanReceiveDamage()
+    {
+        return Time.time >= lastDamageTime + globalDamageCooldown;
+    }
+
+    public void ResetDamageCooldown()
+    {
+        lastDamageTime = 0f;
+    }
+
+    private void OnValidate()
+    {
+        globalDamageCooldown = Mathf.Max(0f, globalDamageCooldown);
     }
 }

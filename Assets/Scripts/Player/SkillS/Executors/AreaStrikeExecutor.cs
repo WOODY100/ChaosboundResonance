@@ -8,10 +8,10 @@ public class AreaStrikeExecutor : MonoBehaviour, ISkillExecutor
 
     private bool isExecuting = false;
 
-    private static readonly Collider[] hitBuffer = new Collider[32];
-
     public void Initialize(RuntimeSkill runtimeSkill, Transform skillOwner)
     {
+        ResetExecutor();
+
         skill = runtimeSkill;
         owner = skillOwner;
     }
@@ -85,5 +85,15 @@ public class AreaStrikeExecutor : MonoBehaviour, ISkillExecutor
 
         return owner.position +
                new Vector3(randomCircle.x, 0f, randomCircle.y);
+    }
+
+    public void ResetExecutor()
+    {
+        StopAllCoroutines();
+
+        skill = null;
+        owner = null;
+
+        isExecuting = false;
     }
 }

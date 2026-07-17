@@ -22,7 +22,7 @@ public class SkillStats
     public float FinalDamageMultiplier = 1f;
 
     public float CriticalChance;
-    public float CriticalMultiplier;
+    public float CriticalMultiplier = 1f;
 
     // =========================
     // COOLDOWN
@@ -78,12 +78,15 @@ public class SkillStats
 
         // COOLDOWN
         float cooldownAfterFlat =
-            BaseCooldown - FlatCooldownReduction;
+            Mathf.Max(0f, BaseCooldown - FlatCooldownReduction);
 
-        float cooldownAfterPercent =
-            cooldownAfterFlat * (1f - PercentCooldownReduction);
+        float cooldownMultiplier =
+            Mathf.Clamp01(1f - PercentCooldownReduction);
 
-        FinalCooldown = Mathf.Max(0.05f, cooldownAfterPercent);
+        FinalCooldown =
+            Mathf.Max(
+                0.05f,
+                cooldownAfterFlat * cooldownMultiplier);
 
         // AREA / RANGE / DURATION
         FinalSpawnRadius = Mathf.Max(0f, BaseSpawnRadius * (1f + PercentSpawnRadius));

@@ -11,12 +11,16 @@ public class PlayerExperienceSystem : MonoBehaviour
     public float CurrentXP { get; private set; }
     public float RequiredXP { get; private set; }
 
+    public float NormalizedXP =>
+        RequiredXP <= 0f ? 0f : CurrentXP / RequiredXP;
+
     public event Action<float, float> OnXPChanged;
     public event Action<int> OnLevelUp;
 
     void Awake()
     {
         RecalculateRequiredXP();
+        OnXPChanged?.Invoke(CurrentXP, RequiredXP);
     }
 
     // ===============================
@@ -25,18 +29,22 @@ public class PlayerExperienceSystem : MonoBehaviour
 
     public void AddXP(float amount)
     {
+        if (amount <= 0f)
+            return;
+
         CurrentXP += amount;
 
         CheckLevelUp();
-
-        OnXPChanged?.Invoke(CurrentXP, RequiredXP);
     }
 
     public void ResetProgression()
     {
         CurrentLevel = 1;
         CurrentXP = 0f;
+
         RecalculateRequiredXP();
+
+        OnXPChanged?.Invoke(CurrentXP, RequiredXP);
     }
 
     // ===============================
@@ -45,8 +53,6 @@ public class PlayerExperienceSystem : MonoBehaviour
 
     private void CheckLevelUp()
     {
-        //bool leveledUp = false;
-
         while (CurrentXP >= RequiredXP)
         {
             CurrentXP -= RequiredXP;
@@ -55,14 +61,21 @@ public class PlayerExperienceSystem : MonoBehaviour
             RecalculateRequiredXP();
 
             OnLevelUp?.Invoke(CurrentLevel);
-            //leveledUp = true;
         }
 
         OnXPChanged?.Invoke(CurrentXP, RequiredXP);
     }
 
+    private void OnValidate()
+    {
+        baseXP = Mathf.Max(1f, baseXP);
+        growthFactor = Mathf.Max(0f, growthFactor);
+    }
+
     private void RecalculateRequiredXP()
     {
-        RequiredXP = baseXP * (1f + (CurrentLevel - 1) * growthFactor);
+        RequiredXP = Mathf.Max(
+            1f,
+            baseXP * (1f + (CurrentLevel - 1) * growthFactor));
     }
 }

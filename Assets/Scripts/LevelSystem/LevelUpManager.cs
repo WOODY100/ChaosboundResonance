@@ -14,14 +14,36 @@ public class LevelUpManager : MonoBehaviour
     public event System.Action OnReplaceFinished;
     public event System.Action OnReplaceCancelled;
     public event System.Action OnLevelUpFinished;
+    public bool IsPlayerBound =>
+    experience != null &&
+    loadout != null &&
+    playerStats != null &&
+    modifierSystem != null;
 
     private List<UpgradeOption> currentOptions;
     private SkillDefinition pendingReplaceSkill;
+    private PlayerModifierSystem modifierSystem;
+
+    private void OnEnable()
+    {
+        if (experience != null)
+            experience.OnLevelUp += HandleLevelUp;
+    }
+
+    private void OnDisable()
+    {
+        if (experience != null)
+            experience.OnLevelUp -= HandleLevelUp;
+    }
 
     public void BindPlayer(PlayerExperienceSystem exp,
                            PlayerSkillLoadout skillLoadout,
                            PlayerStats stats)
     {
+        modifierSystem = stats != null
+            ? stats.GetComponent<PlayerModifierSystem>()
+            : null;
+
         if (experience != null)
             experience.OnLevelUp -= HandleLevelUp;
 
@@ -37,18 +59,42 @@ public class LevelUpManager : MonoBehaviour
     {
         EnterLevelUpState();
 
-        currentOptions = upgradeGenerator.GenerateOptions(loadout);
+        if (!IsPlayerBound)
+        {
+            Debug.LogError("LevelUpManager has no Player bound.");
+            ExitLevelUpState();
+            return;
+        }
+
+        if (upgradeGenerator == null)
+        {
+            Debug.LogError("LevelUpManager is missing UpgradeGenerator.");
+            ExitLevelUpState();
+            return;
+        }
+
+        currentOptions =
+            upgradeGenerator.GenerateOptions(loadout);
 
         OnLevelUpOptionsGenerated?.Invoke(currentOptions);
     }
 
     public void SelectUpgrade(UpgradeOption option)
     {
+        if (option == null)
+            return;
+
         ApplyUpgrade(option);
     }
 
     private void ApplyUpgrade(UpgradeOption option)
     {
+        if (option.Effects == null || option.Effects.Count == 0)
+        {
+            ExitLevelUpState();
+            return;
+        }
+
         foreach (var effect in option.Effects)
         {
             ApplyEffect(effect, option.SkillDefinition);
@@ -110,8 +156,9 @@ public class LevelUpManager : MonoBehaviour
             Value = effect.Value
         });
 
-        playerStats.GetComponent<PlayerModifierSystem>()
-            .AddSource(ModifierLayer.Run, source);
+        modifierSystem?.AddSource(
+            ModifierLayer.Run,
+            source);
     }
 
     public void ReplaceSkillAt(int index)
@@ -135,12 +182,27 @@ public class LevelUpManager : MonoBehaviour
 
     private void EnterLevelUpState()
     {
+        if (GameStateManager.Instance == null)
+            return;
+
         GameStateManager.Instance.SetState(GameState.LevelUp);
     }
 
     private void ExitLevelUpState()
     {
         OnLevelUpFinished?.Invoke();
-        GameStateManager.Instance.SetState(GameState.Playing);
+
+        if (GameStateManager.Instance != null)
+            GameStateManager.Instance.SetState(GameState.Playing);
+    }
+
+    private void OnValidate()
+    {
+        if (upgradeGenerator == null)
+        {
+            Debug.LogWarning(
+                $"{name}: UpgradeGenerator is not assigned.",
+                this);
+        }
     }
 }

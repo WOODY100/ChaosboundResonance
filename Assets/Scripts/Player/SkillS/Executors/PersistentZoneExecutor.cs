@@ -17,6 +17,8 @@ public class PersistentZoneExecutor : MonoBehaviour, ISkillExecutor
 
     public void Initialize(RuntimeSkill runtimeSkill, Transform playerTransform)
     {
+        ResetExecutor();
+
         skill = runtimeSkill;
         player = playerTransform;
     }
@@ -182,5 +184,17 @@ public class PersistentZoneExecutor : MonoBehaviour, ISkillExecutor
             pooledObject.ReturnToPool();
         else
             Destroy(oldest);
+    }
+
+    public void ResetExecutor()
+    {
+        StopAllCoroutines();
+
+        skill = null;
+        player = null;
+
+        isExecuting = false;
+
+        activeZones.Clear();
     }
 }

@@ -5,17 +5,28 @@ public class ProjectileExecutor : MonoBehaviour, ISkillExecutor
 {
     private RuntimeSkill skill;
     private Transform owner;
-    private PlayerStats playerStats;
+    private PlayerModifierSystem modifierSystem;
 
     private bool isExecuting = false;
 
     private static readonly Collider[] hitBuffer = new Collider[32];
 
+    private readonly List<Transform> availableTargets = new();
+
     public void Initialize(RuntimeSkill runtimeSkill, Transform skillOwner)
     {
+        ResetExecutor();
+
         skill = runtimeSkill;
         owner = skillOwner;
-        playerStats = owner.GetComponent<PlayerStats>();
+
+        modifierSystem = owner.GetComponent<PlayerModifierSystem>();
+
+        if (modifierSystem == null)
+        {
+            Debug.LogError(
+                $"ProjectileExecutor could not find PlayerModifierSystem on '{owner.name}'.");
+        }
     }
 
     public void Tick(float deltaTime)
@@ -54,7 +65,7 @@ public class ProjectileExecutor : MonoBehaviour, ISkillExecutor
             return;
         }
 
-        List<Transform> availableTargets = new List<Transform>();
+        availableTargets.Clear();
 
         for (int i = 0; i < hits; i++)
         {
@@ -128,7 +139,19 @@ public class ProjectileExecutor : MonoBehaviour, ISkillExecutor
 
         if (projectile != null)
         {
-            projectile.Initialize(skill, direction, playerStats);
+            projectile.Initialize(
+                skill,
+                direction,
+                modifierSystem);
         }
+    }
+
+    public void ResetExecutor()
+    {
+        skill = null;
+        owner = null;
+        modifierSystem = null;
+
+        isExecuting = false;
     }
 }

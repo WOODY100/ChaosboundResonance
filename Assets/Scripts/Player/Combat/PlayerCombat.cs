@@ -20,21 +20,24 @@ public class PlayerCombat : MonoBehaviour
     public Transform attackSpawnPoint;
 
     private Animator animator;
-    private PlayerStats stats;
+    private PlayerStats playerStats;
+    private PlayerModifierSystem modifierSystem;
     private PlayerController controller;
 
-    private Coroutine rotationCoroutine;
+    private static readonly Collider[] attackHits = new Collider[64];
 
-    private static Collider[] attackHits = new Collider[64];
-
-    void Awake()
+    private void Awake()
     {
         animator = GetComponentInChildren<Animator>();
-        stats = GetComponent<PlayerStats>();
+        playerStats = GetComponent<PlayerStats>();
+        modifierSystem = GetComponent<PlayerModifierSystem>();
         controller = GetComponent<PlayerController>();
 
-        if (stats == null)
+        if (playerStats == null)
             Debug.LogError("PlayerStats NOT FOUND");
+
+        if (modifierSystem == null)
+            Debug.LogError("PlayerModifierSystem NOT FOUND");
 
         if (autoAttackCooldown == null)
             Debug.LogError("CooldownComponent NOT ASSIGNED");
@@ -42,7 +45,7 @@ public class PlayerCombat : MonoBehaviour
         autoAttackCooldown.SetBaseCooldown(0.9f);
     }
 
-    void Update()
+    private void Update()
     {
         if (GameStateManager.Instance.CurrentState != GameState.Playing)
             return;
@@ -55,18 +58,21 @@ public class PlayerCombat : MonoBehaviour
             RotateTowards(CurrentTarget);
         }
 
+        float attackSpeed =
+    modifierSystem.GetStat(StatType.AttackSpeed);
+
         autoAttackCooldown.CooldownMultiplier =
-            1f / Mathf.Max(0.01f, stats.FinalAttackSpeed);
+            1f / Mathf.Max(0.01f, attackSpeed);
+
+        animator.SetFloat("AttackSpeed", attackSpeed);
 
         autoAttackCooldown.Tick(Time.deltaTime);
-
-        animator.SetFloat("AttackSpeed", stats.FinalAttackSpeed);
 
         UpdateTarget();
         HandleAutoAttack();
     }
 
-    void UpdateTarget()
+    private void UpdateTarget()
     {
         IDamageable target = FindBestTarget();
 
@@ -76,7 +82,7 @@ public class PlayerCombat : MonoBehaviour
             CurrentTarget = null;
     }
 
-    void HandleAutoAttack()
+    private void HandleAutoAttack()
     {
         if (!autoAttackCooldown.IsReady)
             return;
@@ -88,7 +94,7 @@ public class PlayerCombat : MonoBehaviour
         ExecuteAttack(target);
     }
 
-    void HandleDynamicRetarget()
+    private void HandleDynamicRetarget()
     {
         if (!IsAttacking)
             return;
@@ -118,7 +124,7 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
-    IDamageable FindBestTarget()
+    private IDamageable FindBestTarget()
     {
         int hitCount = Physics.OverlapSphereNonAlloc(
             transform.position,
@@ -171,7 +177,7 @@ public class PlayerCombat : MonoBehaviour
         return bestTarget;
     }
 
-    void RotateTowards(Transform target)
+    private void RotateTowards(Transform target)
     {
         Vector3 direction = target.position - transform.position;
         direction.y = 0f;
@@ -188,7 +194,7 @@ public class PlayerCombat : MonoBehaviour
         );
     }
 
-    void ExecuteAttack(IDamageable target)
+    private void ExecuteAttack(IDamageable target)
     {
         autoAttackCooldown.Trigger();
 
@@ -214,8 +220,9 @@ public class PlayerCombat : MonoBehaviour
 
         SlashVFX vfx = slash.GetComponent<SlashVFX>();
 
-        if (vfx != null && stats != null)
-            vfx.SetColor(DamageVisuals.GetColor(stats.CurrentDamageType));
+        if (vfx != null && playerStats != null)
+            vfx.SetColor(
+                DamageVisuals.GetColor(playerStats.CurrentDamageType));
     }
 
     // 🔥 Animation Event
@@ -262,15 +269,17 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
-    void ApplyDamage(IDamageable target)
+    private void ApplyDamage(IDamageable target)
     {
-        if (stats == null) return;
+        if (modifierSystem == null || playerStats == null)
+            return;
 
-        float damageAmount = stats.FinalDamage;
+        float damageAmount =
+            modifierSystem.GetStat(StatType.Damage);
 
         DamageData damage = new DamageData(
             damageAmount,
-            stats.CurrentDamageType
+            playerStats.CurrentDamageType
         );
 
         target.TakeDamage(damage);
@@ -297,7 +306,7 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
-    void OnDrawGizmosSelected()
+    private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, attackRange);
@@ -319,8 +328,6 @@ public class PlayerCombat : MonoBehaviour
     {
         if (!IsAttacking)
             return;
-
-        StopAllCoroutines();
 
         animator.ResetTrigger("Attack");
 

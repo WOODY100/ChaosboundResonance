@@ -10,12 +10,17 @@ public class OrbitalExecutor : MonoBehaviour, ISkillExecutor
 
     public void Initialize(RuntimeSkill runtimeSkill, Transform skillOwner)
     {
+        ResetExecutor();
+
         skill = runtimeSkill;
         owner = skillOwner;
     }
 
     public void Tick(float deltaTime)
     {
+        if (skill == null || owner == null)
+            return;
+
         skill.TickCooldown(deltaTime);
 
         if (isActive)
@@ -34,6 +39,19 @@ public class OrbitalExecutor : MonoBehaviour, ISkillExecutor
     {
         if (skill.Stats.FinalCount <= 0)
             return;
+
+        if (PoolManager.Instance == null)
+        {
+            Debug.LogError("PoolManager not found.");
+            return;
+        }
+
+        if (skill.Definition.ExecutionPrefab == null)
+        {
+            Debug.LogError(
+                $"{skill.Definition.name} has no ExecutionPrefab assigned.");
+            return;
+        }
 
         isActive = true;
 
@@ -68,14 +86,30 @@ public class OrbitalExecutor : MonoBehaviour, ISkillExecutor
 
     private void OnSingleOrbFinished()
     {
+        if (!isActive)
+            return;
+
         activeOrbs--;
 
-        if (activeOrbs <= 0)
-        {
-            isActive = false;
+        if (activeOrbs > 0)
+            return;
 
-            if (skill.Definition.CooldownStartsAfterDuration)
-                skill.StartCooldown(skill.Stats.FinalCooldown);
+        activeOrbs = 0;
+        isActive = false;
+
+        if (skill != null &&
+            skill.Definition.CooldownStartsAfterDuration)
+        {
+            skill.StartCooldown(skill.Stats.FinalCooldown);
         }
+    }
+
+    public void ResetExecutor()
+    {
+        skill = null;
+        owner = null;
+
+        activeOrbs = 0;
+        isActive = false;
     }
 }

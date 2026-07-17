@@ -12,7 +12,7 @@ public class ArcBoltProjectile : PooledBehaviour, IProjectile
     [SerializeField] private float maxLifetime = 5f;
 
     private RuntimeSkill skill;
-    private PlayerStats playerStats;
+    private PlayerModifierSystem modifierSystem;
     private Rigidbody rb;
 
     private int remainingPenetration;
@@ -33,7 +33,7 @@ public class ArcBoltProjectile : PooledBehaviour, IProjectile
         lifetimeTimer = 0f;
         remainingPenetration = 0;
         skill = null;
-        playerStats = null;
+        modifierSystem = null;
 
         if (rb != null)
         {
@@ -54,23 +54,53 @@ public class ArcBoltProjectile : PooledBehaviour, IProjectile
     }
 
     public void Initialize(
-        RuntimeSkill runtimeSkill,
-        Vector3 direction,
-        PlayerStats ownerStats)
+    RuntimeSkill runtimeSkill,
+    Vector3 direction,
+    PlayerModifierSystem ownerModifiers)
     {
         ResetPooledState();
 
+        if (runtimeSkill == null)
+        {
+            Debug.LogError("ArcBoltProjectile initialized with null RuntimeSkill.");
+            ReturnToPool();
+            return;
+        }
+
+        if (direction.sqrMagnitude < 0.0001f)
+        {
+            Debug.LogError("ArcBoltProjectile initialized with an invalid direction.");
+            ReturnToPool();
+            return;
+        }
+
+        if (rb == null)
+        {
+            Debug.LogError("ArcBoltProjectile has no Rigidbody.");
+            ReturnToPool();
+            return;
+        }
+
+        direction.Normalize();
+
         skill = runtimeSkill;
-        playerStats = ownerStats;
+        modifierSystem = ownerModifiers;
 
         float attackSpeedMultiplier = 1f;
 
-        if (skill.Definition.ScalesWithAttackSpeed && playerStats != null)
-            attackSpeedMultiplier = playerStats.FinalAttackSpeed;
+        if (skill.Definition.ScalesWithAttackSpeed &&
+            modifierSystem != null)
+        {
+            attackSpeedMultiplier = Mathf.Max(
+                0.05f,
+                modifierSystem.GetStat(StatType.AttackSpeed));
+        }
 
         float finalSpeed = baseSpeed * attackSpeedMultiplier;
 
+        transform.forward = direction;
         rb.linearVelocity = direction * finalSpeed;
+
         remainingPenetration = skill.Stats.PenetrationCount;
 
         initialized = true;
@@ -117,6 +147,9 @@ public class ArcBoltProjectile : PooledBehaviour, IProjectile
 
     private void ApplyDamage(IDamageable target)
     {
+        if (skill == null)
+            return;
+
         float damage = skill.Stats.FinalDamage;
 
         if (skill.Stats.CriticalChance > 0f &&

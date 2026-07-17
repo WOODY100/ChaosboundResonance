@@ -6,10 +6,13 @@ public class PlayerModifierSystem : MonoBehaviour
 {
     public event Action<StatType, float> OnStatChanged;
 
-    private Dictionary<StatType, PlayerStat> stats = new();
+    private readonly Dictionary<StatType, PlayerStat> stats = new();
 
-    private Dictionary<string, ModifierSource> metaSources = new();
-    private Dictionary<string, ModifierSource> runSources = new();
+    private readonly Dictionary<string, ModifierSource> metaSources = new();
+
+    private readonly Dictionary<string, ModifierSource> runSources = new();
+
+    private readonly List<StatModifier> modifierBuffer = new(16);
 
     private void Awake()
     {
@@ -29,7 +32,10 @@ public class PlayerModifierSystem : MonoBehaviour
 
     private void CreateStat(StatType type, float baseValue)
     {
-        stats[type] = new PlayerStat { BaseValue = baseValue };
+        PlayerStat stat = new();
+        stat.SetBaseValue(baseValue);
+
+        stats[type] = stat;
     }
 
     // =========================
@@ -63,7 +69,10 @@ public class PlayerModifierSystem : MonoBehaviour
         {
             ModifierLayer.Meta => metaSources,
             ModifierLayer.Run => runSources,
-            _ => null
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(layer),
+                layer,
+                $"Unknown modifier layer '{layer}'.")
         };
     }
 
@@ -73,15 +82,14 @@ public class PlayerModifierSystem : MonoBehaviour
 
     private void RecalculateAll()
     {
-
         foreach (var statType in stats.Keys)
         {
-            List<StatModifier> collected = new();
+            modifierBuffer.Clear();
 
-            CollectModifiers(metaSources, statType, collected);
-            CollectModifiers(runSources, statType, collected);
+            CollectModifiers(metaSources, statType, modifierBuffer);
+            CollectModifiers(runSources, statType, modifierBuffer);
 
-            stats[statType].Recalculate(collected);
+            stats[statType].Recalculate(modifierBuffer);
 
             OnStatChanged?.Invoke(statType, stats[statType].CurrentValue);
         }
@@ -108,6 +116,12 @@ public class PlayerModifierSystem : MonoBehaviour
 
     public float GetStat(StatType type)
     {
-        return stats[type].CurrentValue;
+        if (!stats.TryGetValue(type, out var stat))
+        {
+            throw new InvalidOperationException(
+                $"Stat '{type}' is not registered in PlayerModifierSystem.");
+        }
+
+        return stat.CurrentValue;
     }
 }

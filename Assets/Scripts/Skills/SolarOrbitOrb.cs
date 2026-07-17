@@ -18,6 +18,7 @@ public class SolarOrbitOrb : PooledBehaviour, IOrbital
     private RuntimeSkill skill;
     private Transform owner;
     private System.Action onFinished;
+    private Rigidbody rb;
 
     private Vector3 chaosAxis;
     private float chaosSpeed;
@@ -27,6 +28,7 @@ public class SolarOrbitOrb : PooledBehaviour, IOrbital
     private float duration;
     private float radius;
     private float angularSpeed;
+    private bool finished;
     private Vector3 smoothedCenter;
 
     private float damage;
@@ -36,7 +38,7 @@ public class SolarOrbitOrb : PooledBehaviour, IOrbital
     {
         base.Awake();
 
-        Rigidbody rb = GetComponent<Rigidbody>();
+        rb = GetComponent<Rigidbody>();
         rb.useGravity = false;
         rb.isKinematic = true;
     }
@@ -49,15 +51,31 @@ public class SolarOrbitOrb : PooledBehaviour, IOrbital
     {
         ResetPooledState();
 
+        if (runtimeSkill == null)
+        {
+            Debug.LogError("SolarOrbitOrb initialized with null RuntimeSkill.");
+            ReturnToPool();
+            return;
+        }
+
+        if (orbitOwner == null)
+        {
+            Debug.LogError("SolarOrbitOrb initialized with null owner.");
+            ReturnToPool();
+            return;
+        }
+
         skill = runtimeSkill;
         owner = orbitOwner;
         onFinished = onOrbitFinished;
 
+        finished = false;
+
         currentAngle = startAngle;
 
-        radius = skill.Stats.FinalRange;
-        duration = skill.Stats.FinalDuration;
-        damage = skill.Stats.FinalDamage;
+        radius = Mathf.Max(0.1f, skill.Stats.FinalRange);
+        duration = Mathf.Max(0.01f, skill.Stats.FinalDuration);
+        damage = Mathf.Max(0f, skill.Stats.FinalDamage);
         damageType = skill.Definition.DamageType;
 
         chaosAxis = Random.onUnitSphere;
@@ -69,9 +87,15 @@ public class SolarOrbitOrb : PooledBehaviour, IOrbital
 
         if (skill.Definition.ScalesWithAttackSpeed)
         {
-            PlayerStats stats = owner.GetComponent<PlayerStats>();
-            if (stats != null)
-                attackSpeedMultiplier = stats.FinalAttackSpeed;
+            PlayerModifierSystem modifierSystem =
+                owner.GetComponent<PlayerModifierSystem>();
+
+            if (modifierSystem != null)
+            {
+                attackSpeedMultiplier = Mathf.Max(
+                    0.05f,
+                    modifierSystem.GetStat(StatType.AttackSpeed));
+            }
         }
 
         angularSpeed = baseAngularSpeed * attackSpeedMultiplier;
@@ -148,7 +172,7 @@ public class SolarOrbitOrb : PooledBehaviour, IOrbital
 
     private void OnTriggerEnter(Collider other)
     {
-        if (skill == null)
+        if (skill == null || owner == null)
             return;
 
         IDamageable damageable = other.GetComponentInParent<IDamageable>();
@@ -164,6 +188,11 @@ public class SolarOrbitOrb : PooledBehaviour, IOrbital
 
     private void FinishOrbit()
     {
+        if (finished)
+            return;
+
+        finished = true;
+
         onFinished?.Invoke();
         onFinished = null;
 
@@ -176,6 +205,8 @@ public class SolarOrbitOrb : PooledBehaviour, IOrbital
         owner = null;
         onFinished = null;
 
+        finished = false;
+
         chaosAxis = Vector3.up;
         chaosSpeed = 0f;
 
@@ -185,6 +216,8 @@ public class SolarOrbitOrb : PooledBehaviour, IOrbital
         radius = 0f;
         angularSpeed = 0f;
         smoothedCenter = Vector3.zero;
+
+        transform.localRotation = Quaternion.identity;
 
         damage = 0f;
     }

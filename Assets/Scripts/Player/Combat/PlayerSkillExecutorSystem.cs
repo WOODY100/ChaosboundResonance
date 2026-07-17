@@ -5,12 +5,18 @@ public class PlayerSkillExecutorSystem : MonoBehaviour
 {
     private PlayerSkillLoadout loadout;
 
-    private List<ISkillExecutor> activeExecutors =
-        new List<ISkillExecutor>();
+    private readonly List<ISkillExecutor> activeExecutors = new();
+
+    public int ExecutorCount => activeExecutors.Count;
 
     void Awake()
     {
         loadout = GetComponent<PlayerSkillLoadout>();
+    }
+
+    private void Start()
+    {
+        RebuildExecutors();
     }
 
     void OnEnable()
@@ -27,31 +33,30 @@ public class PlayerSkillExecutorSystem : MonoBehaviour
 
     void Update()
     {
+        if (GameStateManager.Instance == null)
+            return;
+
         if (GameStateManager.Instance.CurrentState != GameState.Playing)
             return;
 
         float delta = Time.deltaTime;
 
-        foreach (var executor in activeExecutors)
+        for (int i = 0; i < activeExecutors.Count; i++)
         {
-            executor.Tick(delta);
+            activeExecutors[i]?.Tick(delta);
         }
     }
 
     private void RebuildExecutors()
     {
-        // Destroy old executor components
-        foreach (var executor in activeExecutors)
-        {
-            if (executor is MonoBehaviour mb)
-                Destroy(mb);
-        }
+        DestroyExecutors();
 
-        activeExecutors.Clear();
+        if (loadout == null)
+            return;
 
         RuntimeSkill[] skills = loadout.GetAllSkills();
 
-        foreach (var skill in skills)
+        foreach (RuntimeSkill skill in skills)
         {
             if (skill == null)
                 continue;
@@ -60,8 +65,32 @@ public class PlayerSkillExecutorSystem : MonoBehaviour
         }
     }
 
+    private void DestroyExecutors()
+    {
+        foreach (var executor in activeExecutors)
+        {
+            executor.ResetExecutor();
+
+            if (executor is MonoBehaviour mb)
+                Destroy(mb);
+        }
+
+        activeExecutors.Clear();
+    }
+
+    private void OnDestroy()
+    {
+        DestroyExecutors();
+    }
+
     private void CreateExecutor(RuntimeSkill skill)
     {
+        if (skill.Definition == null)
+        {
+            Debug.LogError("RuntimeSkill has no SkillDefinition.");
+            return;
+        }
+
         if (skill.Definition.ExecutorPrefab == null)
         {
             Debug.LogWarning(
@@ -74,6 +103,14 @@ public class PlayerSkillExecutorSystem : MonoBehaviour
             skill.Definition.ExecutorPrefab,
             transform
         );
+
+        if (executorObj == null)
+        {
+            Debug.LogError(
+                $"Failed to instantiate ExecutorPrefab for {skill.Definition.DisplayName}."
+            );
+            return;
+        }
 
         ISkillExecutor executor =
             executorObj.GetComponent<ISkillExecutor>();

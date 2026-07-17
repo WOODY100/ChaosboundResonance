@@ -10,7 +10,7 @@ public class ExperiencePickup : MonoBehaviour
     [SerializeField] private float absorbDuration = 0.2f;
 
     private Transform player;
-    private PlayerStats playerStats;
+    private PlayerModifierSystem modifierSystem;
     private PlayerExperienceSystem xpSystem;
     private FloatingPickup floatingPickup;
     private PooledObject pooledObject;
@@ -22,7 +22,8 @@ public class ExperiencePickup : MonoBehaviour
 
     public void Initialize(int xp)
     {
-        xpAmount = xp;
+        xpAmount = Mathf.Max(0, xp);
+
         ResetState();
         EnsureReferences();
     }
@@ -30,6 +31,10 @@ public class ExperiencePickup : MonoBehaviour
     private void Awake()
     {
         startScale = transform.localScale;
+
+        if (startScale == Vector3.zero)
+            startScale = Vector3.one;
+
         floatingPickup = GetComponent<FloatingPickup>();
         pooledObject = GetComponent<PooledObject>();
     }
@@ -56,8 +61,8 @@ public class ExperiencePickup : MonoBehaviour
             return;
         }
 
-        float attractRadius = playerStats != null
-            ? playerStats.ExpAttractionRadius
+        float attractRadius = modifierSystem != null
+            ? modifierSystem.GetStat(StatType.ExpAttractionRadius)
             : 2f;
 
         float sqrDistance = (transform.position - player.position).sqrMagnitude;
@@ -78,6 +83,9 @@ public class ExperiencePickup : MonoBehaviour
                 player.position,
                 attractSpeed * Time.deltaTime
             );
+
+            sqrDistance =
+                (transform.position - player.position).sqrMagnitude;
         }
 
         if (sqrDistance <= 0.09f)
@@ -97,7 +105,7 @@ public class ExperiencePickup : MonoBehaviour
         {
             xpSystem = playerXP;
             player = playerXP.transform;
-            playerStats = playerXP.GetComponent<PlayerStats>();
+            modifierSystem = playerXP.GetComponent<PlayerModifierSystem>();
 
             StartAbsorb();
         }
@@ -118,6 +126,9 @@ public class ExperiencePickup : MonoBehaviour
 
         isAbsorbing = true;
         absorbTimer = 0f;
+
+        if (floatingPickup != null)
+            floatingPickup.DisableFloating();
     }
 
     private void AbsorbEffect()
@@ -127,7 +138,10 @@ public class ExperiencePickup : MonoBehaviour
 
         absorbTimer += Time.deltaTime;
 
-        float t = Mathf.Clamp01(absorbTimer / absorbDuration);
+        float duration = Mathf.Max(0.01f, absorbDuration);
+
+        float t = Mathf.Clamp01(absorbTimer / duration);
+
         float curved = t * t;
 
         transform.position = Vector3.Lerp(
@@ -174,6 +188,8 @@ public class ExperiencePickup : MonoBehaviour
         isAbsorbing = false;
         absorbTimer = 0f;
         transform.localScale = startScale;
+        transform.localRotation = Quaternion.identity;
+        transform.SetParent(null, true);
     }
 
     private void EnsureReferences()
@@ -187,6 +203,15 @@ public class ExperiencePickup : MonoBehaviour
             return;
 
         player = xpSystem.transform;
-        playerStats = xpSystem.GetComponent<PlayerStats>();
+        modifierSystem = xpSystem.GetComponent<PlayerModifierSystem>();
+    }
+
+    private void OnValidate()
+    {
+        xpAmount = Mathf.Max(0, xpAmount);
+
+        attractSpeed = Mathf.Max(0f, attractSpeed);
+
+        absorbDuration = Mathf.Max(0.01f, absorbDuration);
     }
 }

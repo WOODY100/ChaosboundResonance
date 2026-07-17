@@ -41,6 +41,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7148642481656305542}
   - component: {fileID: 4777236258634498890}
+  - component: {fileID: 8147469518392399759}
   - component: {fileID: 4055586777931732939}
   - component: {fileID: 7456098046516693950}
   - component: {fileID: 8481841851863748374}
@@ -55,6 +56,8 @@ GameObject:
   - component: {fileID: 3967080049449003311}
   - component: {fileID: 755046934357331053}
   - component: {fileID: 1864340752066512939}
+  - component: {fileID: 101089627876951994}
+  - component: {fileID: 5463630734366664216}
   m_Layer: 3
   m_Name: Player
   m_TagString: Player
@@ -105,6 +108,27 @@ CharacterController:
   m_SkinWidth: 0.03
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0.86, z: 0}
+--- !u!135 &8147469518392399759
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1545538594216743131}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 2
+  m_Center: {x: 0, y: 0.75, z: 0}
 --- !u!114 &4055586777931732939
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -148,6 +172,9 @@ MonoBehaviour:
   dashCooldown: 1
   gravity: -20
   groundCheckDistance: 1.5
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!114 &4092326677262735991
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -297,6 +324,45 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f111ff30c4a9a784b8db587c42cc6aa6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerModifierSystem
+--- !u!114 &101089627876951994
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1545538594216743131}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9c2b29000908be45a3c0bf34b1fd482, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerInteractor
+--- !u!54 &5463630734366664216
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1545538594216743131}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &5831844168756715225
 GameObject:
   m_ObjectHideFlags: 0

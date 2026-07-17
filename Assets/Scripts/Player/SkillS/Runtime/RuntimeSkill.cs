@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class RuntimeSkill
@@ -9,11 +10,17 @@ public class RuntimeSkill
     public float CooldownDuration { get; private set; }
 
     public bool IsOnCooldown => CurrentCooldown > 0f;
-
     public int ModifierCount => appliedModifiers.Count;
+    public bool HasModifiers => appliedModifiers.Count > 0;
+    public bool HasEvolutions => appliedEvolutions.Count > 0;
 
-    private List<SkillModifierDefinition> appliedModifiers;
-    private List<SkillEvolutionDefinition> appliedEvolutions;
+    public float CooldownNormalized =>
+        CooldownDuration <= 0f
+            ? 0f
+            : CurrentCooldown / CooldownDuration;
+
+    private readonly List<SkillModifierDefinition> appliedModifiers = new();
+    private readonly List<SkillEvolutionDefinition> appliedEvolutions = new();
 
     private SkillStats stats;
 
@@ -31,10 +38,7 @@ public class RuntimeSkill
 
     public RuntimeSkill(SkillDefinition definition)
     {
-        Definition = definition;
-
-        appliedModifiers = new List<SkillModifierDefinition>();
-        appliedEvolutions = new List<SkillEvolutionDefinition>();
+        Definition = definition ?? throw new ArgumentNullException(nameof(definition));
 
         stats = new SkillStats
         {
@@ -83,6 +87,32 @@ public class RuntimeSkill
 
     private void RecalculateStats()
     {
+        ResetStats();
+
+        // =========================
+        // APPLY MODIFIERS
+        // =========================
+        foreach (var mod in appliedModifiers)
+        {
+            ApplyModifierToStatsFlexible(mod);
+        }
+
+        // =========================
+        // APPLY EVOLUTIONS
+        // =========================
+        foreach (var evo in appliedEvolutions)
+        {
+            ApplyEvolutionToStats(evo);
+        }
+
+        // =========================
+        // FINAL CALCULATION
+        // =========================
+        stats.Calculate();
+    }
+
+    private void ResetStats()
+    {
         // =========================
         // RESET BASE VALUES
         // =========================
@@ -129,27 +159,8 @@ public class RuntimeSkill
         stats.GrantsExplosion = false;
         stats.GrantsChaining = false;
         stats.GrantsSplit = false;
-
-        // =========================
-        // APPLY MODIFIERS
-        // =========================
-        foreach (var mod in appliedModifiers)
-        {
-            ApplyModifierToStatsFlexible(mod);
-        }
-
-        // =========================
-        // APPLY EVOLUTIONS
-        // =========================
-        foreach (var evo in appliedEvolutions)
-        {
-            ApplyEvolutionToStats(evo);
-        }
-
-        // =========================
-        // FINAL CALCULATION
-        // =========================
-        stats.Calculate();
+        stats.SpawnZoneOnHit = false;
+        stats.SpawnZoneChance = 0f;
     }
 
     // ===============================
@@ -262,6 +273,8 @@ public class RuntimeSkill
     // ===============================
     public void StartCooldown(float duration)
     {
+        duration = Mathf.Max(0f, duration);
+
         CooldownDuration = duration;
         CurrentCooldown = duration;
     }
@@ -271,13 +284,10 @@ public class RuntimeSkill
         if (CurrentCooldown <= 0f)
             return;
 
-        CurrentCooldown -= deltaTime;
+        CurrentCooldown = Mathf.Max(0f, CurrentCooldown - deltaTime);
 
-        if (CurrentCooldown <= 0f)
-        {
-            CurrentCooldown = 0f;
+        if (CurrentCooldown == 0f)
             OnCooldownFinished?.Invoke(this);
-        }
     }
 
     private void ApplyModifierToStatsFlexible(SkillModifierDefinition modifier)
