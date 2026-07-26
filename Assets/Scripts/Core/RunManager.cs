@@ -1,6 +1,5 @@
-using Chaosbound.Core.Runtime.Core;
-using Chaosbound.Runtime.Population;
-using Chaosbound.Runtime.Run;
+using Chaosbound.Core.Runtime.State;
+using Chaosbound.Content.Expeditions.Runtime.Configs;
 using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -14,12 +13,9 @@ public class RunManager : MonoBehaviour
     private PlayerHealth player;
 
     private RuntimeState _runtimeState;
-    private IPopulationDirector _populationDirector;
-    private RuntimeRunConfig _currentRunConfig;
+    private RuntimeExpeditionConfig _currentRunConfig;
 
-    private float nextEvaluationTime;
-
-    public RuntimeRunConfig CurrentRunConfig => _currentRunConfig;
+    public RuntimeExpeditionConfig CurrentRunConfig => _currentRunConfig;
 
     void Awake()
     {
@@ -31,35 +27,19 @@ public class RunManager : MonoBehaviour
 
     private void Update()
     {
-        if (_runtimeState == null ||
-            _populationDirector == null)
+        if (_runtimeState == null)
         {
             return;
         }
 
         _runtimeState.Advance(Time.deltaTime);
 
-        if (_runtimeState.ElapsedTime < nextEvaluationTime)
-        {
-            return;
-        }
-
-        nextEvaluationTime += 1f;
-
-        PopulationContext context =
-            new PopulationContext(_runtimeState.ElapsedTime);
-
-        PopulationIntent intent =
-            _populationDirector.Evaluate(context);
-
-        if (intent != null)
-        {
-            Debug.Log(
-                $"[{_runtimeState.ElapsedTime:F1}s] Population Intent: {intent.Formation}");
-        }
+        // TODO:
+        // Evaluate the Expedition Director once the
+        // Director runtime architecture is implemented.
     }
 
-    public void StartRun(RuntimeRunConfig config)
+    public void StartRun(RuntimeExpeditionConfig config)
     {
         if (config == null)
             throw new ArgumentNullException(nameof(config));
@@ -68,16 +48,11 @@ public class RunManager : MonoBehaviour
 
         _runtimeState = new RuntimeState();
 
-        _populationDirector =
-            new PopulationDirector(config.Population);
-
         Time.timeScale = 1f;
 
         if (gameOverPanel != null)
             gameOverPanel.SetActive(false);
 
-        // TODO:
-        // Include expedition identity when RuntimeRunConfig exposes it.
         Debug.Log(
             $"Run started. Difficulty: {config.General.BaseDifficulty}");
     }
@@ -107,7 +82,6 @@ public class RunManager : MonoBehaviour
     public void RestartRun()
     {
         _runtimeState = null;
-        _populationDirector = null;
 
         Time.timeScale = 1f;
 

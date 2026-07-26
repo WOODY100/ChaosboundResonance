@@ -36,6 +36,16 @@ public class LevelUpManager : MonoBehaviour
             experience.OnLevelUp -= HandleLevelUp;
     }
 
+    public void Initialize(PlayerExperienceSystem exp,
+                           PlayerSkillLoadout skillLoadout,
+                           PlayerStats stats)
+    {
+        BindPlayer(
+            exp,
+            skillLoadout,
+            stats);
+    }
+
     public void BindPlayer(PlayerExperienceSystem exp,
                            PlayerSkillLoadout skillLoadout,
                            PlayerStats stats)

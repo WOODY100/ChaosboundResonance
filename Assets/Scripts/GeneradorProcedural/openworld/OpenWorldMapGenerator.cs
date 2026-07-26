@@ -1,55 +1,24 @@
-using System.Collections.Generic;
+using Chaosbound.Content.Expeditions.Runtime.World;
+using Chaosbound.Content.World.Runtime.Services;
+using Chaosbound.Content.World.Themes.TileSets;
+using System;
 using UnityEngine;
 
 public class OpenWorldMapGenerator : MonoBehaviour
 {
-    [System.Serializable]
-    public class TilePrefabEntry
-    {
-        public GameObject prefab;
-
-        [Min(1)] public int sizeX = 1;
-        [Min(1)] public int sizeZ = 1;
-
-        [Min(0)] public int weight = 1;
-
-        public bool allowRotate90 = false;
-        public bool randomYRotation = false;
-    }
-
-    [System.Serializable]
-    public class TileCategory
-    {
-        public string categoryName = "Floors";
-        public string parentName = "Floors";
-
-        [Min(0)] public int categoryWeight = 1;
-
-        public List<TilePrefabEntry> prefabs = new List<TilePrefabEntry>();
-    }
-
     [Header("Map Settings")]
     [SerializeField] private int width = 10;
     [SerializeField] private int height = 10;
     [SerializeField] private float tileSize = 12f;
     [SerializeField] private bool centerMapOnOrigin = true;
 
-    [Header("Center Tile Categories")]
-    [SerializeField] private List<TileCategory> centerCategories = new List<TileCategory>();
-
-    [Header("Edge Tile Categories")]
-    [SerializeField] private List<TileCategory> edgeCategories = new List<TileCategory>();
-
-    [Header("Corner Tile Categories")]
-    [SerializeField] private List<TileCategory> cornerCategories = new List<TileCategory>();
-
     [Header("Generated Parent")]
     [SerializeField] private Transform generatedParent;
 
     [Header("Generation")]
-    [SerializeField] private bool generateOnStart = true;
+    [SerializeField] private bool generateOnStart = false;
     [SerializeField] private bool clearBeforeGenerate = true;
-    [SerializeField] private bool generateDecorationAfterMap = true;
+    [SerializeField] private bool generateDecorationAfterMap = false;
 
     private Transform terrainParent;
     private Transform decorationParent;
@@ -57,8 +26,19 @@ public class OpenWorldMapGenerator : MonoBehaviour
     private Transform obstaclesParent;
     private Transform lightsParent;
 
-    private readonly Dictionary<string, Transform> categoryParents = new Dictionary<string, Transform>();
+    private TileSetProfile TileSet => runtimeWorldConfig.Theme.TileSet;
+
+    private readonly TileSelector tileSelector = new();
+
+    private RuntimeWorldConfig runtimeWorldConfig;
+
     private bool[,] occupied;
+
+    public void Initialize(RuntimeWorldConfig config)
+    {
+        runtimeWorldConfig = config
+            ?? throw new System.ArgumentNullException(nameof(config));
+    }
 
     private void Start()
     {
@@ -129,87 +109,50 @@ public class OpenWorldMapGenerator : MonoBehaviour
         bool isSouth = z == 0;
         bool isNorth = z == height - 1;
 
-        bool isCorner = (isWest || isEast) && (isSouth || isNorth);
+        TileContext context =
+            (isWest || isEast) && (isSouth || isNorth)
+                ? TileContext.Corner
+                : TileContext.Edge;
 
-        TileCategory category = isCorner
-            ? GetWeightedRandomCategory(cornerCategories)
-            : GetWeightedRandomCategory(edgeCategories);
+        TileEntry tile = tileSelector.Select(
+            TileSet,
+            context);
 
-        if (category == null)
-            return;
+        Quaternion rotation = GetBorderRotation(
+            isWest,
+            isEast,
+            isSouth,
+            isNorth);
 
-        TilePrefabEntry entry = GetWeightedRandomEntry(category.prefabs);
-
-        if (entry == null || entry.prefab == null)
-            return;
-
-        Quaternion rotation = Quaternion.identity;
-
-        if (isCorner)
-        {
-            if (isWest && isSouth)
-                rotation = Quaternion.Euler(0f, 0f, 0f);
-            else if (isEast && isSouth)
-                rotation = Quaternion.Euler(0f, 270f, 0f);
-            else if (isEast && isNorth)
-                rotation = Quaternion.Euler(0f, 180f, 0f);
-            else if (isWest && isNorth)
-                rotation = Quaternion.Euler(0f, 90f, 0f);
-        }
-        else
-        {
-            if (isWest)
-                rotation = Quaternion.Euler(0f, 0f, 0f);
-            else if (isNorth)
-                rotation = Quaternion.Euler(0f, 90f, 0f);
-            else if (isEast)
-                rotation = Quaternion.Euler(0f, 180f, 0f);
-            else if (isSouth)
-                rotation = Quaternion.Euler(0f, 270f, 0f);
-        }
-
-        Transform parent = GetCategoryParent(category.parentName);
-
-        Instantiate(entry.prefab, GetWorldPosition(x, z), rotation, parent);
+        Instantiate(
+            tile.Prefab,
+            GetWorldPosition(x, z),
+            rotation,
+            terrainParent);
     }
 
     private void SpawnCenterTile(int x, int z)
     {
         for (int attempts = 0; attempts < 20; attempts++)
         {
-            TileCategory category = GetWeightedRandomCategory();
+            TileEntry tile = tileSelector.Select(
+                TileSet,
+                TileContext.Center);
 
-            if (category == null)
-                continue;
+            int sizeX = tile.SizeX;
+            int sizeZ = tile.SizeZ;
 
-            TilePrefabEntry entry = GetWeightedRandomEntry(category.prefabs);
-
-            if (entry == null || entry.prefab == null)
-                continue;
-
-            int sizeX = entry.sizeX;
-            int sizeZ = entry.sizeZ;
-            float yRotation = 0f;
-
-            if (entry.allowRotate90 && Random.value > 0.5f)
-            {
-                (sizeX, sizeZ) = (sizeZ, sizeX);
-                yRotation = 90f;
-            }
-            else if (entry.randomYRotation)
-            {
-                yRotation = Random.Range(0, 4) * 90f;
-            }
+            Quaternion rotation = ApplyTileRotationModifiers(
+                tile,
+                ref sizeX,
+                ref sizeZ);
 
             if (!CanPlaceTile(x, z, sizeX, sizeZ))
                 continue;
 
             Vector3 position = GetWorldPositionForFootprint(x, z, sizeX, sizeZ);
-            Quaternion rotation = Quaternion.Euler(0f, yRotation, 0f);
 
-            Transform parent = GetCategoryParent(category.parentName);
-
-            Instantiate(entry.prefab, position, rotation, parent);
+            Instantiate(tile.Prefab, position, rotation, terrainParent);
 
             MarkOccupied(x, z, sizeX, sizeZ);
             return;
@@ -220,23 +163,85 @@ public class OpenWorldMapGenerator : MonoBehaviour
 
     private void SpawnFallbackFloor(int x, int z)
     {
-        TileCategory floorCategory = centerCategories.Find(c => c.categoryName == "Floors");
+        TileEntry tile = tileSelector.Select(
+            TileSet,
+            TileContext.Center);
 
-        if (floorCategory == null)
-            floorCategory = centerCategories.Count > 0 ? centerCategories[0] : null;
+        Quaternion rotation = ApplyTileRotationModifiers(tile);
 
-        if (floorCategory == null)
-            return;
+        Instantiate(
+            tile.Prefab,
+            GetWorldPosition(x, z),
+            rotation,
+            terrainParent);
+    }
 
-        TilePrefabEntry entry = GetWeightedRandomEntry(floorCategory.prefabs);
+    private Quaternion GetBorderRotation(
+    bool isWest,
+    bool isEast,
+    bool isSouth,
+    bool isNorth)
+    {
+        bool isCorner = (isWest || isEast) && (isSouth || isNorth);
 
-        if (entry == null || entry.prefab == null)
-            return;
+        if (isCorner)
+        {
+            if (isWest && isSouth)
+                return Quaternion.Euler(0f, 0f, 0f);
 
-        Transform parent = GetCategoryParent(floorCategory.parentName);
+            if (isEast && isSouth)
+                return Quaternion.Euler(0f, 270f, 0f);
 
-        Instantiate(entry.prefab, GetWorldPosition(x, z), Quaternion.identity, parent);
-        occupied[x, z] = true;
+            if (isEast && isNorth)
+                return Quaternion.Euler(0f, 180f, 0f);
+
+            return Quaternion.Euler(0f, 90f, 0f);
+        }
+
+        if (isWest)
+            return Quaternion.Euler(0f, 0f, 0f);
+
+        if (isNorth)
+            return Quaternion.Euler(0f, 90f, 0f);
+
+        if (isEast)
+            return Quaternion.Euler(0f, 180f, 0f);
+
+        return Quaternion.Euler(0f, 270f, 0f);
+    }
+
+    private Quaternion ApplyTileRotationModifiers(
+    TileEntry tile)
+    {
+        int sizeX = tile.SizeX;
+        int sizeZ = tile.SizeZ;
+
+        return ApplyTileRotationModifiers(
+            tile,
+            ref sizeX,
+            ref sizeZ);
+    }
+
+    private Quaternion ApplyTileRotationModifiers( TileEntry tile, ref int sizeX, ref int sizeZ)
+    {
+        if (tile == null)
+            throw new ArgumentNullException(nameof(tile));
+
+        if (tile.AllowRotate90 && UnityEngine.Random.value > 0.5f)
+        {
+            (sizeX, sizeZ) = (sizeZ, sizeX);
+
+            return Quaternion.Euler(0f, 90f, 0f);
+        }
+
+        if (tile.RandomYRotation)
+        {
+            float angle = UnityEngine.Random.Range(0, 4) * 90f;
+
+            return Quaternion.Euler(0f, angle, 0f);
+        }
+
+        return Quaternion.identity;
     }
 
     private bool CanPlaceTile(int startX, int startZ, int sizeX, int sizeZ)
@@ -297,91 +302,8 @@ public class OpenWorldMapGenerator : MonoBehaviour
         return firstTile + new Vector3(offsetX, 0f, offsetZ);
     }
 
-    private TileCategory GetWeightedRandomCategory(List<TileCategory> categories)
-    {
-        if (categories == null || categories.Count == 0)
-            return null;
-
-        int totalWeight = 0;
-
-        foreach (TileCategory category in categories)
-        {
-            if (category == null || category.categoryWeight <= 0)
-                continue;
-
-            if (category.prefabs == null || category.prefabs.Count == 0)
-                continue;
-
-            totalWeight += category.categoryWeight;
-        }
-
-        if (totalWeight <= 0)
-            return null;
-
-        int roll = Random.Range(0, totalWeight);
-        int current = 0;
-
-        foreach (TileCategory category in categories)
-        {
-            if (category == null || category.categoryWeight <= 0)
-                continue;
-
-            if (category.prefabs == null || category.prefabs.Count == 0)
-                continue;
-
-            current += category.categoryWeight;
-
-            if (roll < current)
-                return category;
-        }
-
-        return null;
-    }
-
-    private TileCategory GetWeightedRandomCategory()
-    {
-        return GetWeightedRandomCategory(centerCategories);
-    }
-
-    private TilePrefabEntry GetWeightedRandomEntry(List<TilePrefabEntry> entries)
-    {
-        if (entries == null || entries.Count == 0)
-            return null;
-
-        int totalWeight = 0;
-
-        foreach (TilePrefabEntry entry in entries)
-        {
-            if (entry == null || entry.prefab == null || entry.weight <= 0)
-                continue;
-
-            totalWeight += entry.weight;
-        }
-
-        if (totalWeight <= 0)
-            return null;
-
-        int roll = Random.Range(0, totalWeight);
-        int current = 0;
-
-        foreach (TilePrefabEntry entry in entries)
-        {
-            if (entry == null || entry.prefab == null || entry.weight <= 0)
-                continue;
-
-            current += entry.weight;
-
-            if (roll < current)
-                return entry;
-        }
-
-        return null;
-    }
-
     private void CreateGeneratedHierarchy()
     {
-        categoryParents.Clear();
-
         if (generatedParent == null)
         {
             GameObject parent = new GameObject("Generated_Map");
@@ -390,62 +312,25 @@ public class OpenWorldMapGenerator : MonoBehaviour
             generatedParent = parent.transform;
         }
 
-        terrainParent = CreateChild(generatedParent, "Terrain");
+        terrainParent = CreateChild(
+            generatedParent,
+            "Terrain");
 
-        foreach (TileCategory category in centerCategories)
-        {
-            if (category == null)
-                continue;
+        decorationParent = CreateChild(
+            generatedParent,
+            "Decoration");
 
-            string parentName = string.IsNullOrWhiteSpace(category.parentName)
-                ? category.categoryName
-                : category.parentName;
+        propsParent = CreateChild(
+            decorationParent,
+            "Props");
 
-            GetCategoryParent(parentName);
-        }
+        obstaclesParent = CreateChild(
+            decorationParent,
+            "Obstacles");
 
-        foreach (TileCategory category in edgeCategories)
-        {
-            if (category == null)
-                continue;
-
-            string parentName = string.IsNullOrWhiteSpace(category.parentName)
-                ? category.categoryName
-                : category.parentName;
-
-            GetCategoryParent(parentName);
-        }
-
-        foreach (TileCategory category in cornerCategories)
-        {
-            if (category == null)
-                continue;
-
-            string parentName = string.IsNullOrWhiteSpace(category.parentName)
-                ? category.categoryName
-                : category.parentName;
-
-            GetCategoryParent(parentName);
-        }
-
-        decorationParent = CreateChild(generatedParent, "Decoration");
-        propsParent = CreateChild(decorationParent, "Props");
-        obstaclesParent = CreateChild(decorationParent, "Obstacles");
-        lightsParent = CreateChild(decorationParent, "Lights");
-    }
-
-    private Transform GetCategoryParent(string parentName)
-    {
-        if (string.IsNullOrWhiteSpace(parentName))
-            parentName = "Misc";
-
-        if (categoryParents.TryGetValue(parentName, out Transform existing))
-            return existing;
-
-        Transform parent = CreateChild(terrainParent, parentName);
-        categoryParents.Add(parentName, parent);
-
-        return parent;
+        lightsParent = CreateChild(
+            decorationParent,
+            "Lights");
     }
 
     private Transform CreateChild(Transform parent, string childName)
@@ -484,7 +369,5 @@ public class OpenWorldMapGenerator : MonoBehaviour
         propsParent = null;
         obstaclesParent = null;
         lightsParent = null;
-
-        categoryParents.Clear();
     }
 }

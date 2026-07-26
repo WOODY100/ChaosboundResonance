@@ -41,8 +41,6 @@ public class LevelUpUI : MonoBehaviour
 
     private void ShowOptions(List<UpgradeOption> options)
     {
-        Debug.Log("OPTIONS COUNT: " + options.Count);
-
         panelRoot.SetActive(true);
         SetNormalInstruction();
 

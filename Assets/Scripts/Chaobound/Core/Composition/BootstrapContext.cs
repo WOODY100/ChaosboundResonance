@@ -1,0 +1,129 @@
+using Chaosbound.Core.Runtime.SceneManagement;
+using System;
+using UnityEngine;
+
+namespace Chaosbound.Core.Composition
+{
+    public sealed class BootstrapContext : MonoBehaviour
+    {
+        public static BootstrapContext Current { get; private set; }
+
+        //==========================================================
+        // Persistent Managers
+        //==========================================================
+
+        [Header("Persistent Managers")]
+
+        [SerializeField] private RunSession runSession;
+        [SerializeField] private RunManager runManager;
+        [SerializeField] private PoolManager poolManager;
+        [SerializeField] private EnemyManager enemyManager;
+        [SerializeField] private GameStateManager gameStateManager;
+        [SerializeField] private LevelUpManager levelUpManager;
+
+        //==========================================================
+        // HUD
+        //==========================================================
+
+        [Header("HUD")]
+
+        [SerializeField] private HUDController hudController;
+        [SerializeField] private HUDXPBarUI hudXPBarUI;
+        [SerializeField] private HUDLevelUI hudLevelUI;
+        [SerializeField] private SkillBarUI skillBarUI;
+
+        //==========================================================
+        // Private Fields
+        //==========================================================
+
+        private SceneTransitionService sceneTransitionService;
+
+        //==========================================================
+        // Public Properties
+        //==========================================================
+
+        public RunSession RunSession => runSession;
+        public RunManager RunManager => runManager;
+        public PoolManager PoolManager => poolManager;
+        public EnemyManager EnemyManager => enemyManager;
+        public GameStateManager GameStateManager => gameStateManager;
+        public LevelUpManager LevelUpManager => levelUpManager;
+        public SceneTransitionService SceneTransitionService => sceneTransitionService;
+
+        public HUDController HUDController => hudController;
+        public HUDXPBarUI HUDXPBarUI => hudXPBarUI;
+        public HUDLevelUI HUDLevelUI => hudLevelUI;
+        public SkillBarUI SkillBarUI => skillBarUI;
+
+        //==========================================================
+        // Unity
+        //==========================================================
+
+        private void Awake()
+        {
+            RegisterCurrentContext();
+
+            sceneTransitionService = new SceneTransitionService();
+        }
+
+        private void OnDestroy()
+        {
+            if (Current == this)
+            {
+                Current = null;
+            }
+        }
+
+        //==========================================================
+        // Initialization
+        //==========================================================
+
+        private void RegisterCurrentContext()
+        {
+            if (Current != null && Current != this)
+            {
+                throw new InvalidOperationException(
+                    "Multiple BootstrapContext instances were detected.");
+            }
+
+            Current = this;
+        }
+
+#if UNITY_EDITOR
+
+        //==========================================================
+        // Validation
+        //==========================================================
+
+        private void OnValidate()
+        {
+            // Persistent Managers
+            ValidateReference(runSession, nameof(runSession));
+            ValidateReference(runManager, nameof(runManager));
+            ValidateReference(poolManager, nameof(poolManager));
+            ValidateReference(enemyManager, nameof(enemyManager));
+            ValidateReference(gameStateManager, nameof(gameStateManager));
+            ValidateReference(levelUpManager, nameof(levelUpManager));
+
+            // HUD
+            ValidateReference(hudController, nameof(hudController));
+            ValidateReference(hudXPBarUI, nameof(hudXPBarUI));
+            ValidateReference(hudLevelUI, nameof(hudLevelUI));
+            ValidateReference(skillBarUI, nameof(skillBarUI));
+        }
+
+        private void ValidateReference(
+            UnityEngine.Object reference,
+            string fieldName)
+        {
+            if (reference == null)
+            {
+                Debug.LogWarning(
+                    $"{nameof(BootstrapContext)}: '{fieldName}' is not assigned.",
+                    this);
+            }
+        }
+
+#endif
+    }
+}

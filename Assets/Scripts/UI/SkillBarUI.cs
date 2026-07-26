@@ -7,6 +7,13 @@ public class SkillBarUI : MonoBehaviour
     private PlayerSkillLoadout loadout;
     private LevelUpManager levelUpManager;
 
+    public void Initialize(
+    PlayerSkillLoadout playerLoadout,
+    LevelUpManager lvlManager)
+    {
+        Bind(playerLoadout, lvlManager);
+    }
+
     public void Bind(PlayerSkillLoadout playerLoadout, LevelUpManager lvlManager)
     {
         loadout = playerLoadout;

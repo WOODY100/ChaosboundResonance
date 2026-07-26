@@ -21,8 +21,6 @@ public sealed class PlayerInteractor : MonoBehaviour
         }
 
         currentInteractable = interactable;
-
-        Debug.Log($"Interactable detected: {other.name}");
     }
 
     private void OnTriggerExit(Collider other)

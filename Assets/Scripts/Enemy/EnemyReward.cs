@@ -69,8 +69,6 @@ public class EnemyReward : MonoBehaviour
                             20f,
                             groundLayer))
         {
-            Debug.Log($"Hit: {hit.collider.name} Layer: {LayerMask.LayerToName(hit.collider.gameObject.layer)}");
-
             return hit.point + Vector3.up * 0.25f;
         }
 

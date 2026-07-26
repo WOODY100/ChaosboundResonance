@@ -1,64 +1,50 @@
+using Chaosbound.Core.Composition;
 using UnityEngine;
 
 public class WorldInitializer : MonoBehaviour
 {
-    private HUDController hud;
-
-    void Start()
+    private void Start()
     {
-        PlayerHealth player = FindFirstObjectByType<PlayerHealth>();
-        ArenaSpawnDirector arena = FindFirstObjectByType<ArenaSpawnDirector>();
-        HUDController hud = FindFirstObjectByType<HUDController>();
-        RunManager runManager = FindFirstObjectByType<RunManager>();
-        PlayerSkillLoadout loadout = FindFirstObjectByType<PlayerSkillLoadout>();
-        PlayerStats stats = FindFirstObjectByType<PlayerStats>();
-        LevelUpManager levelUpManager = FindFirstObjectByType<LevelUpManager>();
-        PlayerExperienceSystem xpSystem = player.GetComponent<PlayerExperienceSystem>();
-        HUDXPBarUI xpUI = FindFirstObjectByType<HUDXPBarUI>();
-        HUDLevelUI levelUI = FindFirstObjectByType<HUDLevelUI>();
-        SkillBarUI skillBar = FindFirstObjectByType<SkillBarUI>();
+        BootstrapContext bootstrap = BootstrapContext.Current;
+        ExpeditionSceneContext scene = ExpeditionSceneContext.Current;
 
-        if (hud != null)
-            hud.gameObject.SetActive(true);
+        PlayerHealth player = scene.Player;
+        PlayerSkillLoadout loadout = scene.PlayerSkillLoadout;
+        PlayerStats stats = scene.PlayerStats;
+        PlayerExperienceSystem xpSystem = scene.PlayerExperienceSystem;
 
-        if (player != null && hud != null)
-            hud.BindPlayer(player);
+        SkillBarUI skillBar = bootstrap.SkillBarUI;
 
-        if (arena != null && hud != null)
-            hud.BindArena(arena);
+        RunManager runManager = bootstrap.RunManager;
+        LevelUpManager levelUpManager = bootstrap.LevelUpManager;
+        EnemyManager enemyManager = bootstrap.EnemyManager;
 
         if (runManager != null && player != null)
             runManager.BindPlayer(player);
-        
-        if (xpUI != null)
-            xpUI.Bind(xpSystem);
 
-        if (levelUI != null)
-            levelUI.Bind(xpSystem);
-
-
-        if (EnemyManager.Instance != null && player != null)
-            EnemyManager.Instance.SetPlayer(player.transform);
+        if (enemyManager != null && player != null)
+            enemyManager.SetPlayer(player.transform);
 
         if (levelUpManager != null &&
             xpSystem != null &&
             loadout != null &&
             stats != null)
-            {
-                levelUpManager.BindPlayer(xpSystem, loadout, stats);
+        {
+            levelUpManager.Initialize(
+            xpSystem,
+            loadout,
+            stats);
         }
 
-        if (skillBar != null && loadout != null && levelUpManager != null)
+        if (skillBar != null &&
+            loadout != null &&
+            levelUpManager != null)
         {
-            skillBar.Bind(loadout, levelUpManager);
+            skillBar.Initialize(
+            loadout,
+            levelUpManager);
         }
 
         EnemyBrain.ResetAttackSlots();
-    }
-
-    void OnDestroy()
-    {
-        if (hud != null)
-            hud.gameObject.SetActive(false);
     }
 }

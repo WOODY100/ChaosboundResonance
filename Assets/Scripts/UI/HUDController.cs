@@ -65,4 +65,19 @@ public class HUDController : MonoBehaviour
         if (healthFill != null)
             healthFill.fillAmount = current / max;
     }
+
+    public void Initialize(
+    PlayerHealth player,
+    ArenaSpawnDirector arenaDirector)
+    {
+        ShowHUD();
+
+        BindPlayer(player);
+        BindArena(arenaDirector);
+    }
+
+    public void Shutdown()
+    {
+        HideHUD();
+    }
 }

@@ -1,0 +1,93 @@
+using Chaosbound.Content.Expeditions.Authoring.Scene;
+using Chaosbound.Content.Expeditions.Authoring.Bosses;
+using Chaosbound.Content.Expeditions.Authoring.ExpeditionEvents;
+using Chaosbound.Content.Expeditions.Authoring.General;
+using Chaosbound.Content.Expeditions.Authoring.Identity;
+using Chaosbound.Content.Expeditions.Authoring.MiniBosses;
+using Chaosbound.Content.Expeditions.Authoring.Population;
+using Chaosbound.Content.Expeditions.Authoring.Presentation;
+using Chaosbound.Content.Expeditions.Authoring.Rewards;
+using Chaosbound.Content.Expeditions.Authoring.World;
+using System;
+using UnityEngine;
+
+namespace Chaosbound.Content.Expeditions.Authoring
+{
+    /// <summary>
+    /// Root authoring model for an expedition.
+    /// Aggregates every editable section that composes an expedition.
+    /// </summary>
+    [Serializable]
+    public sealed class ExpeditionAuthoring
+    {
+        [Header("Scene")]
+
+        [SerializeField]
+        private SceneAuthoring m_Scene;
+
+        [Header("Identity")]
+
+        [SerializeField]
+        private IdentityAuthoring m_identity = new();
+
+        [Header("Presentation")]
+
+        [SerializeField]
+        private PresentationAuthoring m_presentation = new();
+
+        [Header("General")]
+
+        [SerializeField]
+        private GeneralAuthoring m_general = new();
+
+        [Header("World")]
+
+        [SerializeField]
+        private WorldAuthoring m_world = new();
+
+        [Header("Population")]
+
+        [SerializeField]
+        private PopulationAuthoring m_population = new();
+
+        [Header("Expedition Events")]
+
+        [SerializeField]
+        private ExpeditionEventsAuthoring m_expeditionEvents = new();
+
+        [Header("Mini Bosses")]
+
+        [SerializeField]
+        private MiniBossesAuthoring m_miniBosses = new();
+
+        [Header("Bosses")]
+
+        [SerializeField]
+        private BossesAuthoring m_bosses = new();
+
+        [Header("Rewards")]
+
+        [SerializeField]
+        private RewardsAuthoring m_rewards = new();
+
+        public SceneAuthoring Scene => m_Scene;
+
+        public IdentityAuthoring Identity => m_identity;
+
+        public PresentationAuthoring Presentation => m_presentation;
+
+        public GeneralAuthoring General => m_general;
+
+        public WorldAuthoring World => m_world;
+
+        public PopulationAuthoring Population => m_population;
+
+        public ExpeditionEventsAuthoring ExpeditionEvents => m_expeditionEvents;
+
+        public MiniBossesAuthoring MiniBosses => m_miniBosses;
+
+        public BossesAuthoring Bosses => m_bosses;
+
+        public RewardsAuthoring Rewards => m_rewards;
+    }
+}
