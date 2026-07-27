@@ -3,7 +3,9 @@ using System;
 namespace Chaosbound.Content.Expeditions.Definitions.Presentation
 {
     /// <summary>
-    /// Represents the immutable presentation data of an expedition.
+    /// Represents the immutable visual and textual presentation
+    /// of an expedition. This data is intended for UI and player-facing
+    /// systems only and contains no gameplay logic.
     /// </summary>
     public sealed class PresentationDefinition
     {

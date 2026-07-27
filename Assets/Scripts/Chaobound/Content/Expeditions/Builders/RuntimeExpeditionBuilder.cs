@@ -80,7 +80,7 @@ namespace Chaosbound.Content.Expeditions.Runtime.Builders
         }
 
         private RuntimeWorldConfig BuildWorld(
-    WorldDefinition definition)
+            WorldDefinition definition)
         {
             if (definition == null)
                 throw new ArgumentNullException(nameof(definition));

@@ -3,7 +3,8 @@ using Chaosbound.Content.Expeditions.Enums;
 namespace Chaosbound.Content.Expeditions.Definitions.General
 {
     /// <summary>
-    /// Describes the general gameplay characteristics of an expedition.
+    /// Describes the global rules and characteristics of an expedition.
+    /// This definition contains only declarative data and no gameplay logic.
     /// </summary>
     public sealed class GeneralDefinition
     {
