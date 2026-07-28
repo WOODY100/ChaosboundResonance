@@ -9,18 +9,13 @@ namespace Chaosbound.Shared.Identifiers
     {
         private readonly string value;
 
-        /// <summary>
-        /// Gets the identifier value.
-        /// </summary>
-        public string Value => value;
-
-        /// <summary>
-        /// Creates a new content identifier.
-        /// </summary>
-        /// <param name="value">Stable content identifier.</param>
-        /// <exception cref="ArgumentException">
-        /// Thrown when the identifier is null, empty or whitespace.
-        /// </exception>
+        public string Value
+        {
+            get
+            {
+                return value;
+            }
+        }
 
         public static readonly ContentId Empty = default;
 
@@ -57,12 +52,12 @@ namespace Chaosbound.Shared.Identifiers
 
         public override int GetHashCode()
         {
-            return value?.GetHashCode() ?? 0;
+            return StringComparer.Ordinal.GetHashCode(value);
         }
 
         public override string ToString()
         {
-            return value;
+            return value ?? string.Empty;
         }
 
         public static bool operator ==(
@@ -77,11 +72,6 @@ namespace Chaosbound.Shared.Identifiers
             ContentId right)
         {
             return !left.Equals(right);
-        }
-
-        public static implicit operator string(ContentId id)
-        {
-            return id.value;
         }
 
         public static explicit operator ContentId(string value)
