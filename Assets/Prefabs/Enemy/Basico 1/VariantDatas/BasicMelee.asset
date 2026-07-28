@@ -12,10 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 447969a4cc83221428c6b5b49c1d7db3, type: 3}
   m_Name: BasicMelee
   m_EditorClassIdentifier: Assembly-CSharp::EnemyVariantData
-  enemyName: BasicMelee
+  displayName: Skeleton
   baseHealth: 25
   baseDamage: 5
   moveSpeed: 3.5
+  category: 0
+  roles: 00000000
+  tacticalCapabilities: 00000000
   experienceReward: 5
   goldReward: 1
   modelPrefab: {fileID: 4705129364518131770, guid: a9ca8c615c94de845ae808e4fefe6762, type: 3}
