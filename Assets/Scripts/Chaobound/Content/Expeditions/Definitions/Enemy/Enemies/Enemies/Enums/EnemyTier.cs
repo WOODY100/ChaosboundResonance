@@ -1,4 +1,4 @@
-namespace Chaosbound.Content.Expeditions.Domain.Definitions.Population.Enemies
+namespace Chaosbound.Content.Expeditions.Domain.Definitions.Enemy.Enemies
 {
     /// <summary>
     /// Indicates the importance of an enemy inside an expedition.

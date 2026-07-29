@@ -1,7 +1,7 @@
 namespace Chaosbound.Shared.Enums
 {
     /// <summary>
-    /// Identifies the category of content referenced by a population entry.
+    /// Identifies the category of content referenced by a enemy entry.
     /// </summary>
     public enum ContentCategory
     {

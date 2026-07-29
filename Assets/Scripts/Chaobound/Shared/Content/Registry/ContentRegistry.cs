@@ -60,6 +60,13 @@ namespace Chaosbound.Shared.Content.Registry
             ContentId id,
             out UnityEngine.Object asset)
         {
+            if (id.IsEmpty)
+            {
+                throw new ArgumentException(
+                    "ContentId cannot be empty.",
+                    nameof(id));
+            }
+
             return assets.TryGetValue(
                 id,
                 out asset);

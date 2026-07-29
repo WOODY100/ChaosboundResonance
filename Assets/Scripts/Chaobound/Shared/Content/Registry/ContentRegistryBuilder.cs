@@ -12,41 +12,52 @@ namespace Chaosbound.Shared.Content.Registry
     public sealed class ContentRegistryBuilder
     {
         /// <summary>
-        /// Builds a runtime content registry.
+        /// Builds a fully validated immutable content registry.
         /// </summary>
         /// <param name="entries">
-        /// The discovered content entries.
+        /// Collection of discovered content entries.
         /// </param>
         /// <returns>
-        /// A fully validated immutable content registry.
+        /// An immutable runtime content registry.
         /// </returns>
         /// <exception cref="ArgumentNullException">
         /// Thrown when the collection is null.
         /// </exception>
         /// <exception cref="ArgumentException">
-        /// Thrown when duplicate ContentIds are detected.
+        /// Thrown when invalid or duplicate entries are detected.
         /// </exception>
         public ContentRegistry Build(
-            IReadOnlyCollection<ContentEntry> entries)
+            IReadOnlyCollection<Entries.ContentEntry> entries)
         {
             if (entries == null)
                 throw new ArgumentNullException(nameof(entries));
 
             Dictionary<ContentId, UnityEngine.Object> assets =
-                new Dictionary<ContentId, UnityEngine.Object>(entries.Count);
+                new(entries.Count);
 
-            foreach (ContentEntry entry in entries)
+            foreach (Entries.ContentEntry entry in entries)
             {
-                if (assets.ContainsKey(entry.Id))
+                // Defensive validation.
+                if (entry.Id.IsEmpty)
+                {
+                    throw new ArgumentException(
+                        "ContentEntry contains an empty ContentId.",
+                        nameof(entries));
+                }
+
+                if (entry.Asset == null)
+                {
+                    throw new ArgumentException(
+                        $"Content '{entry.Id}' contains a null asset.",
+                        nameof(entries));
+                }
+
+                if (!assets.TryAdd(entry.Id, entry.Asset))
                 {
                     throw new ArgumentException(
                         $"Duplicate ContentId detected: '{entry.Id}'.",
                         nameof(entries));
                 }
-
-                assets.Add(
-                    entry.Id,
-                    entry.Asset);
             }
 
             return new ContentRegistry(assets);

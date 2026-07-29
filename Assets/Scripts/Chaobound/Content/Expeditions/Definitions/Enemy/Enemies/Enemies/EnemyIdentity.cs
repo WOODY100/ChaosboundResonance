@@ -1,6 +1,6 @@
 using System;
 
-namespace Chaosbound.Content.Expeditions.Domain.Definitions.Population.Enemies
+namespace Chaosbound.Content.Expeditions.Domain.Definitions.Enemy.Enemies
 {
     /// <summary>
     /// Stable identity of an enemy.

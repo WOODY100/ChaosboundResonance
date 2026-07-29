@@ -3,7 +3,7 @@ using Chaosbound.Content.Expeditions.Definitions.Identity;
 using Chaosbound.Content.Expeditions.Definitions.Presentation;
 using Chaosbound.Content.Expeditions.Definitions.General;
 using Chaosbound.Content.Expeditions.Definitions.World;
-using Chaosbound.Content.Expeditions.Definitions.Population;
+using Chaosbound.Content.Expeditions.Definitions.Enemy;
 using Chaosbound.Content.Expeditions.Definitions.ExpeditionEvents;
 using Chaosbound.Content.Expeditions.Definitions.MiniBosses;
 using Chaosbound.Content.Expeditions.Definitions.Bosses;
@@ -43,9 +43,9 @@ namespace Chaosbound.Content.Expeditions.Definitions
         public WorldDefinition World { get; }
 
         /// <summary>
-        /// Gets the population configuration.
+        /// Gets the enemy configuration.
         /// </summary>
-        public PopulationDefinition Population { get; }
+        public EnemyDefinition Enemy { get; }
 
         /// <summary>
         /// Gets the expedition events configuration.
@@ -73,7 +73,7 @@ namespace Chaosbound.Content.Expeditions.Definitions
             PresentationDefinition presentation,
             GeneralDefinition general,
             WorldDefinition world,
-            PopulationDefinition population,
+            EnemyDefinition enemy,
             ExpeditionEventsDefinition expeditionEvents,
             MiniBossesDefinition miniBosses,
             BossesDefinition bosses,
@@ -94,8 +94,8 @@ namespace Chaosbound.Content.Expeditions.Definitions
             if (world == null)
                 throw new ArgumentNullException(nameof(world));
 
-            if (population == null)
-                throw new ArgumentNullException(nameof(population));
+            if (enemy == null)
+                throw new ArgumentNullException(nameof(enemy));
 
             if (expeditionEvents == null)
                 throw new ArgumentNullException(nameof(expeditionEvents));
@@ -114,7 +114,7 @@ namespace Chaosbound.Content.Expeditions.Definitions
             Presentation = presentation;
             General = general;
             World = world;
-            Population = population;
+            Enemy = enemy;
             ExpeditionEvents = expeditionEvents;
             MiniBosses = miniBosses;
             Bosses = bosses;

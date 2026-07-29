@@ -7,6 +7,8 @@ using Chaosbound.Content.Expeditions.Runtime.Builders;
 using Chaosbound.Content.Expeditions.Runtime.Configs;
 using Chaosbound.Core.Composition;
 using Chaosbound.Core.Runtime.SceneManagement;
+using Chaosbound.Shared.Content.Registry;
+using Chaosbound.Shared.Content.Resolution;
 using System;
 using UnityEngine;
 
@@ -26,15 +28,11 @@ namespace Chaosbound.Runtime.Bootstrap
         private readonly ExpeditionBuilder expeditionBuilder =
             new ExpeditionBuilder();
 
-        private readonly RuntimeExpeditionBuilder runtimeBuilder =
-            new RuntimeExpeditionBuilder();
-
         public void StartExpedition()
         {
             if (expeditionAsset == null)
             {
                 Debug.LogError("Missing ExpeditionAsset.");
-
                 return;
             }
 
@@ -46,7 +44,6 @@ namespace Chaosbound.Runtime.Bootstrap
             if (context == null)
             {
                 Debug.LogError("BootstrapContext is not available.");
-
                 return;
             }
 
@@ -55,24 +52,26 @@ namespace Chaosbound.Runtime.Bootstrap
             if (runSession == null)
             {
                 Debug.LogError("Missing RunSession.");
-
                 return;
             }
 
-            SceneTransitionService sceneTransitionService = context.SceneTransitionService;
+            SceneTransitionService sceneTransitionService =
+                context.SceneTransitionService;
 
             if (sceneTransitionService == null)
             {
                 Debug.LogError("Missing SceneTransitionService.");
-
                 return;
             }
+
+            RuntimeExpeditionBuilder runtimeBuilder =
+                CreateRuntimeBuilder(expeditionDefinition);
 
             ExpeditionRequest request =
                 new ExpeditionRequest(
                     expeditionDefinition,
                     // TODO:
-                    // Replace with the player's selected difficulty
+                    // Replace with the player's selected difficulty.
                     DifficultyTier.Normal,
                     Environment.TickCount);
 
@@ -88,6 +87,33 @@ namespace Chaosbound.Runtime.Bootstrap
 
             Debug.Log(
                 $"RunSession Active: {runSession.HasRun}");
+        }
+
+        /// <summary>
+        /// Composes the runtime dependency graph required to build
+        /// an expedition runtime configuration.
+        /// </summary>
+        private RuntimeExpeditionBuilder CreateRuntimeBuilder(
+            ExpeditionDefinition definition)
+        {
+            if (definition == null)
+                throw new ArgumentNullException(nameof(definition));
+
+            // Build the runtime content registry.
+            IContentRegistry registry =
+                new ContentRegistryBuilder()
+                    .Build(definition.Enemy.Entries);
+
+            // Create the content resolver.
+            IContentResolver resolver =
+                new UnityContentResolver(registry);
+
+            // Create domain runtime builders.
+            RuntimeEnemyBuilder enemyBuilder =
+                new RuntimeEnemyBuilder(resolver);
+
+            // Create the expedition runtime builder.
+            return new RuntimeExpeditionBuilder(enemyBuilder);
         }
     }
 }

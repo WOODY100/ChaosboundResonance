@@ -1,11 +1,20 @@
-using Chaosbound.Core.Runtime.Enemies;
+using Chaosbound.Shared.Identifiers;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Arena/Enemy Variant")]
 public class EnemyVariantData : ScriptableObject
 {
     [Header("Identity")]
-    public string displayName;
+
+    [SerializeField]
+    private string m_ContentId;
+
+    [SerializeField]
+    private string m_DisplayName;
+
+    public ContentId Id => new(m_ContentId);
+
+    public string DisplayName => m_DisplayName;
 
     [Header("Stats")]
     public float baseHealth = 10f;

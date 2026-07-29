@@ -2,7 +2,7 @@ using Chaosbound.Content.Expeditions.Runtime.Bosses;
 using Chaosbound.Content.Expeditions.Runtime.ExpeditionEvents;
 using Chaosbound.Content.Expeditions.Runtime.General;
 using Chaosbound.Content.Expeditions.Runtime.MiniBosses;
-using Chaosbound.Content.Expeditions.Runtime.Population;
+using Chaosbound.Content.Expeditions.Runtime.Enemy;
 using Chaosbound.Content.Expeditions.Runtime.Rewards;
 using Chaosbound.Content.Expeditions.Runtime.World;
 using Chaosbound.Content.Expeditions.Runtime.Scene;
@@ -22,7 +22,7 @@ namespace Chaosbound.Content.Expeditions.Runtime.Configs
 
         public RuntimeWorldConfig World { get; }
 
-        public RuntimePopulationConfig Population { get; }
+        public RuntimeEnemyConfig Enemy { get; }
 
         public RuntimeExpeditionEventsConfig ExpeditionEvents { get; }
         
@@ -36,7 +36,7 @@ namespace Chaosbound.Content.Expeditions.Runtime.Configs
             RuntimeSceneConfig scene,
             RuntimeGeneralConfig general,
             RuntimeWorldConfig world,
-            RuntimePopulationConfig population,
+            RuntimeEnemyConfig enemy,
             RuntimeExpeditionEventsConfig expeditionEvents,
             RuntimeMiniBossesConfig miniBosses,
             RuntimeBossesConfig bosses,
@@ -45,7 +45,7 @@ namespace Chaosbound.Content.Expeditions.Runtime.Configs
             Scene = scene ?? throw new ArgumentNullException(nameof(scene));
             General = general ?? throw new ArgumentNullException(nameof(general));
             World = world ?? throw new ArgumentNullException(nameof(world));
-            Population = population ?? throw new ArgumentNullException(nameof(population));
+            Enemy = enemy ?? throw new ArgumentNullException(nameof(enemy));
             ExpeditionEvents = expeditionEvents ?? throw new ArgumentNullException(nameof(expeditionEvents));
             MiniBosses = miniBosses ?? throw new ArgumentNullException(nameof(miniBosses));
             Bosses = bosses ?? throw new ArgumentNullException(nameof(bosses));

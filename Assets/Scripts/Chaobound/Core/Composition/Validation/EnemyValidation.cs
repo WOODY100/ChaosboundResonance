@@ -3,16 +3,16 @@ using System;
 namespace Chaosbound.Core.Composition.Validation
 {
     /// <summary>
-    /// Validates the composed population.
+    /// Validates the composed enemy.
     /// </summary>
-    public sealed class PopulationValidation : ICompositionValidation
+    public sealed class EnemyValidation : ICompositionValidation
     {
         public void Validate(CompositionContext context)
         {
             if (context == null)
                 throw new ArgumentNullException(nameof(context));
 
-            // Validate population runtime objects.
+            // Validate enemy runtime objects.
         }
     }
 }

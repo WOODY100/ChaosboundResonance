@@ -1,4 +1,4 @@
-namespace Chaosbound.Content.Expeditions.Domain.Definitions.Population.Enums
+namespace Chaosbound.Content.Expeditions.Domain.Definitions.Enemy.Enums
 {
     /// <summary>
     /// Describes the tactical function of an enemy during combat.

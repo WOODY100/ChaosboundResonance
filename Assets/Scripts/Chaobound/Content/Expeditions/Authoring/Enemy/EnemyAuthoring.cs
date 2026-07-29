@@ -1,0 +1,16 @@
+using Chaosbound.Content.Expeditions.Runtime.Enemy;
+using System;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace Chaosbound.Content.Expeditions.Authoring.Enemy
+{
+    [Serializable]
+    public sealed class EnemyAuthoring
+    {
+        [SerializeField]
+        private List<EnemyVariantData> m_Content = new();
+
+        public IReadOnlyList<EnemyVariantData> Content => m_Content;
+    }
+}

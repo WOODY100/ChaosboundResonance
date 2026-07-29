@@ -4,7 +4,7 @@ using Chaosbound.Content.Expeditions.Authoring.ExpeditionEvents;
 using Chaosbound.Content.Expeditions.Authoring.General;
 using Chaosbound.Content.Expeditions.Authoring.Identity;
 using Chaosbound.Content.Expeditions.Authoring.MiniBosses;
-using Chaosbound.Content.Expeditions.Authoring.Population;
+using Chaosbound.Content.Expeditions.Authoring.Enemy;
 using Chaosbound.Content.Expeditions.Authoring.Presentation;
 using Chaosbound.Content.Expeditions.Authoring.Rewards;
 using Chaosbound.Content.Expeditions.Authoring.World;
@@ -45,10 +45,10 @@ namespace Chaosbound.Content.Expeditions.Authoring
         [SerializeField]
         private WorldAuthoring m_world = new();
 
-        [Header("Population")]
+        [Header("Enemy")]
 
         [SerializeField]
-        private PopulationAuthoring m_population = new();
+        private EnemyAuthoring m_enemy = new();
 
         [Header("Expedition Events")]
 
@@ -80,7 +80,7 @@ namespace Chaosbound.Content.Expeditions.Authoring
 
         public WorldAuthoring World => m_world;
 
-        public PopulationAuthoring Population => m_population;
+        public EnemyAuthoring Enemy => m_enemy;
 
         public ExpeditionEventsAuthoring ExpeditionEvents => m_expeditionEvents;
 

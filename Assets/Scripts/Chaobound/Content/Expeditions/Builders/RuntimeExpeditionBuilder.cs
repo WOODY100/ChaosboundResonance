@@ -1,4 +1,4 @@
-using Chaosbound.Content.Expeditions.Definitions.Population;
+using Chaosbound.Content.Expeditions.Definitions.Enemy;
 using Chaosbound.Content.Expeditions.Definitions.Rewards;
 using Chaosbound.Content.Expeditions.Definitions.ExpeditionEvents;
 using Chaosbound.Content.Expeditions.Definitions.Bosses;
@@ -9,7 +9,7 @@ using Chaosbound.Content.Expeditions.Runtime.Bosses;
 using Chaosbound.Content.Expeditions.Runtime.ExpeditionEvents;
 using Chaosbound.Content.Expeditions.Runtime.General;
 using Chaosbound.Content.Expeditions.Runtime.MiniBosses;
-using Chaosbound.Content.Expeditions.Runtime.Population;
+using Chaosbound.Content.Expeditions.Runtime.Enemy;
 using Chaosbound.Content.Expeditions.Runtime.Rewards;
 using Chaosbound.Content.Expeditions.Runtime.World;
 using Chaosbound.Content.Expeditions.Runtime.Configs;
@@ -25,6 +25,15 @@ namespace Chaosbound.Content.Expeditions.Runtime.Builders
     /// </summary>
     public sealed class RuntimeExpeditionBuilder
     {
+        private readonly RuntimeEnemyBuilder runtimeEnemyBuilder;
+
+        public RuntimeExpeditionBuilder(
+            RuntimeEnemyBuilder runtimeEnemyBuilder)
+        {
+            this.runtimeEnemyBuilder = runtimeEnemyBuilder
+                ?? throw new ArgumentNullException(nameof(runtimeEnemyBuilder));
+        }
+
         public RuntimeExpeditionConfig BuildRunConfig(
             ExpeditionRequest request)
         {
@@ -35,7 +44,7 @@ namespace Chaosbound.Content.Expeditions.Runtime.Builders
             RuntimeSceneConfig scene = BuildScene(request.Definition.Scene);
             RuntimeGeneralConfig general = BuildGeneral(request.Definition.General);
             RuntimeWorldConfig world = BuildWorld(request.Definition.World);
-            RuntimePopulationConfig population = BuildPopulation(request.Definition.Population);
+            RuntimeEnemyConfig enemy = runtimeEnemyBuilder.Build(request.Definition.Enemy);
             RuntimeExpeditionEventsConfig expeditionEvents = BuildExpeditionEvents(request.Definition.ExpeditionEvents);
             RuntimeMiniBossesConfig miniBosses = BuildMiniBosses(request.Definition.MiniBosses);
             RuntimeBossesConfig bosses = BuildBosses(request.Definition.Bosses);
@@ -47,7 +56,7 @@ namespace Chaosbound.Content.Expeditions.Runtime.Builders
                     scene,
                     general,
                     world,
-                    population,
+                    enemy,
                     expeditionEvents,
                     miniBosses,
                     bosses,
@@ -88,16 +97,6 @@ namespace Chaosbound.Content.Expeditions.Runtime.Builders
             return new RuntimeWorldConfig(
                 definition.Bounds,
                 definition.Theme);
-        }
-
-        private RuntimePopulationConfig BuildPopulation(
-            PopulationDefinition definition)
-        {
-            if (definition == null)
-                throw new ArgumentNullException(nameof(definition));
-
-            return new RuntimePopulationConfig(
-                definition.Content);
         }
 
         private RuntimeExpeditionEventsConfig BuildExpeditionEvents(

@@ -1,8 +1,8 @@
-using Chaosbound.Content.Expeditions.Domain.Definitions.Population.Enums;
+using Chaosbound.Content.Expeditions.Domain.Definitions.Enemy.Enums;
 using System;
 using System.Collections.Generic;
 
-namespace Chaosbound.Content.Expeditions.Domain.Definitions.Population.Enemies
+namespace Chaosbound.Content.Expeditions.Domain.Definitions.Enemy.Enemies
 {
     /// <summary>
     /// Describes an enemy available in the game.

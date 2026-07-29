@@ -1,6 +1,6 @@
-using Chaosbound.Shared.Identifiers;
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Chaosbound.Core.Runtime.Enemies
 {
@@ -9,13 +9,12 @@ namespace Chaosbound.Core.Runtime.Enemies
     /// </summary>
     public sealed class CandidateSet
     {
-        private readonly List<ContentReference> candidates =
-            new List<ContentReference>();
+        private readonly List<EnemyVariantData> candidates = new();
 
         /// <summary>
         /// Gets the candidates contained in this set.
         /// </summary>
-        public IReadOnlyList<ContentReference> Candidates
+        public IReadOnlyList<EnemyVariantData> Candidates
         {
             get
             {
@@ -35,7 +34,7 @@ namespace Chaosbound.Core.Runtime.Enemies
         /// <exception cref="InvalidOperationException">
         /// Thrown when the candidate already exists in the set.
         /// </exception>
-        public void Add(ContentReference candidate)
+        public void Add(EnemyVariantData candidate)
         {
             if (candidate == null)
             {
@@ -60,7 +59,7 @@ namespace Chaosbound.Core.Runtime.Enemies
         /// <returns>
         /// True if the candidate was removed; otherwise, false.
         /// </returns>
-        public bool Remove(ContentReference candidate)
+        public bool Remove(EnemyVariantData candidate)
         {
             if (candidate == null)
             {
@@ -79,7 +78,7 @@ namespace Chaosbound.Core.Runtime.Enemies
         /// <returns>
         /// True if the candidate exists; otherwise, false.
         /// </returns>
-        public bool Contains(ContentReference candidate)
+        public bool Contains(EnemyVariantData candidate)
         {
             if (candidate == null)
             {
