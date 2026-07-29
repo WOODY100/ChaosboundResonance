@@ -1,69 +1,53 @@
-using Chaosbound.Shared.Identifiers;
 using System;
 
 namespace Chaosbound.Core.Runtime.Enemies
 {
     /// <summary>
-    /// Represents the evaluation of a candidate for a tactical objective.
+    /// Represents the tactical evaluation result of a single enemy candidate.
     /// </summary>
     public sealed class CandidateEvaluation
     {
         /// <summary>
-        /// Gets the evaluated candidate.
+        /// Gets the evaluated enemy candidate.
         /// </summary>
-        public ContentReference Candidate
-        {
-            get;
-        }
+        public EnemyVariantData Candidate { get; }
 
         /// <summary>
-        /// Gets the tactical objective used during evaluation.
+        /// Gets the tactical score assigned to the candidate.
+        /// Higher values indicate a better match for the current objective.
         /// </summary>
-        public TacticalObjective Objective
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Gets the evaluation score.
-        /// </summary>
-        public int Score
-        {
-            get;
-        }
+        public int Score { get; }
 
         /// <summary>
         /// Initializes a new candidate evaluation.
         /// </summary>
         /// <param name="candidate">
-        /// The evaluated candidate.
-        /// </param>
-        /// <param name="objective">
-        /// The tactical objective.
+        /// The evaluated enemy candidate.
         /// </param>
         /// <param name="score">
-        /// The evaluation score.
+        /// The tactical score assigned to the candidate.
         /// </param>
         /// <exception cref="ArgumentNullException">
-        /// Thrown when candidate or objective is null.
+        /// Thrown when the candidate is null.
+        /// </exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// Thrown when the score is negative.
         /// </exception>
         public CandidateEvaluation(
-            ContentReference candidate,
-            TacticalObjective objective,
-            int score)
+    EnemyVariantData candidate,
+    int score)
         {
-            if (candidate == null)
+            Candidate = candidate
+                ?? throw new ArgumentNullException(nameof(candidate));
+
+            if (score < 0)
             {
-                throw new ArgumentNullException(nameof(candidate));
+                throw new ArgumentOutOfRangeException(
+                    nameof(score),
+                    score,
+                    "Candidate score cannot be negative.");
             }
 
-            if (objective == null)
-            {
-                throw new ArgumentNullException(nameof(objective));
-            }
-
-            Candidate = candidate;
-            Objective = objective;
             Score = score;
         }
     }
