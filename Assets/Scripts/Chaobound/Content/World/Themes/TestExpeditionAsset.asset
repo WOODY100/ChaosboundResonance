@@ -28,10 +28,11 @@ MonoBehaviour:
       m_Width: 12
       m_Height: 12
       m_Theme: {fileID: 11400000, guid: c6e8d114b40782d4e925563e7877ccd7, type: 2}
-    m_population:
+    m_enemy:
       m_Content:
-      - m_Id: 
-        m_Category: 0
+      - {fileID: 11400000, guid: f5819a66bba33df429698f45f81dc0aa, type: 2}
+      - {fileID: 11400000, guid: bd38301ec6fd209459cdc8d6199033cd, type: 2}
+      - {fileID: 11400000, guid: e3af66caf09419f47a5046e7d60ef0e3, type: 2}
     m_expeditionEvents:
       content:
       - m_Id: 
