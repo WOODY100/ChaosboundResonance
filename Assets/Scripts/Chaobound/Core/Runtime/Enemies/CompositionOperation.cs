@@ -8,6 +8,7 @@ namespace Chaosbound.Core.Runtime.Enemies
         /// <summary>
         /// Adds a new enemy to the composition.
         /// </summary>
-        Add
+        Add,
+        Remove
     }
 }

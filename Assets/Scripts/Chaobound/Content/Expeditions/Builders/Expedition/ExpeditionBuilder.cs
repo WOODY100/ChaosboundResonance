@@ -1,12 +1,12 @@
 using Chaosbound.Content.Expeditions.Assets;
 using Chaosbound.Content.Expeditions.Authoring;
-using Chaosbound.Content.Expeditions.Authoring.Scene;
 using Chaosbound.Content.Expeditions.Builders.Bosses;
 using Chaosbound.Content.Expeditions.Builders.ExpeditionEvents;
 using Chaosbound.Content.Expeditions.Builders.General;
 using Chaosbound.Content.Expeditions.Builders.Identity;
 using Chaosbound.Content.Expeditions.Builders.MiniBosses;
 using Chaosbound.Content.Expeditions.Builders.Enemy;
+using Chaosbound.Content.Expeditions.Builders.Spawn;
 using Chaosbound.Content.Expeditions.Builders.Presentation;
 using Chaosbound.Content.Expeditions.Builders.Rewards;
 using Chaosbound.Content.Expeditions.Builders.Scene;
@@ -18,6 +18,7 @@ using Chaosbound.Content.Expeditions.Definitions.General;
 using Chaosbound.Content.Expeditions.Definitions.Identity;
 using Chaosbound.Content.Expeditions.Definitions.MiniBosses;
 using Chaosbound.Content.Expeditions.Definitions.Enemy;
+using Chaosbound.Content.Expeditions.Definitions.Spawn;
 using Chaosbound.Content.Expeditions.Definitions.Presentation;
 using Chaosbound.Content.Expeditions.Definitions.Rewards;
 using Chaosbound.Content.Expeditions.Definitions.Scene;
@@ -61,6 +62,9 @@ namespace Chaosbound.Content.Expeditions.Builders.Expedition
             EnemyDefinition enemy =
                 EnemyBuilder.Build(authoring.Enemy);
 
+            SpawnDefinition spawn =
+                SpawnBuilder.Build(authoring.Spawn);
+
             ExpeditionEventsDefinition expeditionEvents =
                 ExpeditionEventsBuilder.Build(authoring.ExpeditionEvents);
 
@@ -80,6 +84,7 @@ namespace Chaosbound.Content.Expeditions.Builders.Expedition
                 general,
                 world,
                 enemy,
+                spawn,
                 expeditionEvents,
                 miniBosses,
                 bosses,

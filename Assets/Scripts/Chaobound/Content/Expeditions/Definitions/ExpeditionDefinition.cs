@@ -1,13 +1,14 @@
-using Chaosbound.Content.Expeditions.Definitions.Scene;
-using Chaosbound.Content.Expeditions.Definitions.Identity;
-using Chaosbound.Content.Expeditions.Definitions.Presentation;
-using Chaosbound.Content.Expeditions.Definitions.General;
-using Chaosbound.Content.Expeditions.Definitions.World;
+using Chaosbound.Content.Expeditions.Definitions.Bosses;
 using Chaosbound.Content.Expeditions.Definitions.Enemy;
 using Chaosbound.Content.Expeditions.Definitions.ExpeditionEvents;
+using Chaosbound.Content.Expeditions.Definitions.General;
+using Chaosbound.Content.Expeditions.Definitions.Identity;
 using Chaosbound.Content.Expeditions.Definitions.MiniBosses;
-using Chaosbound.Content.Expeditions.Definitions.Bosses;
+using Chaosbound.Content.Expeditions.Definitions.Presentation;
 using Chaosbound.Content.Expeditions.Definitions.Rewards;
+using Chaosbound.Content.Expeditions.Definitions.Scene;
+using Chaosbound.Content.Expeditions.Definitions.Spawn;
+using Chaosbound.Content.Expeditions.Definitions.World;
 using System;
 
 namespace Chaosbound.Content.Expeditions.Definitions
@@ -48,6 +49,11 @@ namespace Chaosbound.Content.Expeditions.Definitions
         public EnemyDefinition Enemy { get; }
 
         /// <summary>
+        /// Gets the spawn configuration.
+        /// </summary>
+        public SpawnDefinition Spawn { get; }
+
+        /// <summary>
         /// Gets the expedition events configuration.
         /// </summary>
         public ExpeditionEventsDefinition ExpeditionEvents { get; }
@@ -74,6 +80,7 @@ namespace Chaosbound.Content.Expeditions.Definitions
             GeneralDefinition general,
             WorldDefinition world,
             EnemyDefinition enemy,
+            SpawnDefinition spawn,
             ExpeditionEventsDefinition expeditionEvents,
             MiniBossesDefinition miniBosses,
             BossesDefinition bosses,
@@ -97,6 +104,9 @@ namespace Chaosbound.Content.Expeditions.Definitions
             if (enemy == null)
                 throw new ArgumentNullException(nameof(enemy));
 
+            if (spawn == null)
+                throw new ArgumentNullException(nameof(spawn));
+
             if (expeditionEvents == null)
                 throw new ArgumentNullException(nameof(expeditionEvents));
 
@@ -115,6 +125,7 @@ namespace Chaosbound.Content.Expeditions.Definitions
             General = general;
             World = world;
             Enemy = enemy;
+            Spawn = spawn;
             ExpeditionEvents = expeditionEvents;
             MiniBosses = miniBosses;
             Bosses = bosses;

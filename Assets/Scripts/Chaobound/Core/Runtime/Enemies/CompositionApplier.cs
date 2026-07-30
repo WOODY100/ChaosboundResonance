@@ -35,7 +35,11 @@ namespace Chaosbound.Core.Runtime.Enemies
             switch (delta.Operation)
             {
                 case CompositionOperation.Add:
-                    ApplyAdd(composition, delta.Candidate);
+                    ApplyAdd(composition, delta);
+                    break;
+
+                case CompositionOperation.Remove:
+                    ApplyRemove(composition, delta);
                     break;
 
                 default:
@@ -44,20 +48,27 @@ namespace Chaosbound.Core.Runtime.Enemies
             }
         }
 
+        private static void ApplyRemove(
+            EnemyComposition composition,
+            EnemyCompositionDelta delta)
+        {
+            throw new NotImplementedException();
+        }
+
         private static void ApplyAdd(
             EnemyComposition composition,
-            EnemyVariantData variant)
+            EnemyCompositionDelta delta)
         {
-            if (composition.TryGetEntry(variant, out EnemyCompositionEntry entry))
+            if (composition.TryGetEntry(delta.Candidate, out EnemyCompositionEntry entry))
             {
-                entry.UpdateQuantity(entry.Quantity + 1);
+                entry.UpdateQuantity(entry.Quantity + delta.Quantity);
                 return;
             }
 
             composition.Add(
                 new EnemyCompositionEntry(
-                    variant,
-                    1));
+                    delta.Candidate,
+                    delta.Quantity));
         }
     }
 }

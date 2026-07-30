@@ -24,6 +24,14 @@ namespace Chaosbound.Core.Runtime.Enemies
         }
 
         /// <summary>
+        /// Gets the quantity associated with the operation.
+        /// </summary>
+        public int Quantity
+        {
+            get;
+        }
+
+        /// <summary>
         /// Initializes a new composition delta.
         /// </summary>
         /// <param name="operation">
@@ -37,12 +45,22 @@ namespace Chaosbound.Core.Runtime.Enemies
         /// </exception>
         public EnemyCompositionDelta(
             CompositionOperation operation,
-            EnemyVariantData candidate)
+            EnemyVariantData candidate,
+            int quantity)
         {
             Candidate = candidate
                 ?? throw new ArgumentNullException(nameof(candidate));
 
+            if (quantity <= 0)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(quantity),
+                    quantity,
+                    "Quantity must be greater than zero.");
+            }
+
             Operation = operation;
+            Quantity = quantity;
         }
     }
 }

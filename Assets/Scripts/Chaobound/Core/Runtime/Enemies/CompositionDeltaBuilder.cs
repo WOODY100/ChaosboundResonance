@@ -20,16 +20,17 @@ namespace Chaosbound.Core.Runtime.Enemies
         /// Thrown when the evaluation is null.
         /// </exception>
         public EnemyCompositionDelta Build(
-            CandidateEvaluation evaluation)
+            CompositionSynchronizationEntry entry)
         {
-            if (evaluation == null)
+            if (entry == null)
             {
-                throw new ArgumentNullException(nameof(evaluation));
+                throw new ArgumentNullException(nameof(entry));
             }
 
             return new EnemyCompositionDelta(
                 CompositionOperation.Add,
-                evaluation.Candidate);
+                entry.Variant,
+                entry.Amount);
         }
     }
 }

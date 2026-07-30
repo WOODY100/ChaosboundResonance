@@ -23,7 +23,7 @@ namespace Chaosbound.Content.Expeditions.Runtime.Builders
                 ?? throw new ArgumentNullException(nameof(contentResolver));
         }
 
-        public RuntimeEnemyConfig Build(
+        public RuntimeEnemyConfig BuildEnemy(
             EnemyDefinition definition)
         {
             if (definition == null)

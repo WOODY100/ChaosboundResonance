@@ -1,4 +1,4 @@
-using Chaosbound.Content.Expeditions.Definitions.Enemy;
+using Chaosbound.Content.Expeditions.Definitions.Spawn;
 using Chaosbound.Content.Expeditions.Definitions.Rewards;
 using Chaosbound.Content.Expeditions.Definitions.ExpeditionEvents;
 using Chaosbound.Content.Expeditions.Definitions.Bosses;
@@ -10,6 +10,7 @@ using Chaosbound.Content.Expeditions.Runtime.ExpeditionEvents;
 using Chaosbound.Content.Expeditions.Runtime.General;
 using Chaosbound.Content.Expeditions.Runtime.MiniBosses;
 using Chaosbound.Content.Expeditions.Runtime.Enemy;
+using Chaosbound.Content.Expeditions.Runtime.Spawn;
 using Chaosbound.Content.Expeditions.Runtime.Rewards;
 using Chaosbound.Content.Expeditions.Runtime.World;
 using Chaosbound.Content.Expeditions.Runtime.Configs;
@@ -44,7 +45,8 @@ namespace Chaosbound.Content.Expeditions.Runtime.Builders
             RuntimeSceneConfig scene = BuildScene(request.Definition.Scene);
             RuntimeGeneralConfig general = BuildGeneral(request.Definition.General);
             RuntimeWorldConfig world = BuildWorld(request.Definition.World);
-            RuntimeEnemyConfig enemy = runtimeEnemyBuilder.Build(request.Definition.Enemy);
+            RuntimeEnemyConfig enemy = runtimeEnemyBuilder.BuildEnemy(request.Definition.Enemy);
+            RuntimeSpawnConfig spawn = BuildSpawn(request.Definition.Spawn);
             RuntimeExpeditionEventsConfig expeditionEvents = BuildExpeditionEvents(request.Definition.ExpeditionEvents);
             RuntimeMiniBossesConfig miniBosses = BuildMiniBosses(request.Definition.MiniBosses);
             RuntimeBossesConfig bosses = BuildBosses(request.Definition.Bosses);
@@ -57,6 +59,7 @@ namespace Chaosbound.Content.Expeditions.Runtime.Builders
                     general,
                     world,
                     enemy,
+                    spawn,
                     expeditionEvents,
                     miniBosses,
                     bosses,
@@ -97,6 +100,18 @@ namespace Chaosbound.Content.Expeditions.Runtime.Builders
             return new RuntimeWorldConfig(
                 definition.Bounds,
                 definition.Theme);
+        }
+
+        private RuntimeSpawnConfig BuildSpawn(
+            SpawnDefinition definition)
+        {
+            if (definition == null)
+                throw new ArgumentNullException(nameof(definition));
+
+            return new RuntimeSpawnConfig(
+                definition.Placement,
+                definition.Activation,
+                definition.SpawnConstraints);
         }
 
         private RuntimeExpeditionEventsConfig BuildExpeditionEvents(

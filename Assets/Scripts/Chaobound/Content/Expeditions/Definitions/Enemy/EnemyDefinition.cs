@@ -1,5 +1,4 @@
 using Chaosbound.Shared.Content.Entries;
-using System;
 using System.Collections.Generic;
 
 namespace Chaosbound.Content.Expeditions.Definitions.Enemy
