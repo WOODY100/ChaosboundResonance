@@ -6,7 +6,7 @@ namespace Chaosbound.Spawn.Definitions
     /// <summary>
     /// Describes the content that should be materialized by a spawn job.
     /// </summary>
-    public sealed class MaterializableDefinition
+    public sealed class MaterializableDefinition : IDefinition
     {
         /// <summary>
         /// Gets the materializable reference.
