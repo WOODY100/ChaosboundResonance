@@ -1,3 +1,4 @@
+using Chaosbound.Gameplay.Threat.ValueObjects;
 using Chaosbound.Shared.Identifiers;
 using UnityEngine;
 
@@ -27,6 +28,13 @@ public class EnemyVariantData : ScriptableObject
     public EnemyRole[] roles;
 
     public TacticalCapability[] tacticalCapabilities;
+
+    [Header("Threat")]
+
+    [SerializeField]
+    private float m_ThreatCost = 10f;
+
+    public ThreatCost ThreatCost => new(m_ThreatCost);
 
     [Header("Rewards")]
     public int experienceReward = 5;
