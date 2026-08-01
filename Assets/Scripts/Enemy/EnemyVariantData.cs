@@ -1,5 +1,7 @@
 using Chaosbound.Gameplay.Threat.ValueObjects;
 using Chaosbound.Shared.Identifiers;
+using Chaosbound.Core.Runtime.Enemies;
+using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Arena/Enemy Variant")]
@@ -23,11 +25,22 @@ public class EnemyVariantData : ScriptableObject
     public float moveSpeed = 3.5f;
 
     [Header("Classification")]
-    public EnemyCategory category;
 
-    public EnemyRole[] roles;
+    [SerializeField]
+    private EnemyCategory m_Category;
 
-    public TacticalCapability[] tacticalCapabilities;
+    [SerializeField]
+    private EnemyRole[] m_Roles;
+
+    [SerializeField]
+    private TacticalCapability[] m_TacticalCapabilities;
+
+    public EnemyCategory Category => m_Category;
+
+    public IReadOnlyList<EnemyRole> Roles => m_Roles;
+
+    public IReadOnlyList<TacticalCapability> TacticalCapabilities =>
+        m_TacticalCapabilities;
 
     [Header("Threat")]
 

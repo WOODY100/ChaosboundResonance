@@ -23,7 +23,7 @@ namespace Chaosbound.Core.Runtime.Enemies
             {
                 EnemyVariantData variant = entry.Variant;
 
-                foreach (TacticalCapability capability in variant.tacticalCapabilities)
+                foreach (TacticalCapability capability in variant.TacticalCapabilities)
                 {
                     profile.Increment(capability, entry.Quantity);
                 }

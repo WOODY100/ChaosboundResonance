@@ -59,7 +59,7 @@ namespace Chaosbound.Core.Runtime.Enemies
             EnemyComposition composition,
             EnemyCompositionDelta delta)
         {
-            if (composition.TryGetEntry(delta.Candidate, out EnemyCompositionEntry entry))
+            /*if (composition.TryGetEntry(delta.Candidate, out EnemyCompositionEntry entry))
             {
                 entry.UpdateQuantity(entry.Quantity + delta.Quantity);
                 return;
@@ -68,7 +68,7 @@ namespace Chaosbound.Core.Runtime.Enemies
             composition.Add(
                 new EnemyCompositionEntry(
                     delta.Candidate,
-                    delta.Quantity));
+                    delta.Quantity));*/
         }
     }
 }

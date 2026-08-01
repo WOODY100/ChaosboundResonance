@@ -83,14 +83,14 @@ namespace Chaosbound.Core.Runtime.Enemies
                 throw new ArgumentNullException(nameof(objective));
             }
 
-            if (candidate.tacticalCapabilities == null)
+            if (candidate.TacticalCapabilities == null)
             {
                 return 0;
             }
 
             int score = 0;
 
-            foreach (TacticalCapability capability in candidate.tacticalCapabilities)
+            foreach (TacticalCapability capability in candidate.TacticalCapabilities)
             {
                 if (capability == objective.Capability)
                 {
