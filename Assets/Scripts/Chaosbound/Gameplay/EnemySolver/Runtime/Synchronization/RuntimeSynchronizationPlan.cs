@@ -6,24 +6,24 @@ namespace Chaosbound.Core.Runtime.Enemies
     /// Represents the synchronization required to transform the current
     /// runtime composition into the desired composition.
     /// </summary>
-    public sealed class CompositionSynchronization
+    public sealed class RuntimeSynchronizationPlan
     {
-        private readonly List<CompositionSynchronizationEntry> entries;
+        private readonly List<RuntimeSynchronizationEntry> entries;
 
-        public CompositionSynchronization()
+        public RuntimeSynchronizationPlan()
         {
-            entries = new List<CompositionSynchronizationEntry>();
+            entries = new List<RuntimeSynchronizationEntry>();
         }
 
         /// <summary>
         /// Gets the synchronization entries.
         /// </summary>
-        public IReadOnlyList<CompositionSynchronizationEntry> Entries => entries;
+        public IReadOnlyList<RuntimeSynchronizationEntry> Entries => entries;
 
         /// <summary>
         /// Adds a synchronization entry.
         /// </summary>
-        public void Add(CompositionSynchronizationEntry entry)
+        public void Add(RuntimeSynchronizationEntry entry)
         {
             if (entry == null)
                 throw new System.ArgumentNullException(nameof(entry));

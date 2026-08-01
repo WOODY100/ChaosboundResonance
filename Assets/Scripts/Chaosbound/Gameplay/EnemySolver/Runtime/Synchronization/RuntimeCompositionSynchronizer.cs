@@ -7,15 +7,15 @@ namespace Chaosbound.Core.Runtime.Enemies
     /// materialized composition and produces the synchronization
     /// required to align both states.
     /// </summary>
-    public sealed class CompositionSynchronizer
+    public sealed class RuntimeCompositionSynchronizer
     {
         /// <summary>
         /// Produces the synchronization required to transform the
         /// current composition into the desired composition.
         /// </summary>
-        public CompositionSynchronization Synchronize(
+        public RuntimeSynchronizationPlan Synchronize(
             EnemyComposition desiredComposition,
-            CompositionState currentState)
+            RuntimeCompositionState currentState)
         {
             if (desiredComposition == null)
             {
@@ -27,8 +27,8 @@ namespace Chaosbound.Core.Runtime.Enemies
                 throw new ArgumentNullException(nameof(currentState));
             }
 
-            CompositionSynchronization synchronization =
-                new CompositionSynchronization();
+            RuntimeSynchronizationPlan synchronization =
+                new RuntimeSynchronizationPlan();
 
             SynchronizeMissingEnemies(
                 desiredComposition,
@@ -45,8 +45,8 @@ namespace Chaosbound.Core.Runtime.Enemies
 
         private static void SynchronizeMissingEnemies(
             EnemyComposition desiredComposition,
-            CompositionState currentState,
-            CompositionSynchronization synchronization)
+            RuntimeCompositionState currentState,
+            RuntimeSynchronizationPlan synchronization)
         {
             foreach (EnemyCompositionEntry desiredEntry in desiredComposition.Entries)
             {
@@ -54,7 +54,7 @@ namespace Chaosbound.Core.Runtime.Enemies
 
                 if (currentState.TryGetEntry(
                     desiredEntry.Variant,
-                    out CompositionStateEntry currentEntry))
+                    out RuntimeCompositionEntry currentEntry))
                 {
                     currentAmount = currentEntry.AliveCount;
                 }
@@ -68,7 +68,7 @@ namespace Chaosbound.Core.Runtime.Enemies
                 }
 
                 synchronization.Add(
-                    new CompositionSynchronizationEntry(
+                    new RuntimeSynchronizationEntry(
                         desiredEntry.Variant,
                         SynchronizationOperationType.Spawn,
                         missingAmount));
@@ -77,10 +77,10 @@ namespace Chaosbound.Core.Runtime.Enemies
 
         private static void SynchronizeExcessEnemies(
             EnemyComposition desiredComposition,
-            CompositionState currentState,
-            CompositionSynchronization synchronization)
+            RuntimeCompositionState currentState,
+            RuntimeSynchronizationPlan synchronization)
         {
-            foreach (CompositionStateEntry currentEntry in currentState.Entries)
+            foreach (RuntimeCompositionEntry currentEntry in currentState.Entries)
             {
                 int desiredAmount = 0;
 
@@ -100,7 +100,7 @@ namespace Chaosbound.Core.Runtime.Enemies
                 }
 
                 synchronization.Add(
-                    new CompositionSynchronizationEntry(
+                    new RuntimeSynchronizationEntry(
                         currentEntry.Variant,
                         SynchronizationOperationType.Despawn,
                         excessAmount));

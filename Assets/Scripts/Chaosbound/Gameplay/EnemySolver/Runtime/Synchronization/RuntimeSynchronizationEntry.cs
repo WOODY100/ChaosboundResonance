@@ -6,7 +6,7 @@ namespace Chaosbound.Core.Runtime.Enemies
     /// Represents a single synchronization action required to align
     /// the runtime composition with the desired composition.
     /// </summary>
-    public sealed class CompositionSynchronizationEntry
+    public sealed class RuntimeSynchronizationEntry
     {
         /// <summary>
         /// Gets the enemy variant.
@@ -23,7 +23,7 @@ namespace Chaosbound.Core.Runtime.Enemies
         /// </summary>
         public int Amount { get; }
 
-        public CompositionSynchronizationEntry(
+        public RuntimeSynchronizationEntry(
             EnemyVariantData variant,
             SynchronizationOperationType operation,
             int amount)

@@ -6,19 +6,19 @@ namespace Chaosbound.Core.Runtime.Enemies
     /// <summary>
     /// Represents the current materialized composition of the world.
     /// </summary>
-    public sealed class CompositionState
+    public sealed class RuntimeCompositionState
     {
-        private readonly List<CompositionStateEntry> entries;
+        private readonly List<RuntimeCompositionEntry> entries;
 
-        public CompositionState()
+        public RuntimeCompositionState()
         {
-            entries = new List<CompositionStateEntry>();
+            entries = new List<RuntimeCompositionEntry>();
         }
 
         /// <summary>
         /// Gets the current runtime composition entries.
         /// </summary>
-        public IReadOnlyList<CompositionStateEntry> Entries => entries;
+        public IReadOnlyList<RuntimeCompositionEntry> Entries => entries;
 
         /// <summary>
         /// Returns whether the specified variant exists.
@@ -33,7 +33,7 @@ namespace Chaosbound.Core.Runtime.Enemies
         /// </summary>
         public bool TryGetEntry(
             EnemyVariantData variant,
-            out CompositionStateEntry entry)
+            out RuntimeCompositionEntry entry)
         {
             int index = IndexOf(variant);
 
@@ -55,14 +55,14 @@ namespace Chaosbound.Core.Runtime.Enemies
             if (variant == null)
                 throw new ArgumentNullException(nameof(variant));
 
-            if (TryGetEntry(variant, out CompositionStateEntry entry))
+            if (TryGetEntry(variant, out RuntimeCompositionEntry entry))
             {
                 entry.Increment();
                 return;
             }
 
             entries.Add(
-                new CompositionStateEntry(
+                new RuntimeCompositionEntry(
                     variant,
                     1));
         }
@@ -84,7 +84,7 @@ namespace Chaosbound.Core.Runtime.Enemies
                     $"Enemy variant '{variant.name}' does not exist in the current composition state.");
             }
 
-            CompositionStateEntry entry = entries[index];
+            RuntimeCompositionEntry entry = entries[index];
 
             entry.Decrement();
 

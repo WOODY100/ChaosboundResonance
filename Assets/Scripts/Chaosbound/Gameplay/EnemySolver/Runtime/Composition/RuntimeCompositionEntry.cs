@@ -6,7 +6,7 @@ namespace Chaosbound.Core.Runtime.Enemies
     /// Represents the current runtime state of a single enemy variant
     /// within the materialized composition.
     /// </summary>
-    public sealed class CompositionStateEntry
+    public sealed class RuntimeCompositionEntry
     {
         /// <summary>
         /// Gets the enemy variant represented by this entry.
@@ -21,7 +21,7 @@ namespace Chaosbound.Core.Runtime.Enemies
         /// <summary>
         /// Creates a new runtime composition entry.
         /// </summary>
-        public CompositionStateEntry(
+        public RuntimeCompositionEntry(
             EnemyVariantData variant,
             int aliveCount)
         {
