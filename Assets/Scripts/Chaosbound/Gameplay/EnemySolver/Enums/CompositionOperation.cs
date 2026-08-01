@@ -1,4 +1,4 @@
-namespace Chaosbound.Core.Runtime.Enemies
+namespace Chaosbound.Gameplay.EnemySolver.Enums
 {
     /// <summary>
     /// Represents a composition modification operation.

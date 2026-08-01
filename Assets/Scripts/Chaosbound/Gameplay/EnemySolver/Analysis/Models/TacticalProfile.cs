@@ -1,7 +1,8 @@
+using Chaosbound.Gameplay.EnemySolver.Enums;
 using System;
 using System.Collections.Generic;
 
-namespace Chaosbound.Core.Runtime.Enemies
+namespace Chaosbound.Gameplay.EnemySolver.Analysis.Models
 {
     /// <summary>
     /// Represents the current tactical capability state of an enemy composition.

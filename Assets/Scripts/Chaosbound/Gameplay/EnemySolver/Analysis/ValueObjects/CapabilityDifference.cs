@@ -1,6 +1,7 @@
+using Chaosbound.Gameplay.EnemySolver.Enums;
 using System;
 
-namespace Chaosbound.Core.Runtime.Enemies
+namespace Chaosbound.Gameplay.EnemySolver.Analysis.ValueObjects
 {
     /// <summary>
     /// Represents the objective difference between the current and desired

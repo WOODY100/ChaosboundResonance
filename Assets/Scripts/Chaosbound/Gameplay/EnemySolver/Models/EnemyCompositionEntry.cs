@@ -1,8 +1,9 @@
+using Chaosbound.Gameplay.EnemySolver.Enums;
 using Chaosbound.Gameplay.Threat.ValueObjects;
 using System;
 using System.Collections.Generic;
 
-namespace Chaosbound.Core.Runtime.Enemies
+namespace Chaosbound.Gameplay.EnemySolver.Models
 {
     /// <summary>
     /// Represents a tactical allocation of a standard enemy variant

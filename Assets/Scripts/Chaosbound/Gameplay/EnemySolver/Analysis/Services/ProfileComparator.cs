@@ -1,6 +1,9 @@
+using Chaosbound.Gameplay.EnemySolver.Analysis.Models;
+using Chaosbound.Gameplay.EnemySolver.Enums;
+using Chaosbound.Gameplay.EnemySolver.Analysis.ValueObjects;
 using System;
 
-namespace Chaosbound.Core.Runtime.Enemies
+namespace Chaosbound.Gameplay.EnemySolver.Analysis.Services
 {
     /// <summary>
     /// Compares two tactical profiles and produces their capability differences.

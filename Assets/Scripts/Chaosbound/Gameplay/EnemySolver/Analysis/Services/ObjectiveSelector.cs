@@ -1,7 +1,8 @@
+using Chaosbound.Gameplay.EnemySolver.Analysis.Models;
 using System;
 using System.Collections.Generic;
 
-namespace Chaosbound.Core.Runtime.Enemies
+namespace Chaosbound.Gameplay.EnemySolver.Analysis.Services
 {
     /// <summary>
     /// Selects the tactical objective that should be addressed next.

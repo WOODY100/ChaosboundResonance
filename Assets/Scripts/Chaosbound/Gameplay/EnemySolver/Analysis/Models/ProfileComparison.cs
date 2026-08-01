@@ -1,7 +1,9 @@
+using Chaosbound.Gameplay.EnemySolver.Enums;
+using Chaosbound.Gameplay.EnemySolver.Analysis.ValueObjects;
 using System;
 using System.Collections.Generic;
 
-namespace Chaosbound.Core.Runtime.Enemies
+namespace Chaosbound.Gameplay.EnemySolver.Analysis.Models
 {
     /// <summary>
     /// Represents the complete comparison between two tactical profiles.

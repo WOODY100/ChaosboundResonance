@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using Chaosbound.Gameplay.Threat.ValueObjects;
 
-namespace Chaosbound.Core.Runtime.Enemies
+namespace Chaosbound.Gameplay.EnemySolver.Models
 {
     /// <summary>
     /// Represents the executable spawn plan generated after

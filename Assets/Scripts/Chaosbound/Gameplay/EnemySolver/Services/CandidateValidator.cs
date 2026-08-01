@@ -1,6 +1,8 @@
+using Chaosbound.Gameplay.EnemySolver.Models;
+using Chaosbound.Gameplay.EnemySolver.ValueObjects;
 using System;
 
-namespace Chaosbound.Core.Runtime.Enemies
+namespace Chaosbound.Gameplay.EnemySolver.Services
 {
     /// <summary>
     /// Validates whether an enemy candidate satisfies the active

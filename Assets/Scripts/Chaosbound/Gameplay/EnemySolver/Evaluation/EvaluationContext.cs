@@ -1,7 +1,9 @@
+using Chaosbound.Gameplay.EnemySolver.ValueObjects;
+using Chaosbound.Gameplay.EnemySolver.Models;
 using System;
 using Chaosbound.Gameplay.Threat.ValueObjects;
 
-namespace Chaosbound.Core.Runtime.Enemies.Evaluation
+namespace Chaosbound.Gameplay.EnemySolver.Evaluation
 {
     /// <summary>
     /// Represents the immutable state used by evaluation rules when

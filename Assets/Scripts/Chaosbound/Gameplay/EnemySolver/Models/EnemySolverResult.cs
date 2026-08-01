@@ -1,6 +1,6 @@
 using System;
 
-namespace Chaosbound.Core.Runtime.Enemies
+namespace Chaosbound.Gameplay.EnemySolver.Models
 {
     /// <summary>
     /// Represents the result produced by the EnemySolver.

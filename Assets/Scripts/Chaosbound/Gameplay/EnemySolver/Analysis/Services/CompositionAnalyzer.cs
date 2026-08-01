@@ -1,6 +1,9 @@
+using Chaosbound.Gameplay.EnemySolver.Analysis.Models;
+using Chaosbound.Gameplay.EnemySolver.Models;
+using Chaosbound.Gameplay.EnemySolver.Enums;
 using System;
 
-namespace Chaosbound.Core.Runtime.Enemies
+namespace Chaosbound.Gameplay.EnemySolver.Analysis.Services
 {
     /// <summary>
     /// Analyzes an enemy composition and produces its tactical profile.

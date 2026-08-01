@@ -1,7 +1,8 @@
+using Chaosbound.Gameplay.EnemySolver.Models;
 using System;
 using System.Collections.Generic;
 
-namespace Chaosbound.Core.Runtime.Enemies
+namespace Chaosbound.Gameplay.EnemySolver.Services
 {
     /// <summary>
     /// Builds the candidate list consumed by the EnemySolver

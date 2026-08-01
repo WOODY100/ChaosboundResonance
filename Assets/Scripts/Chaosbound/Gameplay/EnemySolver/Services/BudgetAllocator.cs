@@ -1,8 +1,9 @@
+using Chaosbound.Gameplay.EnemySolver.Models;
+using Chaosbound.Gameplay.Threat.ValueObjects;
 using System;
 using System.Collections.Generic;
-using Chaosbound.Gameplay.Threat.ValueObjects;
 
-namespace Chaosbound.Core.Runtime.Enemies
+namespace Chaosbound.Gameplay.EnemySolver.Services
 {
     /// <summary>
     /// Allocates the available threat capacity across the desired

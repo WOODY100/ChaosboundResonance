@@ -1,7 +1,8 @@
+using Chaosbound.Gameplay.EnemySolver.Models;
 using System;
 using System.Collections.Generic;
 
-namespace Chaosbound.Core.Runtime.Enemies.Evaluation
+namespace Chaosbound.Gameplay.EnemySolver.Evaluation
 {
     /// <summary>
     /// Coordinates the execution of the tactical evaluation rules

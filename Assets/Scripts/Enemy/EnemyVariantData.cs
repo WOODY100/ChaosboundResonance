@@ -1,6 +1,6 @@
+using Chaosbound.Gameplay.EnemySolver.Enums;
 using Chaosbound.Gameplay.Threat.ValueObjects;
 using Chaosbound.Shared.Identifiers;
-using Chaosbound.Core.Runtime.Enemies;
 using System.Collections.Generic;
 using UnityEngine;
 

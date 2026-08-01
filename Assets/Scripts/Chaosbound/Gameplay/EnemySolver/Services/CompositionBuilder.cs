@@ -1,8 +1,10 @@
-using Chaosbound.Core.Runtime.Enemies.Evaluation;
+using Chaosbound.Gameplay.EnemySolver.Models;
+using Chaosbound.Gameplay.EnemySolver.Evaluation;
+using Chaosbound.Gameplay.EnemySolver.ValueObjects;
 using System;
 using System.Collections.Generic;
 
-namespace Chaosbound.Core.Runtime.Enemies
+namespace Chaosbound.Gameplay.EnemySolver.Services
 {
     /// <summary>
     /// Builds the target enemy composition from a collection of

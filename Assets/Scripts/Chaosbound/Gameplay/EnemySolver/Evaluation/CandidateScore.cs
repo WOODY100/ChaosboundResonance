@@ -1,6 +1,6 @@
 using System;
 
-namespace Chaosbound.Core.Runtime.Enemies.Evaluation
+namespace Chaosbound.Gameplay.EnemySolver.Evaluation
 {
     /// <summary>
     /// Represents the tactical score assigned to an enemy candidate during

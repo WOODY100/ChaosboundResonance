@@ -1,6 +1,7 @@
+using Chaosbound.Gameplay.EnemySolver.Enums;
 using System;
 
-namespace Chaosbound.Core.Runtime.Enemies
+namespace Chaosbound.Gameplay.EnemySolver.Analysis.Models
 {
     /// <summary>
     /// Represents a tactical need identified during composition analysis.

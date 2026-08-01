@@ -1,9 +1,11 @@
-using Chaosbound.Core.Runtime.Enemies.Evaluation;
+using Chaosbound.Gameplay.EnemySolver.ValueObjects;
+using Chaosbound.Gameplay.EnemySolver.Models;
+using Chaosbound.Gameplay.EnemySolver.Evaluation;
 using Chaosbound.Gameplay.Threat.ValueObjects;
 using System;
 using System.Collections.Generic;
 
-namespace Chaosbound.Core.Runtime.Enemies
+namespace Chaosbound.Gameplay.EnemySolver.Services
 {
     /// <summary>
     /// Orchestrates the complete EnemySolver pipeline.

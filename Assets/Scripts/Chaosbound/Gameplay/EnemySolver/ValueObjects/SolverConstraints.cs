@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Chaosbound.Core.Runtime.Enemies
+namespace Chaosbound.Gameplay.EnemySolver.ValueObjects
 {
     /// <summary>
     /// Represents the active constraints that limit the search space

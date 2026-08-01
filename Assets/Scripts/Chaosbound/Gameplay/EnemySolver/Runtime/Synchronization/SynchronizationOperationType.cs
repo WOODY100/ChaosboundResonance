@@ -1,4 +1,4 @@
-namespace Chaosbound.Core.Runtime.Enemies
+namespace Chaosbound.Gameplay.EnemySolver.Runtime.Synchronization
 {
     /// <summary>
     /// Represents the type of synchronization required to align the

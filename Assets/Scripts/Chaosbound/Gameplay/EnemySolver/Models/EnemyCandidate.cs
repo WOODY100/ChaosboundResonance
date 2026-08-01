@@ -1,8 +1,9 @@
+using Chaosbound.Gameplay.EnemySolver.Enums;
 using System;
 using System.Collections.Generic;
 using Chaosbound.Gameplay.Threat.ValueObjects;
 
-namespace Chaosbound.Core.Runtime.Enemies
+namespace Chaosbound.Gameplay.EnemySolver.Models
 {
     /// <summary>
     /// Represents a possible enemy variant that can participate in the

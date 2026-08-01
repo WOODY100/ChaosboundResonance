@@ -1,6 +1,6 @@
 using System;
 
-namespace Chaosbound.Core.Runtime.Enemies
+namespace Chaosbound.Gameplay.EnemySolver.Runtime.Composition
 {
     /// <summary>
     /// Represents the current runtime state of a single enemy variant

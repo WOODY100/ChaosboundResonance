@@ -1,8 +1,10 @@
+using Chaosbound.Gameplay.EnemySolver.Enums;
+using Chaosbound.Gameplay.EnemySolver.Models;
 using Chaosbound.Gameplay.Threat.ValueObjects;
 using System;
 using System.Collections.Generic;
 
-namespace Chaosbound.Core.Runtime.Enemies.Evaluation
+namespace Chaosbound.Gameplay.EnemySolver.Evaluation
 {
     /// <summary>
     /// Represents the result of evaluating an enemy candidate.

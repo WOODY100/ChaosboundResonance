@@ -1,4 +1,5 @@
-namespace Chaosbound.Core.Runtime.Enemies.Evaluation
+using Chaosbound.Gameplay.EnemySolver.Models;
+namespace Chaosbound.Gameplay.EnemySolver.Evaluation
 {
     /// <summary>
     /// Represents a single tactical evaluation rule used by the

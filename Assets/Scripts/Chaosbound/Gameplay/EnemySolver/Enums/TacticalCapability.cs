@@ -1,4 +1,4 @@
-namespace Chaosbound.Core.Runtime.Enemies
+namespace Chaosbound.Gameplay.EnemySolver.Enums
 {
     /// <summary>
     /// Represents the tactical functions that an enemy can contribute

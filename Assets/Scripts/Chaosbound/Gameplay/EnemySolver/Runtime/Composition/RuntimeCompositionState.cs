@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Chaosbound.Core.Runtime.Enemies
+namespace Chaosbound.Gameplay.EnemySolver.Runtime.Composition
 {
     /// <summary>
     /// Represents the current materialized composition of the world.

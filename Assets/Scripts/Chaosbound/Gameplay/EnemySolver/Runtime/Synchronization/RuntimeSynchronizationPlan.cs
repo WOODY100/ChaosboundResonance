@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Chaosbound.Core.Runtime.Enemies
+namespace Chaosbound.Gameplay.EnemySolver.Runtime.Synchronization
 {
     /// <summary>
     /// Represents the synchronization required to transform the current

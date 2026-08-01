@@ -1,6 +1,6 @@
 using System;
 
-namespace Chaosbound.Core.Runtime.Enemies
+namespace Chaosbound.Gameplay.EnemySolver.Runtime.Synchronization
 {
     /// <summary>
     /// Represents a single synchronization action required to align

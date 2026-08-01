@@ -1,6 +1,8 @@
+using Chaosbound.Gameplay.EnemySolver.Runtime.Composition;
+using Chaosbound.Gameplay.EnemySolver.Models;
 using System;
 
-namespace Chaosbound.Core.Runtime.Enemies
+namespace Chaosbound.Gameplay.EnemySolver.Runtime.Synchronization
 {
     /// <summary>
     /// Compares the desired enemy composition with the current

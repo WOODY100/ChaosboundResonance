@@ -1,7 +1,9 @@
+using Chaosbound.Gameplay.EnemySolver.Analysis.Models;
+using Chaosbound.Gameplay.EnemySolver.Analysis.ValueObjects;
 using System;
 using System.Collections.Generic;
 
-namespace Chaosbound.Core.Runtime.Enemies
+namespace Chaosbound.Gameplay.EnemySolver.Analysis.Services
 {
     /// <summary>
     /// Converts profile differences into tactical composition needs.
