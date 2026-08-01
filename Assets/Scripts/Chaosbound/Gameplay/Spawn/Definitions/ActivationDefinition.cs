@@ -1,8 +1,8 @@
 using System;
 using Chaosbound.Shared.Contracts;
-using Chaosbound.Core.Runtime.Spawn.Contracts;
+using Chaosbound.Gameplay.Spawn.Contracts;
 
-namespace Chaosbound.Core.Runtime.Spawn.Definitions
+namespace Chaosbound.Gameplay.Spawn.Definitions
 {
     /// <summary>
     /// Describes when a spawn job may become active.

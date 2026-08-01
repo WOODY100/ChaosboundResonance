@@ -1,9 +1,8 @@
-using Chaosbound.Core.Runtime.Spawn.Definitions;
-using Chaosbound.Core.Runtime.Spawn.ValueObjects;
-using Chaosbound.Spawn.Definitions;
+using Chaosbound.Gameplay.Spawn.ValueObjects;
+using Chaosbound.Gameplay.Spawn.Definitions;
 using System;
 
-namespace Chaosbound.Core.Runtime.Spawn.Domain
+namespace Chaosbound.Gameplay.Spawn.Domain
 {
     /// <summary>
     /// Represents the complete declarative description of a spawn intention.

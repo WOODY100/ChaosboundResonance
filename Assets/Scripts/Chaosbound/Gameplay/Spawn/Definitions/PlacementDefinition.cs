@@ -1,8 +1,8 @@
-using Chaosbound.Core.Runtime.Spawn.Contracts;
+using Chaosbound.Gameplay.Spawn.Contracts;
 using Chaosbound.Shared.Contracts;
 using System;
 
-namespace Chaosbound.Core.Runtime.Spawn.Definitions
+namespace Chaosbound.Gameplay.Spawn.Definitions
 {
     /// <summary>
     /// Describes where a spawn job should be materialized.

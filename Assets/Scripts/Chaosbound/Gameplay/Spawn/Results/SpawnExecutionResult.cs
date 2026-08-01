@@ -1,8 +1,8 @@
-using Chaosbound.Core.Runtime.Spawn.Contracts;
+using Chaosbound.Gameplay.Spawn.Contracts;
 using System;
 using System.Collections.Generic;
 
-namespace Chaosbound.Core.Runtime.Spawn.Results
+namespace Chaosbound.Gameplay.Spawn.Results
 {
     /// <summary>
     /// Represents the outcome of executing a SpawnJob.

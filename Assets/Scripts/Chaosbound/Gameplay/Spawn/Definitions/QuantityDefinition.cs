@@ -1,7 +1,7 @@
 using System;
 using Chaosbound.Shared.Contracts;
 
-namespace Chaosbound.Core.Runtime.Spawn.Definitions
+namespace Chaosbound.Gameplay.Spawn.Definitions
 {
     /// <summary>
     /// Describes the quantity range for a spawn job.

@@ -1,12 +1,11 @@
-using Chaosbound.Core.Runtime.Spawn.Contracts;
-using Chaosbound.Core.Runtime.Spawn.Domain;
-using Chaosbound.Core.Runtime.Spawn.Results;
-using Chaosbound.Core.Runtime.Spawn.Definitions;
+using Chaosbound.Gameplay.Spawn.Contracts;
+using Chaosbound.Gameplay.Spawn.Domain;
+using Chaosbound.Gameplay.Spawn.Results;
 using Chaosbound.Shared.Contracts;
 using System;
 using System.Collections.Generic;
 
-namespace Chaosbound.Core.Runtime.Spawn.Services
+namespace Chaosbound.Gameplay.Spawn.Services
 {
     /// <summary>
     /// Executes SpawnJobs by resolving declarative content and

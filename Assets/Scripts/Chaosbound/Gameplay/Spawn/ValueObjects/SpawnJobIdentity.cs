@@ -1,6 +1,6 @@
 using System;
 
-namespace Chaosbound.Core.Runtime.Spawn.ValueObjects
+namespace Chaosbound.Gameplay.Spawn.ValueObjects
 {
     /// <summary>
     /// Represents the immutable identity of a SpawnJob.

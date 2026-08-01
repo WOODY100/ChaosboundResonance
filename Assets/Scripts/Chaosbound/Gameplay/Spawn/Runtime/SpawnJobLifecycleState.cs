@@ -1,4 +1,4 @@
-namespace Chaosbound.Core.Runtime.Spawn.Runtime
+namespace Chaosbound.Gameplay.Spawn.Runtime
 {
     /// <summary>
     /// Represents the execution lifecycle of a SpawnJob during a run.

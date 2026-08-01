@@ -1,6 +1,6 @@
 using Chaosbound.Shared.Contracts;
 
-namespace Chaosbound.Core.Runtime.Spawn.Contracts
+namespace Chaosbound.Gameplay.Spawn.Contracts
 {
     /// <summary>
     /// Represents a runtime instance created from declarative content.

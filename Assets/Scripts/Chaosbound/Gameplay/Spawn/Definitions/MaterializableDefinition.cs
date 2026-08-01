@@ -1,7 +1,7 @@
 using System;
 using Chaosbound.Shared.Contracts;
 
-namespace Chaosbound.Spawn.Definitions
+namespace Chaosbound.Gameplay.Spawn.Definitions
 {
     /// <summary>
     /// Describes the content that should be materialized by a spawn job.

@@ -1,6 +1,6 @@
 using Chaosbound.Shared.Contracts;
 
-namespace Chaosbound.Core.Runtime.Spawn.Contracts
+namespace Chaosbound.Gameplay.Spawn.Contracts
 {
     /// <summary>
     /// Materializes a specific type of declarative content.

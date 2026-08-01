@@ -1,9 +1,9 @@
 using Chaosbound.Shared.Contracts;
-using Chaosbound.Core.Runtime.Spawn.Contracts;
+using Chaosbound.Gameplay.Spawn.Contracts;
 using System;
 using System.Collections.Generic;
 
-namespace Chaosbound.Core.Runtime.Spawn.Services
+namespace Chaosbound.Gameplay.Spawn.Services
 {
     /// <summary>
     /// Coordinates declarative content materialization by delegating

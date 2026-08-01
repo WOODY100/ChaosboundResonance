@@ -1,4 +1,4 @@
-namespace Chaosbound.Core.Runtime.Spawn.Contracts
+namespace Chaosbound.Gameplay.Spawn.Contracts
 {
     /// <summary>
     /// Represents a declarative reference to an activation strategy.

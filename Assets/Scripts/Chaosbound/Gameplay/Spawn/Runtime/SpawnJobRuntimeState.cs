@@ -1,7 +1,7 @@
-using Chaosbound.Core.Runtime.Spawn.Domain;
+using Chaosbound.Gameplay.Spawn.Domain;
 using System;
 
-namespace Chaosbound.Core.Runtime.Spawn.Runtime
+namespace Chaosbound.Gameplay.Spawn.Runtime
 {
     /// <summary>
     /// Represents the runtime execution state associated with a SpawnJob.

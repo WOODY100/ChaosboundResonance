@@ -1,6 +1,6 @@
 using Chaosbound.Shared.Contracts;
 
-namespace Chaosbound.Core.Runtime.Spawn.Contracts
+namespace Chaosbound.Gameplay.Spawn.Contracts
 {
     /// <summary>
     /// Resolves a specific materializable reference into its corresponding domain definition.
