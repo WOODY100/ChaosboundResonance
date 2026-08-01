@@ -3,6 +3,8 @@ using Chaosbound.Content.Expeditions.Authoring;
 using Chaosbound.Content.Expeditions.Builders.Bosses;
 using Chaosbound.Content.Expeditions.Builders.ExpeditionEvents;
 using Chaosbound.Content.Expeditions.Builders.General;
+using Chaosbound.Content.Expeditions.Builders.Pressure;
+using Chaosbound.Content.Expeditions.Builders.Threat;
 using Chaosbound.Content.Expeditions.Builders.Identity;
 using Chaosbound.Content.Expeditions.Builders.MiniBosses;
 using Chaosbound.Content.Expeditions.Builders.Enemy;
@@ -15,6 +17,8 @@ using Chaosbound.Content.Expeditions.Definitions;
 using Chaosbound.Content.Expeditions.Definitions.Bosses;
 using Chaosbound.Content.Expeditions.Definitions.ExpeditionEvents;
 using Chaosbound.Content.Expeditions.Definitions.General;
+using Chaosbound.Content.Expeditions.Definitions.Pressure;
+using Chaosbound.Content.Expeditions.Definitions.Threat;
 using Chaosbound.Content.Expeditions.Definitions.Identity;
 using Chaosbound.Content.Expeditions.Definitions.MiniBosses;
 using Chaosbound.Content.Expeditions.Definitions.Enemy;
@@ -56,6 +60,12 @@ namespace Chaosbound.Content.Expeditions.Builders.Expedition
             GeneralDefinition general =
                 GeneralBuilder.Build(authoring.General);
 
+            PressureDefinition pressure =
+                PressureBuilder.Build(authoring.Pressure);
+
+            ThreatDefinition threat =
+                ThreatBuilder.Build(authoring.Threat);
+
             WorldDefinition world =
                 WorldBuilder.Build(authoring.World);
 
@@ -82,6 +92,8 @@ namespace Chaosbound.Content.Expeditions.Builders.Expedition
                 identity,
                 presentation,
                 general,
+                pressure,
+                threat,
                 world,
                 enemy,
                 spawn,

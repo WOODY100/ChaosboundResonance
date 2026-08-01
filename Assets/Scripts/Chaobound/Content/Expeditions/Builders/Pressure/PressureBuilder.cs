@@ -1,16 +1,22 @@
-using UnityEngine;
+using System;
+using Chaosbound.Content.Expeditions.Authoring.Pressure;
+using Chaosbound.Content.Expeditions.Definitions.Pressure;
 
-public class PressureBuilder : MonoBehaviour
+namespace Chaosbound.Content.Expeditions.Builders.Pressure
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    /// <summary>
+    /// Converts pressure authoring into its domain representation.
+    /// </summary>
+    public static class PressureBuilder
     {
-        
-    }
+        public static PressureDefinition Build(
+            PressureAuthoring authoring)
+        {
+            if (authoring == null)
+                throw new ArgumentNullException(nameof(authoring));
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+            return new PressureDefinition(
+                authoring.CurveProfile);
+        }
     }
 }

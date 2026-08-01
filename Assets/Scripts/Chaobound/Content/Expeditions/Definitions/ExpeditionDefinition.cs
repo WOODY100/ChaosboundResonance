@@ -5,6 +5,7 @@ using Chaosbound.Content.Expeditions.Definitions.General;
 using Chaosbound.Content.Expeditions.Definitions.Identity;
 using Chaosbound.Content.Expeditions.Definitions.MiniBosses;
 using Chaosbound.Content.Expeditions.Definitions.Presentation;
+using Chaosbound.Content.Expeditions.Definitions.Pressure;
 using Chaosbound.Content.Expeditions.Definitions.Rewards;
 using Chaosbound.Content.Expeditions.Definitions.Scene;
 using Chaosbound.Content.Expeditions.Definitions.Spawn;
@@ -38,6 +39,11 @@ namespace Chaosbound.Content.Expeditions.Definitions
         /// Gets the general expedition configuration.
         /// </summary>
         public GeneralDefinition General { get; }
+
+        /// <summary>
+        /// Gets the pressure configuration.
+        /// </summary>
+        public PressureDefinition Pressure { get; }
 
         /// <summary>
         /// Gets the threat configuration.
@@ -84,7 +90,8 @@ namespace Chaosbound.Content.Expeditions.Definitions
             IdentityDefinition identity,
             PresentationDefinition presentation,
             GeneralDefinition general,
-            ThreatDefinition threat,    
+            PressureDefinition pressure,
+            ThreatDefinition threat,
             WorldDefinition world,
             EnemyDefinition enemy,
             SpawnDefinition spawn,
@@ -104,6 +111,9 @@ namespace Chaosbound.Content.Expeditions.Definitions
 
             if (general == null)
                 throw new ArgumentNullException(nameof(general));
+
+            if (pressure == null)
+                throw new ArgumentNullException(nameof(pressure));
 
             if (threat == null)
                 throw new ArgumentNullException(nameof(threat));
@@ -133,6 +143,7 @@ namespace Chaosbound.Content.Expeditions.Definitions
             Identity = identity;
             Presentation = presentation;
             General = general;
+            Pressure = pressure;
             Threat = threat;
             World = world;
             Enemy = enemy;
