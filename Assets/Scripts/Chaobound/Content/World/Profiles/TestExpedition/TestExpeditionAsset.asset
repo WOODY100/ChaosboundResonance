@@ -24,6 +24,10 @@ MonoBehaviour:
     m_general:
       m_CompletionCondition: 0
       m_BaseDifficulty: 0
+    m_pressure:
+      m_curveProfile: {fileID: 0}
+    m_threat:
+      m_budgetPolicy: {fileID: 0}
     m_world:
       m_Width: 12
       m_Height: 12
@@ -33,6 +37,10 @@ MonoBehaviour:
       - {fileID: 11400000, guid: f5819a66bba33df429698f45f81dc0aa, type: 2}
       - {fileID: 11400000, guid: bd38301ec6fd209459cdc8d6199033cd, type: 2}
       - {fileID: 11400000, guid: e3af66caf09419f47a5046e7d60ef0e3, type: 2}
+    m_Spawn:
+      m_Placement: 0
+      m_Activation: 0
+      m_Constraints: 
     m_expeditionEvents:
       content:
       - m_Id: 
