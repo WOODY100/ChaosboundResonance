@@ -1,8 +1,13 @@
 using Chaosbound.Core.Composition;
+using Chaosbound.Gameplay.Spawn.Validation;
 using UnityEngine;
 
 public class WorldInitializer : MonoBehaviour
 {
+    [SerializeField]
+    private EnemyVariantData
+    spawnRuntimeValidationEnemy;
+
     private void Start()
     {
         BootstrapContext bootstrap = BootstrapContext.Current;
@@ -46,5 +51,15 @@ public class WorldInitializer : MonoBehaviour
         }
 
         EnemyBrain.ResetAttackSlots();
+
+#if UNITY_EDITOR
+
+        if (spawnRuntimeValidationEnemy != null)
+        {
+            SpawnRuntimeValidation.Run(
+                spawnRuntimeValidationEnemy);
+        }
+
+#endif
     }
 }

@@ -1,7 +1,6 @@
 using Chaosbound.Gameplay.Spawn.Execution;
 using Chaosbound.Gameplay.Spawn.Infrastructure;
 using Chaosbound.Gameplay.Spawn.Integration;
-using Chaosbound.Gameplay.Spawn.References;
 using System;
 
 namespace Chaosbound.Gameplay.Spawn.Materialization
@@ -39,7 +38,7 @@ namespace Chaosbound.Gameplay.Spawn.Materialization
                     .Entry
                     .Materializable
                     .Reference
-                is not EnemyMaterializableReference reference)
+                is not EnemyVariantData enemy)
             {
                 throw new InvalidOperationException(
                     "EnemyMaterializer received an unsupported materializable reference.");
@@ -47,7 +46,7 @@ namespace Chaosbound.Gameplay.Spawn.Materialization
 
             SpawnInstantiationRequest request =
                 new SpawnInstantiationRequest(
-                    reference);
+                    enemy);
 
             instantiationService.Spawn(request);
         }

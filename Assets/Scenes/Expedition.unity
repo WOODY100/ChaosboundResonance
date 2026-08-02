@@ -866,7 +866,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1124559830
 Transform:
   m_ObjectHideFlags: 0
@@ -1385,6 +1385,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f3fee2fc22846a4c83c767147f57920, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WorldInitializer
+  spawnRuntimeValidationEnemy: {fileID: 11400000, guid: f5819a66bba33df429698f45f81dc0aa, type: 2}
 --- !u!1 &2005377836
 GameObject:
   m_ObjectHideFlags: 0

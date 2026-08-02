@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Chaosbound.Gameplay.Spawn.Execution;
-using Chaosbound.Gameplay.Spawn.References;
 
 namespace Chaosbound.Gameplay.Spawn.Materialization
 {
@@ -25,7 +24,7 @@ namespace Chaosbound.Gameplay.Spawn.Materialization
                 new Dictionary<Type, ISpawnMaterializer>
                 {
                     {
-                        typeof(EnemyMaterializableReference),
+                        typeof(EnemyVariantData),
                         enemyMaterializer
                     }
                 };
