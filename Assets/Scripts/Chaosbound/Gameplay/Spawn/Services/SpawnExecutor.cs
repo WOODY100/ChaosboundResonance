@@ -1,56 +1,57 @@
-using Chaosbound.Gameplay.Spawn.Contracts;
-using Chaosbound.Gameplay.Spawn.Domain;
-using Chaosbound.Gameplay.Spawn.Results;
-using Chaosbound.Shared.Contracts;
 using System;
-using System.Collections.Generic;
+using Chaosbound.Gameplay.Spawn.Contracts;
+using Chaosbound.Gameplay.Spawn.Factories;
+using Chaosbound.Gameplay.Spawn.Models;
 
 namespace Chaosbound.Gameplay.Spawn.Services
 {
     /// <summary>
-    /// Executes SpawnJobs by resolving declarative content and
-    /// materializing the requested runtime instances.
+    /// Translates SpawnRequests into executable runtime plans.
     /// </summary>
     public sealed class SpawnExecutor
     {
-        private readonly IMaterializableResolver resolver;
-        private readonly IMaterializer materializer;
+        private readonly SpawnExecutionPlanFactory executionPlanFactory;
 
-        public SpawnExecutor(
-            IMaterializableResolver resolver,
-            IMaterializer materializer)
+        /// <summary>
+        /// Creates a SpawnExecutor using the default execution plan factory.
+        /// </summary>
+        public SpawnExecutor()
+            : this(new SpawnExecutionPlanFactory())
         {
-            this.resolver = resolver
-                ?? throw new ArgumentNullException(nameof(resolver));
-
-            this.materializer = materializer
-                ?? throw new ArgumentNullException(nameof(materializer));
         }
 
-        public SpawnExecutionResult Execute(SpawnJob job)
+        /// <summary>
+        /// Creates a SpawnExecutor with the specified execution plan factory.
+        /// </summary>
+        /// <param name="executionPlanFactory">
+        /// Factory responsible for creating execution plans.
+        /// </param>
+        public SpawnExecutor(
+            SpawnExecutionPlanFactory executionPlanFactory)
         {
-            if (job == null)
+            this.executionPlanFactory =
+                executionPlanFactory
+                ?? throw new ArgumentNullException(nameof(executionPlanFactory));
+        }
+
+        /// <summary>
+        /// Produces an execution plan from the supplied SpawnRequest.
+        /// </summary>
+        /// <param name="request">
+        /// The SpawnRequest to execute.
+        /// </param>
+        /// <returns>
+        /// A runtime execution plan.
+        /// </returns>
+        public SpawnExecutionPlan Execute(
+            SpawnRequest request)
+        {
+            if (request == null)
             {
-                throw new ArgumentNullException(nameof(job));
+                throw new ArgumentNullException(nameof(request));
             }
 
-            IDefinition definition =
-                resolver.ResolveDefinition(job.Materializable.Reference);
-
-            int quantity = job.Quantity.Minimum;
-
-            List<IMaterializedInstance> instances =
-                new List<IMaterializedInstance>(quantity);
-
-            for (int i = 0; i < quantity; i++)
-            {
-                IMaterializedInstance instance =
-                    materializer.Materialize(definition);
-
-                instances.Add(instance);
-            }
-
-            return new SpawnExecutionResult(instances);
+            return executionPlanFactory.Create(request);
         }
     }
 }

@@ -1,50 +1,36 @@
-using Chaosbound.Gameplay.Spawn.ValueObjects;
-using Chaosbound.Gameplay.Spawn.Definitions;
 using System;
+using Chaosbound.Gameplay.Spawn.Models;
+using Chaosbound.Gameplay.Spawn.ValueObjects;
 
 namespace Chaosbound.Gameplay.Spawn.Domain
 {
     /// <summary>
-    /// Represents the complete declarative description of a spawn intention.
+    /// Represents an immutable unit of work
+    /// executed by the Spawn Runtime.
     /// </summary>
     public sealed class SpawnJob
     {
+        /// <summary>
+        /// Gets the immutable job identity.
+        /// </summary>
         public SpawnJobIdentity Identity { get; }
 
-        public MaterializableDefinition Materializable { get; }
+        /// <summary>
+        /// Gets the execution plan entry represented by this job.
+        /// </summary>
+        public SpawnExecutionPlanEntry Entry { get; }
 
-        public QuantityDefinition Quantity { get; }
-
-        public PlacementDefinition Placement { get; }
-
-        public ActivationDefinition Activation { get; }
-
-        public ConstraintsDefinition Constraints { get; }
-
+        /// <summary>
+        /// Creates a new SpawnJob.
+        /// </summary>
         public SpawnJob(
             SpawnJobIdentity identity,
-            MaterializableDefinition materializable,
-            QuantityDefinition quantity,
-            PlacementDefinition placement,
-            ActivationDefinition activation,
-            ConstraintsDefinition constraints)
+            SpawnExecutionPlanEntry executionEntry)
         {
+            Entry = executionEntry
+                ?? throw new ArgumentNullException(nameof(executionEntry));
+
             Identity = identity;
-
-            Materializable = materializable
-                ?? throw new ArgumentNullException(nameof(materializable));
-
-            Quantity = quantity
-                ?? throw new ArgumentNullException(nameof(quantity));
-
-            Placement = placement
-                ?? throw new ArgumentNullException(nameof(placement));
-
-            Activation = activation
-                ?? throw new ArgumentNullException(nameof(activation));
-
-            Constraints = constraints
-                ?? throw new ArgumentNullException(nameof(constraints));
         }
     }
 }
