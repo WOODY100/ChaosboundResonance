@@ -1,18 +1,19 @@
-using Chaosbound.Gameplay.Spawn.Definitions;
 using System;
+using Chaosbound.Gameplay.Spawn.Definitions;
 
 namespace Chaosbound.Gameplay.Spawn.Contracts
 {
     /// <summary>
-    /// Represents a single declarative materialization request.
+    /// Represents a single materialization request contained within a
+    /// SpawnRequest.
     ///
-    /// Each entry describes one type of materializable that should
-    /// exist in the world.
+    /// Each entry declares WHAT should be materialized and HOW MANY
+    /// instances are requested.
     /// </summary>
     public sealed class SpawnRequestEntry
     {
         /// <summary>
-        /// Gets the requested materializable.
+        /// Gets the requested materializable definition.
         /// </summary>
         public MaterializableDefinition Materializable { get; }
 
@@ -22,17 +23,23 @@ namespace Chaosbound.Gameplay.Spawn.Contracts
         public int Quantity { get; }
 
         /// <summary>
-        /// Gets entry-specific materialization options.
-        /// </summary>
-        public SpawnEntryOptions Options { get; }
-
-        /// <summary>
         /// Creates a new spawn request entry.
         /// </summary>
+        /// <param name="materializable">
+        /// Materializable definition.
+        /// </param>
+        /// <param name="quantity">
+        /// Requested quantity.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// Thrown when the materializable is null.
+        /// </exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// Thrown when the quantity is not greater than zero.
+        /// </exception>
         public SpawnRequestEntry(
             MaterializableDefinition materializable,
-            int quantity,
-            SpawnEntryOptions options)
+            int quantity)
         {
             Materializable = materializable
                 ?? throw new ArgumentNullException(nameof(materializable));
@@ -44,9 +51,6 @@ namespace Chaosbound.Gameplay.Spawn.Contracts
                     quantity,
                     "Quantity must be greater than zero.");
             }
-
-            Options = options
-                ?? throw new ArgumentNullException(nameof(options));
 
             Quantity = quantity;
         }

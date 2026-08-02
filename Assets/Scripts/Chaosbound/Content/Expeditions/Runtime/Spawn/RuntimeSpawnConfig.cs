@@ -1,4 +1,5 @@
 using Chaosbound.Content.Expeditions.Enums.Spawn;
+using System;
 using System.Collections.Generic;
 
 namespace Chaosbound.Content.Expeditions.Runtime.Spawn
@@ -32,7 +33,10 @@ namespace Chaosbound.Content.Expeditions.Runtime.Spawn
         {
             Placement = placement;
             Activation = activation;
-            SpawnConstraints = new List<SpawnConstraintPolicy>(spawnConstraints);
+            SpawnConstraints =
+                new List<SpawnConstraintPolicy>(
+                    spawnConstraints
+                        ?? throw new ArgumentNullException(nameof(spawnConstraints)));
         }
     }
 }

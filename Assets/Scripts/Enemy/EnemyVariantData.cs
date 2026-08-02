@@ -1,11 +1,12 @@
 using Chaosbound.Gameplay.EnemySolver.Enums;
 using Chaosbound.Gameplay.Threat.ValueObjects;
+using Chaosbound.Shared.Contracts;
 using Chaosbound.Shared.Identifiers;
 using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Arena/Enemy Variant")]
-public class EnemyVariantData : ScriptableObject
+public class EnemyVariantData : ScriptableObject, IMaterializableReference
 {
     [Header("Identity")]
 
