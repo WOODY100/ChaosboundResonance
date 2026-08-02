@@ -20,7 +20,8 @@ namespace Chaosbound.Gameplay.Spawn.Factories
         /// </summary>
         public SpawnRequestFactory()
             : this(
-                new SpawnRequestEntryFactory(),
+                new SpawnRequestEntryFactory(
+                new MaterializableReferenceFactory()),
                 new SpawnRequestContextFactory(),
                 new SpawnRequestMetadataFactory())
         {

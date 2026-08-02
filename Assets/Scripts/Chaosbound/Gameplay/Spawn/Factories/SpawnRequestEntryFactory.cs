@@ -1,8 +1,9 @@
-using System;
-using System.Collections.Generic;
 using Chaosbound.Gameplay.EnemySolver.Models;
 using Chaosbound.Gameplay.Spawn.Contracts;
 using Chaosbound.Gameplay.Spawn.Definitions;
+using Chaosbound.Shared.Contracts;
+using System;
+using System.Collections.Generic;
 
 namespace Chaosbound.Gameplay.Spawn.Factories
 {
@@ -11,6 +12,9 @@ namespace Chaosbound.Gameplay.Spawn.Factories
     /// </summary>
     public sealed class SpawnRequestEntryFactory
     {
+        private readonly MaterializableReferenceFactory
+            materializableReferenceFactory;
+
         /// <summary>
         /// Creates the SpawnRequest entries represented by the specified SpawnPlan.
         /// </summary>
@@ -32,9 +36,13 @@ namespace Chaosbound.Gameplay.Spawn.Factories
                     continue;
                 }
 
+                IMaterializableReference reference =
+                    materializableReferenceFactory.Create(
+                        planEntry.Variant);
+
                 MaterializableDefinition materializable =
                     new MaterializableDefinition(
-                        planEntry.Variant);
+                        reference);
 
                 entries.Add(
                     new SpawnRequestEntry(
@@ -43,6 +51,15 @@ namespace Chaosbound.Gameplay.Spawn.Factories
             }
 
             return entries;
+        }
+
+        public SpawnRequestEntryFactory(
+            MaterializableReferenceFactory materializableReferenceFactory)
+        {
+            this.materializableReferenceFactory =
+                materializableReferenceFactory
+                ?? throw new ArgumentNullException(
+                    nameof(materializableReferenceFactory));
         }
     }
 }
