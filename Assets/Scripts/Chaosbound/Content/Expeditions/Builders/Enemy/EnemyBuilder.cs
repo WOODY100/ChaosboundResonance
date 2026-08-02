@@ -17,7 +17,7 @@ namespace Chaosbound.Content.Expeditions.Builders.Enemy
             List<ContentEntry> content =
                 BuildContent(authoring.Content);
 
-            return new EnemyDefinition(content);
+            return new EnemyDefinition(content, authoring.SchedulingPolicy);
         }
 
         private static List<ContentEntry> BuildContent(

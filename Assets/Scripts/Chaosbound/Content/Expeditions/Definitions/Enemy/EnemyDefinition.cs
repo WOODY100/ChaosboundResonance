@@ -1,3 +1,4 @@
+using Chaosbound.Content.Expeditions.Enums.Enemy;
 using Chaosbound.Shared.Content.Entries;
 using System.Collections.Generic;
 
@@ -13,10 +14,15 @@ namespace Chaosbound.Content.Expeditions.Definitions.Enemy
         /// </summary>
         public IReadOnlyList<ContentEntry> Entries { get; }
 
+        public EnemySchedulingPolicy SchedulingPolicy { get; }
+
         public EnemyDefinition(
-            IReadOnlyList<ContentEntry> entries)
+            IReadOnlyList<ContentEntry> entries,
+            EnemySchedulingPolicy schedulingPolicy)
         {
             Entries = new List<ContentEntry>(entries);
+
+            SchedulingPolicy = schedulingPolicy;
         }
     }
 }

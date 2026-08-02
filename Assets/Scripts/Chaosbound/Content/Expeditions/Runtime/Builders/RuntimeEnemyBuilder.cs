@@ -7,13 +7,11 @@ using System.Collections.Generic;
 
 namespace Chaosbound.Content.Expeditions.Runtime.Builders
 {
-
     /// <summary>
     /// Builds the runtime enemy configuration from the declarative expedition content.
     /// </summary>
     public sealed class RuntimeEnemyBuilder
     {
-
         private readonly IContentResolver contentResolver;
 
         public RuntimeEnemyBuilder(
@@ -40,7 +38,9 @@ namespace Chaosbound.Content.Expeditions.Runtime.Builders
                 resolvedEnemies.Add(enemy);
             }
 
-            return new RuntimeEnemyConfig(resolvedEnemies);
+            return new RuntimeEnemyConfig(
+                resolvedEnemies,
+                definition.SchedulingPolicy);
         }
     }
 }
