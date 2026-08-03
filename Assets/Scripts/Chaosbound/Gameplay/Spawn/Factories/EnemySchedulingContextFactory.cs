@@ -1,4 +1,6 @@
 using Chaosbound.Content.Expeditions.Runtime.Enemy;
+using Chaosbound.Content.Expeditions.Runtime.References;
+using Chaosbound.Content.Expeditions.Runtime.Spawn;
 using Chaosbound.Gameplay.Pressure.Models;
 using Chaosbound.Gameplay.Spawn.Domain;
 using Chaosbound.Gameplay.Spawn.Scheduling;
@@ -9,6 +11,8 @@ public sealed class EnemySchedulingContextFactory
     public EnemySchedulingContext Create(
         SpawnJob job,
         RuntimeEnemyConfig enemyConfig,
+        RuntimeSpawnConfig spawnConfig,
+        RuntimeReferencesConfig references,
         PressureSnapshot pressure)
     {
         if (job == null)
@@ -17,12 +21,20 @@ public sealed class EnemySchedulingContextFactory
         if (enemyConfig == null)
             throw new ArgumentNullException(nameof(enemyConfig));
 
+        if (spawnConfig == null)
+            throw new ArgumentNullException(nameof(spawnConfig));
+
+        if (references == null)
+            throw new ArgumentNullException(nameof(references));
+
         if (pressure == null)
             throw new ArgumentNullException(nameof(pressure));
 
         return new EnemySchedulingContext(
             job,
             enemyConfig,
+            spawnConfig,
+            references,
             pressure);
     }
 }

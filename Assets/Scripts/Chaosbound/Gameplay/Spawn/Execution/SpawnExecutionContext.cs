@@ -11,9 +11,9 @@ namespace Chaosbound.Gameplay.Spawn.Execution
     public sealed class SpawnExecutionContext
     {
         /// <summary>
-        /// Gets the scheduled task being executed.
+        /// Gets the resolved task being executed.
         /// </summary>
-        public ScheduledSpawnTask ScheduledTask { get; }
+        public ResolvedSpawnTask ResolvedTask { get; }
 
         /// <summary>
         /// Gets the runtime state associated with the parent SpawnJob.
@@ -21,12 +21,12 @@ namespace Chaosbound.Gameplay.Spawn.Execution
         public SpawnJobRuntimeState RuntimeState { get; }
 
         public SpawnExecutionContext(
-            ScheduledSpawnTask scheduledTask,
+            ResolvedSpawnTask resolvedTask,
             SpawnJobRuntimeState runtimeState)
         {
-            ScheduledTask =
-                scheduledTask
-                ?? throw new ArgumentNullException(nameof(scheduledTask));
+            ResolvedTask =
+                resolvedTask
+                ?? throw new ArgumentNullException(nameof(resolvedTask));
 
             RuntimeState =
                 runtimeState

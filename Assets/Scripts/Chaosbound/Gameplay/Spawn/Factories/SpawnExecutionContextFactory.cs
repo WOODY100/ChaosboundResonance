@@ -14,17 +14,17 @@ namespace Chaosbound.Gameplay.Spawn.Factories
         /// Creates an execution context for the supplied task.
         /// </summary>
         public SpawnExecutionContext Create(
-            ScheduledSpawnTask scheduledTask,
+            ResolvedSpawnTask resolvedTask,
             SpawnJobRuntimeState runtimeState)
         {
-            if (scheduledTask == null)
-                throw new ArgumentNullException(nameof(scheduledTask));
+            if (resolvedTask == null)
+                throw new ArgumentNullException(nameof(resolvedTask));
 
             if (runtimeState == null)
                 throw new ArgumentNullException(nameof(runtimeState));
 
             return new SpawnExecutionContext(
-                scheduledTask,
+                resolvedTask,
                 runtimeState);
         }
     }

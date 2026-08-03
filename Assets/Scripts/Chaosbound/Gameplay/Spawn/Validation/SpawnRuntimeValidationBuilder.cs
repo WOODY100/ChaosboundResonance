@@ -1,5 +1,8 @@
 using Chaosbound.Content.Expeditions.Enums.Enemy;
+using Chaosbound.Content.Expeditions.Enums.Spawn;
 using Chaosbound.Content.Expeditions.Runtime.Enemy;
+using Chaosbound.Content.Expeditions.Runtime.References;
+using Chaosbound.Content.Expeditions.Runtime.Spawn;
 using Chaosbound.Gameplay.Pressure.Models;
 using Chaosbound.Gameplay.Spawn.Definitions;
 using Chaosbound.Gameplay.Spawn.Domain;
@@ -7,6 +10,7 @@ using Chaosbound.Gameplay.Spawn.Models;
 using Chaosbound.Gameplay.Spawn.Scheduling;
 using Chaosbound.Gameplay.Spawn.ValueObjects;
 using System;
+using UnityEngine;
 
 namespace Chaosbound.Gameplay.Spawn.Validation
 {
@@ -50,6 +54,12 @@ namespace Chaosbound.Gameplay.Spawn.Validation
             RuntimeEnemyConfig enemyConfig =
                 BuildRuntimeEnemyConfig(enemy);
 
+            RuntimeSpawnConfig spawnConfig =
+                BuildRuntimeSpawnConfig();
+
+            RuntimeReferencesConfig references =
+                BuildRuntimeReferencesConfig();
+
             PressureSnapshot pressure =
                 BuildPressureSnapshot();
 
@@ -57,11 +67,15 @@ namespace Chaosbound.Gameplay.Spawn.Validation
                 BuildSchedulingContext(
                     job,
                     enemyConfig,
+                    spawnConfig,
+                    references,
                     pressure);
 
             return new SpawnRuntimeValidationContext(
                 schedulingContext,
                 enemyConfig,
+                spawnConfig,
+                references,
                 pressure);
         }
 
@@ -97,6 +111,15 @@ namespace Chaosbound.Gameplay.Spawn.Validation
                 1);
         }
 
+        private RuntimeReferencesConfig BuildRuntimeReferencesConfig()
+        {
+            GameObject player =
+                new GameObject("SpawnRuntimeValidation_Player");
+
+            return new RuntimeReferencesConfig(
+                player.transform);
+        }
+
         private SpawnJobIdentity BuildSpawnJobIdentity()
         {
             return SpawnJobIdentity.New();
@@ -122,6 +145,14 @@ namespace Chaosbound.Gameplay.Spawn.Validation
                 EnemySchedulingPolicy.Continuous);
         }
 
+        private RuntimeSpawnConfig BuildRuntimeSpawnConfig()
+        {
+            return new RuntimeSpawnConfig(
+                SpawnPlacementPolicy.AroundPlayer,
+                SpawnActivationPolicy.Immediate,
+                Array.Empty<SpawnConstraintPolicy>());
+        }
+
         private PressureSnapshot BuildPressureSnapshot()
         {
             return new PressureSnapshot();
@@ -134,11 +165,15 @@ namespace Chaosbound.Gameplay.Spawn.Validation
         private EnemySchedulingContext BuildSchedulingContext(
             SpawnJob job,
             RuntimeEnemyConfig enemyConfig,
+            RuntimeSpawnConfig spawnConfig,
+            RuntimeReferencesConfig references,
             PressureSnapshot pressure)
         {
             return schedulingContextFactory.Create(
                 job,
                 enemyConfig,
+                spawnConfig,
+                references,
                 pressure);
         }
     }

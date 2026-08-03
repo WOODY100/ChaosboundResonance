@@ -4,6 +4,12 @@ using Chaosbound.Gameplay.Spawn.Factories;
 using Chaosbound.Gameplay.Spawn.Infrastructure;
 using Chaosbound.Gameplay.Spawn.Integration;
 using Chaosbound.Gameplay.Spawn.Materialization;
+using Chaosbound.Gameplay.Spawn.Placement.Factories;
+using Chaosbound.Gameplay.Spawn.Placement.Resolvers;
+using Chaosbound.Gameplay.Spawn.Placement.Strategies;
+using Chaosbound.Gameplay.Spawn.Reference.Factories;
+using Chaosbound.Gameplay.Spawn.Reference.Providers;
+using Chaosbound.Gameplay.Spawn.Reference.Resolvers;
 using Chaosbound.Gameplay.Spawn.Scheduling;
 using System;
 
@@ -44,7 +50,17 @@ namespace Chaosbound.Gameplay.Spawn.Validation
             return new SpawnJobExecutor(
                 scheduler,
                 runtimeStateFactory,
-                taskExecutor);
+                taskExecutor,
+
+                BuildPlacementIntentFactory(),
+
+                BuildReferenceContextFactory(),
+                BuildReferenceResolver(),
+
+                BuildPlacementContextFactory(),
+                BuildPlacementResolver(),
+
+                BuildResolvedSpawnTaskFactory());
         }
 
         private SpawnBatchCalculator BuildBatchCalculator()
@@ -119,6 +135,51 @@ namespace Chaosbound.Gameplay.Spawn.Validation
         private SpawnJobRuntimeStateFactory BuildRuntimeStateFactory()
         {
             return new SpawnJobRuntimeStateFactory();
+        }
+
+        private PlacementIntentFactory BuildPlacementIntentFactory()
+        {
+            return new PlacementIntentFactory();
+        }
+
+        private SpawnReferenceContextFactory BuildReferenceContextFactory()
+        {
+            return new SpawnReferenceContextFactory();
+        }
+
+        private PlayerReferenceProvider BuildPlayerReferenceProvider()
+        {
+            return new PlayerReferenceProvider();
+        }
+
+        private SpawnReferenceResolver BuildReferenceResolver()
+        {
+            return new SpawnReferenceResolver(
+                BuildPlayerReferenceProvider());
+        }
+
+        private PlacementContextFactory BuildPlacementContextFactory()
+        {
+            return new PlacementContextFactory();
+        }
+
+        private AroundPlayerPlacementStrategy
+            BuildAroundPlayerPlacementStrategy()
+        {
+            return new AroundPlayerPlacementStrategy();
+        }
+
+        private PlacementResolver
+            BuildPlacementResolver()
+        {
+            return new PlacementResolver(
+                BuildAroundPlayerPlacementStrategy());
+        }
+
+        private ResolvedSpawnTaskFactory
+            BuildResolvedSpawnTaskFactory()
+        {
+            return new ResolvedSpawnTaskFactory();
         }
     }
 }

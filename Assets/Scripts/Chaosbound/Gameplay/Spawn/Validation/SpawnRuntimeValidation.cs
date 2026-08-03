@@ -16,10 +16,10 @@ namespace Chaosbound.Gameplay.Spawn.Validation
             if (enemy == null)
                 throw new ArgumentNullException(nameof(enemy));
 
-            SpawnRuntimeLogger.Step(
+            SpawnRuntimeDebugger.Step(
                 "========================================");
 
-            SpawnRuntimeLogger.Step(
+            SpawnRuntimeDebugger.Step(
                 "Spawn Runtime Validation Started");
 
             SpawnRuntimeValidationBuilder builder =
@@ -29,7 +29,7 @@ namespace Chaosbound.Gameplay.Spawn.Validation
             SpawnRuntimeValidationContext context =
                 builder.Build();
 
-            SpawnRuntimeLogger.Success(
+            SpawnRuntimeDebugger.Success(
                 "Validation context created.");
 
             SpawnRuntimeValidationBootstrap bootstrap =
@@ -38,19 +38,19 @@ namespace Chaosbound.Gameplay.Spawn.Validation
             SpawnJobExecutor executor =
                 bootstrap.Build();
 
-            SpawnRuntimeLogger.Success(
+            SpawnRuntimeDebugger.Success(
                 "Runtime graph assembled.");
 
-            SpawnRuntimeLogger.Step(
+            SpawnRuntimeDebugger.Step(
                 "Executing Spawn Runtime...");
 
             executor.Execute(
                 context.SchedulingContext);
 
-            SpawnRuntimeLogger.Success(
+            SpawnRuntimeDebugger.Success(
                 "Spawn Runtime Validation Completed.");
 
-            SpawnRuntimeLogger.Step(
+            SpawnRuntimeDebugger.Step(
                 "========================================");
         }
     }

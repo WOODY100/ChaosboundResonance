@@ -1,6 +1,7 @@
+using Chaosbound.Debugging;
+using Chaosbound.Gameplay.Spawn.Models;
 using System;
 using System.Collections.Generic;
-using Chaosbound.Gameplay.Spawn.Models;
 
 namespace Chaosbound.Gameplay.Spawn.Scheduling
 {
@@ -32,7 +33,14 @@ namespace Chaosbound.Gameplay.Spawn.Scheduling
                 resolver.Resolve(
                     context.EnemyConfig.SchedulingPolicy);
 
-            return policy.Schedule(context);
+            IReadOnlyList<ScheduledSpawnTask> tasks =
+                policy.Schedule(context);
+
+            SpawnRuntimeDebugger.LogScheduling(
+                context,
+                tasks.Count);
+
+            return tasks;
         }
     }
 }

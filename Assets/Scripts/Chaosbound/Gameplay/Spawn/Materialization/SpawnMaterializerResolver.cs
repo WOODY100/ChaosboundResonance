@@ -41,6 +41,7 @@ namespace Chaosbound.Gameplay.Spawn.Materialization
 
             Type referenceType =
                 context
+                    .ResolvedTask
                     .ScheduledTask
                     .Task
                     .Entry

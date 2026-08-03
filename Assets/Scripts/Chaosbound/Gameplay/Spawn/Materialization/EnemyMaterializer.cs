@@ -33,6 +33,7 @@ namespace Chaosbound.Gameplay.Spawn.Materialization
                 throw new ArgumentNullException(nameof(context));
 
             if (context
+                    .ResolvedTask
                     .ScheduledTask
                     .Task
                     .Entry

@@ -34,15 +34,15 @@ namespace Chaosbound.Gameplay.Spawn.Materialization
         /// Executes the supplied scheduled task.
         /// </summary>
         public void Execute(
-            ScheduledSpawnTask scheduledTask,
+            ResolvedSpawnTask resolvedTask,
             SpawnJobRuntimeState runtimeState)
         {
-            if (scheduledTask == null)
-                throw new ArgumentNullException(nameof(scheduledTask));
+            if (resolvedTask == null)
+                throw new ArgumentNullException(nameof(resolvedTask));
 
             SpawnExecutionContext context =
                 contextFactory.Create(
-                    scheduledTask,
+                    resolvedTask,
                     runtimeState);
 
             ISpawnMaterializer materializer =
