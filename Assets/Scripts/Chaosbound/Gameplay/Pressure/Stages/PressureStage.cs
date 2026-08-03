@@ -1,32 +1,18 @@
 using System;
 using Chaosbound.Gameplay.ExpeditionRuntime.Context;
 using Chaosbound.Gameplay.ExpeditionRuntime.Contracts;
-using Chaosbound.Gameplay.ExpeditionRuntime.Time.Contracts;
+using Chaosbound.Gameplay.Pressure.Services;
+using Chaosbound.Gameplay.Pressure.ValueObjects;
 using UnityEngine;
 
-namespace Chaosbound.Gameplay.ExpeditionRuntime.Time.Stages
+namespace Chaosbound.Gameplay.Pressure.Stages
 {
     /// <summary>
-    /// Advances the expedition runtime clock.
+    /// Evaluates the current expedition pressure.
     /// </summary>
-    public sealed class TimeStage :
+    public sealed class PressureStage :
         IExpeditionRuntimeStage
     {
-        private readonly ITimeProvider
-            timeProvider;
-
-        /// <summary>
-        /// Creates a new Time Stage.
-        /// </summary>
-        public TimeStage(
-            ITimeProvider timeProvider)
-        {
-            this.timeProvider =
-                timeProvider
-                ?? throw new ArgumentNullException(
-                    nameof(timeProvider));
-        }
-
         /// <inheritdoc/>
         public bool ShouldExecute(
             ExpeditionRuntimeContext context)
@@ -46,8 +32,13 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Time.Stages
                 throw new ArgumentNullException(
                     nameof(context));
 
-            context.State.AdvanceTime(
-                timeProvider.DeltaTime);
+            PressureValue pressure =
+                PressureEvaluator.Evaluate(
+                    context.Config.Pressure.CurveProfile,
+                    (float)context.State.ElapsedTime.TotalSeconds);
+
+            context.State.SetPressure(
+                pressure);
         }
     }
 }
