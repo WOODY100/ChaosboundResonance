@@ -1,6 +1,9 @@
+using Chaosbound.Gameplay.ExpeditionRuntime.Director;
+using Chaosbound.Gameplay.ExpeditionRuntime.Runtime;
+using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 
 public class HUDController : MonoBehaviour
 {
@@ -9,27 +12,49 @@ public class HUDController : MonoBehaviour
     [SerializeField] private TMP_Text timerText;
 
     private PlayerHealth playerHealth;
-    private ArenaSpawnDirector arena;
+    private RunManager runManager;
     private int lastSecond = -1;
 
-    /*void Update()
+    private void Update()
     {
-        if (arena == null || timerText == null)
+        if (runManager == null)
             return;
 
-        float time = arena.CurrentTime;
-        int totalSeconds = Mathf.FloorToInt(time);
+        ExpeditionDirector director =
+            runManager.ExpeditionDirector;
+
+        if (director == null)
+            return;
+
+        if (!director.IsRunning)
+            return;
+
+        ExpeditionRuntimeState runtimeState =
+            director.RuntimeState;
+
+        if (runtimeState == null)
+            return;
+
+        UpdateTimer(runtimeState.ElapsedTime);
+    }
+
+    private void UpdateTimer(
+    TimeSpan elapsedTime)
+    {
+        if (timerText == null)
+            return;
+
+        int totalSeconds =
+            (int)elapsedTime.TotalSeconds;
 
         if (totalSeconds == lastSecond)
             return;
 
         lastSecond = totalSeconds;
 
-        int minutes = totalSeconds / 60;
-        int seconds = totalSeconds % 60;
-
-        timerText.text = minutes.ToString("00") + ":" + seconds.ToString("00");
-    }*/
+        timerText.text =
+            elapsedTime.ToString(@"mm\:ss");
+    }
 
     public void ShowHUD()
     {
@@ -55,9 +80,10 @@ public class HUDController : MonoBehaviour
         }
     }
 
-    public void BindArena(ArenaSpawnDirector arenaDirector)
+    public void BindRunManager(
+    RunManager manager)
     {
-        arena = arenaDirector;
+        runManager = manager;
     }
 
     void UpdateHealth(float current, float max)
@@ -68,12 +94,12 @@ public class HUDController : MonoBehaviour
 
     public void Initialize(
     PlayerHealth player,
-    ArenaSpawnDirector arenaDirector)
+    RunManager manager)
     {
         ShowHUD();
 
         BindPlayer(player);
-        BindArena(arenaDirector);
+        BindRunManager(manager);
     }
 
     public void Shutdown()

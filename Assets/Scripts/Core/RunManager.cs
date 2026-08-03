@@ -1,5 +1,6 @@
-using Chaosbound.Core.Runtime.State;
 using Chaosbound.Content.Expeditions.Runtime.Configs;
+using Chaosbound.Gameplay.ExpeditionRuntime.Bootstrap;
+using Chaosbound.Gameplay.ExpeditionRuntime.Director;
 using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -12,14 +13,24 @@ public class RunManager : MonoBehaviour
 
     private PlayerHealth player;
 
-    private RuntimeState _runtimeState;
+    private ExpeditionDirector expeditionDirector;
+
+    public ExpeditionDirector ExpeditionDirector =>
+        expeditionDirector;
+
     private RuntimeExpeditionConfig _currentRunConfig;
 
     public RuntimeExpeditionConfig CurrentRunConfig => _currentRunConfig;
 
-    void Awake()
+    private void Awake()
     {
         Instance = this;
+
+        ExpeditionRuntimeBootstrap bootstrap =
+            new ExpeditionRuntimeBootstrap();
+
+        expeditionDirector =
+            bootstrap.Build();
 
         if (gameOverPanel != null)
             gameOverPanel.SetActive(false);
@@ -27,16 +38,9 @@ public class RunManager : MonoBehaviour
 
     private void Update()
     {
-        if (_runtimeState == null)
-        {
-            return;
-        }
+        Debug.Log("RunManager.Update");
 
-        _runtimeState.Advance(Time.deltaTime);
-
-        // TODO:
-        // Evaluate the Expedition Director once the
-        // Director runtime architecture is implemented.
+        expeditionDirector?.Tick();
     }
 
     public void StartRun(RuntimeExpeditionConfig config)
@@ -46,9 +50,10 @@ public class RunManager : MonoBehaviour
 
         _currentRunConfig = config;
 
-        _runtimeState = new RuntimeState();
-
         Time.timeScale = 1f;
+
+        expeditionDirector.StartExpedition(
+            config);
 
         if (gameOverPanel != null)
             gameOverPanel.SetActive(false);
@@ -81,8 +86,6 @@ public class RunManager : MonoBehaviour
 
     public void RestartRun()
     {
-        _runtimeState = null;
-
         Time.timeScale = 1f;
 
         if (gameOverPanel != null)

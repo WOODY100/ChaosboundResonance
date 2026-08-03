@@ -71,15 +71,16 @@ namespace Chaosbound.Core.Composition
             Debug.Log("InitializeUI");
 
             PlayerHealth player = sceneContext.Player;
-            ArenaSpawnDirector arena = sceneContext.ArenaSpawnDirector;
             PlayerExperienceSystem xpSystem = sceneContext.PlayerExperienceSystem;
+
+            RunManager runManager = bootstrapContext.RunManager;
 
             HUDController hud = bootstrapContext.HUDController;
             HUDXPBarUI xpUI = bootstrapContext.HUDXPBarUI;
             HUDLevelUI levelUI = bootstrapContext.HUDLevelUI;
 
             if (hud != null)
-                hud.Initialize(player, arena);
+                hud.Initialize(player, runManager);
 
             if (xpUI != null)
                 xpUI.Bind(xpSystem);
@@ -133,6 +134,17 @@ namespace Chaosbound.Core.Composition
 
         private void InitializeRuntime()
         {
+            RunManager runManager =
+                bootstrapContext.RunManager;
+
+            if (runManager == null)
+            {
+                throw new InvalidOperationException(
+                    "RunManager is missing.");
+            }
+
+            runManager.StartRun(
+                runtimeConfig);
             // V1
             // Runtime initialization will be migrated here
             // incrementally in future sprints.
