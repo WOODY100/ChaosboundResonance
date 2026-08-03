@@ -1,4 +1,5 @@
 using Chaosbound.Gameplay.Spawn.Infrastructure;
+using UnityEngine;
 
 namespace Chaosbound.Gameplay.Spawn.Integration
 {
@@ -7,10 +8,7 @@ namespace Chaosbound.Gameplay.Spawn.Integration
     /// </summary>
     public interface ISpawnInstantiationService
     {
-        /// <summary>
-        /// Spawns the supplied instantiation request.
-        /// </summary>
-        void Spawn(
+        GameObject Spawn(
             SpawnInstantiationRequest request);
     }
 }

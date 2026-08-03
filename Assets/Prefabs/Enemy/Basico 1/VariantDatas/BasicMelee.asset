@@ -14,12 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyVariantData
   m_ContentId: 01
   m_DisplayName: Enemigo Basico
-  baseHealth: 25
-  baseDamage: 5
-  moveSpeed: 3.5
-  category: 0
-  roles: 00000000
-  tacticalCapabilities: 00000000
-  experienceReward: 5
-  goldReward: 1
-  modelPrefab: {fileID: 4705129364518131770, guid: a9ca8c615c94de845ae808e4fefe6762, type: 3}
+  m_BaseHealth: 10
+  m_BaseDamage: 5
+  m_MoveSpeed: 3.5
+  m_Category: 0
+  m_Roles: 
+  m_TacticalCapabilities: 
+  m_ThreatCost: 10
+  m_ExperienceReward: 5
+  m_GoldReward: 1
+  m_ModelPrefab: {fileID: 4705129364518131770, guid: a9ca8c615c94de845ae808e4fefe6762, type: 3}
+  m_SpawnPrefab: {fileID: 9107703072713531257, guid: f046d6d28badd864d8c992dc80556882, type: 3}

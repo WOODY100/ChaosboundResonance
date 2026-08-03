@@ -17,7 +17,10 @@ public class EnemyVariantController : MonoBehaviour
 
     private void OnEnable()
     {
-        ApplyVariant();
+        if (variantData != null)
+        {
+            ApplyVariant();
+        }
     }
 
     public void SetVariant(EnemyVariantData data)
@@ -34,23 +37,23 @@ public class EnemyVariantController : MonoBehaviour
         if (stats != null)
         {
             stats.SetBaseStats(
-                variantData.baseHealth,
-                variantData.baseDamage,
-                variantData.moveSpeed
+                variantData.BaseHealth,
+                variantData.BaseDamage,
+                variantData.MoveSpeed
             );
         }
 
         if (reward != null)
         {
             reward.SetRewards(
-                variantData.experienceReward,
-                variantData.goldReward
+                variantData.ExperienceReward,
+                variantData.GoldReward
             );
         }
 
         if (movement != null)
         {
-            movement.SetBaseSpeed(variantData.moveSpeed);
+            movement.SetBaseSpeed(variantData.MoveSpeed);
         }
     }
 }

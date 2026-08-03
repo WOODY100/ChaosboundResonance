@@ -14,12 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyVariantData
   m_ContentId: 03
   m_DisplayName: Enemigo Tanque
-  baseHealth: 90
-  baseDamage: 8
-  moveSpeed: 2.2
-  category: 0
-  roles: 00000000
-  tacticalCapabilities: 0400000000000000
-  experienceReward: 12
-  goldReward: 3
-  modelPrefab: {fileID: 4705129364518131770, guid: a9ca8c615c94de845ae808e4fefe6762, type: 3}
+  m_BaseHealth: 10
+  m_BaseDamage: 5
+  m_MoveSpeed: 3.5
+  m_Category: 0
+  m_Roles: 
+  m_TacticalCapabilities: 
+  m_ThreatCost: 10
+  m_ExperienceReward: 5
+  m_GoldReward: 1
+  m_ModelPrefab: {fileID: 4705129364518131770, guid: a9ca8c615c94de845ae808e4fefe6762, type: 3}
+  m_SpawnPrefab: {fileID: 7728196334316816959, guid: ef9f3cfa0921bee42bf66d6804b3a459, type: 3}

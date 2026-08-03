@@ -21,9 +21,21 @@ public class EnemyVariantData : ScriptableObject, IMaterializableReference
     public string DisplayName => m_DisplayName;
 
     [Header("Stats")]
-    public float baseHealth = 10f;
-    public float baseDamage = 5f;
-    public float moveSpeed = 3.5f;
+
+    [SerializeField]
+    private float m_BaseHealth = 10f;
+
+    [SerializeField]
+    private float m_BaseDamage = 5f;
+
+    [SerializeField]
+    private float m_MoveSpeed = 3.5f;
+
+    public float BaseHealth => m_BaseHealth;
+
+    public float BaseDamage => m_BaseDamage;
+
+    public float MoveSpeed => m_MoveSpeed;
 
     [Header("Classification")]
 
@@ -51,9 +63,36 @@ public class EnemyVariantData : ScriptableObject, IMaterializableReference
     public ThreatCost ThreatCost => new(m_ThreatCost);
 
     [Header("Rewards")]
-    public int experienceReward = 5;
-    public int goldReward = 1;
+
+    [SerializeField]
+    private int m_ExperienceReward = 5;
+
+    [SerializeField]
+    private int m_GoldReward = 1;
+
+    public int ExperienceReward => m_ExperienceReward;
+
+    public int GoldReward => m_GoldReward;
 
     [Header("Visual")]
-    public GameObject modelPrefab;
+
+    /// <summary>
+    /// Visual model associated with this enemy variant.
+    /// Used by UI, previews and other visual systems.
+    /// </summary>
+    [SerializeField]
+    private GameObject m_ModelPrefab;
+
+    public GameObject ModelPrefab => m_ModelPrefab;
+
+    [Header("Spawn")]
+
+    /// <summary>
+    /// Gameplay prefab that should be materialized by
+    /// the Spawn Runtime.
+    /// </summary>
+    [SerializeField]
+    private GameObject m_SpawnPrefab;
+
+    public GameObject SpawnPrefab => m_SpawnPrefab;
 }

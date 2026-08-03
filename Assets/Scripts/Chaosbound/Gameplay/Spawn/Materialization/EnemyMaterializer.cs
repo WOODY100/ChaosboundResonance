@@ -1,7 +1,9 @@
 using Chaosbound.Gameplay.Spawn.Execution;
 using Chaosbound.Gameplay.Spawn.Infrastructure;
 using Chaosbound.Gameplay.Spawn.Integration;
+using Chaosbound.Gameplay.Spawn.Placement.Models;
 using System;
+using UnityEngine;
 
 namespace Chaosbound.Gameplay.Spawn.Materialization
 {
@@ -45,11 +47,19 @@ namespace Chaosbound.Gameplay.Spawn.Materialization
                     "EnemyMaterializer received an unsupported materializable reference.");
             }
 
+            SpawnPlacement placement =
+                context
+                    .ResolvedTask
+                    .Placement
+                    .Placement;
+
             SpawnInstantiationRequest request =
                 new SpawnInstantiationRequest(
-                    enemy);
+                    enemy,
+                    placement.Position,
+                    placement.Rotation);
 
-            instantiationService.Spawn(request);
+            GameObject spawnedObject = instantiationService.Spawn(request);
         }
     }
 }
