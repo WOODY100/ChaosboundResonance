@@ -3,6 +3,7 @@ using Chaosbound.Gameplay.ExpeditionRuntime.Time.Contracts;
 using Chaosbound.Gameplay.ExpeditionRuntime.Time.Providers;
 using Chaosbound.Gameplay.ExpeditionRuntime.Time.Stages;
 using Chaosbound.Gameplay.Pressure.Stages;
+using Chaosbound.Gameplay.Threat.Stages;
 using System.Collections.Generic;
 
 namespace Chaosbound.Gameplay.ExpeditionRuntime.Pipeline
@@ -30,7 +31,8 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Pipeline
             return new List<IExpeditionRuntimeStage>
             {
                 BuildTimeStage(),
-                BuildPressureStage()
+                BuildPressureStage(),
+                BuildThreatStage()
             };
         }
 
@@ -54,6 +56,12 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Pipeline
             BuildTimeProvider()
         {
             return new UnityTimeProvider();
+        }
+
+        private IExpeditionRuntimeStage
+            BuildThreatStage()
+        {
+            return new ThreatStage();
         }
     }
 }

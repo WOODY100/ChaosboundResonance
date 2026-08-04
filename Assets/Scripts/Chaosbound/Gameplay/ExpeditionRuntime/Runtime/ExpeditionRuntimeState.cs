@@ -1,5 +1,6 @@
-using System;
 using Chaosbound.Gameplay.Pressure.ValueObjects;
+using Chaosbound.Gameplay.Threat.Runtime;
+using System;
 
 namespace Chaosbound.Gameplay.ExpeditionRuntime.Runtime
 {
@@ -28,6 +29,15 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Runtime
         }
 
         /// <summary>
+        /// Gets the current expedition threat budget.
+        /// </summary>
+        public ThreatBudget ThreatBudget
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
         /// Advances the runtime clock.
         /// </summary>
         public void AdvanceTime(
@@ -43,6 +53,17 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Runtime
             PressureValue pressure)
         {
             CurrentPressure = pressure;
+        }
+
+        /// <summary>
+        /// Sets the current expedition threat budget.
+        /// </summary>
+        public void SetThreatBudget(
+            ThreatBudget threatBudget)
+        {
+            ThreatBudget = threatBudget
+                ?? throw new ArgumentNullException(
+                    nameof(threatBudget));
         }
     }
 }
