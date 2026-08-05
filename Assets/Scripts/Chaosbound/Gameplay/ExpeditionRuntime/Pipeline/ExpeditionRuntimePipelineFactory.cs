@@ -1,3 +1,9 @@
+using Chaosbound.Gameplay.EnemySolver.Evaluation;
+using Chaosbound.Gameplay.EnemySolver.Evaluation.Rules;
+using Chaosbound.Gameplay.EnemySolver.Runtime.Builders;
+using Chaosbound.Gameplay.EnemySolver.Runtime.Stages;
+using Chaosbound.Gameplay.EnemySolver.Services;
+using Chaosbound.Gameplay.EnemySolver.Analysis;
 using Chaosbound.Gameplay.ExpeditionRuntime.Contracts;
 using Chaosbound.Gameplay.ExpeditionRuntime.Time.Contracts;
 using Chaosbound.Gameplay.ExpeditionRuntime.Time.Providers;
@@ -5,6 +11,7 @@ using Chaosbound.Gameplay.ExpeditionRuntime.Time.Stages;
 using Chaosbound.Gameplay.Pressure.Stages;
 using Chaosbound.Gameplay.Threat.Stages;
 using System.Collections.Generic;
+using EnemySolverService = Chaosbound.Gameplay.EnemySolver.Services.EnemySolver;
 
 namespace Chaosbound.Gameplay.ExpeditionRuntime.Pipeline
 {
@@ -32,9 +39,25 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Pipeline
             {
                 BuildTimeStage(),
                 BuildPressureStage(),
-                BuildThreatStage()
+                BuildThreatStage(),
+                BuildEnemyCompositionStage()
             };
         }
+       
+        private IExpeditionRuntimeStage
+            BuildEnemyCompositionStage()
+        {
+            EnemySolverRequestBuilder requestBuilder =
+                BuildEnemySolverRequestBuilder();
+
+            EnemySolverService enemySolver =
+                BuildEnemySolver();
+
+            return new EnemyCompositionStage(
+                requestBuilder,
+                enemySolver);
+        }
+
 
         private IExpeditionRuntimeStage
             BuildTimeStage()
@@ -62,6 +85,83 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Pipeline
             BuildThreatStage()
         {
             return new ThreatStage();
+        }
+
+        private EnemySolverRequestBuilder
+            BuildEnemySolverRequestBuilder()
+        {
+            return new EnemySolverRequestBuilder();
+        }
+
+        private EnemySolverService
+            BuildEnemySolver()
+        {
+            return new EnemySolverService(
+                BuildCandidateBuilder(),
+                BuildCandidateValidator(),
+                BuildCandidateEvaluator(),
+                BuildCompositionBuilder(),
+                BuildBudgetAllocator(),
+                BuildCompositionAnalyzer());
+        }
+
+        private CandidateBuilder
+            BuildCandidateBuilder()
+        {
+            return new CandidateBuilder();
+        }
+
+        private CandidateValidator
+            BuildCandidateValidator()
+        {
+            return new CandidateValidator();
+        }
+
+        private BudgetAllocator
+            BuildBudgetAllocator()
+        {
+            return new BudgetAllocator();
+        }
+
+        private CompositionBuilder
+            BuildCompositionBuilder()
+        {
+            return new CompositionBuilder();
+        }
+
+        private CandidateEvaluator
+            BuildCandidateEvaluator()
+        {
+            return new CandidateEvaluator(
+                BuildEvaluationRules());
+        }
+
+        private IReadOnlyList<IEnemyEvaluationRule>
+            BuildEvaluationRules()
+        {
+            return new IEnemyEvaluationRule[]
+            {
+                BuildTacticalIdentityRule(),
+                BuildNeedCoverageRule()
+            };
+        }
+
+        private IEnemyEvaluationRule
+            BuildTacticalIdentityRule()
+        {
+            return new TacticalIdentityRule();
+        }
+
+        private IEnemyEvaluationRule
+            BuildNeedCoverageRule()
+        {
+            return new NeedCoverageRule();
+        }
+
+        private CompositionAnalyzer
+            BuildCompositionAnalyzer()
+        {
+            return new CompositionAnalyzer();
         }
     }
 }

@@ -1,3 +1,5 @@
+using Chaosbound.Content.Expeditions.Runtime.Enemy.TacticalIdentity;
+using Chaosbound.Gameplay.EnemySolver.Runtime.Composition;
 using Chaosbound.Gameplay.EnemySolver.ValueObjects;
 using Chaosbound.Gameplay.Threat.ValueObjects;
 using System;
@@ -20,9 +22,15 @@ namespace Chaosbound.Gameplay.EnemySolver.Models
         public IReadOnlyList<EnemyVariantData> AvailableEnemies { get; }
 
         /// <summary>
-        /// Gets the current enemy composition.
+        /// Gets the target composition produced by the
+        /// previous EnemySolver resolution.
         /// </summary>
-        public EnemyComposition CurrentComposition { get; }
+        public EnemyComposition PreviousComposition { get; }
+        
+        /// <summary>
+        /// Gets the current materialized runtime composition.
+        /// </summary>
+        public RuntimeCompositionState RuntimeComposition { get; }
 
         /// <summary>
         /// Gets the available threat capacity.
@@ -35,25 +43,40 @@ namespace Chaosbound.Gameplay.EnemySolver.Models
         public SolverConstraints Constraints { get; }
 
         /// <summary>
+        /// Gets the tactical identity configured for the current expedition.
+        /// </summary>
+        public RuntimeTacticalIdentity TacticalIdentity { get; }
+
+        /// <summary>
         /// Creates a new solver request.
         /// </summary>
         public EnemySolverRequest(
-            IReadOnlyList<EnemyVariantData> availableEnemies,
-            EnemyComposition currentComposition,
-            ThreatCapacity availableThreat,
-            SolverConstraints constraints)
+                IReadOnlyList<EnemyVariantData> availableEnemies,
+                EnemyComposition previousComposition,
+                RuntimeCompositionState runtimeComposition,
+                ThreatCapacity availableThreat,
+                SolverConstraints constraints,
+                RuntimeTacticalIdentity tacticalIdentity)
         {
             AvailableEnemies =
                 availableEnemies
                 ?? throw new ArgumentNullException(nameof(availableEnemies));
 
-            CurrentComposition =
-                currentComposition
-                ?? throw new ArgumentNullException(nameof(currentComposition));
+            PreviousComposition =
+                previousComposition
+                ?? throw new ArgumentNullException(nameof(previousComposition));
+
+            RuntimeComposition =
+                runtimeComposition
+                ?? throw new ArgumentNullException(nameof(runtimeComposition));
 
             Constraints =
                 constraints
                 ?? throw new ArgumentNullException(nameof(constraints));
+
+            TacticalIdentity =
+                tacticalIdentity
+                ?? throw new ArgumentNullException(nameof(tacticalIdentity));
 
             AvailableThreat = availableThreat;
         }

@@ -13,7 +13,8 @@ namespace Chaosbound.Gameplay.EnemySolver.Models
         public EnemyComposition Composition { get; }
 
         /// <summary>
-        /// Gets the executable spawn plan.
+        /// Gets the declarative spawn plan produced by the EnemySolver.
+        /// This plan will later be translated by the Spawn Runtime.
         /// </summary>
         public SpawnPlan SpawnPlan { get; }
 

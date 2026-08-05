@@ -8,7 +8,7 @@ namespace Chaosbound.Gameplay.EnemySolver.Analysis.Services
     /// <summary>
     /// Analyzes an enemy composition and produces its tactical profile.
     /// </summary>
-    public sealed class CompositionAnalyzer
+    public sealed class TacticalProfileBuilder
     {
         /// <summary>
         /// Generates the tactical profile represented by the specified enemy composition.

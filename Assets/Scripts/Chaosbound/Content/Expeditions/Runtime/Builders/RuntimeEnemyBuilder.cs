@@ -1,7 +1,9 @@
 using Chaosbound.Content.Expeditions.Definitions.Enemy;
+using Chaosbound.Content.Expeditions.Definitions.Enemy.TacticalIdentity;
 using Chaosbound.Content.Expeditions.Runtime.Enemy;
-using Chaosbound.Shared.Content.Resolution;
+using Chaosbound.Content.Expeditions.Runtime.Enemy.TacticalIdentity;
 using Chaosbound.Shared.Content.Entries;
+using Chaosbound.Shared.Content.Resolution;
 using System;
 using System.Collections.Generic;
 
@@ -28,19 +30,71 @@ namespace Chaosbound.Content.Expeditions.Runtime.Builders
                 throw new ArgumentNullException(nameof(definition));
 
             List<EnemyVariantData> resolvedEnemies =
-                new(definition.Entries.Count);
+                ResolveEnemies(definition.Entries);
 
-            foreach (ContentEntry entry in definition.Entries)
+            RuntimeTacticalIdentity tacticalIdentity =
+                BuildRuntimeTacticalIdentity(
+                    definition.TacticalIdentity);
+
+            return new RuntimeEnemyConfig(
+                resolvedEnemies,
+                definition.SchedulingPolicy,
+                tacticalIdentity);
+        }
+
+        private List<EnemyVariantData> ResolveEnemies(
+            IReadOnlyList<ContentEntry> entries)
+        {
+            List<EnemyVariantData> resolvedEnemies =
+                new(entries.Count);
+
+            foreach (ContentEntry entry in entries)
             {
                 EnemyVariantData enemy =
-                    contentResolver.Resolve<EnemyVariantData>(entry.Id);
+                    contentResolver.Resolve<EnemyVariantData>(
+                        entry.Id);
 
                 resolvedEnemies.Add(enemy);
             }
 
-            return new RuntimeEnemyConfig(
-                resolvedEnemies,
-                definition.SchedulingPolicy);
+            return resolvedEnemies;
+        }
+
+        private static RuntimeTacticalIdentity BuildRuntimeTacticalIdentity(
+            TacticalIdentityDefinition definition)
+        {
+            if (definition == null)
+                throw new ArgumentNullException(nameof(definition));
+
+            List<RuntimeCapabilityAffinity> affinities =
+                BuildRuntimeAffinities(
+                    definition.Affinities);
+
+            return new RuntimeTacticalIdentity(
+                affinities);
+        }
+
+        private static List<RuntimeCapabilityAffinity> BuildRuntimeAffinities(
+            IReadOnlyList<CapabilityAffinityDefinition> definitions)
+        {
+            List<RuntimeCapabilityAffinity> result =
+                new(definitions.Count);
+
+            foreach (CapabilityAffinityDefinition affinity in definitions)
+            {
+                if (affinity == null)
+                {
+                    throw new InvalidOperationException(
+                        "TacticalIdentityDefinition contains a null CapabilityAffinityDefinition.");
+                }
+
+                result.Add(
+                    new RuntimeCapabilityAffinity(
+                        affinity.Capability,
+                        affinity.BonusScore));
+            }
+
+            return result;
         }
     }
 }

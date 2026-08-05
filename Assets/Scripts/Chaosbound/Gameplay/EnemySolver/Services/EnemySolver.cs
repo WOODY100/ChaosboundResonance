@@ -1,6 +1,7 @@
-using Chaosbound.Gameplay.EnemySolver.ValueObjects;
-using Chaosbound.Gameplay.EnemySolver.Models;
+using Chaosbound.Gameplay.EnemySolver.Analysis;
 using Chaosbound.Gameplay.EnemySolver.Evaluation;
+using Chaosbound.Gameplay.EnemySolver.Models;
+using Chaosbound.Gameplay.EnemySolver.ValueObjects;
 using Chaosbound.Gameplay.Threat.ValueObjects;
 using System;
 using System.Collections.Generic;
@@ -21,13 +22,15 @@ namespace Chaosbound.Gameplay.EnemySolver.Services
         private readonly CandidateEvaluator candidateEvaluator;
         private readonly CompositionBuilder compositionBuilder;
         private readonly BudgetAllocator budgetAllocator;
+        private readonly CompositionAnalyzer compositionAnalyzer;
 
         public EnemySolver(
             CandidateBuilder candidateBuilder,
             CandidateValidator candidateValidator,
             CandidateEvaluator candidateEvaluator,
             CompositionBuilder compositionBuilder,
-            BudgetAllocator budgetAllocator)
+            BudgetAllocator budgetAllocator,
+            CompositionAnalyzer compositionAnalyzer)
         {
             this.candidateBuilder =
                 candidateBuilder ?? throw new ArgumentNullException(nameof(candidateBuilder));
@@ -43,6 +46,9 @@ namespace Chaosbound.Gameplay.EnemySolver.Services
 
             this.budgetAllocator =
                 budgetAllocator ?? throw new ArgumentNullException(nameof(budgetAllocator));
+
+            this.compositionAnalyzer =
+                compositionAnalyzer ?? throw new ArgumentNullException(nameof(compositionAnalyzer));
         }
 
         /// <summary>
@@ -73,13 +79,28 @@ namespace Chaosbound.Gameplay.EnemySolver.Services
                     request.Constraints);
 
             SpawnPlan spawnPlan =
-                budgetAllocator.Allocate(
+                BuildSpawnPlan(
                     composition,
                     request.AvailableThreat);
 
             return new EnemySolverResult(
                 composition,
                 spawnPlan);
+        }
+
+        /// <summary>
+        /// Builds the declarative spawn plan for the generated composition.
+        /// </summary>
+        private SpawnPlan BuildSpawnPlan(
+            EnemyComposition composition,
+            ThreatCapacity availableThreat)
+        {
+            if (composition == null)
+                throw new ArgumentNullException(nameof(composition));
+
+            return budgetAllocator.Allocate(
+                composition,
+                availableThreat);
         }
 
         /// <summary>
@@ -94,8 +115,17 @@ namespace Chaosbound.Gameplay.EnemySolver.Services
             if (request.AvailableEnemies == null)
                 throw new ArgumentNullException(nameof(request.AvailableEnemies));
 
+            if (request.PreviousComposition == null)
+                throw new ArgumentNullException(nameof(request.PreviousComposition));
+
+            if (request.RuntimeComposition == null)
+                throw new ArgumentNullException(nameof(request.RuntimeComposition));
+
             if (request.Constraints == null)
                 throw new ArgumentNullException(nameof(request.Constraints));
+
+            if (request.TacticalIdentity == null)
+                throw new ArgumentNullException(nameof(request.TacticalIdentity));
         }
 
         /// <summary>
@@ -127,11 +157,17 @@ namespace Chaosbound.Gameplay.EnemySolver.Services
         {
             List<ScoredCandidate> scoredCandidates = new();
 
+            CompositionAnalysis analysis =
+                compositionAnalyzer.Analyze(
+                    request.RuntimeComposition);
+
             EvaluationContext context =
                 new EvaluationContext(
-                    request.CurrentComposition,
+                    request.PreviousComposition,
                     new ThreatCost(request.AvailableThreat.Value),
-                    request.Constraints);
+                    request.Constraints,
+                    request.TacticalIdentity,
+                    analysis);
 
             foreach (EnemyCandidate candidate in candidates)
             {

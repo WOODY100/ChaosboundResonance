@@ -6,35 +6,38 @@ using Chaosbound.Gameplay.Spawn.Domain;
 using Chaosbound.Gameplay.Spawn.Scheduling;
 using System;
 
-public sealed class EnemySchedulingContextFactory
+namespace Chaosbound.Gameplay.Spawn.Factories
 {
-    public EnemySchedulingContext Create(
-        SpawnJob job,
-        RuntimeEnemyConfig enemyConfig,
-        RuntimeSpawnConfig spawnConfig,
-        RuntimeReferencesConfig references,
-        PressureSnapshot pressure)
+    public sealed class EnemySchedulingContextFactory
     {
-        if (job == null)
-            throw new ArgumentNullException(nameof(job));
+        public EnemySchedulingContext Create(
+            SpawnJob job,
+            RuntimeEnemyConfig enemyConfig,
+            RuntimeSpawnConfig spawnConfig,
+            RuntimeReferencesConfig references,
+            PressureSnapshot pressure)
+        {
+            if (job == null)
+                throw new ArgumentNullException(nameof(job));
 
-        if (enemyConfig == null)
-            throw new ArgumentNullException(nameof(enemyConfig));
+            if (enemyConfig == null)
+                throw new ArgumentNullException(nameof(enemyConfig));
 
-        if (spawnConfig == null)
-            throw new ArgumentNullException(nameof(spawnConfig));
+            if (spawnConfig == null)
+                throw new ArgumentNullException(nameof(spawnConfig));
 
-        if (references == null)
-            throw new ArgumentNullException(nameof(references));
+            if (references == null)
+                throw new ArgumentNullException(nameof(references));
 
-        if (pressure == null)
-            throw new ArgumentNullException(nameof(pressure));
+            if (pressure == null)
+                throw new ArgumentNullException(nameof(pressure));
 
-        return new EnemySchedulingContext(
-            job,
-            enemyConfig,
-            spawnConfig,
-            references,
-            pressure);
+            return new EnemySchedulingContext(
+                job,
+                enemyConfig,
+                spawnConfig,
+                references,
+                pressure);
+        }
     }
 }

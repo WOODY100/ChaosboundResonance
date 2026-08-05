@@ -1,3 +1,4 @@
+using Chaosbound.Content.Expeditions.Authoring.Enemy.TacticalIdentity;
 using Chaosbound.Content.Expeditions.Enums.Enemy;
 using System;
 using System.Collections.Generic;
@@ -19,5 +20,12 @@ namespace Chaosbound.Content.Expeditions.Authoring.Enemy
 
         public EnemySchedulingPolicy SchedulingPolicy =>
             m_SchedulingPolicy;
+
+        [SerializeField]
+        private TacticalIdentityAuthoring m_TacticalIdentity =
+            new();
+
+        public TacticalIdentityAuthoring TacticalIdentity =>
+            m_TacticalIdentity;
     }
 }

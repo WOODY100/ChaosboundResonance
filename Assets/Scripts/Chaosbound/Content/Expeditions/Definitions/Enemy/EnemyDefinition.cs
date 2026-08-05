@@ -1,5 +1,7 @@
+using Chaosbound.Content.Expeditions.Definitions.Enemy.TacticalIdentity;
 using Chaosbound.Content.Expeditions.Enums.Enemy;
 using Chaosbound.Shared.Content.Entries;
+using System;
 using System.Collections.Generic;
 
 namespace Chaosbound.Content.Expeditions.Definitions.Enemy
@@ -16,13 +18,26 @@ namespace Chaosbound.Content.Expeditions.Definitions.Enemy
 
         public EnemySchedulingPolicy SchedulingPolicy { get; }
 
+        /// <summary>
+        /// Gets the tactical identity configured for this expedition.
+        /// </summary>
+        public TacticalIdentityDefinition TacticalIdentity { get; }
+
         public EnemyDefinition(
             IReadOnlyList<ContentEntry> entries,
-            EnemySchedulingPolicy schedulingPolicy)
+            EnemySchedulingPolicy schedulingPolicy,
+            TacticalIdentityDefinition tacticalIdentity)
         {
+            if (tacticalIdentity == null)
+            {
+                throw new ArgumentNullException(nameof(tacticalIdentity));
+            }
+
             Entries = new List<ContentEntry>(entries);
 
             SchedulingPolicy = schedulingPolicy;
+
+            TacticalIdentity = tacticalIdentity;
         }
     }
 }

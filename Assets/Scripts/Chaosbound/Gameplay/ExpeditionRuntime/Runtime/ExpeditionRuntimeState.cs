@@ -1,3 +1,4 @@
+using Chaosbound.Gameplay.EnemySolver.Models;
 using Chaosbound.Gameplay.Pressure.ValueObjects;
 using Chaosbound.Gameplay.Threat.Runtime;
 using System;
@@ -38,6 +39,15 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Runtime
         }
 
         /// <summary>
+        /// Gets the latest enemy solver result.
+        /// </summary>
+        public EnemySolverResult EnemySolverResult
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
         /// Advances the runtime clock.
         /// </summary>
         public void AdvanceTime(
@@ -64,6 +74,18 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Runtime
             ThreatBudget = threatBudget
                 ?? throw new ArgumentNullException(
                     nameof(threatBudget));
+        }
+
+        /// <summary>
+        /// Updates the latest enemy solver result.
+        /// </summary>
+        public void SetEnemySolverResult(
+            EnemySolverResult result)
+        {
+            EnemySolverResult =
+                result
+                ?? throw new ArgumentNullException(
+                    nameof(result));
         }
     }
 }

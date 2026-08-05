@@ -2,14 +2,17 @@ using Chaosbound.Gameplay.Spawn.Domain;
 using Chaosbound.Gameplay.Spawn.Runtime;
 using System;
 
-public sealed class SpawnJobRuntimeStateFactory
+namespace Chaosbound.Gameplay.Spawn.Factories
 {
-    public SpawnJobRuntimeState Create(
-        SpawnJob job)
+    public sealed class SpawnJobRuntimeStateFactory
     {
-        if (job == null)
-            throw new ArgumentNullException(nameof(job));
+        public SpawnJobRuntimeState Create(
+            SpawnJob job)
+        {
+            if (job == null)
+                throw new ArgumentNullException(nameof(job));
 
-        return new SpawnJobRuntimeState(job);
+            return new SpawnJobRuntimeState(job);
+        }
     }
 }
