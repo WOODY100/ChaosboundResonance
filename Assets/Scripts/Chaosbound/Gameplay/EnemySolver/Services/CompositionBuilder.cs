@@ -1,6 +1,7 @@
-using Chaosbound.Gameplay.EnemySolver.Models;
 using Chaosbound.Gameplay.EnemySolver.Evaluation;
+using Chaosbound.Gameplay.EnemySolver.Models;
 using Chaosbound.Gameplay.EnemySolver.ValueObjects;
+using Chaosbound.Gameplay.Threat.ValueObjects;
 using System;
 using System.Collections.Generic;
 
@@ -17,7 +18,8 @@ namespace Chaosbound.Gameplay.EnemySolver.Services
         /// </summary>
         public EnemyComposition Build(
             IReadOnlyList<ScoredCandidate> candidates,
-            SolverConstraints constraints)
+            SolverConstraints constraints,
+            ThreatCapacity availableThreat)
         {
             ValidateArguments(
                 candidates,
@@ -30,7 +32,8 @@ namespace Chaosbound.Gameplay.EnemySolver.Services
             IReadOnlyList<ScoredCandidate> selectedCandidates =
                 SelectCandidates(
                     orderedCandidates,
-                    constraints);
+                    constraints,
+                    availableThreat);
 
             IReadOnlyList<EnemyCompositionEntry> entries =
                 BuildEntries(
@@ -68,9 +71,88 @@ namespace Chaosbound.Gameplay.EnemySolver.Services
         private static IReadOnlyList<ScoredCandidate>
             SelectCandidates(
                 IReadOnlyList<ScoredCandidate> orderedCandidates,
-                SolverConstraints constraints)
+                SolverConstraints constraints,
+                ThreatCapacity availableThreat)
         {
-            return orderedCandidates;
+            if (orderedCandidates == null)
+                throw new ArgumentNullException(nameof(orderedCandidates));
+
+            if (constraints == null)
+                throw new ArgumentNullException(nameof(constraints));
+
+            float remainingThreat =
+                availableThreat.Value;
+
+            List<ScoredCandidate> selectedCandidates =
+                new();
+
+            foreach (ScoredCandidate candidate in orderedCandidates)
+            {
+                if (!CanAddCandidate(
+                    candidate,
+                    constraints,
+                    remainingThreat))
+                {
+                    continue;
+                }
+
+                remainingThreat =
+                    AddCandidate(
+                        candidate,
+                        selectedCandidates,
+                        remainingThreat);
+            }
+
+            return selectedCandidates;
+        }
+
+        private static bool HasEnoughThreat(
+            ScoredCandidate candidate,
+            float remainingThreat)
+        {
+            if (candidate == null)
+                throw new ArgumentNullException(nameof(candidate));
+
+            return candidate.Variant.ThreatCost.Value
+                <= remainingThreat;
+        }
+
+        private static bool CanAddCandidate(
+            ScoredCandidate candidate,
+            SolverConstraints constraints,
+            float remainingThreat)
+        {
+            if (candidate == null)
+                throw new ArgumentNullException(nameof(candidate));
+
+            if (constraints == null)
+                throw new ArgumentNullException(nameof(constraints));
+
+            if (!HasEnoughThreat(
+                candidate,
+                remainingThreat))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private static float AddCandidate(
+            ScoredCandidate candidate,
+            List<ScoredCandidate> selectedCandidates,
+            float remainingThreat)
+        {
+            if (candidate == null)
+                throw new ArgumentNullException(nameof(candidate));
+
+            if (selectedCandidates == null)
+                throw new ArgumentNullException(nameof(selectedCandidates));
+
+            selectedCandidates.Add(candidate);
+
+            return remainingThreat
+                - candidate.Variant.ThreatCost.Value;
         }
 
         private static IReadOnlyList<EnemyCompositionEntry>

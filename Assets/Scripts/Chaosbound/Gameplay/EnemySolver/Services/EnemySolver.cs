@@ -76,7 +76,8 @@ namespace Chaosbound.Gameplay.EnemySolver.Services
             EnemyComposition composition =
                 compositionBuilder.Build(
                     scoredCandidates,
-                    request.Constraints);
+                    request.Constraints,
+                    request.AvailableThreat);
 
             SpawnPlan spawnPlan =
                 BuildSpawnPlan(
