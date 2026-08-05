@@ -1,14 +1,17 @@
+using Chaosbound.Gameplay.EnemySolver.Analysis;
 using Chaosbound.Gameplay.EnemySolver.Evaluation;
 using Chaosbound.Gameplay.EnemySolver.Evaluation.Rules;
 using Chaosbound.Gameplay.EnemySolver.Runtime.Builders;
 using Chaosbound.Gameplay.EnemySolver.Runtime.Stages;
 using Chaosbound.Gameplay.EnemySolver.Services;
-using Chaosbound.Gameplay.EnemySolver.Analysis;
 using Chaosbound.Gameplay.ExpeditionRuntime.Contracts;
 using Chaosbound.Gameplay.ExpeditionRuntime.Time.Contracts;
 using Chaosbound.Gameplay.ExpeditionRuntime.Time.Providers;
 using Chaosbound.Gameplay.ExpeditionRuntime.Time.Stages;
 using Chaosbound.Gameplay.Pressure.Stages;
+using Chaosbound.Gameplay.Spawn.Factories;
+using Chaosbound.Gameplay.Spawn.Services;
+using Chaosbound.Gameplay.Spawn.Stages;
 using Chaosbound.Gameplay.Threat.Stages;
 using System.Collections.Generic;
 using EnemySolverService = Chaosbound.Gameplay.EnemySolver.Services.EnemySolver;
@@ -40,7 +43,8 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Pipeline
                 BuildTimeStage(),
                 BuildPressureStage(),
                 BuildThreatStage(),
-                BuildEnemyCompositionStage()
+                BuildEnemyCompositionStage(),
+                BuildSpawnStage()
             };
         }
        
@@ -85,6 +89,26 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Pipeline
             BuildThreatStage()
         {
             return new ThreatStage();
+        }
+
+        private IExpeditionRuntimeStage
+            BuildSpawnStage()
+        {
+            return new SpawnStage(
+                BuildSpawnRequestFactory(),
+                BuildSpawnExecutor());
+        }
+
+        private SpawnRequestFactory
+            BuildSpawnRequestFactory()
+        {
+            return new SpawnRequestFactory();
+        }
+
+        private SpawnExecutor
+            BuildSpawnExecutor()
+        {
+            return new SpawnExecutor();
         }
 
         private EnemySolverRequestBuilder

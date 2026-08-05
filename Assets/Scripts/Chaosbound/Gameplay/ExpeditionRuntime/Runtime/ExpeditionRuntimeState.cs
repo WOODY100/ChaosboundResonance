@@ -1,6 +1,7 @@
 using Chaosbound.Gameplay.EnemySolver.Models;
 using Chaosbound.Gameplay.Pressure.ValueObjects;
 using Chaosbound.Gameplay.Threat.Runtime;
+using Chaosbound.Gameplay.Pressure.Models;
 using System;
 
 namespace Chaosbound.Gameplay.ExpeditionRuntime.Runtime
@@ -24,6 +25,15 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Runtime
         /// Gets the current expedition pressure.
         /// </summary>
         public PressureValue CurrentPressure
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Gets the latest pressure snapshot.
+        /// </summary>
+        public PressureSnapshot PressureSnapshot
         {
             get;
             private set;
@@ -63,6 +73,18 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Runtime
             PressureValue pressure)
         {
             CurrentPressure = pressure;
+        }
+
+        /// <summary>
+        /// Updates the latest pressure snapshot.
+        /// </summary>
+        public void SetPressureSnapshot(
+            PressureSnapshot snapshot)
+        {
+            PressureSnapshot =
+                snapshot
+                ?? throw new ArgumentNullException(
+                    nameof(snapshot));
         }
 
         /// <summary>

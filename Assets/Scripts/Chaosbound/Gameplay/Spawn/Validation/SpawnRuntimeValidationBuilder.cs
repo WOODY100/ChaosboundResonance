@@ -4,10 +4,11 @@ using Chaosbound.Content.Expeditions.Runtime.Enemy;
 using Chaosbound.Content.Expeditions.Runtime.Enemy.TacticalIdentity;
 using Chaosbound.Content.Expeditions.Runtime.References;
 using Chaosbound.Content.Expeditions.Runtime.Spawn;
-using Chaosbound.Gameplay.Spawn.Factories;
 using Chaosbound.Gameplay.Pressure.Models;
+using Chaosbound.Gameplay.Pressure.ValueObjects;
 using Chaosbound.Gameplay.Spawn.Definitions;
 using Chaosbound.Gameplay.Spawn.Domain;
+using Chaosbound.Gameplay.Spawn.Factories;
 using Chaosbound.Gameplay.Spawn.Models;
 using Chaosbound.Gameplay.Spawn.Scheduling;
 using Chaosbound.Gameplay.Spawn.ValueObjects;
@@ -164,7 +165,11 @@ namespace Chaosbound.Gameplay.Spawn.Validation
 
         private PressureSnapshot BuildPressureSnapshot()
         {
-            return new PressureSnapshot();
+            PressureValue pressure =
+                new PressureValue(0f);
+
+            return new PressureSnapshot(
+                pressure);
         }
 
         private readonly EnemySchedulingContextFactory

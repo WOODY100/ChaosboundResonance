@@ -1,3 +1,5 @@
+using Chaosbound.Gameplay.Pressure.ValueObjects;
+
 namespace Chaosbound.Gameplay.Pressure.Models
 {
     /// <summary>
@@ -6,5 +8,18 @@ namespace Chaosbound.Gameplay.Pressure.Models
     /// </summary>
     public sealed class PressureSnapshot
     {
+        /// <summary>
+        /// Gets the evaluated pressure.
+        /// </summary>
+        public PressureValue Pressure
+        {
+            get;
+        }
+
+        public PressureSnapshot(
+            PressureValue pressure)
+        {
+            Pressure = pressure;
+        }
     }
 }

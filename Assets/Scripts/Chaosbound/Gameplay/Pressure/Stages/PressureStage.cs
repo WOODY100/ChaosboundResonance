@@ -3,6 +3,8 @@ using Chaosbound.Gameplay.ExpeditionRuntime.Context;
 using Chaosbound.Gameplay.ExpeditionRuntime.Contracts;
 using Chaosbound.Gameplay.Pressure.Services;
 using Chaosbound.Gameplay.Pressure.ValueObjects;
+using Chaosbound.Gameplay.Pressure.Factories;
+using Chaosbound.Gameplay.Pressure.Models;
 using UnityEngine;
 
 namespace Chaosbound.Gameplay.Pressure.Stages
@@ -13,6 +15,9 @@ namespace Chaosbound.Gameplay.Pressure.Stages
     public sealed class PressureStage :
         IExpeditionRuntimeStage
     {
+        private readonly PressureSnapshotFactory
+            snapshotFactory;
+
         /// <inheritdoc/>
         public bool ShouldExecute(
             ExpeditionRuntimeContext context)
@@ -39,6 +44,27 @@ namespace Chaosbound.Gameplay.Pressure.Stages
 
             context.State.SetPressure(
                 pressure);
+
+            PressureSnapshot snapshot =
+                snapshotFactory.Create(
+                    pressure);
+
+            context.State.SetPressureSnapshot(
+                snapshot);
+        }
+
+        public PressureStage()
+            : this(new PressureSnapshotFactory())
+        {
+        }
+
+        public PressureStage(
+            PressureSnapshotFactory snapshotFactory)
+        {
+            this.snapshotFactory =
+                snapshotFactory
+                ?? throw new ArgumentNullException(
+                    nameof(snapshotFactory));
         }
     }
 }

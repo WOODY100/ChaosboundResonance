@@ -1,7 +1,10 @@
 using Chaosbound.Content.Expeditions.Runtime.Configs;
+using Chaosbound.Content.Expeditions.Runtime.References;
+using Chaosbound.Core.Composition;
 using Chaosbound.Gameplay.ExpeditionRuntime.Context;
 using Chaosbound.Gameplay.ExpeditionRuntime.Runtime;
 using System;
+using UnityEngine;
 
 namespace Chaosbound.Gameplay.ExpeditionRuntime.Factories
 {
@@ -37,7 +40,27 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Factories
 
         private ExpeditionRuntimeReferences BuildReferences()
         {
-            return new ExpeditionRuntimeReferences();
+            RuntimeReferencesConfig runtime =
+                BuildRuntimeReferences();
+
+            return new ExpeditionRuntimeReferences(
+                runtime);
+        }
+
+        private RuntimeReferencesConfig
+            BuildRuntimeReferences()
+        {
+            ExpeditionSceneContext scene =
+                ExpeditionSceneContext.Current;
+
+            if (scene == null)
+            {
+                throw new InvalidOperationException(
+                    "ExpeditionSceneContext is not available.");
+            }
+
+            return new RuntimeReferencesConfig(
+                scene.Player.transform);
         }
 
         private ExpeditionRuntimeServices BuildServices()
