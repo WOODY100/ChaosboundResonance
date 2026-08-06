@@ -51,6 +51,8 @@ GameObject:
   - component: {fileID: 3575845428116138342}
   - component: {fileID: 5091326436363750975}
   - component: {fileID: 8012991259864080932}
+  - component: {fileID: 2873835817305760886}
+  - component: {fileID: -6084379960073881549}
   m_Layer: 6
   m_Name: Enemy_Base
   m_TagString: Untagged
@@ -255,3 +257,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18a179446157da545a43d83cc8878e9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PooledObject
+--- !u!114 &2873835817305760886
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1123065836721121703}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97cbc2a78dc10e644b22e11e481fb50e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyRuntimeContext
+--- !u!114 &-6084379960073881549
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1123065836721121703}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 154a68ea916a4a34486803d4b7426657, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyRuntimeLifecycle

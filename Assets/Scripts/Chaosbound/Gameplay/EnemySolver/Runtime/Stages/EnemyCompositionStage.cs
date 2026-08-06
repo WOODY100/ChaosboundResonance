@@ -3,6 +3,7 @@ using Chaosbound.Gameplay.EnemySolver.Runtime.Builders;
 using Chaosbound.Gameplay.ExpeditionRuntime.Context;
 using Chaosbound.Gameplay.ExpeditionRuntime.Contracts;
 using System;
+using UnityEngine;
 
 using EnemySolverService =
     Chaosbound.Gameplay.EnemySolver.Services.EnemySolver;
@@ -66,6 +67,11 @@ namespace Chaosbound.Gameplay.EnemySolver.Runtime.Stages
             EnemySolverResult result =
                 enemySolver.Solve(
                     request);
+
+            Debug.Log(
+                $"[EnemySolver] Composition={result.Composition.Entries.Count} | " +
+                $"SpawnEntries={result.SpawnPlan.Entries.Count} | " +
+                $"Allocated={result.SpawnPlan.TotalAllocatedEnemyCount}");
 
             context.State.SetEnemySolverResult(
                 result);

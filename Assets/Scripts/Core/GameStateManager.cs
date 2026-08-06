@@ -7,6 +7,25 @@ public class GameStateManager : MonoBehaviour
 
     public GameState CurrentState { get; private set; }
 
+    /// <summary>
+    /// Gets whether gameplay systems are allowed
+    /// to advance the simulation.
+    /// </summary>
+    public bool CanSimulate
+    {
+        get
+        {
+            switch (CurrentState)
+            {
+                case GameState.Playing:
+                    return true;
+
+                default:
+                    return false;
+            }
+        }
+    }
+
     public event Action<GameState> OnStateChanged;
 
     void Awake()

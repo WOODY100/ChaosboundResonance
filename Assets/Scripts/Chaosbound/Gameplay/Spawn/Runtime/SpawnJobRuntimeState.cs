@@ -1,3 +1,4 @@
+using Chaosbound.Gameplay.ExpeditionRuntime.Runtime;
 using Chaosbound.Gameplay.Spawn.Domain;
 using System;
 
@@ -19,9 +20,18 @@ namespace Chaosbound.Gameplay.Spawn.Runtime
         /// </summary>
         public SpawnJobLifecycleState Lifecycle { get; internal set; }
 
-        public SpawnJobRuntimeState(SpawnJob job)
+        public ExpeditionRuntimeState ExpeditionRuntime { get; }
+
+        public SpawnJobRuntimeState(
+            SpawnJob job,
+            ExpeditionRuntimeState expeditionRuntime)
         {
-            Job = job ?? throw new ArgumentNullException(nameof(job));
+            Job = job
+                ?? throw new ArgumentNullException(nameof(job));
+
+            ExpeditionRuntime =
+                expeditionRuntime
+                ?? throw new ArgumentNullException(nameof(expeditionRuntime));
 
             Lifecycle = SpawnJobLifecycleState.Pending;
         }

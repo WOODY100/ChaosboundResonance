@@ -23,5 +23,15 @@ namespace Chaosbound.Content.Expeditions.Authoring.Enemy.TacticalIdentity
 
         public float BonusScore =>
             m_BonusScore;
+
+        /// <summary>
+        /// Desired alive enemies contributing this capability.
+        /// </summary>
+        [SerializeField]
+        [Min(0)]
+        private int m_DesiredCount = 0;
+
+        public int DesiredCount =>
+            m_DesiredCount;
     }
 }

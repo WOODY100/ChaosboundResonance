@@ -160,7 +160,8 @@ namespace Chaosbound.Gameplay.EnemySolver.Services
 
             CompositionAnalysis analysis =
                 compositionAnalyzer.Analyze(
-                    request.RuntimeComposition);
+                    request.RuntimeComposition,
+                    request.TacticalIdentity);
 
             EvaluationContext context =
                 new EvaluationContext(

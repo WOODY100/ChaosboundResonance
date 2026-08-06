@@ -38,7 +38,15 @@ public class RunManager : MonoBehaviour
 
     private void Update()
     {
-        Debug.Log("RunManager.Update");
+        if (GameStateManager.Instance == null)
+        {
+            return;
+        }
+
+        if (!GameStateManager.Instance.CanSimulate)
+        {
+            return;
+        }
 
         expeditionDirector?.Tick();
     }
@@ -57,9 +65,6 @@ public class RunManager : MonoBehaviour
 
         if (gameOverPanel != null)
             gameOverPanel.SetActive(false);
-
-        Debug.Log(
-            $"Run started. Difficulty: {config.General.BaseDifficulty}");
     }
 
     public void BindPlayer(PlayerHealth health)
@@ -91,6 +96,6 @@ public class RunManager : MonoBehaviour
         if (gameOverPanel != null)
             gameOverPanel.SetActive(false);
 
-        SceneManager.LoadScene("Arena");
+        SceneManager.LoadScene("Expedition");
     }
 }

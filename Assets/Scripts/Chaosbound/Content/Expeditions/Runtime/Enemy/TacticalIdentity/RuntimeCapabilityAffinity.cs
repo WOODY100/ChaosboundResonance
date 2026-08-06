@@ -19,12 +19,27 @@ namespace Chaosbound.Content.Expeditions.Runtime.Enemy.TacticalIdentity
         /// </summary>
         public float BonusScore { get; }
 
+        /// <summary>
+        /// Gets the desired alive enemies contributing this capability.
+        /// </summary>
+        public int DesiredCount { get; }
+
         public RuntimeCapabilityAffinity(
             TacticalCapability capability,
-            float bonusScore)
+            float bonusScore,
+            int desiredCount)
         {
+            if (desiredCount < 0)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(desiredCount),
+                    desiredCount,
+                    "Desired count cannot be negative.");
+            }
+
             Capability = capability;
             BonusScore = bonusScore;
+            DesiredCount = desiredCount;
         }
     }
 }

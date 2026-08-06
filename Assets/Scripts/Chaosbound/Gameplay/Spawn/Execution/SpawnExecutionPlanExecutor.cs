@@ -5,9 +5,10 @@ using Chaosbound.Gameplay.Pressure.Models;
 using Chaosbound.Gameplay.Spawn.Domain;
 using Chaosbound.Gameplay.Spawn.Factories;
 using Chaosbound.Gameplay.Spawn.Models;
-using Chaosbound.Gameplay.Spawn.Results;
+using Chaosbound.Gameplay.ExpeditionRuntime.Runtime;
 using Chaosbound.Gameplay.Spawn.Scheduling;
 using System;
+using UnityEngine;
 using System.Collections.Generic;
 
 namespace Chaosbound.Gameplay.Spawn.Execution
@@ -59,7 +60,8 @@ namespace Chaosbound.Gameplay.Spawn.Execution
     RuntimeEnemyConfig enemyConfig,
     RuntimeSpawnConfig spawnConfig,
     RuntimeReferencesConfig references,
-    PressureSnapshot pressure)
+    PressureSnapshot pressure,
+    ExpeditionRuntimeState expeditionRuntime)
         {
             if (executionPlan == null)
                 throw new ArgumentNullException(nameof(executionPlan));
@@ -76,6 +78,9 @@ namespace Chaosbound.Gameplay.Spawn.Execution
             if (pressure == null)
                 throw new ArgumentNullException(nameof(pressure));
 
+            if (expeditionRuntime == null)
+                throw new ArgumentNullException(nameof(expeditionRuntime));
+
             IReadOnlyList<SpawnJob> jobs =
                 spawnJobFactory.Create(
                     executionPlan);
@@ -88,11 +93,15 @@ namespace Chaosbound.Gameplay.Spawn.Execution
                         enemyConfig,
                         spawnConfig,
                         references,
-                        pressure);
+                        pressure,
+                        expeditionRuntime);
 
                 spawnJobExecutor.Execute(
                     schedulingContext);
             }
+
+            Debug.Log(
+                $"[ExecutionPlan] Jobs={jobs.Count}");
         }
     }
 }

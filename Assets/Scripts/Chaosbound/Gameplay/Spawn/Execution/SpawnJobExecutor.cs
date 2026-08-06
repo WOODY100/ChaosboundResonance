@@ -11,6 +11,7 @@ using Chaosbound.Gameplay.Spawn.Runtime;
 using Chaosbound.Gameplay.Spawn.Scheduling;
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Chaosbound.Gameplay.Spawn.Execution
 {
@@ -61,8 +62,8 @@ namespace Chaosbound.Gameplay.Spawn.Execution
             ResolvedSpawnTaskFactory resolvedTaskFactory)
         {
             this.scheduler =
-    scheduler
-    ?? throw new ArgumentNullException(nameof(scheduler));
+                scheduler
+                ?? throw new ArgumentNullException(nameof(scheduler));
 
             this.runtimeStateFactory =
                 runtimeStateFactory
@@ -103,6 +104,10 @@ namespace Chaosbound.Gameplay.Spawn.Execution
         public void Execute(
             EnemySchedulingContext schedulingContext)
         {
+            Debug.Log(
+                "[SpawnJobExecutor] Execute\n" +
+                Environment.StackTrace);
+
             if (schedulingContext == null)
                 throw new ArgumentNullException(nameof(schedulingContext));
 
@@ -110,9 +115,13 @@ namespace Chaosbound.Gameplay.Spawn.Execution
                 scheduler.Schedule(
                     schedulingContext);
 
+            Debug.Log(
+                $"[SpawnJobExecutor] Scheduled={tasks.Count}");
+
             SpawnJobRuntimeState runtimeState =
                 runtimeStateFactory.Create(
-                    schedulingContext.Job);
+                    schedulingContext.Job,
+                    schedulingContext.ExpeditionRuntime);
 
             foreach (ScheduledSpawnTask task in tasks)
             {

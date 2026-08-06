@@ -56,21 +56,28 @@ namespace Chaosbound.Gameplay.EnemySolver.Runtime.Builders
         private RuntimeCompositionState BuildRuntimeComposition(
             ExpeditionRuntimeContext context)
         {
-            throw new NotImplementedException(
-                "Runtime enemy composition will be provided by the Spawn Runtime.");
+            return context.State.RuntimeComposition;
         }
 
         private ThreatCapacity BuildThreatCapacity(
             ExpeditionRuntimeContext context)
         {
-            return context.State.ThreatBudget.Capacity;
+            if (context == null)
+                throw new ArgumentNullException(nameof(context));
+
+            return new ThreatCapacity(
+                context.State
+                    .ThreatBudget
+                    .AvailableThreat);
         }
 
         private SolverConstraints BuildSolverConstraints(
             ExpeditionRuntimeContext context)
         {
-            throw new NotImplementedException(
-                "Solver constraints are not yet exposed by the Expedition Runtime.");
+            return new SolverConstraints(
+                int.MaxValue,
+                Array.Empty<EnemyCategory>(),
+                Array.Empty<EnemyRole>());
         }
 
         private RuntimeTacticalIdentity BuildTacticalIdentity(

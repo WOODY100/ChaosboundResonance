@@ -79,7 +79,8 @@ namespace Chaosbound.Content.Expeditions.Builders.Enemy
                 result.Add(
                     new CapabilityAffinityDefinition(
                         affinity.Capability,
-                        affinity.BonusScore));
+                        affinity.BonusScore,
+                        affinity.DesiredCount));
             }
 
             return result;

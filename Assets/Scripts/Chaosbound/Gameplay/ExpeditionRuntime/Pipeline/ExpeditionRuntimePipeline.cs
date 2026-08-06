@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 using System.Collections.Generic;
 using Chaosbound.Gameplay.ExpeditionRuntime.Context;
 using Chaosbound.Gameplay.ExpeditionRuntime.Contracts;
@@ -39,7 +40,9 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Pipeline
             foreach (IExpeditionRuntimeStage stage in stages)
             {
                 if (!stage.ShouldExecute(context))
+                {
                     continue;
+                }
 
                 stage.Execute(context);
             }

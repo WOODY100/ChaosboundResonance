@@ -31,6 +31,7 @@ namespace Chaosbound.Gameplay.Spawn.Materialization
         public void Materialize(
             SpawnExecutionContext context)
         {
+
             if (context == null)
                 throw new ArgumentNullException(nameof(context));
 
@@ -46,6 +47,9 @@ namespace Chaosbound.Gameplay.Spawn.Materialization
                 throw new InvalidOperationException(
                     "EnemyMaterializer received an unsupported materializable reference.");
             }
+            
+            Debug.Log(
+                $"[EnemyMaterializer] {enemy.name}");
 
             SpawnPlacement placement =
                 context
@@ -60,6 +64,35 @@ namespace Chaosbound.Gameplay.Spawn.Materialization
                     placement.Rotation);
 
             GameObject spawnedObject = instantiationService.Spawn(request);
+
+            EnemyRuntimeContext runtimeContext =
+    spawnedObject.GetComponent<EnemyRuntimeContext>();
+
+            if (runtimeContext == null)
+            {
+                throw new InvalidOperationException(
+                    $"Enemy '{spawnedObject.name}' is missing an EnemyRuntimeContext component.");
+            }
+
+            runtimeContext.Initialize(
+                enemy,
+                context.RuntimeState.ExpeditionRuntime);
+
+            context
+                .RuntimeState
+                .ExpeditionRuntime
+                .ThreatBudget
+                .Occupy(
+                    enemy.ThreatCost);
+
+            Debug.Log(
+                $"Materializer Runtime = {context.RuntimeState.ExpeditionRuntime.GetHashCode()}");
+
+            context
+                .RuntimeState
+                .ExpeditionRuntime
+                .RuntimeComposition
+                .Increment(enemy);
         }
     }
 }

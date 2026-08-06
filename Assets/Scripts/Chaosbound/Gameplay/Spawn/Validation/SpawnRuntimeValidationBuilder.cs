@@ -12,6 +12,7 @@ using Chaosbound.Gameplay.Spawn.Factories;
 using Chaosbound.Gameplay.Spawn.Models;
 using Chaosbound.Gameplay.Spawn.Scheduling;
 using Chaosbound.Gameplay.Spawn.ValueObjects;
+using Chaosbound.Gameplay.ExpeditionRuntime.Runtime;
 using System;
 using UnityEngine;
 
@@ -66,13 +67,17 @@ namespace Chaosbound.Gameplay.Spawn.Validation
             PressureSnapshot pressure =
                 BuildPressureSnapshot();
 
+            ExpeditionRuntimeState expeditionRuntime =
+                BuildExpeditionRuntimeState();
+
             EnemySchedulingContext schedulingContext =
                 BuildSchedulingContext(
                     job,
                     enemyConfig,
                     spawnConfig,
                     references,
-                    pressure);
+                    pressure,
+                    expeditionRuntime);
 
             return new SpawnRuntimeValidationContext(
                 schedulingContext,
@@ -172,6 +177,11 @@ namespace Chaosbound.Gameplay.Spawn.Validation
                 pressure);
         }
 
+        private ExpeditionRuntimeState BuildExpeditionRuntimeState()
+        {
+            return new ExpeditionRuntimeState();
+        }
+
         private readonly EnemySchedulingContextFactory
             schedulingContextFactory =
         new EnemySchedulingContextFactory();
@@ -181,14 +191,16 @@ namespace Chaosbound.Gameplay.Spawn.Validation
             RuntimeEnemyConfig enemyConfig,
             RuntimeSpawnConfig spawnConfig,
             RuntimeReferencesConfig references,
-            PressureSnapshot pressure)
+            PressureSnapshot pressure,
+            ExpeditionRuntimeState expeditionRuntime)
         {
             return schedulingContextFactory.Create(
                 job,
                 enemyConfig,
                 spawnConfig,
                 references,
-                pressure);
+                pressure,
+                expeditionRuntime);
         }
     }
 }

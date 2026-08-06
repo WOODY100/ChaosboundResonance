@@ -3,8 +3,9 @@ using Chaosbound.Gameplay.ExpeditionRuntime.Context;
 using Chaosbound.Gameplay.ExpeditionRuntime.Contracts;
 using Chaosbound.Gameplay.Spawn.Contracts;
 using Chaosbound.Gameplay.Spawn.Factories;
-using Chaosbound.Gameplay.Spawn.Services;
+using Chaosbound.Gameplay.Spawn.Runtime;
 using System;
+using UnityEngine;
 
 namespace Chaosbound.Gameplay.Spawn.Stages
 {
@@ -17,64 +18,76 @@ namespace Chaosbound.Gameplay.Spawn.Stages
         private readonly SpawnRequestFactory
             requestFactory;
 
-        private readonly SpawnExecutor
-            spawnExecutor;
+        private readonly SpawnRuntime
+            spawnRuntime;
 
         public SpawnStage(
             SpawnRequestFactory requestFactory,
-            SpawnExecutor spawnExecutor)
+            SpawnRuntime spawnRuntime)
         {
             this.requestFactory =
                 requestFactory
                 ?? throw new ArgumentNullException(
                     nameof(requestFactory));
 
-            this.spawnExecutor =
-                spawnExecutor
+            this.spawnRuntime =
+                spawnRuntime
                 ?? throw new ArgumentNullException(
-                    nameof(spawnExecutor));
+                    nameof(spawnRuntime));
         }
 
         public bool ShouldExecute(
             ExpeditionRuntimeContext context)
         {
             if (context == null)
-                throw new ArgumentNullException(nameof(context));
+                throw new ArgumentNullException(
+                    nameof(context));
 
-            return true;
+            EnemySolverResult result =
+                context.State.EnemySolverResult;
+
+            Debug.Log(
+                $"[SpawnStage] Result={result != null} | " +
+                $"Empty={result?.SpawnPlan.IsEmpty}");
+
+            return result != null
+                && !result.SpawnPlan.IsEmpty;
         }
 
         public void Execute(
             ExpeditionRuntimeContext context)
         {
             if (context == null)
-                throw new ArgumentNullException(nameof(context));
+                throw new ArgumentNullException(
+                    nameof(context));
 
             EnemySolverResult solverResult =
                 context.State.EnemySolverResult;
 
             if (solverResult == null)
             {
-                return;
-            }
-
-            SpawnPlan spawnPlan =
-                solverResult.SpawnPlan;
-
-            if (spawnPlan == null ||
-                spawnPlan.IsEmpty)
-            {
-                return;
+                throw new InvalidOperationException(
+                    "SpawnStage requires an EnemySolverResult.");
             }
 
             SpawnRequest request =
                 requestFactory.Create(
-                    spawnPlan,
+                    solverResult.SpawnPlan,
                     context.Config.Spawn,
                     SpawnRequestOrigin.EnemySolver);
 
-            // The Spawn Runtime execution will be connected
-            // during the next implementation phase.
+            Debug.Log(
+                $"[SpawnStage] SpawnRequest Entries={request.Entries.Count}");
+
+            spawnRuntime.Execute(
+                request,
+                context.Config.Enemy,
+                context.Config.Spawn,
+                context.References.Runtime,
+                context.State.PressureSnapshot,
+                context.State);
+
+            Debug.Log("[SpawnStage] SpawnRuntime.Execute finished.");
         }
     }
 }

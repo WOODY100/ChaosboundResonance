@@ -1,3 +1,4 @@
+using Chaosbound.Gameplay.Diagnostics.Threat;
 using Chaosbound.Content.Expeditions.Runtime.Configs;
 using Chaosbound.Gameplay.ExpeditionRuntime.Context;
 using Chaosbound.Gameplay.ExpeditionRuntime.Factories;
@@ -22,6 +23,12 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Director
         private ExpeditionRuntimeState
             runtimeState;
 
+        private readonly ThreatBudgetDebugger
+            threatDebugger;
+
+        private float
+            debugTimer;
+
         /// <summary>
         /// Creates a new Expedition Director.
         /// </summary>
@@ -32,6 +39,10 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Director
                 pipeline
                 ?? throw new ArgumentNullException(
                     nameof(pipeline));
+
+            threatDebugger =
+                new ThreatBudgetDebugger(
+                    new ThreatBudgetDebugFormatter());
         }
 
         public bool IsRunning
@@ -69,20 +80,29 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Director
         /// </summary>
         public void Tick()
         {
-            Debug.Log("Director.Tick");
-
-            Debug.Log($"IsRunning = {IsRunning}");
-
             if (!IsRunning)
                 return;
 
             ExpeditionRuntimeContext context =
                 contextFactory.Create();
 
-            Debug.Log("Pipeline.Execute");
-
             pipeline.Execute(
                 context);
+
+            Debug.Log(
+                $"Director Runtime = {runtimeState.GetHashCode()}");
+
+            debugTimer +=
+                UnityEngine.Time.unscaledDeltaTime;
+
+            if (debugTimer >= 1f)
+            {
+                threatDebugger.Print(
+                    runtimeState,
+                    runtimeState.EnemySolverResult);
+
+                debugTimer = 0f;
+            }
         }
 
         public void FinishExpedition()

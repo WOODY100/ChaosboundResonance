@@ -1,7 +1,8 @@
 using Chaosbound.Gameplay.EnemySolver.Models;
+using Chaosbound.Gameplay.EnemySolver.Runtime.Composition;
+using Chaosbound.Gameplay.Pressure.Models;
 using Chaosbound.Gameplay.Pressure.ValueObjects;
 using Chaosbound.Gameplay.Threat.Runtime;
-using Chaosbound.Gameplay.Pressure.Models;
 using System;
 
 namespace Chaosbound.Gameplay.ExpeditionRuntime.Runtime
@@ -12,6 +13,13 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Runtime
     /// </summary>
     public sealed class ExpeditionRuntimeState
     {
+        private readonly RuntimeCompositionState
+            runtimeComposition =
+        new RuntimeCompositionState();
+
+        public RuntimeCompositionState RuntimeComposition =>
+            runtimeComposition;
+
         /// <summary>
         /// Gets the elapsed expedition time.
         /// </summary>

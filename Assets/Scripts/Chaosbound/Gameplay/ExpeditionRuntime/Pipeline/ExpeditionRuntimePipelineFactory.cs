@@ -1,3 +1,5 @@
+using Chaosbound.Gameplay.EnemySolver.Analysis.Runtime;
+using Chaosbound.Gameplay.EnemySolver.Analysis.Services;
 using Chaosbound.Gameplay.EnemySolver.Analysis;
 using Chaosbound.Gameplay.EnemySolver.Evaluation;
 using Chaosbound.Gameplay.EnemySolver.Evaluation.Rules;
@@ -9,8 +11,9 @@ using Chaosbound.Gameplay.ExpeditionRuntime.Time.Contracts;
 using Chaosbound.Gameplay.ExpeditionRuntime.Time.Providers;
 using Chaosbound.Gameplay.ExpeditionRuntime.Time.Stages;
 using Chaosbound.Gameplay.Pressure.Stages;
+using Chaosbound.Gameplay.Spawn.Bootstrap;
 using Chaosbound.Gameplay.Spawn.Factories;
-using Chaosbound.Gameplay.Spawn.Services;
+using Chaosbound.Gameplay.Spawn.Runtime;
 using Chaosbound.Gameplay.Spawn.Stages;
 using Chaosbound.Gameplay.Threat.Stages;
 using System.Collections.Generic;
@@ -96,7 +99,7 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Pipeline
         {
             return new SpawnStage(
                 BuildSpawnRequestFactory(),
-                BuildSpawnExecutor());
+                BuildSpawnRuntime());
         }
 
         private SpawnRequestFactory
@@ -105,10 +108,11 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Pipeline
             return new SpawnRequestFactory();
         }
 
-        private SpawnExecutor
-            BuildSpawnExecutor()
+        private SpawnRuntime
+            BuildSpawnRuntime()
         {
-            return new SpawnExecutor();
+            return new SpawnRuntimeBootstrap()
+                .Build();
         }
 
         private EnemySolverRequestBuilder
@@ -185,7 +189,35 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Pipeline
         private CompositionAnalyzer
             BuildCompositionAnalyzer()
         {
-            return new CompositionAnalyzer();
+            return new CompositionAnalyzer(
+                BuildRuntimeTacticalProfileBuilder(),
+                BuildProfileComparator(),
+                BuildNeedsAnalyzer(),
+                BuildObjectiveSelector());
+        }
+
+        private RuntimeTacticalProfileBuilder
+            BuildRuntimeTacticalProfileBuilder()
+        {
+            return new RuntimeTacticalProfileBuilder();
+        }
+
+        private ProfileComparator
+            BuildProfileComparator()
+        {
+            return new ProfileComparator();
+        }
+
+        private NeedsAnalyzer
+            BuildNeedsAnalyzer()
+        {
+            return new NeedsAnalyzer();
+        }
+
+        private ObjectiveSelector
+            BuildObjectiveSelector()
+        {
+            return new ObjectiveSelector();
         }
     }
 }

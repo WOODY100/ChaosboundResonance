@@ -12,6 +12,9 @@ namespace Chaosbound.Content.Expeditions.Runtime.Enemy.TacticalIdentity
     {
         private readonly Dictionary<TacticalCapability, float> bonusLookup;
 
+        private readonly Dictionary<TacticalCapability, int>
+            desiredCountLookup;
+
         /// <summary>
         /// Gets every tactical affinity configured for the expedition.
         /// </summary>
@@ -24,14 +27,23 @@ namespace Chaosbound.Content.Expeditions.Runtime.Enemy.TacticalIdentity
                 affinities ??
                 throw new ArgumentNullException(nameof(affinities));
 
-            bonusLookup = new Dictionary<TacticalCapability, float>(
-                affinities.Count);
+            bonusLookup =
+                new Dictionary<TacticalCapability, float>(
+                    affinities.Count);
+
+            desiredCountLookup =
+                new Dictionary<TacticalCapability, int>(
+                    affinities.Count);
 
             foreach (RuntimeCapabilityAffinity affinity in affinities)
             {
                 bonusLookup.Add(
                     affinity.Capability,
                     affinity.BonusScore);
+
+                desiredCountLookup.Add(
+                    affinity.Capability,
+                    affinity.DesiredCount);
             }
         }
 
@@ -40,13 +52,27 @@ namespace Chaosbound.Content.Expeditions.Runtime.Enemy.TacticalIdentity
         /// Returns zero when no affinity has been configured.
         /// </summary>
         public float GetBonusScore(
-    TacticalCapability capability)
+            TacticalCapability capability)
         {
             return bonusLookup.TryGetValue(
                 capability,
                 out float bonusScore)
                 ? bonusScore
                 : 0f;
+        }
+
+        /// <summary>
+        /// Gets the desired alive count for the specified tactical capability.
+        /// Returns zero when no affinity has been configured.
+        /// </summary>
+        public int GetDesiredCount(
+            TacticalCapability capability)
+        {
+            return desiredCountLookup.TryGetValue(
+                capability,
+                out int desiredCount)
+                ? desiredCount
+                : 0;
         }
     }
 }

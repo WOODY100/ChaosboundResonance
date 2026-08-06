@@ -91,7 +91,8 @@ namespace Chaosbound.Content.Expeditions.Runtime.Builders
                 result.Add(
                     new RuntimeCapabilityAffinity(
                         affinity.Capability,
-                        affinity.BonusScore));
+                        affinity.BonusScore,
+                        affinity.DesiredCount));
             }
 
             return result;

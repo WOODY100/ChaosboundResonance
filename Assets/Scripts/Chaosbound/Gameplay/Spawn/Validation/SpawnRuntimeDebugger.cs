@@ -19,11 +19,11 @@ namespace Chaosbound.Debugging
             Debug.Log($"{Prefix} {message}");
         }
 
-        public static void Success(string message)
+        /*public static void Success(string message)
         {
             Debug.Log(
                 $"<color=green>[Spawn Runtime]</color> {message}");
-        }
+        }*/
 
         public static void Warning(string message)
         {
@@ -50,11 +50,12 @@ namespace Chaosbound.Debugging
                 SpawnPlacement placement =
                     resolution.Placement;
 
-                Success(
+                /*Success(
                     $"[Placement] " +
                     $"Policy={context.Intent.PlacementPolicy} | " +
                     $"Position={placement.Position} | " +
                     $"Rotation={placement.Rotation.eulerAngles}");
+                */
             }
             else
             {
@@ -74,11 +75,12 @@ namespace Chaosbound.Debugging
             if (context == null)
                 throw new ArgumentNullException(nameof(context));
 
-            Success(
+            /*Success(
                 $"[Scheduling] " +
                 $"Job={context.Job.Identity} | " +
                 $"Policy={context.EnemyConfig.SchedulingPolicy} | " +
                 $"Tasks={scheduledTaskCount}");
+            */
         }
     }
 }

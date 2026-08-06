@@ -5,8 +5,8 @@ using System;
 namespace Chaosbound.Gameplay.EnemySolver.Evaluation.Rules
 {
     /// <summary>
-    /// Awards score to candidates that provide tactical capabilities
-    /// currently missing from the runtime composition.
+    /// Awards score to candidates that help satisfy tactical capability
+    /// deficits detected in the current runtime composition.
     /// </summary>
     public sealed class NeedCoverageRule :
         IEnemyEvaluationRule
@@ -43,10 +43,20 @@ namespace Chaosbound.Gameplay.EnemySolver.Evaluation.Rules
             foreach (TacticalCapability capability
                 in candidate.TacticalCapabilities)
             {
-                if (context.CompositionAnalysis.NeedsCapability(capability))
+                int deficit =
+                    context
+                        .CompositionAnalysis
+                        .GetCapabilityDeficit(
+                            capability);
+
+                if (deficit <= 0)
                 {
-                    score += MissingCapabilityBonus;
+                    continue;
                 }
+
+                score +=
+                    deficit *
+                    MissingCapabilityBonus;
             }
 
             return score;

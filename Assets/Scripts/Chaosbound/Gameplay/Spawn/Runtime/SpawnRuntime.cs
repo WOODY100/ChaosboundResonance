@@ -1,13 +1,14 @@
 using System;
+using UnityEngine;
 using Chaosbound.Gameplay.Spawn.Contracts;
 using Chaosbound.Gameplay.Spawn.Execution;
 using Chaosbound.Gameplay.Spawn.Models;
-using Chaosbound.Gameplay.Spawn.Results;
 using Chaosbound.Gameplay.Spawn.Services;
 using Chaosbound.Content.Expeditions.Runtime.Enemy;
 using Chaosbound.Content.Expeditions.Runtime.References;
 using Chaosbound.Content.Expeditions.Runtime.Spawn;
 using Chaosbound.Gameplay.Pressure.Models;
+using Chaosbound.Gameplay.ExpeditionRuntime.Runtime;
 
 namespace Chaosbound.Gameplay.Spawn.Runtime
 {
@@ -50,8 +51,12 @@ namespace Chaosbound.Gameplay.Spawn.Runtime
             RuntimeEnemyConfig enemyConfig,
             RuntimeSpawnConfig spawnConfig,
             RuntimeReferencesConfig references,
-            PressureSnapshot pressure)
+            PressureSnapshot pressure,
+            ExpeditionRuntimeState expeditionRuntime)
         {
+            Debug.Log(
+                $"[SpawnRuntime] Request Entries={request.Entries.Count}");
+
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
@@ -67,16 +72,23 @@ namespace Chaosbound.Gameplay.Spawn.Runtime
             if (pressure == null)
                 throw new ArgumentNullException(nameof(pressure));
 
+            if (expeditionRuntime == null)
+                throw new ArgumentNullException(nameof(expeditionRuntime));
+
             SpawnExecutionPlan executionPlan =
                 spawnExecutor.Execute(
                     request);
+
+            Debug.Log(
+                $"[SpawnRuntime] ExecutionPlan Entries={executionPlan.Entries.Count}");
 
             executionPlanExecutor.Execute(
                 executionPlan,
                 enemyConfig,
                 spawnConfig,
                 references,
-                pressure);
+                pressure,
+                expeditionRuntime);
         }
     }
 }
