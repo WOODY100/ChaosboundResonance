@@ -1,3 +1,4 @@
+using Chaosbound.Content.Expeditions.Definitions.Combat;
 using Chaosbound.Content.Expeditions.Definitions.Bosses;
 using Chaosbound.Content.Expeditions.Definitions.Enemy;
 using Chaosbound.Content.Expeditions.Definitions.ExpeditionEvents;
@@ -66,6 +67,11 @@ namespace Chaosbound.Content.Expeditions.Definitions
         public SpawnDefinition Spawn { get; }
 
         /// <summary>
+        /// Gets the combat configuration.
+        /// </summary>
+        public CombatDefinition Combat { get; }
+
+        /// <summary>
         /// Gets the expedition events configuration.
         /// </summary>
         public ExpeditionEventsDefinition ExpeditionEvents { get; }
@@ -95,6 +101,7 @@ namespace Chaosbound.Content.Expeditions.Definitions
             WorldDefinition world,
             EnemyDefinition enemy,
             SpawnDefinition spawn,
+            CombatDefinition combat,
             ExpeditionEventsDefinition expeditionEvents,
             MiniBossesDefinition miniBosses,
             BossesDefinition bosses,
@@ -127,6 +134,9 @@ namespace Chaosbound.Content.Expeditions.Definitions
             if (spawn == null)
                 throw new ArgumentNullException(nameof(spawn));
 
+            if (combat == null)
+                throw new ArgumentNullException(nameof(combat));
+
             if (expeditionEvents == null)
                 throw new ArgumentNullException(nameof(expeditionEvents));
 
@@ -148,6 +158,7 @@ namespace Chaosbound.Content.Expeditions.Definitions
             World = world;
             Enemy = enemy;
             Spawn = spawn;
+            Combat = combat;
             ExpeditionEvents = expeditionEvents;
             MiniBosses = miniBosses;
             Bosses = bosses;

@@ -33,6 +33,7 @@ namespace Chaosbound.Gameplay.Threat.Policies
         public ThreatCapacity Evaluate(
             PressureValue pressure)
         {
+
             float pressureValue = Mathf.Max(
                 0f,
                 pressure.Value);
@@ -43,6 +44,9 @@ namespace Chaosbound.Gameplay.Threat.Policies
             capacity = Mathf.Max(
                 0f,
                 capacity);
+
+            Debug.Log(
+                $"Pressure={pressureValue}  Capacity={capacity}");
 
             return new ThreatCapacity(
                 capacity);

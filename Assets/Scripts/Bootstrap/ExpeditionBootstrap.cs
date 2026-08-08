@@ -112,8 +112,13 @@ namespace Chaosbound.Runtime.Bootstrap
             RuntimeEnemyBuilder enemyBuilder =
                 new RuntimeEnemyBuilder(resolver);
 
+            RuntimeCombatBuilder combatBuilder =
+                new RuntimeCombatBuilder();
+
             // Create the expedition runtime builder.
-            return new RuntimeExpeditionBuilder(enemyBuilder);
+            return new RuntimeExpeditionBuilder(
+                enemyBuilder,
+                combatBuilder);
         }
     }
 }

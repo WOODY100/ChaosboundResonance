@@ -6,6 +6,7 @@ using Chaosbound.Content.Expeditions.Runtime.Threat;
 using Chaosbound.Content.Expeditions.Runtime.MiniBosses;
 using Chaosbound.Content.Expeditions.Runtime.Enemy;
 using Chaosbound.Content.Expeditions.Runtime.Spawn;
+using Chaosbound.Content.Expeditions.Runtime.Combat;
 using Chaosbound.Content.Expeditions.Runtime.Rewards;
 using Chaosbound.Content.Expeditions.Runtime.World;
 using Chaosbound.Content.Expeditions.Runtime.Scene;
@@ -34,6 +35,8 @@ namespace Chaosbound.Content.Expeditions.Runtime.Configs
 
         public RuntimeSpawnConfig Spawn { get; }
 
+        public RuntimeCombatConfig Combat { get; }
+
         public RuntimeExpeditionEventsConfig ExpeditionEvents { get; }
         
         public RuntimeMiniBossesConfig MiniBosses { get; }
@@ -50,6 +53,7 @@ namespace Chaosbound.Content.Expeditions.Runtime.Configs
             RuntimeWorldConfig world,
             RuntimeEnemyConfig enemy,
             RuntimeSpawnConfig spawn,
+            RuntimeCombatConfig combat,
             RuntimeExpeditionEventsConfig expeditionEvents,
             RuntimeMiniBossesConfig miniBosses,
             RuntimeBossesConfig bosses,
@@ -62,6 +66,7 @@ namespace Chaosbound.Content.Expeditions.Runtime.Configs
             World = world ?? throw new ArgumentNullException(nameof(world));
             Enemy = enemy ?? throw new ArgumentNullException(nameof(enemy));
             Spawn = spawn ?? throw new ArgumentNullException(nameof(spawn));
+            Combat = combat ?? throw new ArgumentNullException(nameof(combat));
             ExpeditionEvents = expeditionEvents ?? throw new ArgumentNullException(nameof(expeditionEvents));
             MiniBosses = miniBosses ?? throw new ArgumentNullException(nameof(miniBosses));
             Bosses = bosses ?? throw new ArgumentNullException(nameof(bosses));

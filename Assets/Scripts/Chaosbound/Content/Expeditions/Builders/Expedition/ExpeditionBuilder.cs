@@ -9,6 +9,7 @@ using Chaosbound.Content.Expeditions.Builders.Identity;
 using Chaosbound.Content.Expeditions.Builders.MiniBosses;
 using Chaosbound.Content.Expeditions.Builders.Enemy;
 using Chaosbound.Content.Expeditions.Builders.Spawn;
+using Chaosbound.Content.Expeditions.Builders.Combat;
 using Chaosbound.Content.Expeditions.Builders.Presentation;
 using Chaosbound.Content.Expeditions.Builders.Rewards;
 using Chaosbound.Content.Expeditions.Builders.Scene;
@@ -23,6 +24,7 @@ using Chaosbound.Content.Expeditions.Definitions.Identity;
 using Chaosbound.Content.Expeditions.Definitions.MiniBosses;
 using Chaosbound.Content.Expeditions.Definitions.Enemy;
 using Chaosbound.Content.Expeditions.Definitions.Spawn;
+using Chaosbound.Content.Expeditions.Definitions.Combat;
 using Chaosbound.Content.Expeditions.Definitions.Presentation;
 using Chaosbound.Content.Expeditions.Definitions.Rewards;
 using Chaosbound.Content.Expeditions.Definitions.Scene;
@@ -75,6 +77,9 @@ namespace Chaosbound.Content.Expeditions.Builders.Expedition
             SpawnDefinition spawn =
                 SpawnBuilder.Build(authoring.Spawn);
 
+            CombatDefinition combat =
+                CombatBuilder.Build(authoring.Combat);
+
             ExpeditionEventsDefinition expeditionEvents =
                 ExpeditionEventsBuilder.Build(authoring.ExpeditionEvents);
 
@@ -97,6 +102,7 @@ namespace Chaosbound.Content.Expeditions.Builders.Expedition
                 world,
                 enemy,
                 spawn,
+                combat,
                 expeditionEvents,
                 miniBosses,
                 bosses,

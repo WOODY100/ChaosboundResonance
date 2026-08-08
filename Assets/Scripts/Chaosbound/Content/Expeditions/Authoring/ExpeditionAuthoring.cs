@@ -1,3 +1,4 @@
+using Chaosbound.Content.Expeditions.Authoring.Combat;
 using Chaosbound.Content.Expeditions.Authoring.Bosses;
 using Chaosbound.Content.Expeditions.Authoring.Enemy;
 using Chaosbound.Content.Expeditions.Authoring.ExpeditionEvents;
@@ -68,6 +69,11 @@ namespace Chaosbound.Content.Expeditions.Authoring
         [SerializeField]
         private SpawnAuthoring m_Spawn = new();
 
+        [Header("Combat")]
+
+        [SerializeField]
+        private CombatAuthoring m_combat = new();
+
         [Header("Expedition Events")]
 
         [SerializeField]
@@ -105,6 +111,8 @@ namespace Chaosbound.Content.Expeditions.Authoring
         public EnemyAuthoring Enemy => m_enemy;
 
         public SpawnAuthoring Spawn => m_Spawn;
+
+        public CombatAuthoring Combat => m_combat;
 
         public ExpeditionEventsAuthoring ExpeditionEvents => m_expeditionEvents;
 

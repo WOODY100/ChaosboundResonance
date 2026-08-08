@@ -20,6 +20,7 @@ using Chaosbound.Content.Expeditions.Runtime.MiniBosses;
 using Chaosbound.Content.Expeditions.Runtime.Rewards;
 using Chaosbound.Content.Expeditions.Runtime.Scene;
 using Chaosbound.Content.Expeditions.Runtime.Spawn;
+using Chaosbound.Content.Expeditions.Runtime.Combat;
 using Chaosbound.Content.Expeditions.Runtime.World;
 using System;
 
@@ -32,12 +33,7 @@ namespace Chaosbound.Content.Expeditions.Runtime.Builders
     {
         private readonly RuntimeEnemyBuilder runtimeEnemyBuilder;
 
-        public RuntimeExpeditionBuilder(
-            RuntimeEnemyBuilder runtimeEnemyBuilder)
-        {
-            this.runtimeEnemyBuilder = runtimeEnemyBuilder
-                ?? throw new ArgumentNullException(nameof(runtimeEnemyBuilder));
-        }
+        private readonly RuntimeCombatBuilder runtimeCombatBuilder;      
 
         public RuntimeExpeditionConfig BuildRunConfig(
             ExpeditionRequest request)
@@ -53,6 +49,7 @@ namespace Chaosbound.Content.Expeditions.Runtime.Builders
             RuntimeWorldConfig world = BuildWorld(request.Definition.World);
             RuntimeEnemyConfig enemy = runtimeEnemyBuilder.BuildEnemy(request.Definition.Enemy);
             RuntimeSpawnConfig spawn = BuildSpawn(request.Definition.Spawn);
+            RuntimeCombatConfig combat = runtimeCombatBuilder.BuildCombat(request.Definition.Combat);
             RuntimeExpeditionEventsConfig expeditionEvents = BuildExpeditionEvents(request.Definition.ExpeditionEvents);
             RuntimeMiniBossesConfig miniBosses = BuildMiniBosses(request.Definition.MiniBosses);
             RuntimeBossesConfig bosses = BuildBosses(request.Definition.Bosses);
@@ -68,6 +65,7 @@ namespace Chaosbound.Content.Expeditions.Runtime.Builders
                     world,
                     enemy,
                     spawn,
+                    combat,
                     expeditionEvents,
                     miniBosses,
                     bosses,
@@ -140,6 +138,17 @@ namespace Chaosbound.Content.Expeditions.Runtime.Builders
                 definition.Placement,
                 definition.Activation,
                 definition.SpawnConstraints);
+        }
+
+        public RuntimeExpeditionBuilder(
+            RuntimeEnemyBuilder runtimeEnemyBuilder,
+            RuntimeCombatBuilder runtimeCombatBuilder)
+        {
+            this.runtimeEnemyBuilder = runtimeEnemyBuilder
+                ?? throw new ArgumentNullException(nameof(runtimeEnemyBuilder));
+
+            this.runtimeCombatBuilder = runtimeCombatBuilder
+                ?? throw new ArgumentNullException(nameof(runtimeCombatBuilder));
         }
 
         private RuntimeExpeditionEventsConfig BuildExpeditionEvents(
