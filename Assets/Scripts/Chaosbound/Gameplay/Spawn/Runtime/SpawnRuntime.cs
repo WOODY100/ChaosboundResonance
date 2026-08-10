@@ -54,11 +54,11 @@ namespace Chaosbound.Gameplay.Spawn.Runtime
             PressureSnapshot pressure,
             ExpeditionRuntimeState expeditionRuntime)
         {
-            Debug.Log(
-                $"[SpawnRuntime] Request Entries={request.Entries.Count}");
-
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
+
+            Debug.Log(
+                $"[SpawnRuntime] Request Entries={request.Entries.Count}");
 
             if (enemyConfig == null)
                 throw new ArgumentNullException(nameof(enemyConfig));

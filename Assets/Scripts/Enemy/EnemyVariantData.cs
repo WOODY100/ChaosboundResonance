@@ -1,3 +1,5 @@
+using Chaosbound.Shared.Enums;
+using Chaosbound.Content.Expeditions.Enums.Enemy;
 using Chaosbound.Gameplay.EnemySolver.Enums;
 using Chaosbound.Gameplay.Threat.ValueObjects;
 using Chaosbound.Shared.Contracts;
@@ -46,11 +48,16 @@ public class EnemyVariantData : ScriptableObject, IMaterializableReference
     private EnemyRole[] m_Roles;
 
     [SerializeField]
+    private EnemyTier m_Tier = EnemyTier.Tier1;
+
+    [SerializeField]
     private TacticalCapability[] m_TacticalCapabilities;
 
     public EnemyCategory Category => m_Category;
 
     public IReadOnlyList<EnemyRole> Roles => m_Roles;
+
+    public EnemyTier Tier => m_Tier;
 
     public IReadOnlyList<TacticalCapability> TacticalCapabilities =>
         m_TacticalCapabilities;

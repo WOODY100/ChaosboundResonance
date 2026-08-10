@@ -1,3 +1,4 @@
+using Chaosbound.Shared.Enums;
 using System;
 using System.Collections.Generic;
 

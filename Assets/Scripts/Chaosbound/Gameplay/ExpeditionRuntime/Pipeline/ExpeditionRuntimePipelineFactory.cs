@@ -1,11 +1,8 @@
-using Chaosbound.Gameplay.EnemySolver.Analysis.Runtime;
-using Chaosbound.Gameplay.EnemySolver.Analysis.Services;
-using Chaosbound.Gameplay.EnemySolver.Analysis;
-using Chaosbound.Gameplay.EnemySolver.Evaluation;
-using Chaosbound.Gameplay.EnemySolver.Evaluation.Rules;
-using Chaosbound.Gameplay.EnemySolver.Runtime.Builders;
-using Chaosbound.Gameplay.EnemySolver.Runtime.Stages;
-using Chaosbound.Gameplay.EnemySolver.Services;
+using Chaosbound.Gameplay.Combat.Director;
+using Chaosbound.Gameplay.Combat.Integration.Spawn;
+using Chaosbound.Gameplay.Combat.Runtime.Replenishment;
+using Chaosbound.Gameplay.Combat.Services;
+using Chaosbound.Gameplay.Combat.Stages;
 using Chaosbound.Gameplay.ExpeditionRuntime.Contracts;
 using Chaosbound.Gameplay.ExpeditionRuntime.Time.Contracts;
 using Chaosbound.Gameplay.ExpeditionRuntime.Time.Providers;
@@ -17,7 +14,6 @@ using Chaosbound.Gameplay.Spawn.Runtime;
 using Chaosbound.Gameplay.Spawn.Stages;
 using Chaosbound.Gameplay.Threat.Stages;
 using System.Collections.Generic;
-using EnemySolverService = Chaosbound.Gameplay.EnemySolver.Services.EnemySolver;
 
 namespace Chaosbound.Gameplay.ExpeditionRuntime.Pipeline
 {
@@ -39,32 +35,25 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Pipeline
         }
 
         private IReadOnlyList<IExpeditionRuntimeStage>
-            BuildStages()
-        {
-            return new List<IExpeditionRuntimeStage>
+                BuildStages()
             {
-                BuildTimeStage(),
-                BuildPressureStage(),
-                BuildThreatStage(),
-                BuildEnemyCompositionStage(),
-                BuildSpawnStage()
-            };
-        }
-       
+                return new List<IExpeditionRuntimeStage>
+                    {
+                        BuildTimeStage(),
+                        BuildPressureStage(),
+                        BuildThreatStage(),
+                        BuildCombatStage()
+                    };
+            }
+
         private IExpeditionRuntimeStage
-            BuildEnemyCompositionStage()
+            BuildCombatStage()
         {
-            EnemySolverRequestBuilder requestBuilder =
-                BuildEnemySolverRequestBuilder();
-
-            EnemySolverService enemySolver =
-                BuildEnemySolver();
-
-            return new EnemyCompositionStage(
-                requestBuilder,
-                enemySolver);
+            return new CombatStage(
+                BuildCombatDirector(),
+                BuildCombatSpawnRequestTranslator(),
+                BuildSpawnRuntime());
         }
-
 
         private IExpeditionRuntimeStage
             BuildTimeStage()
@@ -94,20 +83,6 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Pipeline
             return new ThreatStage();
         }
 
-        private IExpeditionRuntimeStage
-            BuildSpawnStage()
-        {
-            return new SpawnStage(
-                BuildSpawnRequestFactory(),
-                BuildSpawnRuntime());
-        }
-
-        private SpawnRequestFactory
-            BuildSpawnRequestFactory()
-        {
-            return new SpawnRequestFactory();
-        }
-
         private SpawnRuntime
             BuildSpawnRuntime()
         {
@@ -115,109 +90,60 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Pipeline
                 .Build();
         }
 
-        private EnemySolverRequestBuilder
-            BuildEnemySolverRequestBuilder()
+        private CombatDirector
+            BuildCombatDirector()
         {
-            return new EnemySolverRequestBuilder();
+            return new CombatDirector(
+                BuildCombatSolver(),
+                BuildCombatReconciler(),
+                BuildReplenishmentController(),
+                BuildCombatReplenishmentPlanBuilder(),
+                BuildCombatSpawnPlanner());
         }
 
-        private EnemySolverService
-            BuildEnemySolver()
+        private CombatReplenishmentPlanBuilder
+            BuildCombatReplenishmentPlanBuilder()
         {
-            return new EnemySolverService(
-                BuildCandidateBuilder(),
-                BuildCandidateValidator(),
-                BuildCandidateEvaluator(),
-                BuildCompositionBuilder(),
-                BuildBudgetAllocator(),
-                BuildCompositionAnalyzer());
+            return new CombatReplenishmentPlanBuilder();
         }
 
-        private CandidateBuilder
-            BuildCandidateBuilder()
+        private CombatSpawnRequestTranslator
+            BuildCombatSpawnRequestTranslator()
         {
-            return new CandidateBuilder();
+            SpawnRequestEntryFactory entryFactory =
+                new SpawnRequestEntryFactory(
+                    new MaterializableReferenceFactory());
+
+            return new CombatSpawnRequestTranslator(
+                new SpawnRequestFactory(),
+                entryFactory);
         }
 
-        private CandidateValidator
-            BuildCandidateValidator()
+        private CombatSpawnPlanner
+            BuildCombatSpawnPlanner()
         {
-            return new CandidateValidator();
+            return new CombatSpawnPlanner(
+                new EnemyPoolResolver(),
+                new EnemyVariantSelector(),
+                new CombatSpawnPlanBuilder());
         }
 
-        private BudgetAllocator
-            BuildBudgetAllocator()
+        private CombatSolver
+            BuildCombatSolver()
         {
-            return new BudgetAllocator();
+            return new CombatSolver();
         }
 
-        private CompositionBuilder
-            BuildCompositionBuilder()
+        private CombatReconciler
+            BuildCombatReconciler()
         {
-            return new CompositionBuilder();
+            return new CombatReconciler();
         }
 
-        private CandidateEvaluator
-            BuildCandidateEvaluator()
+        private ReplenishmentController
+            BuildReplenishmentController()
         {
-            return new CandidateEvaluator(
-                BuildEvaluationRules());
-        }
-
-        private IReadOnlyList<IEnemyEvaluationRule>
-            BuildEvaluationRules()
-        {
-            return new IEnemyEvaluationRule[]
-            {
-                BuildTacticalIdentityRule(),
-                BuildNeedCoverageRule()
-            };
-        }
-
-        private IEnemyEvaluationRule
-            BuildTacticalIdentityRule()
-        {
-            return new TacticalIdentityRule();
-        }
-
-        private IEnemyEvaluationRule
-            BuildNeedCoverageRule()
-        {
-            return new NeedCoverageRule();
-        }
-
-        private CompositionAnalyzer
-            BuildCompositionAnalyzer()
-        {
-            return new CompositionAnalyzer(
-                BuildRuntimeTacticalProfileBuilder(),
-                BuildProfileComparator(),
-                BuildNeedsAnalyzer(),
-                BuildObjectiveSelector());
-        }
-
-        private RuntimeTacticalProfileBuilder
-            BuildRuntimeTacticalProfileBuilder()
-        {
-            return new RuntimeTacticalProfileBuilder();
-        }
-
-        private ProfileComparator
-            BuildProfileComparator()
-        {
-            return new ProfileComparator();
-        }
-
-        private NeedsAnalyzer
-            BuildNeedsAnalyzer()
-        {
-            return new NeedsAnalyzer();
-        }
-
-        private ObjectiveSelector
-            BuildObjectiveSelector()
-        {
-            return new ObjectiveSelector();
+            return new ReplenishmentController();
         }
     }
 }

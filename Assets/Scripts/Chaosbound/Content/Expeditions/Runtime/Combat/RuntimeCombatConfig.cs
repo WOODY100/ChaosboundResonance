@@ -13,15 +13,16 @@ namespace Chaosbound.Content.Expeditions.Runtime.Combat
         /// <summary>
         /// Gets the combat tactics available for the expedition.
         /// </summary>
-        public IReadOnlyList<CombatTacticDefinition> Tactics { get; }
+        public IReadOnlyList<RuntimeCombatTactic> Tactics { get; }
 
         public RuntimeCombatConfig(
-            IReadOnlyList<CombatTacticDefinition> tactics)
+            IReadOnlyList<RuntimeCombatTactic> tactics)
         {
             if (tactics == null)
                 throw new ArgumentNullException(nameof(tactics));
 
-            Tactics = new List<CombatTacticDefinition>(tactics);
+            Tactics =
+                new List<RuntimeCombatTactic>(tactics);
         }
     }
 }

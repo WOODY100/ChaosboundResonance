@@ -1,3 +1,4 @@
+using Chaosbound.Gameplay.Combat.Runtime;
 using Chaosbound.Gameplay.EnemySolver.Models;
 using Chaosbound.Gameplay.EnemySolver.Runtime.Composition;
 using Chaosbound.Gameplay.Pressure.Models;
@@ -17,8 +18,22 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Runtime
             runtimeComposition =
         new RuntimeCompositionState();
 
+        private readonly CombatRuntimeState
+            combatRuntime =
+        new CombatRuntimeState();
+
         public RuntimeCompositionState RuntimeComposition =>
             runtimeComposition;
+
+        /// <summary>
+        /// Gets the delta time applied during the latest
+        /// expedition runtime tick.
+        /// </summary>
+        public TimeSpan DeltaTime
+        {
+            get;
+            private set;
+        }
 
         /// <summary>
         /// Gets the elapsed expedition time.
@@ -66,11 +81,26 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Runtime
         }
 
         /// <summary>
+        /// Gets the current combat runtime state.
+        /// </summary>
+        public CombatRuntimeState Combat =>
+            combatRuntime;
+
+        /// <summary>
         /// Advances the runtime clock.
         /// </summary>
         public void AdvanceTime(
             TimeSpan deltaTime)
         {
+            if (deltaTime < TimeSpan.Zero)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(deltaTime),
+                    "Delta time cannot be negative.");
+            }
+
+            DeltaTime = deltaTime;
+
             ElapsedTime += deltaTime;
         }
 

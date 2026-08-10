@@ -1,3 +1,4 @@
+using Chaosbound.Shared.Enums;
 using Chaosbound.Gameplay.EnemySolver.Enums;
 using System;
 using System.Collections.Generic;

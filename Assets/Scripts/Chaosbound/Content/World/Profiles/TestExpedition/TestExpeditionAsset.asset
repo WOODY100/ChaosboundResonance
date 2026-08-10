@@ -47,6 +47,20 @@ MonoBehaviour:
       m_Placement: 0
       m_Activation: 0
       m_Constraints: 00000000
+    m_combat:
+      m_Tactics:
+      - m_Target: 20
+        m_NormalPercentage: 0.7
+        m_RunnerPercentage: 0.2
+        m_TankPercentage: 0.1
+        m_Replenishment:
+          m_InitialDelay: 0.5
+          m_RecoveryInterval: 0.5
+        m_SpawnPattern:
+          m_PerimeterPercentage: 0.25
+          m_FrontPercentage: 0.25
+          m_RearPercentage: 0.25
+          m_FlankPercentage: 0.25
     m_expeditionEvents:
       content: []
     m_miniBosses:

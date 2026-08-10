@@ -45,9 +45,6 @@ namespace Chaosbound.Gameplay.Threat.Policies
                 0f,
                 capacity);
 
-            Debug.Log(
-                $"Pressure={pressureValue}  Capacity={capacity}");
-
             return new ThreatCapacity(
                 capacity);
         }

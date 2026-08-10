@@ -70,8 +70,8 @@ namespace Chaosbound.Gameplay.Diagnostics.Threat
                     aliveEnemies,
                     composition);
 
-            Debug.Log(
-                formatter.Format(snapshot));
+            //Debug.Log(
+              //  formatter.Format(snapshot));
         }
     }
 }

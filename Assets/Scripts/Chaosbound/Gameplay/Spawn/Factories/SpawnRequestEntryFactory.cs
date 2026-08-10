@@ -61,5 +61,32 @@ namespace Chaosbound.Gameplay.Spawn.Factories
                 ?? throw new ArgumentNullException(
                     nameof(materializableReferenceFactory));
         }
+
+        public SpawnRequestEntry Create(
+            IMaterializableReference reference,
+            int quantity)
+        {
+            if (reference == null)
+            {
+                throw new ArgumentNullException(
+                    nameof(reference));
+            }
+
+            if (quantity <= 0)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(quantity),
+                    quantity,
+                    "Spawn quantity must be greater than zero.");
+            }
+
+            MaterializableDefinition materializable =
+                new MaterializableDefinition(
+                    reference);
+
+            return new SpawnRequestEntry(
+                materializable,
+                quantity);
+        }
     }
 }

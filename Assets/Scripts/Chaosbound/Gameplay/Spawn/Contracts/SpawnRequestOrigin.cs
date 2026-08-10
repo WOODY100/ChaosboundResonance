@@ -20,6 +20,8 @@ namespace Chaosbound.Gameplay.Spawn.Contracts
 
         Debug,
 
-        Editor
+        Editor,
+
+        Combat
     }
 }

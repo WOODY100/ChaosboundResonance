@@ -1,8 +1,9 @@
-public enum EnemyRole
+namespace Chaosbound.Shared.Enums
 {
-    Fighter = 0,
-    Tank = 1,
-    Support = 2,
-    Controller = 3,
-    Harasser = 4
+    public enum EnemyRole
+    {
+        Normal = 0,
+        Runner = 1,
+        Tank = 2
+    }
 }

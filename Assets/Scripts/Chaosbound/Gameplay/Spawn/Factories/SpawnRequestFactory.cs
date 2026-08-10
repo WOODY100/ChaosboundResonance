@@ -1,7 +1,8 @@
-using System;
 using Chaosbound.Content.Expeditions.Runtime.Spawn;
 using Chaosbound.Gameplay.EnemySolver.Models;
 using Chaosbound.Gameplay.Spawn.Contracts;
+using System;
+using System.Collections.Generic;
 
 namespace Chaosbound.Gameplay.Spawn.Factories
 {
@@ -92,6 +93,31 @@ namespace Chaosbound.Gameplay.Spawn.Factories
                 entryFactory.Create(spawnPlan),
                 contextFactory.Create(runtimeSpawnConfig),
                 metadataFactory.Create(origin));
+        }
+
+        public SpawnRequest Create(
+            IEnumerable<SpawnRequestEntry> entries,
+            RuntimeSpawnConfig runtimeSpawnConfig,
+            SpawnRequestOrigin origin)
+        {
+            if (entries == null)
+            {
+                throw new ArgumentNullException(
+                    nameof(entries));
+            }
+
+            if (runtimeSpawnConfig == null)
+            {
+                throw new ArgumentNullException(
+                    nameof(runtimeSpawnConfig));
+            }
+
+            return new SpawnRequest(
+                entries,
+                contextFactory.Create(
+                    runtimeSpawnConfig),
+                metadataFactory.Create(
+                    origin));
         }
     }
 }

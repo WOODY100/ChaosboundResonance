@@ -1,3 +1,4 @@
+using Chaosbound.Shared.Enums;
 using Chaosbound.Content.Expeditions.Domain.Definitions.Enemy.Enums;
 using System;
 using System.Collections.Generic;

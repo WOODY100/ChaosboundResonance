@@ -1,3 +1,4 @@
+using Chaosbound.Shared.Enums;
 using Chaosbound.Content.Expeditions.Runtime.Enemy.TacticalIdentity;
 using Chaosbound.Gameplay.EnemySolver.Models;
 using Chaosbound.Gameplay.EnemySolver.Runtime.Composition;

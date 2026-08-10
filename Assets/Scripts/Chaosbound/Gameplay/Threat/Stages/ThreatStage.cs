@@ -38,9 +38,6 @@ namespace Chaosbound.Gameplay.Threat.Stages
                     context.Config.Threat.BudgetPolicy,
                     context.State.CurrentPressure);
 
-            Debug.Log(
-                $"Pressure={context.State.CurrentPressure.Value}  EvaluatedCapacity={capacity.Value}");
-
             ThreatBudget budget =
                 context.State.ThreatBudget;
 
