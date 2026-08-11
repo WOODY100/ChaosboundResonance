@@ -1,7 +1,5 @@
 using Chaosbound.Content.Expeditions.Definitions.Enemy;
-using Chaosbound.Content.Expeditions.Definitions.Enemy.TacticalIdentity;
 using Chaosbound.Content.Expeditions.Runtime.Enemy;
-using Chaosbound.Content.Expeditions.Runtime.Enemy.TacticalIdentity;
 using Chaosbound.Shared.Content.Entries;
 using Chaosbound.Shared.Content.Resolution;
 using System;
@@ -32,14 +30,9 @@ namespace Chaosbound.Content.Expeditions.Runtime.Builders
             List<EnemyVariantData> resolvedEnemies =
                 ResolveEnemies(definition.Entries);
 
-            RuntimeTacticalIdentity tacticalIdentity =
-                BuildRuntimeTacticalIdentity(
-                    definition.TacticalIdentity);
-
             return new RuntimeEnemyConfig(
                 resolvedEnemies,
-                definition.SchedulingPolicy,
-                tacticalIdentity);
+                definition.SchedulingPolicy);
         }
 
         private List<EnemyVariantData> ResolveEnemies(
@@ -58,44 +51,6 @@ namespace Chaosbound.Content.Expeditions.Runtime.Builders
             }
 
             return resolvedEnemies;
-        }
-
-        private static RuntimeTacticalIdentity BuildRuntimeTacticalIdentity(
-            TacticalIdentityDefinition definition)
-        {
-            if (definition == null)
-                throw new ArgumentNullException(nameof(definition));
-
-            List<RuntimeCapabilityAffinity> affinities =
-                BuildRuntimeAffinities(
-                    definition.Affinities);
-
-            return new RuntimeTacticalIdentity(
-                affinities);
-        }
-
-        private static List<RuntimeCapabilityAffinity> BuildRuntimeAffinities(
-            IReadOnlyList<CapabilityAffinityDefinition> definitions)
-        {
-            List<RuntimeCapabilityAffinity> result =
-                new(definitions.Count);
-
-            foreach (CapabilityAffinityDefinition affinity in definitions)
-            {
-                if (affinity == null)
-                {
-                    throw new InvalidOperationException(
-                        "TacticalIdentityDefinition contains a null CapabilityAffinityDefinition.");
-                }
-
-                result.Add(
-                    new RuntimeCapabilityAffinity(
-                        affinity.Capability,
-                        affinity.BonusScore,
-                        affinity.DesiredCount));
-            }
-
-            return result;
         }
     }
 }

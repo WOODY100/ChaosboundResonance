@@ -2,7 +2,6 @@ using Chaosbound.Content.Expeditions.Runtime.Bosses;
 using Chaosbound.Content.Expeditions.Runtime.ExpeditionEvents;
 using Chaosbound.Content.Expeditions.Runtime.General;
 using Chaosbound.Content.Expeditions.Runtime.Pressure;
-using Chaosbound.Content.Expeditions.Runtime.Threat;
 using Chaosbound.Content.Expeditions.Runtime.MiniBosses;
 using Chaosbound.Content.Expeditions.Runtime.Enemy;
 using Chaosbound.Content.Expeditions.Runtime.Spawn;
@@ -27,8 +26,6 @@ namespace Chaosbound.Content.Expeditions.Runtime.Configs
 
         public RuntimePressureConfig Pressure { get; }
 
-        public RuntimeThreatConfig Threat { get; }
-
         public RuntimeWorldConfig World { get; }
 
         public RuntimeEnemyConfig Enemy { get; }
@@ -49,7 +46,6 @@ namespace Chaosbound.Content.Expeditions.Runtime.Configs
             RuntimeSceneConfig scene,
             RuntimeGeneralConfig general,
             RuntimePressureConfig pressure,
-            RuntimeThreatConfig threat,
             RuntimeWorldConfig world,
             RuntimeEnemyConfig enemy,
             RuntimeSpawnConfig spawn,
@@ -62,7 +58,6 @@ namespace Chaosbound.Content.Expeditions.Runtime.Configs
             Scene = scene ?? throw new ArgumentNullException(nameof(scene));
             General = general ?? throw new ArgumentNullException(nameof(general));
             Pressure = pressure ?? throw new ArgumentNullException(nameof(pressure));
-            Threat = threat ?? throw new ArgumentNullException(nameof(threat));
             World = world ?? throw new ArgumentNullException(nameof(world));
             Enemy = enemy ?? throw new ArgumentNullException(nameof(enemy));
             Spawn = spawn ?? throw new ArgumentNullException(nameof(spawn));

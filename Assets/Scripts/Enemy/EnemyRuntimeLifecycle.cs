@@ -42,13 +42,5 @@ public sealed class EnemyRuntimeLifecycle : MonoBehaviour
             .RuntimeComposition
             .Decrement(
                 runtimeContext.Variant);
-
-        runtimeContext
-            .ExpeditionRuntime
-            .ThreatBudget
-            .Release(
-                runtimeContext
-                    .Variant
-                    .ThreatCost);
     }
 }

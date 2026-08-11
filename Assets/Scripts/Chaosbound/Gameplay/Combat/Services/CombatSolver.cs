@@ -85,8 +85,8 @@ namespace Chaosbound.Gameplay.Combat.Services
                 allocations,
                 target);
 
-            List<CombatCompositionEntry> entries =
-                new List<CombatCompositionEntry>();
+            List<CombatRuntimeCompositionEntry> entries =
+                new List<CombatRuntimeCompositionEntry>();
 
             foreach (RoleAllocation allocation in allocations)
             {
@@ -94,7 +94,7 @@ namespace Chaosbound.Gameplay.Combat.Services
                     continue;
 
                 entries.Add(
-                    new CombatCompositionEntry(
+                    new CombatRuntimeCompositionEntry(
                         allocation.Role,
                         allocation.Quantity));
             }

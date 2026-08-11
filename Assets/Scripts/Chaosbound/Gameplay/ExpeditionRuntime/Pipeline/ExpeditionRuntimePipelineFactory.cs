@@ -11,8 +11,6 @@ using Chaosbound.Gameplay.Pressure.Stages;
 using Chaosbound.Gameplay.Spawn.Bootstrap;
 using Chaosbound.Gameplay.Spawn.Factories;
 using Chaosbound.Gameplay.Spawn.Runtime;
-using Chaosbound.Gameplay.Spawn.Stages;
-using Chaosbound.Gameplay.Threat.Stages;
 using System.Collections.Generic;
 
 namespace Chaosbound.Gameplay.ExpeditionRuntime.Pipeline
@@ -41,7 +39,6 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Pipeline
                     {
                         BuildTimeStage(),
                         BuildPressureStage(),
-                        BuildThreatStage(),
                         BuildCombatStage()
                     };
             }
@@ -75,12 +72,6 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Pipeline
             BuildTimeProvider()
         {
             return new UnityTimeProvider();
-        }
-
-        private IExpeditionRuntimeStage
-            BuildThreatStage()
-        {
-            return new ThreatStage();
         }
 
         private SpawnRuntime

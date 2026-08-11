@@ -104,10 +104,6 @@ namespace Chaosbound.Gameplay.Spawn.Execution
         public void Execute(
             EnemySchedulingContext schedulingContext)
         {
-            Debug.Log(
-                "[SpawnJobExecutor] Execute\n" +
-                Environment.StackTrace);
-
             if (schedulingContext == null)
                 throw new ArgumentNullException(nameof(schedulingContext));
 

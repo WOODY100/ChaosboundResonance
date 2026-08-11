@@ -43,7 +43,7 @@ namespace Chaosbound.Gameplay.Combat.Services
                 new List<CombatReconciliationEntry>();
 
             foreach (
-                CombatCompositionEntry desiredEntry
+                CombatRuntimeCompositionEntry desiredEntry
                 in desired.Entries)
             {
                 int currentQuantity =

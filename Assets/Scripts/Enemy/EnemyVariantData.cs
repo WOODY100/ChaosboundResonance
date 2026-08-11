@@ -1,7 +1,4 @@
 using Chaosbound.Shared.Enums;
-using Chaosbound.Content.Expeditions.Enums.Enemy;
-using Chaosbound.Gameplay.EnemySolver.Enums;
-using Chaosbound.Gameplay.Threat.ValueObjects;
 using Chaosbound.Shared.Contracts;
 using Chaosbound.Shared.Identifiers;
 using System.Collections.Generic;
@@ -50,24 +47,11 @@ public class EnemyVariantData : ScriptableObject, IMaterializableReference
     [SerializeField]
     private EnemyTier m_Tier = EnemyTier.Tier1;
 
-    [SerializeField]
-    private TacticalCapability[] m_TacticalCapabilities;
-
     public EnemyCategory Category => m_Category;
 
     public IReadOnlyList<EnemyRole> Roles => m_Roles;
 
     public EnemyTier Tier => m_Tier;
-
-    public IReadOnlyList<TacticalCapability> TacticalCapabilities =>
-        m_TacticalCapabilities;
-
-    [Header("Threat")]
-
-    [SerializeField]
-    private float m_ThreatCost = 10f;
-
-    public ThreatCost ThreatCost => new(m_ThreatCost);
 
     [Header("Rewards")]
 

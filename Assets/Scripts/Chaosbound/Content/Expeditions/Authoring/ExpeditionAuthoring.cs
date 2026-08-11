@@ -10,7 +10,6 @@ using Chaosbound.Content.Expeditions.Authoring.Pressure;
 using Chaosbound.Content.Expeditions.Authoring.Rewards;
 using Chaosbound.Content.Expeditions.Authoring.Scene;
 using Chaosbound.Content.Expeditions.Authoring.Spawn;
-using Chaosbound.Content.Expeditions.Authoring.Threat;
 using Chaosbound.Content.Expeditions.Authoring.World;
 using System;
 using UnityEngine;
@@ -48,11 +47,6 @@ namespace Chaosbound.Content.Expeditions.Authoring
 
         [SerializeField]
         private PressureAuthoring m_pressure = new();
-
-        [Header("Threat")]
-
-        [SerializeField]
-        private ThreatAuthoring m_threat = new();
 
         [Header("World")]
 
@@ -103,8 +97,6 @@ namespace Chaosbound.Content.Expeditions.Authoring
         public GeneralAuthoring General => m_general;
 
         public PressureAuthoring Pressure => m_pressure;
-
-        public ThreatAuthoring Threat => m_threat;
 
         public WorldAuthoring World => m_world;
 

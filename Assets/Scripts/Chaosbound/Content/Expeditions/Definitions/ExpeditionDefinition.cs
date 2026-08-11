@@ -10,7 +10,6 @@ using Chaosbound.Content.Expeditions.Definitions.Pressure;
 using Chaosbound.Content.Expeditions.Definitions.Rewards;
 using Chaosbound.Content.Expeditions.Definitions.Scene;
 using Chaosbound.Content.Expeditions.Definitions.Spawn;
-using Chaosbound.Content.Expeditions.Definitions.Threat;
 using Chaosbound.Content.Expeditions.Definitions.World;
 using System;
 
@@ -45,11 +44,6 @@ namespace Chaosbound.Content.Expeditions.Definitions
         /// Gets the pressure configuration.
         /// </summary>
         public PressureDefinition Pressure { get; }
-
-        /// <summary>
-        /// Gets the threat configuration.
-        /// </summary>
-        public ThreatDefinition Threat { get; }
 
         /// <summary>
         /// Gets the world generation configuration.
@@ -97,7 +91,6 @@ namespace Chaosbound.Content.Expeditions.Definitions
             PresentationDefinition presentation,
             GeneralDefinition general,
             PressureDefinition pressure,
-            ThreatDefinition threat,
             WorldDefinition world,
             EnemyDefinition enemy,
             SpawnDefinition spawn,
@@ -121,9 +114,6 @@ namespace Chaosbound.Content.Expeditions.Definitions
 
             if (pressure == null)
                 throw new ArgumentNullException(nameof(pressure));
-
-            if (threat == null)
-                throw new ArgumentNullException(nameof(threat));
 
             if (world == null)
                 throw new ArgumentNullException(nameof(world));
@@ -154,7 +144,6 @@ namespace Chaosbound.Content.Expeditions.Definitions
             Presentation = presentation;
             General = general;
             Pressure = pressure;
-            Threat = threat;
             World = world;
             Enemy = enemy;
             Spawn = spawn;

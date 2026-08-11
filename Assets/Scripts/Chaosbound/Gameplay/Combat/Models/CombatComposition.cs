@@ -10,12 +10,12 @@ namespace Chaosbound.Gameplay.Combat.Models
     /// </summary>
     public sealed class CombatComposition
     {
-        private readonly List<CombatCompositionEntry> entries;
+        private readonly List<CombatRuntimeCompositionEntry> entries;
 
         /// <summary>
         /// Gets the desired composition entries.
         /// </summary>
-        public IReadOnlyList<CombatCompositionEntry> Entries =>
+        public IReadOnlyList<CombatRuntimeCompositionEntry> Entries =>
             entries;
 
         /// <summary>
@@ -27,7 +27,7 @@ namespace Chaosbound.Gameplay.Combat.Models
             {
                 int total = 0;
 
-                foreach (CombatCompositionEntry entry in entries)
+                foreach (CombatRuntimeCompositionEntry entry in entries)
                 {
                     total += entry.TargetQuantity;
                 }
@@ -46,7 +46,7 @@ namespace Chaosbound.Gameplay.Combat.Models
         /// Creates a new immutable combat composition.
         /// </summary>
         public CombatComposition(
-            IReadOnlyList<CombatCompositionEntry> entries)
+            IReadOnlyList<CombatRuntimeCompositionEntry> entries)
         {
             if (entries == null)
             {
@@ -55,10 +55,10 @@ namespace Chaosbound.Gameplay.Combat.Models
             }
 
             this.entries =
-                new List<CombatCompositionEntry>(
+                new List<CombatRuntimeCompositionEntry>(
                     entries.Count);
 
-            foreach (CombatCompositionEntry entry in entries)
+            foreach (CombatRuntimeCompositionEntry entry in entries)
             {
                 if (entry == null)
                 {
@@ -83,7 +83,7 @@ namespace Chaosbound.Gameplay.Combat.Models
         public bool ContainsRole(
             EnemyRole role)
         {
-            foreach (CombatCompositionEntry entry in entries)
+            foreach (CombatRuntimeCompositionEntry entry in entries)
             {
                 if (entry.Role == role)
                     return true;
@@ -98,9 +98,9 @@ namespace Chaosbound.Gameplay.Combat.Models
         /// </summary>
         public bool TryGetEntry(
             EnemyRole role,
-            out CombatCompositionEntry entry)
+            out CombatRuntimeCompositionEntry entry)
         {
-            foreach (CombatCompositionEntry current in entries)
+            foreach (CombatRuntimeCompositionEntry current in entries)
             {
                 if (current.Role == role)
                 {

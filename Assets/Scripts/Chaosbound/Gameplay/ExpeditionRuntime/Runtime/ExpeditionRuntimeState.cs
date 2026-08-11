@@ -1,9 +1,7 @@
 using Chaosbound.Gameplay.Combat.Runtime;
-using Chaosbound.Gameplay.EnemySolver.Models;
-using Chaosbound.Gameplay.EnemySolver.Runtime.Composition;
+using Chaosbound.Gameplay.Combat.Runtime.Composition;
 using Chaosbound.Gameplay.Pressure.Models;
 using Chaosbound.Gameplay.Pressure.ValueObjects;
-using Chaosbound.Gameplay.Threat.Runtime;
 using System;
 
 namespace Chaosbound.Gameplay.ExpeditionRuntime.Runtime
@@ -14,15 +12,15 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Runtime
     /// </summary>
     public sealed class ExpeditionRuntimeState
     {
-        private readonly RuntimeCompositionState
+        private readonly CombatRuntimeComposition
             runtimeComposition =
-        new RuntimeCompositionState();
+            new CombatRuntimeComposition();
 
         private readonly CombatRuntimeState
             combatRuntime =
-        new CombatRuntimeState();
+            new CombatRuntimeState();
 
-        public RuntimeCompositionState RuntimeComposition =>
+        public CombatRuntimeComposition RuntimeComposition =>
             runtimeComposition;
 
         /// <summary>
@@ -57,24 +55,6 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Runtime
         /// Gets the latest pressure snapshot.
         /// </summary>
         public PressureSnapshot PressureSnapshot
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Gets the current expedition threat budget.
-        /// </summary>
-        public ThreatBudget ThreatBudget
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Gets the latest enemy solver result.
-        /// </summary>
-        public EnemySolverResult EnemySolverResult
         {
             get;
             private set;
@@ -123,29 +103,6 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Runtime
                 snapshot
                 ?? throw new ArgumentNullException(
                     nameof(snapshot));
-        }
-
-        /// <summary>
-        /// Sets the current expedition threat budget.
-        /// </summary>
-        public void SetThreatBudget(
-            ThreatBudget threatBudget)
-        {
-            ThreatBudget = threatBudget
-                ?? throw new ArgumentNullException(
-                    nameof(threatBudget));
-        }
-
-        /// <summary>
-        /// Updates the latest enemy solver result.
-        /// </summary>
-        public void SetEnemySolverResult(
-            EnemySolverResult result)
-        {
-            EnemySolverResult =
-                result
-                ?? throw new ArgumentNullException(
-                    nameof(result));
         }
     }
 }

@@ -1,7 +1,6 @@
 using Chaosbound.Content.Expeditions.Enums.Enemy;
 using Chaosbound.Content.Expeditions.Enums.Spawn;
 using Chaosbound.Content.Expeditions.Runtime.Enemy;
-using Chaosbound.Content.Expeditions.Runtime.Enemy.TacticalIdentity;
 using Chaosbound.Content.Expeditions.Runtime.References;
 using Chaosbound.Content.Expeditions.Runtime.Spawn;
 using Chaosbound.Gameplay.Pressure.Models;
@@ -150,14 +149,7 @@ namespace Chaosbound.Gameplay.Spawn.Validation
                 {
             enemy
                 },
-                EnemySchedulingPolicy.Continuous,
-                BuildRuntimeTacticalIdentity());
-        }
-
-        private RuntimeTacticalIdentity BuildRuntimeTacticalIdentity()
-        {
-            return new RuntimeTacticalIdentity(
-                Array.Empty<RuntimeCapabilityAffinity>());
+                EnemySchedulingPolicy.Continuous);
         }
 
         private RuntimeSpawnConfig BuildRuntimeSpawnConfig()

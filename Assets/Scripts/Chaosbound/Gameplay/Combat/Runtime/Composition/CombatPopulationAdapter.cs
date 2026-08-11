@@ -1,5 +1,4 @@
 using Chaosbound.Gameplay.Combat.Models;
-using Chaosbound.Gameplay.EnemySolver.Runtime.Composition;
 using Chaosbound.Gameplay.Combat.Services;
 using Chaosbound.Shared.Enums;
 using System;
@@ -9,7 +8,7 @@ namespace Chaosbound.Gameplay.Combat.Runtime.Composition
     public static class CombatPopulationAdapter
     {
         public static CombatPopulationState Build(
-            RuntimeCompositionState composition)
+            CombatRuntimeComposition composition)
         {
             if (composition == null)
             {
@@ -21,7 +20,7 @@ namespace Chaosbound.Gameplay.Combat.Runtime.Composition
             int runnerCount = 0;
             int tankCount = 0;
 
-            foreach (RuntimeCompositionEntry entry
+            foreach (CombatRuntimeCompositionEntry entry
                 in composition.Entries)
             {
                 if (entry == null)
