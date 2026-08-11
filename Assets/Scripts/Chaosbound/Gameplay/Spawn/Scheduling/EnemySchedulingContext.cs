@@ -2,7 +2,6 @@ using Chaosbound.Gameplay.ExpeditionRuntime.Runtime;
 using Chaosbound.Content.Expeditions.Runtime.Enemy;
 using Chaosbound.Content.Expeditions.Runtime.References;
 using Chaosbound.Content.Expeditions.Runtime.Spawn;
-using Chaosbound.Gameplay.Pressure.Models;
 using Chaosbound.Gameplay.Spawn.Domain;
 using System;
 
@@ -35,11 +34,6 @@ namespace Chaosbound.Gameplay.Spawn.Scheduling
         public RuntimeReferencesConfig References { get; }
 
         /// <summary>
-        /// Gets the current pressure snapshot.
-        /// </summary>
-        public PressureSnapshot Pressure { get; }
-
-        /// <summary>
         /// Gets the current expedition runtime state.
         /// </summary>
         public ExpeditionRuntimeState ExpeditionRuntime { get; }
@@ -49,7 +43,6 @@ namespace Chaosbound.Gameplay.Spawn.Scheduling
             RuntimeEnemyConfig enemyConfig,
             RuntimeSpawnConfig spawnConfig,
             RuntimeReferencesConfig references,
-            PressureSnapshot pressure,
             ExpeditionRuntimeState expeditionRuntime)
         {
             Job = job
@@ -63,9 +56,6 @@ namespace Chaosbound.Gameplay.Spawn.Scheduling
             
             References = references
                 ?? throw new ArgumentNullException(nameof(references));
-
-            Pressure = pressure
-                ?? throw new ArgumentNullException(nameof(pressure));
 
             ExpeditionRuntime = expeditionRuntime
                 ?? throw new ArgumentNullException(nameof(expeditionRuntime));

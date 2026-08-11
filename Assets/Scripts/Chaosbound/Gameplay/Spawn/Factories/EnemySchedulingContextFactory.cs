@@ -2,7 +2,6 @@ using Chaosbound.Gameplay.ExpeditionRuntime.Runtime;
 using Chaosbound.Content.Expeditions.Runtime.Enemy;
 using Chaosbound.Content.Expeditions.Runtime.References;
 using Chaosbound.Content.Expeditions.Runtime.Spawn;
-using Chaosbound.Gameplay.Pressure.Models;
 using Chaosbound.Gameplay.Spawn.Domain;
 using Chaosbound.Gameplay.Spawn.Scheduling;
 using System;
@@ -16,7 +15,6 @@ namespace Chaosbound.Gameplay.Spawn.Factories
             RuntimeEnemyConfig enemyConfig,
             RuntimeSpawnConfig spawnConfig,
             RuntimeReferencesConfig references,
-            PressureSnapshot pressure,
             ExpeditionRuntimeState expeditionRuntime)
         {
             if (job == null)
@@ -31,9 +29,6 @@ namespace Chaosbound.Gameplay.Spawn.Factories
             if (references == null)
                 throw new ArgumentNullException(nameof(references));
 
-            if (pressure == null)
-                throw new ArgumentNullException(nameof(pressure));
-
             if (expeditionRuntime == null)
                 throw new ArgumentNullException(nameof(expeditionRuntime));
 
@@ -42,7 +37,6 @@ namespace Chaosbound.Gameplay.Spawn.Factories
                 enemyConfig,
                 spawnConfig,
                 references,
-                pressure,
                 expeditionRuntime);
         }
     }

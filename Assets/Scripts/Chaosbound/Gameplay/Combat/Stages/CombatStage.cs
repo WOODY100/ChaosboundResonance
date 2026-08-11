@@ -162,7 +162,6 @@ namespace Chaosbound.Gameplay.Combat.Stages
                 context.Config.Enemy,
                 context.Config.Spawn,
                 context.References.Runtime,
-                context.State.PressureSnapshot,
                 context.State);
         }
     }

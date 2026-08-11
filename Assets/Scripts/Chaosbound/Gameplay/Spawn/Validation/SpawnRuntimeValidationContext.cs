@@ -1,7 +1,6 @@
 using Chaosbound.Content.Expeditions.Runtime.Enemy;
 using Chaosbound.Content.Expeditions.Runtime.References;
 using Chaosbound.Content.Expeditions.Runtime.Spawn;
-using Chaosbound.Gameplay.Pressure.Models;
 using Chaosbound.Gameplay.Spawn.Scheduling;
 
 namespace Chaosbound.Gameplay.Spawn.Validation
@@ -16,8 +15,6 @@ namespace Chaosbound.Gameplay.Spawn.Validation
 
         public RuntimeEnemyConfig EnemyConfig { get; }
 
-        public PressureSnapshot PressureSnapshot { get; }
-
         public RuntimeSpawnConfig SpawnConfig { get; }
 
         public RuntimeReferencesConfig References { get; }
@@ -26,14 +23,12 @@ namespace Chaosbound.Gameplay.Spawn.Validation
             EnemySchedulingContext schedulingContext,
             RuntimeEnemyConfig enemyConfig,
             RuntimeSpawnConfig spawnConfig,
-            RuntimeReferencesConfig references,
-            PressureSnapshot pressureSnapshot)
+            RuntimeReferencesConfig references)
         {
             SchedulingContext = schedulingContext;
             EnemyConfig = enemyConfig;
             SpawnConfig = spawnConfig;
             References = references;
-            PressureSnapshot = pressureSnapshot;
         }
     }
 }

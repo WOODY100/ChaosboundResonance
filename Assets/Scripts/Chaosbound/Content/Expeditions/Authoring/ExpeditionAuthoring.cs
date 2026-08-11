@@ -6,7 +6,6 @@ using Chaosbound.Content.Expeditions.Authoring.General;
 using Chaosbound.Content.Expeditions.Authoring.Identity;
 using Chaosbound.Content.Expeditions.Authoring.MiniBosses;
 using Chaosbound.Content.Expeditions.Authoring.Presentation;
-using Chaosbound.Content.Expeditions.Authoring.Pressure;
 using Chaosbound.Content.Expeditions.Authoring.Rewards;
 using Chaosbound.Content.Expeditions.Authoring.Scene;
 using Chaosbound.Content.Expeditions.Authoring.Spawn;
@@ -42,11 +41,6 @@ namespace Chaosbound.Content.Expeditions.Authoring
 
         [SerializeField]
         private GeneralAuthoring m_general = new();
-        
-        [Header("Pressure")]
-
-        [SerializeField]
-        private PressureAuthoring m_pressure = new();
 
         [Header("World")]
 
@@ -95,8 +89,6 @@ namespace Chaosbound.Content.Expeditions.Authoring
         public PresentationAuthoring Presentation => m_presentation;
 
         public GeneralAuthoring General => m_general;
-
-        public PressureAuthoring Pressure => m_pressure;
 
         public WorldAuthoring World => m_world;
 

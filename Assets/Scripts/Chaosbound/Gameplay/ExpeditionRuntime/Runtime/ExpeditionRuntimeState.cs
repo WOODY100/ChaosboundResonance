@@ -1,7 +1,5 @@
 using Chaosbound.Gameplay.Combat.Runtime;
 using Chaosbound.Gameplay.Combat.Runtime.Composition;
-using Chaosbound.Gameplay.Pressure.Models;
-using Chaosbound.Gameplay.Pressure.ValueObjects;
 using System;
 
 namespace Chaosbound.Gameplay.ExpeditionRuntime.Runtime
@@ -43,24 +41,6 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Runtime
         }
 
         /// <summary>
-        /// Gets the current expedition pressure.
-        /// </summary>
-        public PressureValue CurrentPressure
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Gets the latest pressure snapshot.
-        /// </summary>
-        public PressureSnapshot PressureSnapshot
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
         /// Gets the current combat runtime state.
         /// </summary>
         public CombatRuntimeState Combat =>
@@ -82,27 +62,6 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Runtime
             DeltaTime = deltaTime;
 
             ElapsedTime += deltaTime;
-        }
-
-        /// <summary>
-        /// Updates the current expedition pressure.
-        /// </summary>
-        public void SetPressure(
-            PressureValue pressure)
-        {
-            CurrentPressure = pressure;
-        }
-
-        /// <summary>
-        /// Updates the latest pressure snapshot.
-        /// </summary>
-        public void SetPressureSnapshot(
-            PressureSnapshot snapshot)
-        {
-            PressureSnapshot =
-                snapshot
-                ?? throw new ArgumentNullException(
-                    nameof(snapshot));
         }
     }
 }

@@ -3,8 +3,6 @@ using Chaosbound.Content.Expeditions.Enums.Spawn;
 using Chaosbound.Content.Expeditions.Runtime.Enemy;
 using Chaosbound.Content.Expeditions.Runtime.References;
 using Chaosbound.Content.Expeditions.Runtime.Spawn;
-using Chaosbound.Gameplay.Pressure.Models;
-using Chaosbound.Gameplay.Pressure.ValueObjects;
 using Chaosbound.Gameplay.Spawn.Definitions;
 using Chaosbound.Gameplay.Spawn.Domain;
 using Chaosbound.Gameplay.Spawn.Factories;
@@ -63,9 +61,6 @@ namespace Chaosbound.Gameplay.Spawn.Validation
             RuntimeReferencesConfig references =
                 BuildRuntimeReferencesConfig();
 
-            PressureSnapshot pressure =
-                BuildPressureSnapshot();
-
             ExpeditionRuntimeState expeditionRuntime =
                 BuildExpeditionRuntimeState();
 
@@ -75,15 +70,13 @@ namespace Chaosbound.Gameplay.Spawn.Validation
                     enemyConfig,
                     spawnConfig,
                     references,
-                    pressure,
                     expeditionRuntime);
 
             return new SpawnRuntimeValidationContext(
                 schedulingContext,
                 enemyConfig,
                 spawnConfig,
-                references,
-                pressure);
+                references);
         }
 
         private EnemyVariantData BuildEnemy()
@@ -160,15 +153,6 @@ namespace Chaosbound.Gameplay.Spawn.Validation
                 Array.Empty<SpawnConstraintPolicy>());
         }
 
-        private PressureSnapshot BuildPressureSnapshot()
-        {
-            PressureValue pressure =
-                new PressureValue(0f);
-
-            return new PressureSnapshot(
-                pressure);
-        }
-
         private ExpeditionRuntimeState BuildExpeditionRuntimeState()
         {
             return new ExpeditionRuntimeState();
@@ -183,7 +167,6 @@ namespace Chaosbound.Gameplay.Spawn.Validation
             RuntimeEnemyConfig enemyConfig,
             RuntimeSpawnConfig spawnConfig,
             RuntimeReferencesConfig references,
-            PressureSnapshot pressure,
             ExpeditionRuntimeState expeditionRuntime)
         {
             return schedulingContextFactory.Create(
@@ -191,7 +174,6 @@ namespace Chaosbound.Gameplay.Spawn.Validation
                 enemyConfig,
                 spawnConfig,
                 references,
-                pressure,
                 expeditionRuntime);
         }
     }

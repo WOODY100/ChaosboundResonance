@@ -1,7 +1,6 @@
 using Chaosbound.Content.Expeditions.Definitions.Bosses;
 using Chaosbound.Content.Expeditions.Definitions.ExpeditionEvents;
 using Chaosbound.Content.Expeditions.Definitions.General;
-using Chaosbound.Content.Expeditions.Definitions.Pressure;
 using Chaosbound.Content.Expeditions.Definitions.MiniBosses;
 using Chaosbound.Content.Expeditions.Definitions.Rewards;
 using Chaosbound.Content.Expeditions.Definitions.Scene;
@@ -13,7 +12,6 @@ using Chaosbound.Content.Expeditions.Runtime.Configs;
 using Chaosbound.Content.Expeditions.Runtime.Enemy;
 using Chaosbound.Content.Expeditions.Runtime.ExpeditionEvents;
 using Chaosbound.Content.Expeditions.Runtime.General;
-using Chaosbound.Content.Expeditions.Runtime.Pressure;
 using Chaosbound.Content.Expeditions.Runtime.MiniBosses;
 using Chaosbound.Content.Expeditions.Runtime.Rewards;
 using Chaosbound.Content.Expeditions.Runtime.Scene;
@@ -42,7 +40,6 @@ namespace Chaosbound.Content.Expeditions.Runtime.Builders
             // Build runtime configurations.
             RuntimeSceneConfig scene = BuildScene(request.Definition.Scene);
             RuntimeGeneralConfig general = BuildGeneral(request.Definition.General);
-            RuntimePressureConfig pressure = BuildPressure(request.Definition.Pressure);
             RuntimeWorldConfig world = BuildWorld(request.Definition.World);
             RuntimeEnemyConfig enemy = runtimeEnemyBuilder.BuildEnemy(request.Definition.Enemy);
             RuntimeSpawnConfig spawn = BuildSpawn(request.Definition.Spawn);
@@ -57,7 +54,6 @@ namespace Chaosbound.Content.Expeditions.Runtime.Builders
                 new RuntimeExpeditionConfig(
                     scene,
                     general,
-                    pressure,
                     world,
                     enemy,
                     spawn,
@@ -91,16 +87,6 @@ namespace Chaosbound.Content.Expeditions.Runtime.Builders
             return new RuntimeGeneralConfig(
                 definition.CompletionCondition,
                 definition.BaseDifficulty);
-        }
-
-        private RuntimePressureConfig BuildPressure(
-            PressureDefinition definition)
-        {
-            if (definition == null)
-                throw new ArgumentNullException(nameof(definition));
-
-            return new RuntimePressureConfig(
-                definition.CurveProfile);
         }
 
         private RuntimeWorldConfig BuildWorld(
