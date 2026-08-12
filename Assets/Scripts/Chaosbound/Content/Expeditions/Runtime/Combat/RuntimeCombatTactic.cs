@@ -6,7 +6,7 @@ namespace Chaosbound.Content.Expeditions.Runtime.Combat
 {
     public sealed class RuntimeCombatTactic
     {
-        public int Target { get; }
+        public int MaximumTarget { get; }
 
         public float NormalPercentage { get; }
 
@@ -19,14 +19,14 @@ namespace Chaosbound.Content.Expeditions.Runtime.Combat
         public RuntimeSpawnPatternProfile SpawnPattern { get; }
 
         public RuntimeCombatTactic(
-            int target,
+            int maximumTarget,
             float normalPercentage,
             float runnerPercentage,
             float tankPercentage,
             RuntimeReplenishmentProfile replenishment,
             RuntimeSpawnPatternProfile spawnPattern)
         {
-            Target = target;
+            MaximumTarget = maximumTarget;
 
             NormalPercentage = normalPercentage;
 

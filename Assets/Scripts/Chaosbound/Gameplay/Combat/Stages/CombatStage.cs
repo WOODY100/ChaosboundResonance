@@ -108,7 +108,9 @@ namespace Chaosbound.Gameplay.Combat.Stages
             }
 
             combatDirector.Solve(
-                combatState);
+                combatState,
+                combatConfig,
+                (float)context.State.ElapsedTime.TotalSeconds);
 
             CombatPopulationState population =
                 CombatPopulationAdapter.Build(

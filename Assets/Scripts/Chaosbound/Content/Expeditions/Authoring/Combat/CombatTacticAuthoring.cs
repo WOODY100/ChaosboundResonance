@@ -8,13 +8,13 @@ namespace Chaosbound.Content.Expeditions.Authoring.Combat
     [Serializable]
     public sealed class CombatTacticAuthoring
     {
-        [Header("Target")]
+        [Header("MaximumTarget")]
 
         [SerializeField]
-        private int m_Target = 10;
+        private int m_MaximumTarget = 10;
 
-        public int Target =>
-            m_Target;
+        public int MaximumTarget =>
+            m_MaximumTarget;
 
         [Header("Composition")]
 

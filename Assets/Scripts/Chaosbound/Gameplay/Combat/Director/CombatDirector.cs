@@ -22,6 +22,8 @@ namespace Chaosbound.Gameplay.Combat.Director
     {
         private readonly CombatSolver solver;
 
+        private readonly CombatTargetEvaluator targetEvaluator;
+
         private readonly CombatReconciler reconciler;
 
         private readonly ReplenishmentController
@@ -35,6 +37,7 @@ namespace Chaosbound.Gameplay.Combat.Director
 
         public CombatDirector(
             CombatSolver solver,
+            CombatTargetEvaluator targetEvaluator,
             CombatReconciler reconciler,
             ReplenishmentController replenishmentController,
             CombatReplenishmentPlanBuilder replenishmentPlanBuilder,
@@ -44,6 +47,11 @@ namespace Chaosbound.Gameplay.Combat.Director
                 solver
                 ?? throw new ArgumentNullException(
                     nameof(solver));
+
+            this.targetEvaluator =
+                targetEvaluator
+                ?? throw new ArgumentNullException(
+                    nameof(targetEvaluator));
 
             this.reconciler =
                 reconciler
@@ -145,12 +153,20 @@ namespace Chaosbound.Gameplay.Combat.Director
         /// combat composition.
         /// </summary>
         public CombatResult Solve(
-            CombatRuntimeState runtimeState)
+            CombatRuntimeState runtimeState,
+            RuntimeCombatConfig combatConfig,
+            float elapsedSeconds)
         {
             if (runtimeState == null)
             {
                 throw new ArgumentNullException(
                     nameof(runtimeState));
+            }
+
+            if (combatConfig == null)
+            {
+                throw new ArgumentNullException(
+                    nameof(combatConfig));
             }
 
             RuntimeCombatTactic tactic =
@@ -163,8 +179,16 @@ namespace Chaosbound.Gameplay.Combat.Director
                     "an active tactic.");
             }
 
+            int target =
+                targetEvaluator.Evaluate(
+                    combatConfig.TargetProgression,
+                    tactic.MaximumTarget,
+                    elapsedSeconds);
+
             CombatResult result =
-                solver.Solve(tactic);
+                solver.Solve(
+                    tactic,
+                    target);
 
             runtimeState.SetCombatResult(
                 result);

@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class FixedNorthCamera : MonoBehaviour
 {
-    [Header("Target")]
+    [Header("MaximumTarget")]
     public Transform target;
 
     [Header("Camera Settings")]

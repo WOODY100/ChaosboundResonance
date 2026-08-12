@@ -9,6 +9,10 @@ namespace Chaosbound.Content.World.Themes.TileSets
         menuName = "Chaosbound/World/Tile Set Profile")]
     public sealed class TileSetProfile : ScriptableObject
     {
+        [Header("Center Spawn Tile")]
+        [SerializeField]
+        private TileEntry centerSpawnTile;
+
         [Header("Center Tiles")]
         [SerializeField]
         private List<TileEntry> centerTiles = new();
@@ -20,6 +24,8 @@ namespace Chaosbound.Content.World.Themes.TileSets
         [Header("Corner Tiles")]
         [SerializeField]
         private List<TileEntry> cornerTiles = new();
+
+        public TileEntry CenterSpawnTile => centerSpawnTile;
 
         public IReadOnlyList<TileEntry> CenterTiles => centerTiles;
 
@@ -53,9 +59,45 @@ namespace Chaosbound.Content.World.Themes.TileSets
             edgeTiles.RemoveAll(entry => entry == null);
             cornerTiles.RemoveAll(entry => entry == null);
 
+            ValidateCenterSpawnTile();
+
             ValidateCollection(centerTiles, "Center");
             ValidateCollection(edgeTiles, "Edge");
             ValidateCollection(cornerTiles, "Corner");
+        }
+
+        private void ValidateCenterSpawnTile()
+        {
+            if (centerSpawnTile == null)
+            {
+                Debug.LogWarning(
+                    $"TileSetProfile '{name}' has no Center Spawn Tile configured.",
+                    this);
+
+                return;
+            }
+
+            if (centerSpawnTile.SizeX != 1 ||
+                centerSpawnTile.SizeZ != 1)
+            {
+                Debug.LogError(
+                    $"TileSetProfile '{name}' Center Spawn Tile must have a 1x1 footprint.",
+                    this);
+            }
+
+            if (centerSpawnTile.AllowRotate90)
+            {
+                Debug.LogError(
+                    $"TileSetProfile '{name}' Center Spawn Tile must not allow 90° rotation.",
+                    this);
+            }
+
+            if (centerSpawnTile.RandomYRotation)
+            {
+                Debug.LogError(
+                    $"TileSetProfile '{name}' Center Spawn Tile must not use random Y rotation.",
+                    this);
+            }
         }
 
         private void ValidateCollection(

@@ -1,24 +1,41 @@
 using Chaosbound.Content.Expeditions.Runtime.World;
 using Chaosbound.Content.World.Runtime.Services;
+using Chaosbound.Content.World.Themes;
 using Chaosbound.Content.World.Themes.TileSets;
 using System;
 using UnityEngine;
 
 public class OpenWorldMapGenerator : MonoBehaviour
 {
-    [Header("Map Settings")]
-    [SerializeField] private int width = 10;
-    [SerializeField] private int height = 10;
-    [SerializeField] private float tileSize = 12f;
-    [SerializeField] private bool centerMapOnOrigin = true;
+    [Header("Editor Preview")]
+    [SerializeField]
+    private int width = 11;
+
+    [SerializeField]
+    private int height = 11;
+
+    [SerializeField]
+    private float tileSize = 12f;
+
+    [SerializeField]
+    private bool centerMapOnOrigin = true;
+
+    [SerializeField]
+    private WorldThemeAsset previewTheme;
 
     [Header("Generated Parent")]
-    [SerializeField] private Transform generatedParent;
+    [SerializeField]
+    private Transform generatedParent;
 
     [Header("Generation")]
-    [SerializeField] private bool generateOnStart = false;
-    [SerializeField] private bool clearBeforeGenerate = true;
-    [SerializeField] private bool generateDecorationAfterMap = false;
+    [SerializeField]
+    private bool generateOnStart = false;
+
+    [SerializeField]
+    private bool clearBeforeGenerate = true;
+
+    [SerializeField]
+    private bool generateDecorationAfterMap = false;
 
     private Transform terrainParent;
     private Transform decorationParent;
@@ -26,7 +43,31 @@ public class OpenWorldMapGenerator : MonoBehaviour
     private Transform obstaclesParent;
     private Transform lightsParent;
 
-    private TileSetProfile TileSet => runtimeWorldConfig.Theme.TileSet;
+    private TileSetProfile TileSet
+    {
+        get
+        {
+            WorldThemeAsset theme =
+                runtimeWorldConfig != null
+                    ? runtimeWorldConfig.Theme
+                    : previewTheme;
+
+            if (theme == null)
+            {
+                throw new InvalidOperationException(
+                    "OpenWorldMapGenerator requires a WorldThemeAsset. " +
+                    "Assign Preview Theme for editor generation or initialize the generator at runtime.");
+            }
+
+            if (theme.TileSet == null)
+            {
+                throw new InvalidOperationException(
+                    $"WorldThemeAsset '{theme.name}' has no TileSet configured.");
+            }
+
+            return theme.TileSet;
+        }
+    }
 
     private readonly TileSelector tileSelector = new();
 
@@ -34,10 +75,20 @@ public class OpenWorldMapGenerator : MonoBehaviour
 
     private bool[,] occupied;
 
+    private int GenerationWidth =>
+        runtimeWorldConfig != null
+            ? GetRuntimeWidth()
+            : width;
+
+    private int GenerationHeight =>
+        runtimeWorldConfig != null
+            ? GetRuntimeHeight()
+            : height;
+
     public void Initialize(RuntimeWorldConfig config)
     {
         runtimeWorldConfig = config
-            ?? throw new System.ArgumentNullException(nameof(config));
+            ?? throw new ArgumentNullException(nameof(config));
     }
 
     private void Start()
@@ -49,65 +100,204 @@ public class OpenWorldMapGenerator : MonoBehaviour
     [ContextMenu("Generate Map")]
     public void GenerateMap()
     {
+        int mapWidth = GenerationWidth;
+        int mapHeight = GenerationHeight;
+
+        ValidateGenerationDimensions(
+            mapWidth,
+            mapHeight);
+
         if (clearBeforeGenerate)
             ClearMap();
 
-        occupied = new bool[width, height];
+        occupied = new bool[mapWidth, mapHeight];
 
         CreateGeneratedHierarchy();
 
         GenerateBorders();
+        GenerateCenterSpawnTile();
         GenerateCenterTiles();
 
         if (generateDecorationAfterMap)
         {
-            OpenWorldDecorationGenerator decorationGenerator = GetComponent<OpenWorldDecorationGenerator>();
+            OpenWorldDecorationGenerator decorationGenerator =
+                GetComponent<OpenWorldDecorationGenerator>();
 
             if (decorationGenerator != null)
                 decorationGenerator.GenerateDecoration();
         }
     }
 
+    private int GetRuntimeWidth()
+    {
+        float value = runtimeWorldConfig.Bounds.Size.Width;
+
+        if (!IsWholeNumber(value))
+        {
+            throw new InvalidOperationException(
+                $"Runtime world width '{value}' must represent a whole number of tiles.");
+        }
+
+        return Mathf.RoundToInt(value);
+    }
+
+    private int GetRuntimeHeight()
+    {
+        float value = runtimeWorldConfig.Bounds.Size.Depth;
+
+        if (!IsWholeNumber(value))
+        {
+            throw new InvalidOperationException(
+                $"Runtime world height '{value}' must represent a whole number of tiles.");
+        }
+
+        return Mathf.RoundToInt(value);
+    }
+
+    private bool IsWholeNumber(float value)
+    {
+        return Mathf.Approximately(
+            value,
+            Mathf.Round(value));
+    }
+
+    private void ValidateGenerationDimensions(
+        int mapWidth,
+        int mapHeight)
+    {
+        if (mapWidth < 3)
+        {
+            throw new InvalidOperationException(
+                $"Map width must be at least 3. Current value: {mapWidth}.");
+        }
+
+        if (mapHeight < 3)
+        {
+            throw new InvalidOperationException(
+                $"Map height must be at least 3. Current value: {mapHeight}.");
+        }
+
+        if (mapWidth % 2 == 0)
+        {
+            throw new InvalidOperationException(
+                $"Map width must be odd. Current value: {mapWidth}.");
+        }
+
+        if (mapHeight % 2 == 0)
+        {
+            throw new InvalidOperationException(
+                $"Map height must be odd. Current value: {mapHeight}.");
+        }
+    }
+
     private void GenerateBorders()
     {
-        for (int x = 0; x < width; x++)
+        int mapWidth = GenerationWidth;
+        int mapHeight = GenerationHeight;
+
+        for (int x = 0; x < mapWidth; x++)
         {
-            for (int z = 0; z < height; z++)
+            for (int z = 0; z < mapHeight; z++)
             {
                 bool isWest = x == 0;
-                bool isEast = x == width - 1;
+                bool isEast = x == mapWidth - 1;
                 bool isSouth = z == 0;
-                bool isNorth = z == height - 1;
+                bool isNorth = z == mapHeight - 1;
 
                 if (!isWest && !isEast && !isSouth && !isNorth)
                     continue;
 
-                SpawnBorderTile(x, z);
+                SpawnBorderTile(
+                    x,
+                    z,
+                    mapWidth,
+                    mapHeight);
+
                 occupied[x, z] = true;
             }
         }
     }
 
+    private void GenerateCenterSpawnTile()
+    {
+        int mapWidth = GenerationWidth;
+        int mapHeight = GenerationHeight;
+
+        int centerX = mapWidth / 2;
+        int centerZ = mapHeight / 2;
+
+        if (occupied[centerX, centerZ])
+        {
+            throw new InvalidOperationException(
+                "The center spawn cell is already occupied.");
+        }
+
+        TileEntry tile = TileSet.CenterSpawnTile;
+
+        if (tile == null)
+        {
+            throw new InvalidOperationException(
+                $"TileSetProfile '{TileSet.name}' has no Center Spawn Tile configured.");
+        }
+
+        if (tile.Prefab == null)
+        {
+            throw new InvalidOperationException(
+                $"TileSetProfile '{TileSet.name}' Center Spawn Tile has no prefab assigned.");
+        }
+
+        if (tile.SizeX != 1 || tile.SizeZ != 1)
+        {
+            throw new InvalidOperationException(
+                $"Center Spawn Tile '{tile.Prefab.name}' must have a 1x1 footprint.");
+        }
+
+        if (tile.AllowRotate90 || tile.RandomYRotation)
+        {
+            throw new InvalidOperationException(
+                $"Center Spawn Tile '{tile.Prefab.name}' must not use rotation.");
+        }
+
+        Instantiate(
+            tile.Prefab,
+            GetWorldPosition(centerX, centerZ),
+            Quaternion.identity,
+            terrainParent);
+
+        occupied[centerX, centerZ] = true;
+    }
+
     private void GenerateCenterTiles()
     {
-        for (int x = 1; x < width - 1; x++)
+        int mapWidth = GenerationWidth;
+        int mapHeight = GenerationHeight;
+
+        for (int x = 1; x < mapWidth - 1; x++)
         {
-            for (int z = 1; z < height - 1; z++)
+            for (int z = 1; z < mapHeight - 1; z++)
             {
                 if (occupied[x, z])
                     continue;
 
-                SpawnCenterTile(x, z);
+                SpawnCenterTile(
+                    x,
+                    z,
+                    mapWidth,
+                    mapHeight);
             }
         }
     }
 
-    private void SpawnBorderTile(int x, int z)
+    private void SpawnBorderTile(
+        int x,
+        int z,
+        int mapWidth,
+        int mapHeight)
     {
         bool isWest = x == 0;
-        bool isEast = x == width - 1;
+        bool isEast = x == mapWidth - 1;
         bool isSouth = z == 0;
-        bool isNorth = z == height - 1;
+        bool isNorth = z == mapHeight - 1;
 
         TileContext context =
             (isWest || isEast) && (isSouth || isNorth)
@@ -126,12 +316,16 @@ public class OpenWorldMapGenerator : MonoBehaviour
 
         Instantiate(
             tile.Prefab,
-            GetWorldPosition(x, z),
+            GetWorldPosition(x, z, mapWidth, mapHeight),
             rotation,
             terrainParent);
     }
 
-    private void SpawnCenterTile(int x, int z)
+    private void SpawnCenterTile(
+        int x,
+        int z,
+        int mapWidth,
+        int mapHeight)
     {
         for (int attempts = 0; attempts < 20; attempts++)
         {
@@ -147,42 +341,77 @@ public class OpenWorldMapGenerator : MonoBehaviour
                 ref sizeX,
                 ref sizeZ);
 
-            if (!CanPlaceTile(x, z, sizeX, sizeZ))
+            if (!CanPlaceTile(
+                    x,
+                    z,
+                    sizeX,
+                    sizeZ,
+                    mapWidth,
+                    mapHeight))
+            {
                 continue;
+            }
 
-            Vector3 position = GetWorldPositionForFootprint(x, z, sizeX, sizeZ);
+            Vector3 position =
+                GetWorldPositionForFootprint(
+                    x,
+                    z,
+                    sizeX,
+                    sizeZ,
+                    mapWidth,
+                    mapHeight);
 
-            Instantiate(tile.Prefab, position, rotation, terrainParent);
+            Instantiate(
+                tile.Prefab,
+                position,
+                rotation,
+                terrainParent);
 
-            MarkOccupied(x, z, sizeX, sizeZ);
+            MarkOccupied(
+                x,
+                z,
+                sizeX,
+                sizeZ);
+
             return;
         }
 
-        SpawnFallbackFloor(x, z);
+        SpawnFallbackFloor(x, z, mapWidth, mapHeight);
     }
 
-    private void SpawnFallbackFloor(int x, int z)
+    private void SpawnFallbackFloor(
+        int x,
+        int z,
+        int mapWidth,
+        int mapHeight)
     {
         TileEntry tile = tileSelector.Select(
             TileSet,
             TileContext.Center);
 
-        Quaternion rotation = ApplyTileRotationModifiers(tile);
+        Quaternion rotation =
+            ApplyTileRotationModifiers(tile);
 
         Instantiate(
             tile.Prefab,
-            GetWorldPosition(x, z),
+            GetWorldPosition(
+                x,
+                z,
+                mapWidth,
+                mapHeight),
             rotation,
             terrainParent);
     }
 
     private Quaternion GetBorderRotation(
-    bool isWest,
-    bool isEast,
-    bool isSouth,
-    bool isNorth)
+        bool isWest,
+        bool isEast,
+        bool isSouth,
+        bool isNorth)
     {
-        bool isCorner = (isWest || isEast) && (isSouth || isNorth);
+        bool isCorner =
+            (isWest || isEast) &&
+            (isSouth || isNorth);
 
         if (isCorner)
         {
@@ -211,7 +440,7 @@ public class OpenWorldMapGenerator : MonoBehaviour
     }
 
     private Quaternion ApplyTileRotationModifiers(
-    TileEntry tile)
+        TileEntry tile)
     {
         int sizeX = tile.SizeX;
         int sizeZ = tile.SizeZ;
@@ -222,37 +451,55 @@ public class OpenWorldMapGenerator : MonoBehaviour
             ref sizeZ);
     }
 
-    private Quaternion ApplyTileRotationModifiers( TileEntry tile, ref int sizeX, ref int sizeZ)
+    private Quaternion ApplyTileRotationModifiers(
+        TileEntry tile,
+        ref int sizeX,
+        ref int sizeZ)
     {
         if (tile == null)
             throw new ArgumentNullException(nameof(tile));
 
-        if (tile.AllowRotate90 && UnityEngine.Random.value > 0.5f)
+        if (tile.AllowRotate90 &&
+            UnityEngine.Random.value > 0.5f)
         {
-            (sizeX, sizeZ) = (sizeZ, sizeX);
+            (sizeX, sizeZ) =
+                (sizeZ, sizeX);
 
-            return Quaternion.Euler(0f, 90f, 0f);
+            return Quaternion.Euler(
+                0f,
+                90f,
+                0f);
         }
 
         if (tile.RandomYRotation)
         {
-            float angle = UnityEngine.Random.Range(0, 4) * 90f;
+            float angle =
+                UnityEngine.Random.Range(0, 4) * 90f;
 
-            return Quaternion.Euler(0f, angle, 0f);
+            return Quaternion.Euler(
+                0f,
+                angle,
+                0f);
         }
 
         return Quaternion.identity;
     }
 
-    private bool CanPlaceTile(int startX, int startZ, int sizeX, int sizeZ)
+    private bool CanPlaceTile(
+        int startX,
+        int startZ,
+        int sizeX,
+        int sizeZ,
+        int mapWidth,
+        int mapHeight)
     {
         if (startX < 1 || startZ < 1)
             return false;
 
-        if (startX + sizeX > width - 1)
+        if (startX + sizeX > mapWidth - 1)
             return false;
 
-        if (startZ + sizeZ > height - 1)
+        if (startZ + sizeZ > mapHeight - 1)
             return false;
 
         for (int x = startX; x < startX + sizeX; x++)
@@ -267,7 +514,11 @@ public class OpenWorldMapGenerator : MonoBehaviour
         return true;
     }
 
-    private void MarkOccupied(int startX, int startZ, int sizeX, int sizeZ)
+    private void MarkOccupied(
+        int startX,
+        int startZ,
+        int sizeX,
+        int sizeZ)
     {
         for (int x = startX; x < startX + sizeX; x++)
         {
@@ -278,73 +529,140 @@ public class OpenWorldMapGenerator : MonoBehaviour
         }
     }
 
-    private Vector3 GetWorldPosition(int x, int z)
+    private Vector3 GetWorldPosition(
+        int x,
+        int z)
+    {
+        return GetWorldPosition(
+            x,
+            z,
+            GenerationWidth,
+            GenerationHeight);
+    }
+
+    private Vector3 GetWorldPosition(
+        int x,
+        int z,
+        int mapWidth,
+        int mapHeight)
     {
         float posX = x * tileSize;
         float posZ = z * tileSize;
 
         if (centerMapOnOrigin)
         {
-            posX -= (width - 1) * tileSize * 0.5f;
-            posZ -= (height - 1) * tileSize * 0.5f;
+            posX -=
+                (mapWidth - 1) *
+                tileSize *
+                0.5f;
+
+            posZ -=
+                (mapHeight - 1) *
+                tileSize *
+                0.5f;
         }
 
-        return new Vector3(posX, 0f, posZ);
+        return new Vector3(
+            posX,
+            0f,
+            posZ);
     }
 
-    private Vector3 GetWorldPositionForFootprint(int x, int z, int sizeX, int sizeZ)
+    private Vector3 GetWorldPositionForFootprint(
+        int x,
+        int z,
+        int sizeX,
+        int sizeZ,
+        int mapWidth,
+        int mapHeight)
     {
-        Vector3 firstTile = GetWorldPosition(x, z);
+        Vector3 firstTile =
+            GetWorldPosition(
+                x,
+                z,
+                mapWidth,
+                mapHeight);
 
-        float offsetX = (sizeX - 1) * tileSize * 0.5f;
-        float offsetZ = (sizeZ - 1) * tileSize * 0.5f;
+        float offsetX =
+            (sizeX - 1) *
+            tileSize *
+            0.5f;
 
-        return firstTile + new Vector3(offsetX, 0f, offsetZ);
+        float offsetZ =
+            (sizeZ - 1) *
+            tileSize *
+            0.5f;
+
+        return firstTile +
+               new Vector3(
+                   offsetX,
+                   0f,
+                   offsetZ);
     }
 
     private void CreateGeneratedHierarchy()
     {
         if (generatedParent == null)
         {
-            GameObject parent = new GameObject("Generated_Map");
+            GameObject parent =
+                new GameObject("Generated_Map");
+
             parent.transform.SetParent(transform);
-            parent.transform.localPosition = Vector3.zero;
-            generatedParent = parent.transform;
+            parent.transform.localPosition =
+                Vector3.zero;
+
+            generatedParent =
+                parent.transform;
         }
 
-        terrainParent = CreateChild(
-            generatedParent,
-            "Terrain");
+        terrainParent =
+            CreateChild(
+                generatedParent,
+                "Terrain");
 
-        decorationParent = CreateChild(
-            generatedParent,
-            "Decoration");
+        decorationParent =
+            CreateChild(
+                generatedParent,
+                "Decoration");
 
-        propsParent = CreateChild(
-            decorationParent,
-            "Props");
+        propsParent =
+            CreateChild(
+                decorationParent,
+                "Props");
 
-        obstaclesParent = CreateChild(
-            decorationParent,
-            "Obstacles");
+        obstaclesParent =
+            CreateChild(
+                decorationParent,
+                "Obstacles");
 
-        lightsParent = CreateChild(
-            decorationParent,
-            "Lights");
+        lightsParent =
+            CreateChild(
+                decorationParent,
+                "Lights");
     }
 
-    private Transform CreateChild(Transform parent, string childName)
+    private Transform CreateChild(
+        Transform parent,
+        string childName)
     {
-        Transform existing = parent.Find(childName);
+        Transform existing =
+            parent.Find(childName);
 
         if (existing != null)
             return existing;
 
-        GameObject child = new GameObject(childName);
+        GameObject child =
+            new GameObject(childName);
+
         child.transform.SetParent(parent);
-        child.transform.localPosition = Vector3.zero;
-        child.transform.localRotation = Quaternion.identity;
-        child.transform.localScale = Vector3.one;
+        child.transform.localPosition =
+            Vector3.zero;
+
+        child.transform.localRotation =
+            Quaternion.identity;
+
+        child.transform.localScale =
+            Vector3.one;
 
         return child.transform;
     }
@@ -355,12 +673,24 @@ public class OpenWorldMapGenerator : MonoBehaviour
         if (generatedParent == null)
             return;
 
-        for (int i = generatedParent.childCount - 1; i >= 0; i--)
+        for (int i = generatedParent.childCount - 1;
+             i >= 0;
+             i--)
         {
             if (Application.isPlaying)
-                Destroy(generatedParent.GetChild(i).gameObject);
+            {
+                Destroy(
+                    generatedParent
+                        .GetChild(i)
+                        .gameObject);
+            }
             else
-                DestroyImmediate(generatedParent.GetChild(i).gameObject);
+            {
+                DestroyImmediate(
+                    generatedParent
+                        .GetChild(i)
+                        .gameObject);
+            }
         }
 
         terrainParent = null;

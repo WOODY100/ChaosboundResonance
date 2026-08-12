@@ -9,10 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0a8f86c59467474418ee33546b032975, type: 3}
-  m_Name: TestPressureCurve
-  m_EditorClassIdentifier: Assembly-CSharp::Chaosbound.Gameplay.Pressure.Profiles.PressureCurveProfile
-  m_pressureCurve:
+  m_Script: {fileID: 11500000, guid: 942991fbd0fbcdf47b5ff1b9e7c3f829, type: 3}
+  m_Name: CombatTargetProgressionProfile
+  m_EditorClassIdentifier: Assembly-CSharp::Chaosbound.Content.Expeditions.Profiles.Combat.CombatTargetProgressionProfile
+  m_ProgressionCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
@@ -25,22 +25,13 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 65.756836
-      value: 421.38318
-      inSlope: 1.3957199
-      outSlope: 1.3957199
+      time: 600
+      value: 1
+      inSlope: 0
+      outSlope: 0
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 300
-      value: 600
-      inSlope: 0.2039554
-      outSlope: 0.2039554
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.09280548
+      inWeight: 0
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2

@@ -5,7 +5,7 @@ public class UpgradeEffect
 {
     public UpgradeEffectType EffectType;
 
-    // ===== Skill Target =====
+    // ===== Skill MaximumTarget =====
     public int TargetSlotIndex = -1;
 
     // ===== Skill Modifier =====

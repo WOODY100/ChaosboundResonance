@@ -17,10 +17,16 @@ namespace Chaosbound.Content.Expeditions.Builders.Combat
             if (authoring == null)
                 throw new ArgumentNullException(nameof(authoring));
 
+            CombatTargetProgressionDefinition targetProgression =
+                BuildTargetProgression(
+                    authoring.TargetProgression);
+
             List<CombatTacticDefinition> tactics =
                 BuildTactics(authoring.Tactics);
 
-            return new CombatDefinition(tactics);
+            return new CombatDefinition(
+                targetProgression,
+                tactics);
         }
 
         private static List<CombatTacticDefinition> BuildTactics(
@@ -49,7 +55,7 @@ namespace Chaosbound.Content.Expeditions.Builders.Combat
 
                 result.Add(
                     new CombatTacticDefinition(
-                        tactic.Target,
+                        tactic.MaximumTarget,
                         tactic.NormalPercentage,
                         tactic.RunnerPercentage,
                         tactic.TankPercentage,
@@ -87,6 +93,26 @@ namespace Chaosbound.Content.Expeditions.Builders.Combat
                 authoring.FrontPercentage,
                 authoring.RearPercentage,
                 authoring.FlankPercentage);
+        }
+
+        private static CombatTargetProgressionDefinition
+            BuildTargetProgression(
+        CombatTargetProgressionAuthoring authoring)
+        {
+            if (authoring == null)
+            {
+                throw new ArgumentNullException(
+                    nameof(authoring));
+            }
+
+            if (authoring.Profile == null)
+            {
+                throw new InvalidOperationException(
+                    "CombatTargetProgressionAuthoring requires a profile.");
+            }
+
+            return new CombatTargetProgressionDefinition(
+                authoring.Profile);
         }
     }
 }

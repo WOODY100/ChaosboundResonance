@@ -9,17 +9,32 @@ namespace Chaosbound.Content.Expeditions.Definitions.Combat
     public sealed class CombatDefinition
     {
         /// <summary>
+        /// Gets the target progression configured for this expedition.
+        /// </summary>
+        public CombatTargetProgressionDefinition TargetProgression { get; }
+
+        /// <summary>
         /// Gets the combat tactics configured for this expedition.
         /// </summary>
         public IReadOnlyList<CombatTacticDefinition> Tactics { get; }
 
         public CombatDefinition(
+            CombatTargetProgressionDefinition targetProgression,
             IReadOnlyList<CombatTacticDefinition> tactics)
         {
-            if (tactics == null)
-                throw new ArgumentNullException(nameof(tactics));
+            if (targetProgression == null)
+                throw new ArgumentNullException(
+                    nameof(targetProgression));
 
-            Tactics = new List<CombatTacticDefinition>(tactics);
+            if (tactics == null)
+                throw new ArgumentNullException(
+                    nameof(tactics));
+
+            TargetProgression =
+                targetProgression;
+
+            Tactics =
+                new List<CombatTacticDefinition>(tactics);
         }
     }
 }

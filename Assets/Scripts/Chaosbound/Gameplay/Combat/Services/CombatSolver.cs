@@ -3,8 +3,8 @@ using Chaosbound.Gameplay.Combat.Models;
 using Chaosbound.Gameplay.Combat.Results;
 using Chaosbound.Shared.Enums;
 using System;
-using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Chaosbound.Gameplay.Combat.Services
 {
@@ -17,19 +17,22 @@ namespace Chaosbound.Gameplay.Combat.Services
     /// - use RNG;
     /// - manage replenishment;
     /// - create SpawnRequests;
-    /// - interact with Threat Budget or Pressure.
+    /// - interact with Threat Budget or Pressure;
+    /// - evaluate target progression.
     ///
-    /// Its only responsibility is to translate the configured
+    /// Its only responsibility is to translate the supplied
     /// target and role percentages into a deterministic
     /// CombatComposition.
     /// </summary>
     public sealed class CombatSolver
     {
         /// <summary>
-        /// Resolves the supplied combat tactic.
+        /// Resolves the supplied combat tactic using the
+        /// already evaluated combat target.
         /// </summary>
         public CombatResult Solve(
-            RuntimeCombatTactic tactic)
+            RuntimeCombatTactic tactic,
+            int target)
         {
             if (tactic == null)
             {
@@ -37,17 +40,24 @@ namespace Chaosbound.Gameplay.Combat.Services
                     nameof(tactic));
             }
 
+            ValidateTarget(
+                tactic,
+                target);
+
             ValidatePercentages(tactic);
 
             Debug.Log(
                 $"[CombatSolverDiagnostic] " +
-                $"Target={tactic.Target} | " +
+                $"Target={target} | " +
+                $"MaximumTarget={tactic.MaximumTarget} | " +
                 $"Normal={tactic.NormalPercentage} | " +
                 $"Runner={tactic.RunnerPercentage} | " +
                 $"Tank={tactic.TankPercentage}");
 
             CombatComposition composition =
-                BuildComposition(tactic);
+                BuildComposition(
+                    tactic,
+                    target);
 
             return new CombatResult(
                 composition,
@@ -55,11 +65,9 @@ namespace Chaosbound.Gameplay.Combat.Services
         }
 
         private CombatComposition BuildComposition(
-            RuntimeCombatTactic tactic)
+            RuntimeCombatTactic tactic,
+            int target)
         {
-            int target =
-                tactic.Target;
-
             List<RoleAllocation> allocations =
                 new List<RoleAllocation>();
 
@@ -159,6 +167,27 @@ namespace Chaosbound.Gameplay.Combat.Services
                         (int)b.Role));
         }
 
+        private static void ValidateTarget(
+            RuntimeCombatTactic tactic,
+            int target)
+        {
+            if (target < 3)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(target),
+                    target,
+                    "Combat target must be at least 3.");
+            }
+
+            if (target > tactic.MaximumTarget)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(target),
+                    target,
+                    "Combat target cannot exceed the tactic MaximumTarget.");
+            }
+        }
+
         private static void ValidatePercentages(
             RuntimeCombatTactic tactic)
         {
@@ -170,12 +199,12 @@ namespace Chaosbound.Gameplay.Combat.Services
                 tactic.RunnerPercentage +
                 tactic.TankPercentage;
 
-            if (tactic.Target < 0)
+            if (tactic.MaximumTarget < 3)
             {
                 throw new ArgumentOutOfRangeException(
-                    nameof(tactic.Target),
-                    tactic.Target,
-                    "Combat target cannot be negative.");
+                    nameof(tactic.MaximumTarget),
+                    tactic.MaximumTarget,
+                    "Combat MaximumTarget must be at least 3.");
             }
 
             if (tactic.NormalPercentage < 0f ||

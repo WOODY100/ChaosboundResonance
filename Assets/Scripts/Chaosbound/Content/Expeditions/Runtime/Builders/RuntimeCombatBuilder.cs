@@ -1,8 +1,6 @@
-
-using Chaosbound.Content.Expeditions.Definitions.Combat.Replenishment;
-using Chaosbound.Content.Expeditions.Runtime.Combat.Replenishment;
 using Chaosbound.Content.Expeditions.Definitions.Combat;
 using Chaosbound.Content.Expeditions.Runtime.Combat;
+using Chaosbound.Content.Expeditions.Runtime.Combat.Replenishment;
 using Chaosbound.Content.Expeditions.Runtime.Combat.SpawnPattern;
 using System;
 using System.Collections.Generic;
@@ -15,7 +13,12 @@ namespace Chaosbound.Content.Expeditions.Runtime.Builders
             CombatDefinition definition)
         {
             if (definition == null)
-                throw new ArgumentNullException(nameof(definition));
+                throw new ArgumentNullException(
+                    nameof(definition));
+
+            RuntimeCombatTargetProgression targetProgression =
+                BuildTargetProgression(
+                    definition.TargetProgression);
 
             List<RuntimeCombatTactic> tactics =
                 new(definition.Tactics.Count);
@@ -43,7 +46,7 @@ namespace Chaosbound.Content.Expeditions.Runtime.Builders
 
                 tactics.Add(
                     new RuntimeCombatTactic(
-                        tactic.Target,
+                        tactic.MaximumTarget,
                         tactic.NormalPercentage,
                         tactic.RunnerPercentage,
                         tactic.TankPercentage,
@@ -52,7 +55,22 @@ namespace Chaosbound.Content.Expeditions.Runtime.Builders
             }
 
             return new RuntimeCombatConfig(
+                targetProgression,
                 tactics);
+        }
+
+        private static RuntimeCombatTargetProgression
+            BuildTargetProgression(
+                CombatTargetProgressionDefinition definition)
+        {
+            if (definition == null)
+            {
+                throw new ArgumentNullException(
+                    nameof(definition));
+            }
+
+            return new RuntimeCombatTargetProgression(
+                definition.Profile);
         }
     }
 }

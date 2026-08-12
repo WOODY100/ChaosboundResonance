@@ -78,6 +78,7 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Pipeline
         {
             return new CombatDirector(
                 BuildCombatSolver(),
+                BuildCombatTargetEvaluator(),
                 BuildCombatReconciler(),
                 BuildReplenishmentController(),
                 BuildCombatReplenishmentPlanBuilder(),
@@ -115,6 +116,12 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Pipeline
             BuildCombatSolver()
         {
             return new CombatSolver();
+        }
+
+        private CombatTargetEvaluator
+            BuildCombatTargetEvaluator()
+        {
+            return new CombatTargetEvaluator();
         }
 
         private CombatReconciler

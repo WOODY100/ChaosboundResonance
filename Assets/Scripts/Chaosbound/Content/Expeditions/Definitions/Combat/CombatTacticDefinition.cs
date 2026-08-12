@@ -6,7 +6,7 @@ namespace Chaosbound.Content.Expeditions.Definitions.Combat
 {
     public sealed class CombatTacticDefinition
     {
-        public int Target { get; }
+        public int MaximumTarget { get; }
 
         public float NormalPercentage { get; }
 
@@ -19,18 +19,18 @@ namespace Chaosbound.Content.Expeditions.Definitions.Combat
         public SpawnPatternDefinition SpawnPattern { get; }
 
         public CombatTacticDefinition(
-            int target,
+            int maximumTarget,
             float normalPercentage,
             float runnerPercentage,
             float tankPercentage,
             ReplenishmentDefinition replenishment,
             SpawnPatternDefinition spawnPattern)
         {
-            if (target <= 0)
+            if (maximumTarget <= 0)
             {
                 throw new ArgumentOutOfRangeException(
-                    nameof(target),
-                    "Combat Target must be greater than zero.");
+                    nameof(maximumTarget),
+                    "Combat MaximumTarget must be greater than zero.");
             }
 
             if (replenishment == null)
@@ -70,7 +70,7 @@ namespace Chaosbound.Content.Expeditions.Definitions.Combat
                     "Combat composition percentages must total 100%.");
             }
 
-            Target = target;
+            MaximumTarget = maximumTarget;
 
             NormalPercentage = normalPercentage;
             RunnerPercentage = runnerPercentage;

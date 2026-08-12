@@ -24,13 +24,9 @@ MonoBehaviour:
     m_general:
       m_CompletionCondition: 0
       m_BaseDifficulty: 0
-    m_pressure:
-      m_curveProfile: {fileID: 11400000, guid: 2c4ef8a075c6ad045ad67790d2ab7d9b, type: 2}
-    m_threat:
-      m_budgetPolicy: {fileID: 11400000, guid: 1fefd546ba3d7ce45ab95740e1879ca9, type: 2}
     m_world:
-      m_Width: 12
-      m_Height: 12
+      m_Width: 5
+      m_Height: 5
       m_Theme: {fileID: 11400000, guid: c6e8d114b40782d4e925563e7877ccd7, type: 2}
     m_enemy:
       m_Content:
@@ -38,18 +34,15 @@ MonoBehaviour:
       - {fileID: 11400000, guid: bd38301ec6fd209459cdc8d6199033cd, type: 2}
       - {fileID: 11400000, guid: e3af66caf09419f47a5046e7d60ef0e3, type: 2}
       m_SchedulingPolicy: 0
-      m_TacticalIdentity:
-        m_Affinities:
-        - m_Capability: 4
-          m_BonusScore: 50
-          m_DesiredCount: 2
     m_Spawn:
       m_Placement: 0
       m_Activation: 0
       m_Constraints: 00000000
     m_combat:
+      m_TargetProgression:
+        m_Profile: {fileID: 11400000, guid: a6d178e8c653a1c4fb1077d8c043eab9, type: 2}
       m_Tactics:
-      - m_Target: 50
+      - m_MaximumTarget: 200
         m_NormalPercentage: 0.7
         m_RunnerPercentage: 0.2
         m_TankPercentage: 0.1

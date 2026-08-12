@@ -41,7 +41,7 @@ namespace Chaosbound.Gameplay.Combat.Models
                 throw new ArgumentOutOfRangeException(
                     nameof(targetQuantity),
                     targetQuantity,
-                    "Target quantity must be greater than zero.");
+                    "MaximumTarget quantity must be greater than zero.");
             }
         }
     }
