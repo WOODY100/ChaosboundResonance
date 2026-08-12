@@ -19,14 +19,6 @@ namespace Chaosbound.Core.Composition
         [SerializeField] private PlayerSkillLoadout playerSkillLoadout;
 
         //==========================================================
-        // Gameplay
-        //==========================================================
-
-        [Header("Gameplay")]
-
-        [SerializeField] private ArenaSpawnDirector arenaSpawnDirector;
-
-        //==========================================================
         // World
         //==========================================================
 
@@ -46,8 +38,6 @@ namespace Chaosbound.Core.Composition
         public PlayerStats PlayerStats => playerStats;
         public PlayerExperienceSystem PlayerExperienceSystem => playerExperienceSystem;
         public PlayerSkillLoadout PlayerSkillLoadout => playerSkillLoadout;
-
-        public ArenaSpawnDirector ArenaSpawnDirector => arenaSpawnDirector;
 
         public OpenWorldMapGenerator MapGenerator => mapGenerator;
         public OpenWorldDecorationGenerator DecorationGenerator => decorationGenerator;
@@ -96,8 +86,6 @@ namespace Chaosbound.Core.Composition
             ValidateReference(playerStats, nameof(playerStats));
             ValidateReference(playerExperienceSystem, nameof(playerExperienceSystem));
             ValidateReference(playerSkillLoadout, nameof(playerSkillLoadout));
-
-            ValidateReference(arenaSpawnDirector, nameof(arenaSpawnDirector));
             
             ValidateReference(mapGenerator, nameof(mapGenerator));
             ValidateReference(decorationGenerator, nameof(decorationGenerator));

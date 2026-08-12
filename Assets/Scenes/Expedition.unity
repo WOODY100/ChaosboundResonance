@@ -147,7 +147,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: -0.1, z: 0}
-  m_LocalScale: {x: 14, y: 1, z: 14}
+  m_LocalScale: {x: 29, y: 1, z: 29}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1338762968}
@@ -539,11 +539,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4048836368822705201, guid: d0591d2f45fe38d41a5f2a4338a8bdfc, type: 3}
       propertyPath: m_LocalScale.x
-      value: 14
+      value: 29
       objectReference: {fileID: 0}
     - target: {fileID: 4048836368822705201, guid: d0591d2f45fe38d41a5f2a4338a8bdfc, type: 3}
       propertyPath: m_LocalScale.z
-      value: 14
+      value: 29
       objectReference: {fileID: 0}
     - target: {fileID: 4048836368822705201, guid: d0591d2f45fe38d41a5f2a4338a8bdfc, type: 3}
       propertyPath: m_LocalPosition.x
@@ -753,69 +753,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1124559829
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1124559830}
-  - component: {fileID: 1124559831}
-  m_Layer: 0
-  m_Name: ArenaSpawnDirector
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!4 &1124559830
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1124559829}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1595693847}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1124559831
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1124559829}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: db133df3ee000b8428e9c4e5d5fbdace, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ArenaSpawnDirector
-  autoStartOpenWorld: 1
-  debugDungeonTier: 5
-  enemyGroups:
-  - enemyPrefab: {fileID: 7728196334316816959, guid: ef9f3cfa0921bee42bf66d6804b3a459, type: 3}
-    spawnWeight: 1
-  - enemyPrefab: {fileID: 5329761019017827508, guid: e21e20152892a4943a8c910388fb24e5, type: 3}
-    spawnWeight: 2
-  - enemyPrefab: {fileID: 9107703072713531257, guid: f046d6d28badd864d8c992dc80556882, type: 3}
-    spawnWeight: 3
-  miniBossPrefab: {fileID: 398206900497037025, guid: 088fafd3af246ff45b65bf21c8f596cf, type: 3}
-  bossPrefab: {fileID: 398206900497037025, guid: 088fafd3af246ff45b65bf21c8f596cf, type: 3}
-  player: {fileID: 435765227}
-  spawnStartDelay: 1.5
-  minSpawnDistance: 14
-  maxSpawnDistance: 22
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 4096
-  spawnPositionAttempts: 12
 --- !u!1 &1146702484
 GameObject:
   m_ObjectHideFlags: 0
@@ -957,7 +894,7 @@ MonoBehaviour:
   playerStats: {fileID: 435765230}
   playerExperienceSystem: {fileID: 435765228}
   playerSkillLoadout: {fileID: 435765229}
-  arenaSpawnDirector: {fileID: 1124559831}
+  arenaSpawnDirector: {fileID: 0}
   mapGenerator: {fileID: 464718899}
   decorationGenerator: {fileID: 464718898}
 --- !u!1 &1338762967
@@ -1023,7 +960,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1124559830}
   - {fileID: 1146702485}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
