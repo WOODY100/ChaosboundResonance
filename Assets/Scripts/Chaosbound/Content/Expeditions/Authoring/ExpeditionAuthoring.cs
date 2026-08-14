@@ -1,5 +1,5 @@
-using Chaosbound.Content.Expeditions.Authoring.Combat;
 using Chaosbound.Content.Expeditions.Authoring.Bosses;
+using Chaosbound.Content.Expeditions.Authoring.Combat;
 using Chaosbound.Content.Expeditions.Authoring.Enemy;
 using Chaosbound.Content.Expeditions.Authoring.ExpeditionEvents;
 using Chaosbound.Content.Expeditions.Authoring.General;
@@ -9,6 +9,7 @@ using Chaosbound.Content.Expeditions.Authoring.Presentation;
 using Chaosbound.Content.Expeditions.Authoring.Rewards;
 using Chaosbound.Content.Expeditions.Authoring.Scene;
 using Chaosbound.Content.Expeditions.Authoring.Spawn;
+using Chaosbound.Content.Expeditions.Authoring.Timeline;
 using Chaosbound.Content.Expeditions.Authoring.World;
 using System;
 using UnityEngine;
@@ -62,6 +63,11 @@ namespace Chaosbound.Content.Expeditions.Authoring
         [SerializeField]
         private CombatAuthoring m_combat = new();
 
+        [Header("Timeline")]
+
+        [SerializeField]
+        private TimelineAuthoring m_Timeline = new();
+
         [Header("Expedition Events")]
 
         [SerializeField]
@@ -97,6 +103,8 @@ namespace Chaosbound.Content.Expeditions.Authoring
         public SpawnAuthoring Spawn => m_Spawn;
 
         public CombatAuthoring Combat => m_combat;
+
+        public TimelineAuthoring Timeline => m_Timeline;
 
         public ExpeditionEventsAuthoring ExpeditionEvents => m_expeditionEvents;
 

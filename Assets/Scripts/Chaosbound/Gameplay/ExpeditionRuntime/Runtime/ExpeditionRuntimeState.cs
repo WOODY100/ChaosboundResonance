@@ -1,5 +1,6 @@
 using Chaosbound.Gameplay.Combat.Runtime;
 using Chaosbound.Gameplay.Combat.Runtime.Composition;
+using Chaosbound.Gameplay.Timeline;
 using System;
 
 namespace Chaosbound.Gameplay.ExpeditionRuntime.Runtime
@@ -12,11 +13,15 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Runtime
     {
         private readonly CombatRuntimeComposition
             runtimeComposition =
-            new CombatRuntimeComposition();
+                new CombatRuntimeComposition();
 
         private readonly CombatRuntimeState
             combatRuntime =
-            new CombatRuntimeState();
+                new CombatRuntimeState();
+
+        private readonly TimelineRuntimeState
+            timelineRuntime =
+                new TimelineRuntimeState();
 
         public CombatRuntimeComposition RuntimeComposition =>
             runtimeComposition;
@@ -45,6 +50,12 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Runtime
         /// </summary>
         public CombatRuntimeState Combat =>
             combatRuntime;
+
+        /// <summary>
+        /// Gets the current timeline runtime state.
+        /// </summary>
+        public TimelineRuntimeState Timeline =>
+            timelineRuntime;
 
         /// <summary>
         /// Advances the runtime clock.

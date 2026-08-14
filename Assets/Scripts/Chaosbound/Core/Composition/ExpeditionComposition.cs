@@ -32,8 +32,6 @@ namespace Chaosbound.Core.Composition
         /// </summary>
         public void Initialize()
         {
-            Debug.Log("ExpeditionComposition.Initialize");
-
             Validate();
             
             InitializeRuntime();
@@ -117,19 +115,13 @@ namespace Chaosbound.Core.Composition
                     "OpenWorldDecorationGenerator is missing.");
             }
 
-            Debug.Log("InitializeWorld - Begin");
-
             mapGenerator.Initialize(world);
-            Debug.Log("MapGenerator Initialized");
 
             mapGenerator.GenerateMap();
-            Debug.Log("Map Generated");
 
             decorationGenerator.Initialize(world);
-            Debug.Log("DecorationGenerator Initialized");
 
             decorationGenerator.GenerateDecoration();
-            Debug.Log("Decoration Generated");
         }
 
         private void InitializeRuntime()

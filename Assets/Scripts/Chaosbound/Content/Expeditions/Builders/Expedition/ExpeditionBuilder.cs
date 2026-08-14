@@ -1,29 +1,31 @@
 using Chaosbound.Content.Expeditions.Assets;
 using Chaosbound.Content.Expeditions.Authoring;
 using Chaosbound.Content.Expeditions.Builders.Bosses;
+using Chaosbound.Content.Expeditions.Builders.Combat;
+using Chaosbound.Content.Expeditions.Builders.Enemy;
 using Chaosbound.Content.Expeditions.Builders.ExpeditionEvents;
 using Chaosbound.Content.Expeditions.Builders.General;
 using Chaosbound.Content.Expeditions.Builders.Identity;
 using Chaosbound.Content.Expeditions.Builders.MiniBosses;
-using Chaosbound.Content.Expeditions.Builders.Enemy;
-using Chaosbound.Content.Expeditions.Builders.Spawn;
-using Chaosbound.Content.Expeditions.Builders.Combat;
 using Chaosbound.Content.Expeditions.Builders.Presentation;
 using Chaosbound.Content.Expeditions.Builders.Rewards;
 using Chaosbound.Content.Expeditions.Builders.Scene;
+using Chaosbound.Content.Expeditions.Builders.Spawn;
+using Chaosbound.Content.Expeditions.Builders.Timeline;
 using Chaosbound.Content.Expeditions.Builders.World;
 using Chaosbound.Content.Expeditions.Definitions;
 using Chaosbound.Content.Expeditions.Definitions.Bosses;
+using Chaosbound.Content.Expeditions.Definitions.Combat;
+using Chaosbound.Content.Expeditions.Definitions.Enemy;
 using Chaosbound.Content.Expeditions.Definitions.ExpeditionEvents;
 using Chaosbound.Content.Expeditions.Definitions.General;
 using Chaosbound.Content.Expeditions.Definitions.Identity;
 using Chaosbound.Content.Expeditions.Definitions.MiniBosses;
-using Chaosbound.Content.Expeditions.Definitions.Enemy;
-using Chaosbound.Content.Expeditions.Definitions.Spawn;
-using Chaosbound.Content.Expeditions.Definitions.Combat;
 using Chaosbound.Content.Expeditions.Definitions.Presentation;
 using Chaosbound.Content.Expeditions.Definitions.Rewards;
 using Chaosbound.Content.Expeditions.Definitions.Scene;
+using Chaosbound.Content.Expeditions.Definitions.Spawn;
+using Chaosbound.Content.Expeditions.Definitions.Timeline;
 using Chaosbound.Content.Expeditions.Definitions.World;
 using System;
 
@@ -70,6 +72,9 @@ namespace Chaosbound.Content.Expeditions.Builders.Expedition
             CombatDefinition combat =
                 CombatBuilder.Build(authoring.Combat);
 
+            TimelineContent timeline =
+                TimelineBuilder.Build(authoring.Timeline);
+
             ExpeditionEventsDefinition expeditionEvents =
                 ExpeditionEventsBuilder.Build(authoring.ExpeditionEvents);
 
@@ -91,6 +96,7 @@ namespace Chaosbound.Content.Expeditions.Builders.Expedition
                 enemy,
                 spawn,
                 combat,
+                timeline,
                 expeditionEvents,
                 miniBosses,
                 bosses,

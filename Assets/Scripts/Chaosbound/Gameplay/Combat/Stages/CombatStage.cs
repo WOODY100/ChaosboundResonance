@@ -11,7 +11,6 @@ using Chaosbound.Gameplay.ExpeditionRuntime.Contracts;
 using Chaosbound.Gameplay.Spawn.Contracts;
 using Chaosbound.Gameplay.Spawn.Runtime;
 using System;
-using UnityEngine;
 
 namespace Chaosbound.Gameplay.Combat.Stages
 {
@@ -121,27 +120,10 @@ namespace Chaosbound.Gameplay.Combat.Stages
                     combatState,
                     population);
 
-            foreach (CombatReconciliationEntry entry
-                in reconciliation.Entries)
-            {
-                Debug.Log(
-                    $"[CombatDiagnostic] " +
-                    $"Role={entry.Role} | " +
-                    $"Target={entry.TargetQuantity} | " +
-                    $"Current={entry.CurrentQuantity} | " +
-                    $"Missing={entry.MissingQuantity}");
-            }
-
             ReplenishmentDecision replenishmentDecision =
                 combatDirector.TickReplenishment(
                     combatState,
                     (float)context.State.DeltaTime.TotalSeconds);
-
-            Debug.Log(
-                $"[CombatStage] " +
-                $"ReplenishmentRequired={replenishmentDecision.IsRequired} | " +
-                $"Role={replenishmentDecision.Role} | " +
-                $"Quantity={replenishmentDecision.Quantity}");
 
             if (!replenishmentDecision.IsRequired)
             {

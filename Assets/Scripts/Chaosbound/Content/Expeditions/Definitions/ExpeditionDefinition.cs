@@ -1,5 +1,5 @@
-using Chaosbound.Content.Expeditions.Definitions.Combat;
 using Chaosbound.Content.Expeditions.Definitions.Bosses;
+using Chaosbound.Content.Expeditions.Definitions.Combat;
 using Chaosbound.Content.Expeditions.Definitions.Enemy;
 using Chaosbound.Content.Expeditions.Definitions.ExpeditionEvents;
 using Chaosbound.Content.Expeditions.Definitions.General;
@@ -9,6 +9,7 @@ using Chaosbound.Content.Expeditions.Definitions.Presentation;
 using Chaosbound.Content.Expeditions.Definitions.Rewards;
 using Chaosbound.Content.Expeditions.Definitions.Scene;
 using Chaosbound.Content.Expeditions.Definitions.Spawn;
+using Chaosbound.Content.Expeditions.Definitions.Timeline;
 using Chaosbound.Content.Expeditions.Definitions.World;
 using System;
 
@@ -60,6 +61,11 @@ namespace Chaosbound.Content.Expeditions.Definitions
         public CombatDefinition Combat { get; }
 
         /// <summary>
+        /// Gets the timeline configuration.
+        /// </summary>
+        public TimelineContent Timeline { get; }
+
+        /// <summary>
         /// Gets the expedition events configuration.
         /// </summary>
         public ExpeditionEventsDefinition ExpeditionEvents { get; }
@@ -88,6 +94,7 @@ namespace Chaosbound.Content.Expeditions.Definitions
             EnemyDefinition enemy,
             SpawnDefinition spawn,
             CombatDefinition combat,
+            TimelineContent timeline,
             ExpeditionEventsDefinition expeditionEvents,
             MiniBossesDefinition miniBosses,
             BossesDefinition bosses,
@@ -117,6 +124,9 @@ namespace Chaosbound.Content.Expeditions.Definitions
             if (combat == null)
                 throw new ArgumentNullException(nameof(combat));
 
+            if (timeline == null)
+                throw new ArgumentNullException(nameof(timeline));
+
             if (expeditionEvents == null)
                 throw new ArgumentNullException(nameof(expeditionEvents));
 
@@ -137,6 +147,7 @@ namespace Chaosbound.Content.Expeditions.Definitions
             Enemy = enemy;
             Spawn = spawn;
             Combat = combat;
+            Timeline = timeline;
             ExpeditionEvents = expeditionEvents;
             MiniBosses = miniBosses;
             Bosses = bosses;

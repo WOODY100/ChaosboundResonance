@@ -46,14 +46,6 @@ namespace Chaosbound.Gameplay.Combat.Services
 
             ValidatePercentages(tactic);
 
-            Debug.Log(
-                $"[CombatSolverDiagnostic] " +
-                $"Target={target} | " +
-                $"MaximumTarget={tactic.MaximumTarget} | " +
-                $"Normal={tactic.NormalPercentage} | " +
-                $"Runner={tactic.RunnerPercentage} | " +
-                $"Tank={tactic.TankPercentage}");
-
             CombatComposition composition =
                 BuildComposition(
                     tactic,

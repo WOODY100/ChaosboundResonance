@@ -47,11 +47,12 @@ public class EnemyReward : MonoBehaviour
 
         Vector3 spawnPosition = GetSpawnPosition();
 
-        ExperiencePickup pickup = PoolManager.Instance.Get<ExperiencePickup>(
-            experienceOrbPrefab,
-            spawnPosition,
-            Quaternion.identity
-        );
+        ResonanceFragmentPickup pickup =
+            PoolManager.Instance.Get<ResonanceFragmentPickup>(
+                experienceOrbPrefab,
+                spawnPosition,
+                experienceOrbPrefab.transform.rotation
+            );
 
         if (pickup != null)
         {

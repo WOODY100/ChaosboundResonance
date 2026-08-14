@@ -10,6 +10,8 @@ using Chaosbound.Gameplay.ExpeditionRuntime.Time.Stages;
 using Chaosbound.Gameplay.Spawn.Bootstrap;
 using Chaosbound.Gameplay.Spawn.Factories;
 using Chaosbound.Gameplay.Spawn.Runtime;
+using Chaosbound.Gameplay.Timeline;
+using Chaosbound.Gameplay.Timeline.Stages;
 using System.Collections.Generic;
 
 namespace Chaosbound.Gameplay.ExpeditionRuntime.Pipeline
@@ -34,12 +36,13 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Pipeline
         private IReadOnlyList<IExpeditionRuntimeStage>
                 BuildStages()
             {
-                return new List<IExpeditionRuntimeStage>
-                    {
-                        BuildTimeStage(),
-                        BuildCombatStage()
-                    };
-            }
+            return new List<IExpeditionRuntimeStage>
+                {
+                    BuildTimeStage(),
+                    BuildTimelineStage(),
+                    BuildCombatStage()
+                };
+        }
 
         private IExpeditionRuntimeStage
             BuildCombatStage()
@@ -134,6 +137,13 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Pipeline
             BuildReplenishmentController()
         {
             return new ReplenishmentController();
+        }
+
+        private IExpeditionRuntimeStage
+            BuildTimelineStage()
+        {
+            return new TimelineStage(
+                new TimelineRuntime());
         }
     }
 }

@@ -16,7 +16,7 @@ public class PlayerStatsDebugTest : MonoBehaviour
     {
         if (Keyboard.current.lKey.wasPressedThisFrame)
         {
-            experience.AddXP(10f);
+            experience.AddXP(50f);
         }
 
         if (Keyboard.current.kKey.wasPressedThisFrame)

@@ -5,9 +5,12 @@ using Chaosbound.Content.Expeditions.Definitions.MiniBosses;
 using Chaosbound.Content.Expeditions.Definitions.Rewards;
 using Chaosbound.Content.Expeditions.Definitions.Scene;
 using Chaosbound.Content.Expeditions.Definitions.Spawn;
+using Chaosbound.Content.Expeditions.Definitions.Timeline;
 using Chaosbound.Content.Expeditions.Definitions.World;
+using Chaosbound.Content.Expeditions.Directors.Timeline;
 using Chaosbound.Content.Expeditions.Requests;
 using Chaosbound.Content.Expeditions.Runtime.Bosses;
+using Chaosbound.Content.Expeditions.Runtime.Combat;
 using Chaosbound.Content.Expeditions.Runtime.Configs;
 using Chaosbound.Content.Expeditions.Runtime.Enemy;
 using Chaosbound.Content.Expeditions.Runtime.ExpeditionEvents;
@@ -16,7 +19,7 @@ using Chaosbound.Content.Expeditions.Runtime.MiniBosses;
 using Chaosbound.Content.Expeditions.Runtime.Rewards;
 using Chaosbound.Content.Expeditions.Runtime.Scene;
 using Chaosbound.Content.Expeditions.Runtime.Spawn;
-using Chaosbound.Content.Expeditions.Runtime.Combat;
+using Chaosbound.Content.Expeditions.Runtime.Timeline;
 using Chaosbound.Content.Expeditions.Runtime.World;
 using System;
 
@@ -44,6 +47,7 @@ namespace Chaosbound.Content.Expeditions.Runtime.Builders
             RuntimeEnemyConfig enemy = runtimeEnemyBuilder.BuildEnemy(request.Definition.Enemy);
             RuntimeSpawnConfig spawn = BuildSpawn(request.Definition.Spawn);
             RuntimeCombatConfig combat = runtimeCombatBuilder.BuildCombat(request.Definition.Combat);
+            RuntimeTimelineConfig timeline = BuildTimeline(request.Definition.Timeline);
             RuntimeExpeditionEventsConfig expeditionEvents = BuildExpeditionEvents(request.Definition.ExpeditionEvents);
             RuntimeMiniBossesConfig miniBosses = BuildMiniBosses(request.Definition.MiniBosses);
             RuntimeBossesConfig bosses = BuildBosses(request.Definition.Bosses);
@@ -58,6 +62,7 @@ namespace Chaosbound.Content.Expeditions.Runtime.Builders
                     enemy,
                     spawn,
                     combat,
+                    timeline,
                     expeditionEvents,
                     miniBosses,
                     bosses,
@@ -121,6 +126,19 @@ namespace Chaosbound.Content.Expeditions.Runtime.Builders
 
             this.runtimeCombatBuilder = runtimeCombatBuilder
                 ?? throw new ArgumentNullException(nameof(runtimeCombatBuilder));
+        }
+
+        private RuntimeTimelineConfig BuildTimeline(
+            TimelineContent content)
+        {
+            if (content == null)
+                throw new ArgumentNullException(nameof(content));
+
+            TimelineAgenda agenda =
+                TimelineDirector.Build(content);
+
+            return new RuntimeTimelineConfig(
+                agenda);
         }
 
         private RuntimeExpeditionEventsConfig BuildExpeditionEvents(

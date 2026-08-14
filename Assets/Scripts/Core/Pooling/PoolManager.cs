@@ -40,6 +40,7 @@ public class PoolManager : MonoBehaviour
     private readonly Dictionary<GameObject, int> activeCountByPrefab = new();
     private readonly Dictionary<GameObject, Transform> parentByPrefab = new();
     private readonly Dictionary<GameObject, string> prefabNameByPrefab = new();
+    private readonly Dictionary<GameObject, Vector3> defaultScaleByPrefab = new();
 
     private void Awake()
     {
@@ -73,6 +74,7 @@ public class PoolManager : MonoBehaviour
         expandAmountByPrefab.Add(prefab, Mathf.Max(1, expandAmount));
         totalCreatedByPrefab.Add(prefab, 0);
         activeCountByPrefab.Add(prefab, 0);
+        defaultScaleByPrefab.Add(prefab, prefab.transform.localScale);
         prefabNameByPrefab.Add(prefab, prefab.name);
         parentByPrefab.Add(prefab, CreatePoolParent(prefab));
 
@@ -140,7 +142,9 @@ public class PoolManager : MonoBehaviour
         activeCountByPrefab[prefab]++;
 
         Transform pooledTransform = pooledObj.transform;
+
         pooledTransform.SetParent(parentByPrefab[prefab]);
+        pooledTransform.localScale = defaultScaleByPrefab[prefab];
         pooledTransform.SetPositionAndRotation(position, rotation);
 
         pooledObj.SetActive(true);
@@ -177,7 +181,7 @@ public class PoolManager : MonoBehaviour
         objTransform.SetParent(parentByPrefab[prefab]);
         objTransform.localPosition = Vector3.zero;
         objTransform.localRotation = Quaternion.identity;
-        objTransform.localScale = Vector3.one;
+        objTransform.localScale = defaultScaleByPrefab[prefab];
 
         poolsByPrefab[prefab].Enqueue(obj);
         activeCountByPrefab[prefab] = Mathf.Max(0, activeCountByPrefab[prefab] - 1);
