@@ -1,8 +1,7 @@
+using Chaosbound.Content.Enemy.MiniBosses;
 using Chaosbound.Content.Expeditions.Authoring.MiniBosses;
 using Chaosbound.Content.Expeditions.Definitions.MiniBosses;
-using Chaosbound.Shared.Authoring;
-using Chaosbound.Shared.Builders;
-using Chaosbound.Shared.Identifiers;
+using Chaosbound.Shared.Content.Entries;
 using System;
 using System.Collections.Generic;
 
@@ -16,14 +15,34 @@ namespace Chaosbound.Content.Expeditions.Builders.MiniBosses
             if (authoring == null)
                 throw new ArgumentNullException(nameof(authoring));
 
-            var content = new List<ContentReference>();
+            List<ContentEntry> content =
+                BuildContent(authoring.Content);
 
-            foreach (var entry in authoring.Content ?? Array.Empty<ContentReferenceAuthoring>())
+            return new MiniBossesDefinition(
+                content);
+        }
+
+        private static List<ContentEntry> BuildContent(
+            IReadOnlyList<MiniBossData> authoring)
+        {
+            List<ContentEntry> result =
+                new(authoring.Count);
+
+            foreach (MiniBossData asset in authoring)
             {
-                content.Add(ContentReferenceBuilder.Build(entry));
+                if (asset == null)
+                {
+                    throw new InvalidOperationException(
+                        "MiniBossesAuthoring contains a null MiniBossData.");
+                }
+
+                result.Add(
+                    new ContentEntry(
+                        asset.Id,
+                        asset));
             }
 
-            return new MiniBossesDefinition(content);
+            return result;
         }
     }
 }

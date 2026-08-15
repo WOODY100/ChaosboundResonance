@@ -91,7 +91,7 @@ namespace Chaosbound.Runtime.Bootstrap
         /// an expedition runtime configuration.
         /// </summary>
         private RuntimeExpeditionBuilder CreateRuntimeBuilder(
-            ExpeditionDefinition definition)
+    ExpeditionDefinition definition)
         {
             if (definition == null)
                 throw new ArgumentNullException(nameof(definition));
@@ -102,6 +102,9 @@ namespace Chaosbound.Runtime.Bootstrap
 
             contentEntries.AddRange(
                 definition.Enemy.Entries);
+
+            contentEntries.AddRange(
+                definition.MiniBosses.Entries);
 
             contentEntries.AddRange(
                 definition.Bosses.Entries);
@@ -124,11 +127,15 @@ namespace Chaosbound.Runtime.Bootstrap
             RuntimeBossesBuilder bossesBuilder =
                 new RuntimeBossesBuilder(resolver);
 
+            RuntimeMiniBossesBuilder miniBossesBuilder =
+                new RuntimeMiniBossesBuilder(resolver);
+
             // Create the expedition runtime builder.
             return new RuntimeExpeditionBuilder(
                 enemyBuilder,
                 combatBuilder,
-                bossesBuilder);
+                bossesBuilder,
+                miniBossesBuilder);
         }
     }
 }

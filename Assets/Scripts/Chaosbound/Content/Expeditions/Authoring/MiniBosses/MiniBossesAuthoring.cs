@@ -1,5 +1,6 @@
-using Chaosbound.Shared.Authoring;
+using Chaosbound.Content.Enemy.MiniBosses;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Chaosbound.Content.Expeditions.Authoring.MiniBosses
@@ -8,8 +9,9 @@ namespace Chaosbound.Content.Expeditions.Authoring.MiniBosses
     public sealed class MiniBossesAuthoring
     {
         [SerializeField]
-        private ContentReferenceAuthoring[] m_Content;
+        private List<MiniBossData> m_Content = new();
 
-        public ContentReferenceAuthoring[] Content => m_Content;
+        public IReadOnlyList<MiniBossData> Content =>
+            m_Content;
     }
 }

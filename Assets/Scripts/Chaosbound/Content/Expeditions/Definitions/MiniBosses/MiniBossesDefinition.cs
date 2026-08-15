@@ -1,15 +1,17 @@
-using Chaosbound.Shared.Identifiers;
+using Chaosbound.Shared.Content.Entries;
 using System.Collections.Generic;
 
 namespace Chaosbound.Content.Expeditions.Definitions.MiniBosses
 {
     public sealed class MiniBossesDefinition
     {
-        public MiniBossesDefinition(IReadOnlyList<ContentReference> content)
+        public MiniBossesDefinition(
+            IReadOnlyList<ContentEntry> entries)
         {
-            Content = content;
+            Entries =
+                new List<ContentEntry>(entries);
         }
 
-        public IReadOnlyList<ContentReference> Content { get; }
+        public IReadOnlyList<ContentEntry> Entries { get; }
     }
 }

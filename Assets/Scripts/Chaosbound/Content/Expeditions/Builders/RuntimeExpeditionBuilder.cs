@@ -36,6 +36,8 @@ namespace Chaosbound.Content.Expeditions.Runtime.Builders
 
         private readonly RuntimeBossesBuilder runtimeBossesBuilder;
 
+        private readonly RuntimeMiniBossesBuilder runtimeMiniBossesBuilder;
+
         public RuntimeExpeditionConfig BuildRunConfig(
             ExpeditionRequest request)
         {
@@ -51,7 +53,7 @@ namespace Chaosbound.Content.Expeditions.Runtime.Builders
             RuntimeCombatConfig combat = runtimeCombatBuilder.BuildCombat(request.Definition.Combat);
             RuntimeTimelineConfig timeline = BuildTimeline(request.Definition.Timeline);
             RuntimeExpeditionEventsConfig expeditionEvents = BuildExpeditionEvents(request.Definition.ExpeditionEvents);
-            RuntimeMiniBossesConfig miniBosses = BuildMiniBosses(request.Definition.MiniBosses);
+            RuntimeMiniBossesConfig miniBosses = runtimeMiniBossesBuilder.BuildMiniBosses(request.Definition.MiniBosses);
             RuntimeBossesConfig bosses = runtimeBossesBuilder.BuildBosses(request.Definition.Bosses);
             RuntimeRewardsConfig rewards = BuildRewards(request.Definition.Rewards);
 
@@ -122,7 +124,8 @@ namespace Chaosbound.Content.Expeditions.Runtime.Builders
         public RuntimeExpeditionBuilder(
             RuntimeEnemyBuilder runtimeEnemyBuilder,
             RuntimeCombatBuilder runtimeCombatBuilder,
-            RuntimeBossesBuilder runtimeBossesBuilder)
+            RuntimeBossesBuilder runtimeBossesBuilder,
+            RuntimeMiniBossesBuilder runtimeMiniBossesBuilder)
         {
             this.runtimeEnemyBuilder =
                 runtimeEnemyBuilder
@@ -160,14 +163,6 @@ namespace Chaosbound.Content.Expeditions.Runtime.Builders
                 throw new ArgumentNullException(nameof(definition));
 
             return new RuntimeExpeditionEventsConfig(
-                definition.Content);
-        }
-        private RuntimeMiniBossesConfig BuildMiniBosses(
-            MiniBossesDefinition definition)
-        {
-            if (definition == null)
-                throw new ArgumentNullException(nameof(definition));
-            return new RuntimeMiniBossesConfig(
                 definition.Content);
         }
 
