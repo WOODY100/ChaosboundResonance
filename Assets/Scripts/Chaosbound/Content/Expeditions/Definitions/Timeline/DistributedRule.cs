@@ -1,41 +1,63 @@
 using System;
+using System.Collections.Generic;
 
 namespace Chaosbound.Content.Expeditions.Definitions.Timeline
 {
     /// <summary>
-    /// Schedules multiple occurrences of one timeline event
+    /// Schedules multiple different timeline events
     /// inside a temporal window.
     /// </summary>
     public sealed class DistributedRule
     {
-        public string EventId { get; }
-
-        public int Count { get; }
+        public IReadOnlyList<string> EventIds { get; }
 
         public float StartTimeSeconds { get; }
 
         public TimelineTimeReference EndTime { get; }
 
         public DistributedRule(
-            string eventId,
-            int count,
+            IReadOnlyList<string> eventIds,
             float startTimeSeconds,
             TimelineTimeReference endTime)
         {
-            if (string.IsNullOrWhiteSpace(eventId))
-                throw new ArgumentException(
-                    "Event id cannot be null or empty.",
-                    nameof(eventId));
+            if (eventIds == null)
+                throw new ArgumentNullException(
+                    nameof(eventIds));
 
-            if (count < 1)
-                throw new ArgumentOutOfRangeException(
-                    nameof(count),
-                    "Distributed rule count must be at least one.");
+            if (eventIds.Count == 0)
+            {
+                throw new ArgumentException(
+                    "Distributed rule must contain at least one event id.",
+                    nameof(eventIds));
+            }
+
+            HashSet<string> uniqueEventIds =
+                new();
+
+            foreach (string eventId in eventIds)
+            {
+                if (string.IsNullOrWhiteSpace(eventId))
+                {
+                    throw new ArgumentException(
+                        "Distributed rule cannot contain an empty event id.",
+                        nameof(eventIds));
+                }
+
+                if (!uniqueEventIds.Add(eventId))
+                {
+                    throw new ArgumentException(
+                        $"Distributed rule contains duplicate event id " +
+                        $"'{eventId}'.",
+                        nameof(eventIds));
+                }
+            }
 
             if (startTimeSeconds < 0f)
+            {
                 throw new ArgumentOutOfRangeException(
                     nameof(startTimeSeconds),
                     "Distributed start time cannot be negative.");
+            }
 
             if (endTime == null)
                 throw new ArgumentNullException(nameof(endTime));
@@ -47,10 +69,15 @@ namespace Chaosbound.Content.Expeditions.Definitions.Timeline
                     "Distributed start time must be less than the fixed end time.");
             }
 
-            EventId = eventId;
-            Count = count;
-            StartTimeSeconds = startTimeSeconds;
-            EndTime = endTime;
+            EventIds =
+                new List<string>(
+                    eventIds).AsReadOnly();
+
+            StartTimeSeconds =
+                startTimeSeconds;
+
+            EndTime =
+                endTime;
         }
     }
 }

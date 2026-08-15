@@ -14,15 +14,12 @@ namespace Chaosbound.Content.Expeditions.Definitions.Timeline
 
         public IReadOnlyList<DistributedRule> DistributedRules { get; }
 
-        public IReadOnlyList<ExplicitTimelineEvent> ExplicitEvents { get; }
-
         public ExpeditionCompletionTarget CompletionTarget { get; }
 
         public TimelineContent(
             IReadOnlyList<TimelineEventDefinition> eventDefinitions,
             IReadOnlyList<FixedTimeRule> fixedTimeRules,
             IReadOnlyList<DistributedRule> distributedRules,
-            IReadOnlyList<ExplicitTimelineEvent> explicitEvents,
             ExpeditionCompletionTarget completionTarget)
         {
             if (eventDefinitions == null)
@@ -34,16 +31,12 @@ namespace Chaosbound.Content.Expeditions.Definitions.Timeline
             if (distributedRules == null)
                 throw new ArgumentNullException(nameof(distributedRules));
 
-            if (explicitEvents == null)
-                throw new ArgumentNullException(nameof(explicitEvents));
-
             if (completionTarget == null)
                 throw new ArgumentNullException(nameof(completionTarget));
 
             EventDefinitions = eventDefinitions;
             FixedTimeRules = fixedTimeRules;
             DistributedRules = distributedRules;
-            ExplicitEvents = explicitEvents;
             CompletionTarget = completionTarget;
         }
     }

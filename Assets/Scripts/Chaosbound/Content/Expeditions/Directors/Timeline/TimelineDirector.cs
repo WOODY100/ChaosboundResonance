@@ -20,29 +20,28 @@ namespace Chaosbound.Content.Expeditions.Directors.Timeline
 
             Dictionary<string, TimelineEventDefinition>
                 eventDefinitions =
-                    BuildEventDefinitionMap(
-                        content.EventDefinitions);
+                BuildEventDefinitionMap(
+                    content.EventDefinitions);
 
             List<TimelineEntry> entries =
+                new();
+
+            HashSet<string> scheduledEventIds =
                 new();
 
             BuildFixedTimeEntries(
                 content.FixedTimeRules,
                 eventDefinitions,
                 completionTargetTime,
-                entries);
+                entries,
+                scheduledEventIds);
 
             BuildDistributedEntries(
                 content.DistributedRules,
                 eventDefinitions,
                 completionTargetTime,
-                entries);
-
-            BuildExplicitEntries(
-                content.ExplicitEvents,
-                eventDefinitions,
-                completionTargetTime,
-                entries);
+                entries,
+                scheduledEventIds);
 
             SortEntries(entries);
 
@@ -61,7 +60,9 @@ namespace Chaosbound.Content.Expeditions.Directors.Timeline
             Dictionary<string, TimelineEventDefinition> result =
                 new();
 
-            foreach (TimelineEventDefinition definition in definitions)
+            foreach (
+                TimelineEventDefinition definition
+                in definitions)
             {
                 if (definition == null)
                 {
@@ -90,14 +91,16 @@ namespace Chaosbound.Content.Expeditions.Directors.Timeline
             IReadOnlyDictionary<string, TimelineEventDefinition>
                 eventDefinitions,
             float completionTargetTime,
-            List<TimelineEntry> entries)
+            List<TimelineEntry> entries,
+            HashSet<string> scheduledEventIds)
         {
             if (rules == null)
                 throw new ArgumentNullException(nameof(rules));
 
             for (int index = 0; index < rules.Count; index++)
             {
-                FixedTimeRule rule = rules[index];
+                FixedTimeRule rule =
+                    rules[index];
 
                 if (rule == null)
                 {
@@ -111,7 +114,12 @@ namespace Chaosbound.Content.Expeditions.Directors.Timeline
                         rule.EventId,
                         eventDefinitions);
 
-                ValidateScheduledTime(
+                RegisterScheduledEvent(
+                    definition.Id,
+                    scheduledEventIds,
+                    $"FixedTimeRule at index {index}");
+
+                ValidateFixedTime(
                     rule.TimeSeconds,
                     completionTargetTime,
                     $"FixedTimeRule at index {index}");
@@ -129,14 +137,16 @@ namespace Chaosbound.Content.Expeditions.Directors.Timeline
             IReadOnlyDictionary<string, TimelineEventDefinition>
                 eventDefinitions,
             float completionTargetTime,
-            List<TimelineEntry> entries)
+            List<TimelineEntry> entries,
+            HashSet<string> scheduledEventIds)
         {
             if (rules == null)
                 throw new ArgumentNullException(nameof(rules));
 
             for (int index = 0; index < rules.Count; index++)
             {
-                DistributedRule rule = rules[index];
+                DistributedRule rule =
+                    rules[index];
 
                 if (rule == null)
                 {
@@ -144,11 +154,6 @@ namespace Chaosbound.Content.Expeditions.Directors.Timeline
                         "TimelineContent contains a null " +
                         "DistributedRule.");
                 }
-
-                TimelineEventDefinition definition =
-                    ResolveEventDefinition(
-                        rule.EventId,
-                        eventDefinitions);
 
                 float endTime =
                     ResolveDistributedEndTime(
@@ -161,28 +166,35 @@ namespace Chaosbound.Content.Expeditions.Directors.Timeline
                     completionTargetTime,
                     index);
 
-                if (rule.Count == 1)
-                {
-                    entries.Add(
-                        CreateEntry(
-                            $"distributed:{index}:0",
-                            definition,
-                            rule.StartTimeSeconds));
-
-                    continue;
-                }
+                int eventCount =
+                    rule.EventIds.Count;
 
                 float step =
-                    (endTime - rule.StartTimeSeconds) /
-                    (rule.Count - 1);
+                    eventCount > 1
+                        ? (endTime - rule.StartTimeSeconds) /
+                          eventCount
+                        : 0f;
 
-                for (int occurrence = 0;
-                     occurrence < rule.Count;
-                     occurrence++)
+                for (int eventIndex = 0;
+                     eventIndex < eventCount;
+                     eventIndex++)
                 {
+                    string eventId =
+                        rule.EventIds[eventIndex];
+
+                    TimelineEventDefinition definition =
+                        ResolveEventDefinition(
+                            eventId,
+                            eventDefinitions);
+
+                    RegisterScheduledEvent(
+                        definition.Id,
+                        scheduledEventIds,
+                        $"DistributedRule at index {index}");
+
                     float scheduledTime =
                         rule.StartTimeSeconds +
-                        step * occurrence;
+                        step * eventIndex;
 
                     ValidateScheduledTime(
                         scheduledTime,
@@ -191,51 +203,10 @@ namespace Chaosbound.Content.Expeditions.Directors.Timeline
 
                     entries.Add(
                         CreateEntry(
-                            $"distributed:{index}:{occurrence}",
+                            $"distributed:{index}:{eventIndex}",
                             definition,
                             scheduledTime));
                 }
-            }
-        }
-
-        private static void BuildExplicitEntries(
-            IReadOnlyList<ExplicitTimelineEvent> explicitEvents,
-            IReadOnlyDictionary<string, TimelineEventDefinition>
-                eventDefinitions,
-            float completionTargetTime,
-            List<TimelineEntry> entries)
-        {
-            if (explicitEvents == null)
-                throw new ArgumentNullException(
-                    nameof(explicitEvents));
-
-            for (int index = 0; index < explicitEvents.Count; index++)
-            {
-                ExplicitTimelineEvent explicitEvent =
-                    explicitEvents[index];
-
-                if (explicitEvent == null)
-                {
-                    throw new InvalidOperationException(
-                        "TimelineContent contains a null " +
-                        "ExplicitTimelineEvent.");
-                }
-
-                TimelineEventDefinition definition =
-                    ResolveEventDefinition(
-                        explicitEvent.EventId,
-                        eventDefinitions);
-
-                ValidateScheduledTime(
-                    explicitEvent.TimeSeconds,
-                    completionTargetTime,
-                    $"ExplicitTimelineEvent at index {index}");
-
-                entries.Add(
-                    CreateEntry(
-                        $"explicit:{index}",
-                        definition,
-                        explicitEvent.TimeSeconds));
             }
         }
 
@@ -264,11 +235,11 @@ namespace Chaosbound.Content.Expeditions.Directors.Timeline
             float completionTargetTime,
             int ruleIndex)
         {
-            if (rule.StartTimeSeconds > completionTargetTime)
+            if (rule.StartTimeSeconds >= completionTargetTime)
             {
                 throw new InvalidOperationException(
                     $"DistributedRule at index {ruleIndex} " +
-                    $"starts after the expedition completion target.");
+                    $"must start before the expedition completion target.");
             }
 
             if (endTime > completionTargetTime)
@@ -278,16 +249,34 @@ namespace Chaosbound.Content.Expeditions.Directors.Timeline
                     $"ends after the expedition completion target.");
             }
 
-            if (rule.Count > 1 &&
-                endTime < rule.StartTimeSeconds)
+            if (endTime <= rule.StartTimeSeconds)
             {
                 throw new InvalidOperationException(
                     $"DistributedRule at index {ruleIndex} " +
-                    $"has an end time before its start time.");
+                    $"must have an end time greater than its start time.");
             }
         }
 
         private static void ValidateScheduledTime(
+            float scheduledTime,
+            float completionTargetTime,
+            string source)
+        {
+            if (scheduledTime < 0f)
+            {
+                throw new InvalidOperationException(
+                    $"{source} produced a negative scheduled time.");
+            }
+
+            if (scheduledTime >= completionTargetTime)
+            {
+                throw new InvalidOperationException(
+                    $"{source} schedules an event at or after the " +
+                    $"expedition completion target.");
+            }
+        }
+
+        private static void ValidateFixedTime(
             float scheduledTime,
             float completionTargetTime,
             string source)
@@ -303,6 +292,19 @@ namespace Chaosbound.Content.Expeditions.Directors.Timeline
                 throw new InvalidOperationException(
                     $"{source} schedules an event after the " +
                     $"expedition completion target.");
+            }
+        }
+
+        private static void RegisterScheduledEvent(
+            string eventId,
+            HashSet<string> scheduledEventIds,
+            string source)
+        {
+            if (!scheduledEventIds.Add(eventId))
+            {
+                throw new InvalidOperationException(
+                    $"{source} attempts to schedule event id " +
+                    $"'{eventId}', but that event is already scheduled.");
             }
         }
 

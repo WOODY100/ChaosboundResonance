@@ -59,8 +59,8 @@ MonoBehaviour:
       - m_Id: dynamic_event_01
         m_IconId: icon.dynamic
         m_TriggerReference:
-          m_DomainId: dynamic_event
-          m_ContentId: event.test_dynamic
+          m_DomainId: 
+          m_ContentId: 
       - m_Id: npc_rescue
         m_IconId: icon.npc
         m_TriggerReference:
@@ -69,58 +69,32 @@ MonoBehaviour:
       - m_Id: dynamic_event_02
         m_IconId: icon.dynamic
         m_TriggerReference:
-          m_DomainId: dynamic_event
-          m_ContentId: event.test_dynamic
-      - m_Id: boss
-        m_IconId: icon.boss
-        m_TriggerReference:
-          m_DomainId: boss
-          m_ContentId: boss.test_boss
+          m_DomainId: 
+          m_ContentId: 
       - m_Id: dynamic_event_03
         m_IconId: icon.dynamic
         m_TriggerReference:
-          m_DomainId: dynamic_event
-          m_ContentId: event.test_dynamic
+          m_DomainId: 
+          m_ContentId: 
+      - m_Id: boss
+        m_IconId: icon.boss
+        m_TriggerReference:
+          m_DomainId: 
+          m_ContentId: 
       m_FixedTimeRules:
-      - m_EventId: dynamic_event_01
-        m_TimeSeconds: 100
-      - m_EventId: npc_rescue
-        m_TimeSeconds: 200
-      - m_EventId: dynamic_event_02
-        m_TimeSeconds: 300
       - m_EventId: boss
-        m_TimeSeconds: 600
-      - m_EventId: dynamic_event_03
-        m_TimeSeconds: 450
+        m_TimeSeconds: 1500
       m_DistributedRules:
-      - m_EventId: dynamic_event_01
-        m_Count: 1
+      - m_EventIds:
+        - dynamic_event_01
+        - npc_rescue
+        - dynamic_event_02
+        - dynamic_event_03
         m_StartTimeSeconds: 300
         m_EndTimeType: 1
         m_EndTimeSeconds: 0
-      - m_EventId: npc_rescue
-        m_Count: 1
-        m_StartTimeSeconds: 300
-        m_EndTimeType: 1
-        m_EndTimeSeconds: 0
-      - m_EventId: dynamic_event_02
-        m_Count: 1
-        m_StartTimeSeconds: 300
-        m_EndTimeType: 1
-        m_EndTimeSeconds: 0
-      - m_EventId: boss
-        m_Count: 1
-        m_StartTimeSeconds: 300
-        m_EndTimeType: 1
-        m_EndTimeSeconds: 0
-      - m_EventId: dynamic_event_03
-        m_Count: 1
-        m_StartTimeSeconds: 300
-        m_EndTimeType: 1
-        m_EndTimeSeconds: 0
-      m_ExplicitEvents: []
       m_CompletionTarget:
-        m_TimeSeconds: 600
+        m_TimeSeconds: 1500
     m_expeditionEvents:
       content: []
     m_miniBosses:

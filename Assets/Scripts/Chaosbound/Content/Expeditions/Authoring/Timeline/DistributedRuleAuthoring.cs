@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Chaosbound.Content.Expeditions.Authoring.Timeline
@@ -7,19 +8,16 @@ namespace Chaosbound.Content.Expeditions.Authoring.Timeline
     public sealed class DistributedRuleAuthoring
     {
         [SerializeField]
-        private string m_EventId;
+        private List<string> m_EventIds = new();
 
-        public string EventId => m_EventId;
-
-        [SerializeField]
-        private int m_Count = 1;
-
-        public int Count => m_Count;
+        public IReadOnlyList<string> EventIds =>
+            m_EventIds;
 
         [SerializeField]
         private float m_StartTimeSeconds;
 
-        public float StartTimeSeconds => m_StartTimeSeconds;
+        public float StartTimeSeconds =>
+            m_StartTimeSeconds;
 
         [SerializeField]
         private TimelineEndTimeType m_EndTimeType =
@@ -31,6 +29,7 @@ namespace Chaosbound.Content.Expeditions.Authoring.Timeline
         [SerializeField]
         private float m_EndTimeSeconds;
 
-        public float EndTimeSeconds => m_EndTimeSeconds;
+        public float EndTimeSeconds =>
+            m_EndTimeSeconds;
     }
 }

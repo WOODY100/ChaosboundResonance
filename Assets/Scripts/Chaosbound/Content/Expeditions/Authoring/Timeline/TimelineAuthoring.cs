@@ -32,15 +32,6 @@ namespace Chaosbound.Content.Expeditions.Authoring.Timeline
         public IReadOnlyList<DistributedRuleAuthoring> DistributedRules =>
             m_DistributedRules;
 
-        [Header("Explicit Events")]
-
-        [SerializeField]
-        private List<ExplicitTimelineEventAuthoring>
-            m_ExplicitEvents = new();
-
-        public IReadOnlyList<ExplicitTimelineEventAuthoring> ExplicitEvents =>
-            m_ExplicitEvents;
-
         [Header("Completion Target")]
 
         [SerializeField]

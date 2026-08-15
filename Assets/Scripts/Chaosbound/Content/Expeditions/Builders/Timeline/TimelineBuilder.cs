@@ -28,10 +28,6 @@ namespace Chaosbound.Content.Expeditions.Builders.Timeline
                 BuildDistributedRules(
                     authoring.DistributedRules);
 
-            List<ExplicitTimelineEvent> explicitEvents =
-                BuildExplicitEvents(
-                    authoring.ExplicitEvents);
-
             ExpeditionCompletionTarget completionTarget =
                 BuildCompletionTarget(
                     authoring.CompletionTarget);
@@ -40,7 +36,6 @@ namespace Chaosbound.Content.Expeditions.Builders.Timeline
                 eventDefinitions,
                 fixedTimeRules,
                 distributedRules,
-                explicitEvents,
                 completionTarget);
         }
 
@@ -85,7 +80,7 @@ namespace Chaosbound.Content.Expeditions.Builders.Timeline
         }
 
         private static TimelineTriggerReference
-    BuildTriggerReference(
+            BuildTriggerReference(
         TimelineTriggerReferenceAuthoring authoring)
         {
             if (authoring == null)
@@ -181,8 +176,7 @@ namespace Chaosbound.Content.Expeditions.Builders.Timeline
 
                 result.Add(
                     new DistributedRule(
-                        ruleAuthoring.EventId,
-                        ruleAuthoring.Count,
+                        ruleAuthoring.EventIds,
                         ruleAuthoring.StartTimeSeconds,
                         endTime));
             }
@@ -208,36 +202,6 @@ namespace Chaosbound.Content.Expeditions.Builders.Timeline
                         $"Unsupported timeline end time type: " +
                         $"{authoring.EndTimeType}.");
             }
-        }
-
-        private static List<ExplicitTimelineEvent>
-            BuildExplicitEvents(
-                IReadOnlyList<ExplicitTimelineEventAuthoring> authoring)
-        {
-            if (authoring == null)
-                throw new ArgumentNullException(nameof(authoring));
-
-            List<ExplicitTimelineEvent> result =
-                new(authoring.Count);
-
-            foreach (
-                ExplicitTimelineEventAuthoring eventAuthoring
-                in authoring)
-            {
-                if (eventAuthoring == null)
-                {
-                    throw new InvalidOperationException(
-                        "TimelineAuthoring contains a null " +
-                        "ExplicitTimelineEventAuthoring.");
-                }
-
-                result.Add(
-                    new ExplicitTimelineEvent(
-                        eventAuthoring.EventId,
-                        eventAuthoring.TimeSeconds));
-            }
-
-            return result;
         }
 
         private static ExpeditionCompletionTarget
