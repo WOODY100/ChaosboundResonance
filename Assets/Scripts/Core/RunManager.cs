@@ -1,6 +1,8 @@
 using Chaosbound.Content.Expeditions.Runtime.Configs;
 using Chaosbound.Gameplay.ExpeditionRuntime.Bootstrap;
 using Chaosbound.Gameplay.ExpeditionRuntime.Director;
+using Chaosbound.Gameplay.Timeline;
+using Chaosbound.UI.Timeline;
 using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -10,6 +12,9 @@ public class RunManager : MonoBehaviour
     public static RunManager Instance;
 
     [SerializeField] private GameObject gameOverPanel;
+
+    [SerializeField]
+    private TimelineUI timelineUI;
 
     private PlayerHealth player;
 
@@ -49,6 +54,17 @@ public class RunManager : MonoBehaviour
         }
 
         expeditionDirector?.Tick();
+
+        if (timelineUI != null &&
+            expeditionDirector != null &&
+            expeditionDirector.IsRunning)
+        {
+            timelineUI.UpdateProgress(
+                (float)
+                expeditionDirector.RuntimeState
+                    .ElapsedTime
+                    .TotalSeconds);
+        }
     }
 
     public void StartRun(RuntimeExpeditionConfig config)
@@ -62,6 +78,14 @@ public class RunManager : MonoBehaviour
 
         expeditionDirector.StartExpedition(
             config);
+
+        if (timelineUI != null &&
+            config.Timeline != null &&
+            config.Timeline.Agenda != null)
+        {
+            timelineUI.SetAgenda(
+                config.Timeline.Agenda);
+        }
 
         if (gameOverPanel != null)
             gameOverPanel.SetActive(false);

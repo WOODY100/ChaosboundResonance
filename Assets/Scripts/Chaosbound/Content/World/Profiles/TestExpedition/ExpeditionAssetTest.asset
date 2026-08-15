@@ -83,19 +83,44 @@ MonoBehaviour:
           m_ContentId: event.test_dynamic
       m_FixedTimeRules:
       - m_EventId: dynamic_event_01
-        m_TimeSeconds: 2
+        m_TimeSeconds: 100
       - m_EventId: npc_rescue
-        m_TimeSeconds: 4
+        m_TimeSeconds: 200
       - m_EventId: dynamic_event_02
-        m_TimeSeconds: 6
+        m_TimeSeconds: 300
       - m_EventId: boss
-        m_TimeSeconds: 8
+        m_TimeSeconds: 600
       - m_EventId: dynamic_event_03
-        m_TimeSeconds: 10
-      m_DistributedRules: []
+        m_TimeSeconds: 450
+      m_DistributedRules:
+      - m_EventId: dynamic_event_01
+        m_Count: 1
+        m_StartTimeSeconds: 300
+        m_EndTimeType: 1
+        m_EndTimeSeconds: 0
+      - m_EventId: npc_rescue
+        m_Count: 1
+        m_StartTimeSeconds: 300
+        m_EndTimeType: 1
+        m_EndTimeSeconds: 0
+      - m_EventId: dynamic_event_02
+        m_Count: 1
+        m_StartTimeSeconds: 300
+        m_EndTimeType: 1
+        m_EndTimeSeconds: 0
+      - m_EventId: boss
+        m_Count: 1
+        m_StartTimeSeconds: 300
+        m_EndTimeType: 1
+        m_EndTimeSeconds: 0
+      - m_EventId: dynamic_event_03
+        m_Count: 1
+        m_StartTimeSeconds: 300
+        m_EndTimeType: 1
+        m_EndTimeSeconds: 0
       m_ExplicitEvents: []
       m_CompletionTarget:
-        m_TimeSeconds: 10
+        m_TimeSeconds: 600
     m_expeditionEvents:
       content: []
     m_miniBosses:
