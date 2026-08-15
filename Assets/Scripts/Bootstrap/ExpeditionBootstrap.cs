@@ -1,3 +1,4 @@
+using Chaosbound.Content.Enemy.Bosses;
 using Chaosbound.Content.Expeditions.Assets;
 using Chaosbound.Content.Expeditions.Builders.Expedition;
 using Chaosbound.Content.Expeditions.Definitions;
@@ -7,9 +8,11 @@ using Chaosbound.Content.Expeditions.Runtime.Builders;
 using Chaosbound.Content.Expeditions.Runtime.Configs;
 using Chaosbound.Core.Composition;
 using Chaosbound.Core.Runtime.SceneManagement;
+using Chaosbound.Shared.Content.Entries;
 using Chaosbound.Shared.Content.Registry;
 using Chaosbound.Shared.Content.Resolution;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Chaosbound.Runtime.Bootstrap
@@ -81,12 +84,6 @@ namespace Chaosbound.Runtime.Bootstrap
             runSession.SetRun(runtime);
 
             sceneTransitionService.LoadScene(GameScene.Expedition);
-
-            Debug.Log(
-                $"Run Ready | Difficulty: {request.SelectedDifficulty} | Seed: {request.Seed}");
-
-            Debug.Log(
-                $"RunSession Active: {runSession.HasRun}");
         }
 
         /// <summary>
@@ -100,9 +97,18 @@ namespace Chaosbound.Runtime.Bootstrap
                 throw new ArgumentNullException(nameof(definition));
 
             // Build the runtime content registry.
+            List<ContentEntry> contentEntries =
+                new();
+
+            contentEntries.AddRange(
+                definition.Enemy.Entries);
+
+            contentEntries.AddRange(
+                definition.Bosses.Entries);
+
             IContentRegistry registry =
                 new ContentRegistryBuilder()
-                    .Build(definition.Enemy.Entries);
+                    .Build(contentEntries);
 
             // Create the content resolver.
             IContentResolver resolver =
@@ -115,10 +121,14 @@ namespace Chaosbound.Runtime.Bootstrap
             RuntimeCombatBuilder combatBuilder =
                 new RuntimeCombatBuilder();
 
+            RuntimeBossesBuilder bossesBuilder =
+                new RuntimeBossesBuilder(resolver);
+
             // Create the expedition runtime builder.
             return new RuntimeExpeditionBuilder(
                 enemyBuilder,
-                combatBuilder);
+                combatBuilder,
+                bossesBuilder);
         }
     }
 }

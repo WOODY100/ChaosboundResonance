@@ -55,9 +55,6 @@ namespace Chaosbound.Gameplay.Spawn.Runtime
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            Debug.Log(
-                $"[SpawnRuntime] Request Entries={request.Entries.Count}");
-
             if (enemyConfig == null)
                 throw new ArgumentNullException(nameof(enemyConfig));
 
@@ -73,9 +70,6 @@ namespace Chaosbound.Gameplay.Spawn.Runtime
             SpawnExecutionPlan executionPlan =
                 spawnExecutor.Execute(
                     request);
-
-            Debug.Log(
-                $"[SpawnRuntime] ExecutionPlan Entries={executionPlan.Entries.Count}");
 
             executionPlanExecutor.Execute(
                 executionPlan,

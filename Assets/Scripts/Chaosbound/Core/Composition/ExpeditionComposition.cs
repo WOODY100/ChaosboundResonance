@@ -66,8 +66,6 @@ namespace Chaosbound.Core.Composition
 
         private void InitializeUI()
         {
-            Debug.Log("InitializeUI");
-
             PlayerHealth player = sceneContext.Player;
             PlayerExperienceSystem xpSystem = sceneContext.PlayerExperienceSystem;
 

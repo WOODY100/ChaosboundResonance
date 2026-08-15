@@ -51,15 +51,5 @@ public class WorldInitializer : MonoBehaviour
         }
 
         EnemyBrain.ResetAttackSlots();
-
-#if UNITY_EDITOR
-
-        if (spawnRuntimeValidationEnemy != null)
-        {
-            SpawnRuntimeValidation.Run(
-                spawnRuntimeValidationEnemy);
-        }
-
-#endif
     }
 }

@@ -111,9 +111,6 @@ namespace Chaosbound.Gameplay.Spawn.Execution
                 scheduler.Schedule(
                     schedulingContext);
 
-            Debug.Log(
-                $"[SpawnJobExecutor] Scheduled={tasks.Count}");
-
             SpawnJobRuntimeState runtimeState =
                 runtimeStateFactory.Create(
                     schedulingContext.Job,

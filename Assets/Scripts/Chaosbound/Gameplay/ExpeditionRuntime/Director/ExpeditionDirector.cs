@@ -63,7 +63,6 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Director
                     config,
                     runtimeState);
 
-            Debug.Log(IsRunning);
             IsRunning = true;
         }
 

@@ -1,5 +1,6 @@
-using Chaosbound.Shared.Authoring;
+using Chaosbound.Content.Enemy.Bosses;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Chaosbound.Content.Expeditions.Authoring.Bosses
@@ -8,8 +9,9 @@ namespace Chaosbound.Content.Expeditions.Authoring.Bosses
     public sealed class BossesAuthoring
     {
         [SerializeField]
-        private ContentReferenceAuthoring[] m_Content;
+        private List<BossData> m_Content = new();
 
-        public ContentReferenceAuthoring[] Content => m_Content;
+        public IReadOnlyList<BossData> Content =>
+            m_Content;
     }
 }

@@ -32,7 +32,9 @@ namespace Chaosbound.Content.Expeditions.Runtime.Builders
     {
         private readonly RuntimeEnemyBuilder runtimeEnemyBuilder;
 
-        private readonly RuntimeCombatBuilder runtimeCombatBuilder;      
+        private readonly RuntimeCombatBuilder runtimeCombatBuilder;
+
+        private readonly RuntimeBossesBuilder runtimeBossesBuilder;
 
         public RuntimeExpeditionConfig BuildRunConfig(
             ExpeditionRequest request)
@@ -50,7 +52,7 @@ namespace Chaosbound.Content.Expeditions.Runtime.Builders
             RuntimeTimelineConfig timeline = BuildTimeline(request.Definition.Timeline);
             RuntimeExpeditionEventsConfig expeditionEvents = BuildExpeditionEvents(request.Definition.ExpeditionEvents);
             RuntimeMiniBossesConfig miniBosses = BuildMiniBosses(request.Definition.MiniBosses);
-            RuntimeBossesConfig bosses = BuildBosses(request.Definition.Bosses);
+            RuntimeBossesConfig bosses = runtimeBossesBuilder.BuildBosses(request.Definition.Bosses);
             RuntimeRewardsConfig rewards = BuildRewards(request.Definition.Rewards);
 
             // Assemble runtime.
@@ -119,13 +121,23 @@ namespace Chaosbound.Content.Expeditions.Runtime.Builders
 
         public RuntimeExpeditionBuilder(
             RuntimeEnemyBuilder runtimeEnemyBuilder,
-            RuntimeCombatBuilder runtimeCombatBuilder)
+            RuntimeCombatBuilder runtimeCombatBuilder,
+            RuntimeBossesBuilder runtimeBossesBuilder)
         {
-            this.runtimeEnemyBuilder = runtimeEnemyBuilder
-                ?? throw new ArgumentNullException(nameof(runtimeEnemyBuilder));
+            this.runtimeEnemyBuilder =
+                runtimeEnemyBuilder
+                ?? throw new ArgumentNullException(
+                    nameof(runtimeEnemyBuilder));
 
-            this.runtimeCombatBuilder = runtimeCombatBuilder
-                ?? throw new ArgumentNullException(nameof(runtimeCombatBuilder));
+            this.runtimeCombatBuilder =
+                runtimeCombatBuilder
+                ?? throw new ArgumentNullException(
+                    nameof(runtimeCombatBuilder));
+
+            this.runtimeBossesBuilder =
+                runtimeBossesBuilder
+                ?? throw new ArgumentNullException(
+                    nameof(runtimeBossesBuilder));
         }
 
         private RuntimeTimelineConfig BuildTimeline(
@@ -156,15 +168,6 @@ namespace Chaosbound.Content.Expeditions.Runtime.Builders
             if (definition == null)
                 throw new ArgumentNullException(nameof(definition));
             return new RuntimeMiniBossesConfig(
-                definition.Content);
-        }
-
-        private RuntimeBossesConfig BuildBosses(
-            BossesDefinition definition)
-        {
-            if (definition == null)
-                throw new ArgumentNullException(nameof(definition));
-            return new RuntimeBossesConfig(
                 definition.Content);
         }
 

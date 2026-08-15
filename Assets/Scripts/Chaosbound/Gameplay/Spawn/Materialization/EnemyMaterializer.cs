@@ -47,9 +47,6 @@ namespace Chaosbound.Gameplay.Spawn.Materialization
                     "EnemyMaterializer received an unsupported materializable reference.");
             }
 
-            Debug.Log(
-                $"[EnemyMaterializer] {enemy.name}");
-
             SpawnPlacement placement =
                 context
                     .ResolvedTask

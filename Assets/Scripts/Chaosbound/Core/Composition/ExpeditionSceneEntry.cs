@@ -12,15 +12,11 @@ namespace Chaosbound.Core.Composition
 
         private void Start()
         {
-            Debug.Log("ExpeditionSceneEntry.Start");
-
             Initialize();
         }
 
         private void Initialize()
         {
-            Debug.Log("ExpeditionSceneEntry.Initialize");
-
             Validate();
 
             BootstrapContext bootstrap = BootstrapContext.Current;

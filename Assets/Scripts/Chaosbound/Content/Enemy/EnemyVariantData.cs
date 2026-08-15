@@ -4,7 +4,7 @@ using Chaosbound.Shared.Identifiers;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Arena/Enemy Variant")]
+[CreateAssetMenu(menuName = "Chaosbound/Enemies/Enemy Variant")]
 public class EnemyVariantData : ScriptableObject, IMaterializableReference
 {
     [Header("Identity")]

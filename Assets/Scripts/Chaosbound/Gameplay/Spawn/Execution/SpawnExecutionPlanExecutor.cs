@@ -93,9 +93,6 @@ namespace Chaosbound.Gameplay.Spawn.Execution
                 spawnJobExecutor.Execute(
                     schedulingContext);
             }
-
-            Debug.Log(
-                $"[ExecutionPlan] Jobs={jobs.Count}");
         }
     }
 }
