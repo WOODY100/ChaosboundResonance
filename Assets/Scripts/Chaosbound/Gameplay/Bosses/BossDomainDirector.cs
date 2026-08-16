@@ -1,8 +1,12 @@
 using Chaosbound.Content.Enemy.Bosses;
-using Chaosbound.Content.Expeditions.Runtime.Bosses;
-using Chaosbound.Content.Expeditions.Runtime.Configs;
-using Chaosbound.Gameplay.ExpeditionRuntime.Context;
 using Chaosbound.Content.Expeditions.Definitions.Timeline;
+using Chaosbound.Content.Expeditions.Runtime.Bosses;
+using Chaosbound.Gameplay.Bosses.Integration.Spawn;
+using Chaosbound.Gameplay.Bosses.Models;
+using Chaosbound.Gameplay.Bosses.Services;
+using Chaosbound.Gameplay.ExpeditionRuntime.Context;
+using Chaosbound.Gameplay.Spawn.Contracts;
+using Chaosbound.Gameplay.Spawn.Runtime;
 using System;
 using System.Collections.Generic;
 
@@ -19,6 +23,15 @@ namespace Chaosbound.Gameplay.Bosses
 
         private const string BossStartContentId =
             "boss.start";
+
+        private readonly BossSpawnPlanner
+            spawnPlanner;
+
+        private readonly BossSpawnRequestTranslator
+            spawnRequestTranslator;
+
+        private readonly SpawnRuntime
+            spawnRuntime;
 
         /// <summary>
         /// Executes the Boss Domain for the current
@@ -56,6 +69,27 @@ namespace Chaosbound.Gameplay.Bosses
             }
         }
 
+        public BossDomainDirector(
+            BossSpawnPlanner spawnPlanner,
+            BossSpawnRequestTranslator spawnRequestTranslator,
+            SpawnRuntime spawnRuntime)
+        {
+            this.spawnPlanner =
+                spawnPlanner
+                ?? throw new ArgumentNullException(
+                    nameof(spawnPlanner));
+
+            this.spawnRequestTranslator =
+                spawnRequestTranslator
+                ?? throw new ArgumentNullException(
+                    nameof(spawnRequestTranslator));
+
+            this.spawnRuntime =
+                spawnRuntime
+                ?? throw new ArgumentNullException(
+                    nameof(spawnRuntime));
+        }
+
         private void HandleBossTrigger(
             ExpeditionRuntimeContext context,
             TimelineEntry entry)
@@ -80,6 +114,21 @@ namespace Chaosbound.Gameplay.Bosses
 
             context.State.Boss.Start(
                 selectedBoss);
+
+            BossSpawnPlan spawnPlan =
+                spawnPlanner.Build(
+                    selectedBoss);
+
+            SpawnRequest spawnRequest =
+                spawnRequestTranslator.Translate(
+                    spawnPlan,
+                    context.Config.Spawn);
+
+            spawnRuntime.Execute(
+                spawnRequest,
+                context.Config.Spawn,
+                context.References.Runtime,
+                context.State);
         }
 
         private BossData SelectBoss(

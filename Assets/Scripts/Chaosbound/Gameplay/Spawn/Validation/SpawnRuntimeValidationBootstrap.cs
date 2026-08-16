@@ -114,10 +114,18 @@ namespace Chaosbound.Gameplay.Spawn.Validation
                 BuildInstantiationService());
         }
 
+        private BossMaterializer
+            BuildBossMaterializer()
+        {
+            return new BossMaterializer(
+                BuildInstantiationService());
+        }
+
         private SpawnMaterializerResolver BuildMaterializerResolver()
         {
             return new SpawnMaterializerResolver(
-                BuildEnemyMaterializer());
+                BuildEnemyMaterializer(),
+                BuildBossMaterializer());
         }
 
         private SpawnExecutionContextFactory BuildExecutionContextFactory()

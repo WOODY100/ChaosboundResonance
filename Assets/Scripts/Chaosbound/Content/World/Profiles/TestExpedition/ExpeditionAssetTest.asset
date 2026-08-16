@@ -33,7 +33,6 @@ MonoBehaviour:
       - {fileID: 11400000, guid: f5819a66bba33df429698f45f81dc0aa, type: 2}
       - {fileID: 11400000, guid: bd38301ec6fd209459cdc8d6199033cd, type: 2}
       - {fileID: 11400000, guid: e3af66caf09419f47a5046e7d60ef0e3, type: 2}
-      m_SchedulingPolicy: 0
     m_Spawn:
       m_Placement: 0
       m_Activation: 0
@@ -42,7 +41,7 @@ MonoBehaviour:
       m_TargetProgression:
         m_Profile: {fileID: 11400000, guid: a6d178e8c653a1c4fb1077d8c043eab9, type: 2}
       m_Tactics:
-      - m_MaximumTarget: 10
+      - m_MaximumTarget: 6
         m_NormalPercentage: 0.7
         m_RunnerPercentage: 0.2
         m_TankPercentage: 0.1
@@ -83,18 +82,18 @@ MonoBehaviour:
           m_ContentId: boss.start
       m_FixedTimeRules:
       - m_EventId: boss
-        m_TimeSeconds: 1500
+        m_TimeSeconds: 60
       m_DistributedRules:
       - m_EventIds:
         - dynamic_event_01
         - npc_rescue
         - dynamic_event_02
         - dynamic_event_03
-        m_StartTimeSeconds: 300
+        m_StartTimeSeconds: 10
         m_EndTimeType: 1
         m_EndTimeSeconds: 0
       m_CompletionTarget:
-        m_TimeSeconds: 1500
+        m_TimeSeconds: 60
     m_expeditionEvents:
       content: []
     m_miniBosses:

@@ -1,0 +1,64 @@
+using Chaosbound.Content.Enemy.Bosses;
+using Chaosbound.Gameplay.Spawn.Execution;
+using Chaosbound.Gameplay.Spawn.Infrastructure;
+using Chaosbound.Gameplay.Spawn.Integration;
+using Chaosbound.Gameplay.Spawn.Placement.Models;
+using System;
+
+namespace Chaosbound.Gameplay.Spawn.Materialization
+{
+    /// <summary>
+    /// Materializes Boss spawn tasks into the game world.
+    /// </summary>
+    public sealed class BossMaterializer :
+        ISpawnMaterializer
+    {
+        private readonly ISpawnInstantiationService
+            instantiationService;
+
+        public BossMaterializer(
+            ISpawnInstantiationService instantiationService)
+        {
+            this.instantiationService =
+                instantiationService
+                ?? throw new ArgumentNullException(
+                    nameof(instantiationService));
+        }
+
+        public void Materialize(
+            SpawnExecutionContext context)
+        {
+            if (context == null)
+                throw new ArgumentNullException(
+                    nameof(context));
+
+            if (context
+                    .ResolvedTask
+                    .ScheduledTask
+                    .Task
+                    .Entry
+                    .Materializable
+                    .Reference
+                is not BossData boss)
+            {
+                throw new InvalidOperationException(
+                    "BossMaterializer received an unsupported materializable reference.");
+            }
+
+            SpawnPlacement placement =
+                context
+                    .ResolvedTask
+                    .Placement
+                    .Placement;
+
+            SpawnInstantiationRequest request =
+                new SpawnInstantiationRequest(
+                    boss,
+                    placement.Position,
+                    placement.Rotation);
+
+            instantiationService.Spawn(
+                request);
+        }
+    }
+}

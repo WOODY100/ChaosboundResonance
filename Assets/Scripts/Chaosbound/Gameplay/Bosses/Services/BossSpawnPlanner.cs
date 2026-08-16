@@ -1,19 +1,23 @@
 using Chaosbound.Content.Enemy.Bosses;
 using Chaosbound.Gameplay.Bosses.Models;
 using System;
+using System.Collections.Generic;
 
 namespace Chaosbound.Gameplay.Bosses.Services
 {
     /// <summary>
-    /// Builds a concrete BossSpawnPlan from the Boss
-    /// selected by the Boss Domain.
+    /// Builds a declarative BossSpawnPlan from
+    /// the Boss selected by the Boss Domain.
     ///
-    /// This builder does not select the Boss.
-    /// It only converts the selected Boss into
-    /// a materialization plan.
+    /// This planner does not select the Boss.
+    /// It does not interact with Spawn Runtime.
+    /// It does not resolve placement or materialization.
     /// </summary>
-    public sealed class BossSpawnPlanBuilder
+    public sealed class BossSpawnPlanner
     {
+        /// <summary>
+        /// Builds a spawn plan for the selected Boss.
+        /// </summary>
         public BossSpawnPlan Build(
             BossData boss)
         {
@@ -29,7 +33,7 @@ namespace Chaosbound.Gameplay.Bosses.Services
                     1);
 
             return new BossSpawnPlan(
-                new[]
+                new List<BossSpawnPlanEntry>
                 {
                     entry
                 });

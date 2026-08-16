@@ -4,14 +4,8 @@ using System.Collections.Generic;
 namespace Chaosbound.Gameplay.Bosses.Models
 {
     /// <summary>
-    /// Represents the concrete materialization plan produced
-    /// by the Boss Domain.
-    ///
-    /// This plan describes which Boss should be materialized
-    /// and how many instances are required.
-    ///
-    /// It does not contain spawn positions, spawn points,
-    /// placement information, or Spawn Runtime behavior.
+    /// Represents the declarative materialization plan
+    /// produced by the Boss Domain.
     /// </summary>
     public sealed class BossSpawnPlan
     {
@@ -19,7 +13,7 @@ namespace Chaosbound.Gameplay.Bosses.Models
             entries;
 
         /// <summary>
-        /// Gets the concrete materialization entries.
+        /// Gets the Boss materialization entries.
         /// </summary>
         public IReadOnlyList<BossSpawnPlanEntry>
             Entries =>
@@ -32,8 +26,8 @@ namespace Chaosbound.Gameplay.Bosses.Models
             entries.Count == 0;
 
         /// <summary>
-        /// Gets the total number of Bosses requested
-        /// by this plan.
+        /// Gets the total number of Boss entities
+        /// requested by this plan.
         /// </summary>
         public int TotalQuantity
         {

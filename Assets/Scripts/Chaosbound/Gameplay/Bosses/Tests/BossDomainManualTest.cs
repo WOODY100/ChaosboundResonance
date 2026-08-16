@@ -2,10 +2,14 @@ using Chaosbound.Content.Enemy.Bosses;
 using Chaosbound.Content.Expeditions.Definitions.Timeline;
 using Chaosbound.Content.Expeditions.Runtime.Configs;
 using Chaosbound.Core.Composition;
-using Chaosbound.Gameplay.Bosses;
+using Chaosbound.Gameplay.Bosses.Integration.Spawn;
+using Chaosbound.Gameplay.Bosses.Services;
 using Chaosbound.Gameplay.ExpeditionRuntime.Context;
 using Chaosbound.Gameplay.ExpeditionRuntime.Factories;
 using Chaosbound.Gameplay.ExpeditionRuntime.Runtime;
+using Chaosbound.Gameplay.Spawn.Bootstrap;
+using Chaosbound.Gameplay.Spawn.Factories;
+using Chaosbound.Gameplay.Spawn.Runtime;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -95,9 +99,29 @@ namespace Chaosbound.Gameplay.Bosses.Tests
             ExpeditionRuntimeContext context =
                 contextFactory.Create();
 
+            SpawnRuntime spawnRuntime =
+                new SpawnRuntimeBootstrap()
+                    .Build();
+
+            SpawnRequestEntryFactory entryFactory =
+                new SpawnRequestEntryFactory(
+                    new MaterializableReferenceFactory());
+
+            BossSpawnRequestTranslator
+                spawnRequestTranslator =
+                    new BossSpawnRequestTranslator(
+                        new SpawnRequestFactory(),
+                        entryFactory);
+
+            BossSpawnPlanner spawnPlanner =
+                new BossSpawnPlanner();
+
             BossStage bossStage =
                 new BossStage(
-                    new BossDomainDirector());
+                    new BossDomainDirector(
+                        spawnPlanner,
+                        spawnRequestTranslator,
+                        spawnRuntime));
 
             // -------------------------------------------------
             // TEST 1

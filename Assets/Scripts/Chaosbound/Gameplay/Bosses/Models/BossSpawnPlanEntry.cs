@@ -4,18 +4,18 @@ using System;
 namespace Chaosbound.Gameplay.Bosses.Models
 {
     /// <summary>
-    /// Represents a concrete Boss and the quantity
-    /// requested for materialization by the Boss Domain.
+    /// Represents a Boss materialization entry
+    /// produced by the Boss Domain.
     /// </summary>
     public sealed class BossSpawnPlanEntry
     {
         /// <summary>
-        /// Gets the concrete Boss to materialize.
+        /// Gets the Boss that should be materialized.
         /// </summary>
         public BossData Boss { get; }
 
         /// <summary>
-        /// Gets the requested quantity of this Boss.
+        /// Gets the quantity requested for materialization.
         /// </summary>
         public int Quantity { get; }
 

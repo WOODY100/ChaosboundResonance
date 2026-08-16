@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using Chaosbound.Content.Enemy.Bosses;
 using Chaosbound.Gameplay.Spawn.Integration;
 
 namespace Chaosbound.Gameplay.Spawn.Infrastructure
@@ -14,41 +15,84 @@ namespace Chaosbound.Gameplay.Spawn.Infrastructure
             SpawnInstantiationRequest request)
         {
             if (request == null)
-                throw new ArgumentNullException(nameof(request));
+                throw new ArgumentNullException(
+                    nameof(request));
 
-            if (request.Reference is not EnemyVariantData enemy)
+            if (request.Reference is EnemyVariantData enemy)
             {
-                throw new InvalidOperationException(
-                    $"Unsupported materializable reference '{request.Reference.GetType().Name}'.");
+                return SpawnEnemy(
+                    enemy,
+                    request);
             }
 
+            if (request.Reference is BossData boss)
+            {
+                return SpawnBoss(
+                    boss,
+                    request);
+            }
+
+            throw new InvalidOperationException(
+                $"Unsupported materializable reference " +
+                $"'{request.Reference.GetType().Name}'.");
+        }
+
+        private GameObject SpawnEnemy(
+            EnemyVariantData enemy,
+            SpawnInstantiationRequest request)
+        {
             if (enemy.SpawnPrefab == null)
             {
                 throw new InvalidOperationException(
                     $"Enemy '{enemy.name}' does not define a spawn prefab.");
             }
 
-            if (PoolManager.Instance == null)
-            {
-                throw new InvalidOperationException(
-                    "PoolManager.Instance is not available.");
-            }
-
             GameObject instance =
-                PoolManager.Instance.Get(
+                GetFromPool(
                     enemy.SpawnPrefab,
-                    request.Position,
-                    request.Rotation);
+                    request);
 
             EnemyVariantController controller =
                 instance.GetComponent<EnemyVariantController>();
 
             if (controller != null)
             {
-                controller.SetVariant(enemy);
+                controller.SetVariant(
+                    enemy);
             }
 
             return instance;
+        }
+
+        private GameObject SpawnBoss(
+            BossData boss,
+            SpawnInstantiationRequest request)
+        {
+            if (boss.SpawnPrefab == null)
+            {
+                throw new InvalidOperationException(
+                    $"Boss '{boss.name}' does not define a spawn prefab.");
+            }
+
+            return GetFromPool(
+                boss.SpawnPrefab,
+                request);
+        }
+
+        private GameObject GetFromPool(
+            GameObject prefab,
+            SpawnInstantiationRequest request)
+        {
+            if (PoolManager.Instance == null)
+            {
+                throw new InvalidOperationException(
+                    "PoolManager.Instance is not available.");
+            }
+
+            return PoolManager.Instance.Get(
+                prefab,
+                request.Position,
+                request.Rotation);
         }
     }
 }

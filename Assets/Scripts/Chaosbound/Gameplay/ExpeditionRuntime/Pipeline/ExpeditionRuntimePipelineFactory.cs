@@ -1,4 +1,6 @@
 using Chaosbound.Gameplay.Bosses;
+using Chaosbound.Gameplay.Bosses.Integration.Spawn;
+using Chaosbound.Gameplay.Bosses.Services;
 using Chaosbound.Gameplay.Combat.Director;
 using Chaosbound.Gameplay.Combat.Integration.Spawn;
 using Chaosbound.Gameplay.Combat.Runtime.Replenishment;
@@ -27,32 +29,38 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Pipeline
         /// </summary>
         public ExpeditionRuntimePipeline Create()
         {
+            SpawnRuntime spawnRuntime =
+                BuildSpawnRuntime();
+
             IReadOnlyList<IExpeditionRuntimeStage> stages =
-                BuildStages();
+                BuildStages(
+                    spawnRuntime);
 
             return new ExpeditionRuntimePipeline(
                 stages);
         }
 
         private IReadOnlyList<IExpeditionRuntimeStage>
-                BuildStages()
-            {
-            return new List<IExpeditionRuntimeStage>
+            BuildStages(
+                SpawnRuntime spawnRuntime)
                 {
-                    BuildTimeStage(),
-                    BuildTimelineStage(),
-                    BuildBossStage(),
-                    BuildCombatStage()
-                };
+                    return new List<IExpeditionRuntimeStage>
+            {
+                BuildTimeStage(),
+                BuildTimelineStage(),
+                BuildBossStage(spawnRuntime),
+                BuildCombatStage(spawnRuntime)
+            };
         }
 
         private IExpeditionRuntimeStage
-            BuildCombatStage()
+             BuildCombatStage(
+        SpawnRuntime spawnRuntime)
         {
             return new CombatStage(
                 BuildCombatDirector(),
                 BuildCombatSpawnRequestTranslator(),
-                BuildSpawnRuntime());
+                spawnRuntime);
         }
 
         private IExpeditionRuntimeStage
@@ -149,10 +157,32 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Pipeline
         }
 
         private IExpeditionRuntimeStage
-            BuildBossStage()
+             BuildBossStage(
+        SpawnRuntime spawnRuntime)
         {
             return new BossStage(
-                new BossDomainDirector());
+                new BossDomainDirector(
+                    BuildBossSpawnPlanner(),
+                    BuildBossSpawnRequestTranslator(),
+                    spawnRuntime));
+        }
+
+        private BossSpawnPlanner
+            BuildBossSpawnPlanner()
+        {
+            return new BossSpawnPlanner();
+        }
+
+        private BossSpawnRequestTranslator
+            BuildBossSpawnRequestTranslator()
+        {
+            SpawnRequestEntryFactory entryFactory =
+                new SpawnRequestEntryFactory(
+                    new MaterializableReferenceFactory());
+
+            return new BossSpawnRequestTranslator(
+                new SpawnRequestFactory(),
+                entryFactory);
         }
     }
 }
