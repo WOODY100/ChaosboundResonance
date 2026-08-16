@@ -1,44 +1,89 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
-public class BossHealth : MonoBehaviour, IDamageable
+public class BossHealth :
+    MonoBehaviour,
+    IDamageable
 {
-    [SerializeField] private float maxHealth = 1000f;
-    [SerializeField] private float currentHealth;
-    public bool IsDead => currentHealth <= 0f;
+    [Header("Stats")]
+    [SerializeField]
+    private float maxHealth = 1000f;
+
+    public float CurrentHealth { get; private set; }
+
+    public bool IsDead { get; private set; }
+
+    public event Action<BossHealth> OnDeath;
+
+    public event Action<float> OnDamageTaken;
 
     private BossControllerBase controller;
 
     private void Awake()
     {
-        currentHealth = maxHealth;
-        controller = GetComponent<BossControllerBase>();
+        controller =
+            GetComponent<BossControllerBase>();
+
+        Initialize();
     }
 
-    public void TakeDamage(DamageData damage)
+    private void OnEnable()
     {
-        if (currentHealth <= 0f)
+        Initialize();
+    }
+
+    private void Initialize()
+    {
+        CurrentHealth =
+            maxHealth;
+
+        IsDead = false;
+    }
+
+    public void TakeDamage(
+        DamageData damageData)
+    {
+        if (IsDead)
             return;
 
-        currentHealth -= damage.amount;
+        float finalDamage =
+            damageData.amount;
 
-        // 🔥 Mostrar daño flotante
-        if (FloatingDamageManager.Instance != null)
-        {
-            FloatingDamageManager.Instance.ShowDamage(
-                transform.position,
-                damage.amount,
-                damage.isCrit
-            );
-        }
+        if (finalDamage <= 0f)
+            return;
 
-        controller?.OnHealthChanged(currentHealth / maxHealth);
+        CurrentHealth -=
+            finalDamage;
 
-        if (currentHealth <= 0f)
-            controller?.OnDeath();
+        OnDamageTaken?.Invoke(
+            finalDamage);
+
+        FloatingDamageManager.Instance?.ShowDamage(
+            transform.position,
+            finalDamage,
+            damageData.isCrit);
+
+        controller?.OnHealthChanged(
+            CurrentHealth / maxHealth);
+
+        if (CurrentHealth <= 0f)
+            Die();
+    }
+
+    private void Die()
+    {
+        if (IsDead)
+            return;
+
+        IsDead = true;
+
+        controller?.OnDeath();
+
+        OnDeath?.Invoke(this);
     }
 
     public float GetHealthPercent()
     {
-        return currentHealth / maxHealth;
+        return CurrentHealth / maxHealth;
     }
 }
