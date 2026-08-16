@@ -1,9 +1,11 @@
 using Chaosbound.Content.Enemy.Bosses;
+using Chaosbound.Gameplay.Bosses;
 using Chaosbound.Gameplay.Spawn.Execution;
 using Chaosbound.Gameplay.Spawn.Infrastructure;
 using Chaosbound.Gameplay.Spawn.Integration;
 using Chaosbound.Gameplay.Spawn.Placement.Models;
 using System;
+using UnityEngine;
 
 namespace Chaosbound.Gameplay.Spawn.Materialization
 {
@@ -57,8 +59,23 @@ namespace Chaosbound.Gameplay.Spawn.Materialization
                     placement.Position,
                     placement.Rotation);
 
-            instantiationService.Spawn(
-                request);
+            GameObject spawnedObject =
+                instantiationService.Spawn(
+                    request);
+
+            BossRuntimeContext runtimeContext =
+                spawnedObject.GetComponent<BossRuntimeContext>();
+
+            if (runtimeContext == null)
+            {
+                throw new InvalidOperationException(
+                    $"Boss '{spawnedObject.name}' " +
+                    "is missing a BossRuntimeContext component.");
+            }
+
+            runtimeContext.Initialize(
+                boss,
+                context.RuntimeState.ExpeditionRuntime);
         }
     }
 }

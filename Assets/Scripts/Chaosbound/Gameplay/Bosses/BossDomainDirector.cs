@@ -129,6 +129,8 @@ namespace Chaosbound.Gameplay.Bosses
                 context.Config.Spawn,
                 context.References.Runtime,
                 context.State);
+
+            context.State.Boss.MarkActive();
         }
 
         private BossData SelectBoss(

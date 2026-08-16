@@ -5,17 +5,19 @@ public class BossHealth :
     MonoBehaviour,
     IDamageable
 {
-    [Header("Stats")]
     [SerializeField]
     private float maxHealth = 1000f;
 
-    public float CurrentHealth { get; private set; }
+    [SerializeField]
+    private float currentHealth;
 
-    public bool IsDead { get; private set; }
+    public float CurrentHealth =>
+        currentHealth;
+
+    public bool IsDead =>
+        currentHealth <= 0f;
 
     public event Action<BossHealth> OnDeath;
-
-    public event Action<float> OnDamageTaken;
 
     private BossControllerBase controller;
 
@@ -34,48 +36,45 @@ public class BossHealth :
 
     private void Initialize()
     {
-        CurrentHealth =
+        currentHealth =
             maxHealth;
-
-        IsDead = false;
     }
 
     public void TakeDamage(
-        DamageData damageData)
+        DamageData damage)
     {
         if (IsDead)
             return;
 
-        float finalDamage =
-            damageData.amount;
+        currentHealth -=
+            damage.amount;
 
-        if (finalDamage <= 0f)
-            return;
+        if (FloatingDamageManager.Instance != null)
+        {
+            FloatingDamageManager.Instance.ShowDamage(
+                transform.position,
+                damage.amount,
+                damage.isCrit);
+        }
 
-        CurrentHealth -=
-            finalDamage;
-
-        OnDamageTaken?.Invoke(
-            finalDamage);
-
-        FloatingDamageManager.Instance?.ShowDamage(
-            transform.position,
-            finalDamage,
-            damageData.isCrit);
+        float healthPercent =
+            maxHealth > 0f
+                ? currentHealth / maxHealth
+                : 0f;
 
         controller?.OnHealthChanged(
-            CurrentHealth / maxHealth);
+            healthPercent);
 
-        if (CurrentHealth <= 0f)
+        if (currentHealth <= 0f)
+        {
             Die();
+        }
     }
 
     private void Die()
     {
-        if (IsDead)
+        if (IsDead == false)
             return;
-
-        IsDead = true;
 
         controller?.OnDeath();
 
@@ -84,6 +83,9 @@ public class BossHealth :
 
     public float GetHealthPercent()
     {
-        return CurrentHealth / maxHealth;
+        if (maxHealth <= 0f)
+            return 0f;
+
+        return currentHealth / maxHealth;
     }
 }

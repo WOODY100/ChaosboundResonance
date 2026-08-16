@@ -134,8 +134,8 @@ namespace Chaosbound.Gameplay.Bosses.Tests
                 BossDomainState.Inactive)
             {
                 throw new Exception(
-                    "Boss Domain should remain Inactive " +
-                    "when no Timeline entry has been reached.");
+                    "Boss Domain did not enter Inactive state " +
+                    "after successful materialization.");
             }
 
             if (context.State.Boss.SelectedBoss != null)
@@ -176,15 +176,16 @@ namespace Chaosbound.Gameplay.Bosses.Tests
 
             bossStage.Execute(context);
 
+
             // -------------------------------------------------
             // Validate Boss Runtime State.
             // -------------------------------------------------
 
             if (context.State.Boss.State !=
-                BossDomainState.Starting)
+                BossDomainState.Active)
             {
                 throw new Exception(
-                    "Boss Domain did not enter Starting state.");
+                    "Boss Domain did not enter Active state.");
             }
 
             if (context.State.Boss.SelectedBoss == null)
@@ -195,9 +196,80 @@ namespace Chaosbound.Gameplay.Bosses.Tests
 
             Debug.Log(
                 "[Boss Domain Test] " +
-                $"PASS 2: Boss selected. " +
+                $"PASS 2: Boss materialized and became Active. " +
                 $"BossId={context.State.Boss.SelectedBoss.Id} | " +
                 $"Name={context.State.Boss.SelectedBoss.DisplayName}");
+
+            Debug.Log(
+                "[Boss Domain Test] " +
+                "ALL TESTS PASSED.");
+
+
+            // -------------------------------------------------
+            // TEST 3
+            // Boss dies and Boss Runtime Lifecycle completes
+            // the Boss Domain.
+            // -------------------------------------------------
+
+            BossRuntimeContext bossRuntimeContext =
+                FindMaterializedBoss(
+                    context.State.Boss.SelectedBoss);
+
+            if (bossRuntimeContext == null)
+            {
+                throw new InvalidOperationException(
+                    "Could not find the materialized Boss Runtime Context.");
+            }
+
+            BossHealth bossHealth =
+                bossRuntimeContext.GetComponent<BossHealth>();
+
+            if (bossHealth == null)
+            {
+                throw new InvalidOperationException(
+                    "Materialized Boss is missing BossHealth.");
+            }
+
+            BossRuntimeLifecycle bossLifecycle =
+                bossRuntimeContext.GetComponent<BossRuntimeLifecycle>();
+
+            if (bossLifecycle == null)
+            {
+                throw new InvalidOperationException(
+                    "Materialized Boss is missing BossRuntimeLifecycle.");
+            }
+
+            if (bossHealth.IsDead)
+            {
+                throw new InvalidOperationException(
+                    "Boss is already dead before lifecycle death test.");
+            }
+
+            bossHealth.TakeDamage(
+                new DamageData
+                {
+                    amount = bossHealth.CurrentHealth,
+                    isCrit = false
+                });
+
+            if (!bossHealth.IsDead)
+            {
+                throw new Exception(
+                    "BossHealth did not enter the Dead state.");
+            }
+
+            if (context.State.Boss.State !=
+                BossDomainState.Completed)
+            {
+                throw new Exception(
+                    "Boss Domain did not enter Completed state " +
+                    "after Boss death.");
+            }
+
+            Debug.Log(
+                "[Boss Domain Test] " +
+                "PASS 3: Boss death propagated through " +
+                "BossRuntimeLifecycle and completed the Boss Domain.");
 
             Debug.Log(
                 "[Boss Domain Test] " +
@@ -239,6 +311,30 @@ namespace Chaosbound.Gameplay.Bosses.Tests
                 }
 
                 return entry;
+            }
+
+            return null;
+        }
+
+        private static BossRuntimeContext FindMaterializedBoss(
+            BossData expectedBoss)
+        {
+            BossRuntimeContext[] contexts =
+                FindObjectsByType<BossRuntimeContext>(
+                    FindObjectsSortMode.None);
+
+            foreach (BossRuntimeContext runtimeContext in contexts)
+            {
+                if (runtimeContext == null)
+                    continue;
+
+                if (!runtimeContext.IsInitialized)
+                    continue;
+
+                if (runtimeContext.Boss != expectedBoss)
+                    continue;
+
+                return runtimeContext;
             }
 
             return null;

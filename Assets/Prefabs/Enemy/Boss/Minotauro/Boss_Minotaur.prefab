@@ -74,9 +74,11 @@ GameObject:
   - component: {fileID: 5166453074552187900}
   - component: {fileID: 8171353774716080389}
   - component: {fileID: 5985319794129961037}
-  - component: {fileID: 8044076977500986214}
   - component: {fileID: 7348215645966141985}
+  - component: {fileID: 8044076977500986214}
   - component: {fileID: 854049702313215581}
+  - component: {fileID: 8323098854580776650}
+  - component: {fileID: 338019560985458648}
   - component: {fileID: -6019622996297451601}
   m_Layer: 6
   m_Name: Boss_Minotaur
@@ -146,6 +148,37 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &7348215645966141985
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 398206900497037025}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f8d0b796d53506478cdd72ca2082bdc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BossMovementController
+  player: {fileID: 0}
+  animator: {fileID: 5985319794129961037}
+  maxMoveSpeed: 3.5
+  acceleration: 5
+  deceleration: 8
+  rotationSpeed: 5
+  chargeSpeed: 15
+  chargeDuration: 1.2
+  chargeRecoveryDuration: 0.6
+  chargeInertiaDeceleration: 25
+  steeringCheckDistance: 3.5
+  obstacleMemoryTime: 0.8
+  stuckCheckTime: 0.4
+  stuckDistance: 0.15
+  wallRepulsionRadius: 2
+  wallRepulsionStrength: 0.4
+  obstacleLayer:
+    serializedVersion: 2
+    m_Bits: 1536
 --- !u!114 &8044076977500986214
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -184,37 +217,6 @@ MonoBehaviour:
   stompDamage: 35
   chargeDamage: 30
   chargeDamageInterval: 0.3
---- !u!114 &7348215645966141985
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 398206900497037025}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0f8d0b796d53506478cdd72ca2082bdc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BossMovementController
-  player: {fileID: 0}
-  animator: {fileID: 5985319794129961037}
-  maxMoveSpeed: 3.5
-  acceleration: 5
-  deceleration: 8
-  rotationSpeed: 5
-  chargeSpeed: 15
-  chargeDuration: 1.2
-  chargeRecoveryDuration: 0.6
-  chargeInertiaDeceleration: 25
-  steeringCheckDistance: 3.5
-  obstacleMemoryTime: 0.8
-  stuckCheckTime: 0.4
-  stuckDistance: 0.15
-  wallRepulsionRadius: 2
-  wallRepulsionStrength: 0.4
-  obstacleLayer:
-    serializedVersion: 2
-    m_Bits: 1536
 --- !u!114 &854049702313215581
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -229,6 +231,30 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BossHealth
   maxHealth: 1000
   currentHealth: 0
+--- !u!114 &8323098854580776650
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 398206900497037025}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eaa44120730ddb0459953653f7f1cd96, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Chaosbound.Gameplay.Bosses.BossRuntimeContext
+--- !u!114 &338019560985458648
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 398206900497037025}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d753440b4abf9049b4d437889736eba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BossRuntimeLifecycle
 --- !u!114 &-6019622996297451601
 MonoBehaviour:
   m_ObjectHideFlags: 0
