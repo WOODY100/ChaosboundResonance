@@ -3569,6 +3569,8 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: f0cf40d30d1d60e4185d0f4183207827, type: 3}
   - iconId: icon.boss
     sprite: {fileID: 21300000, guid: 81a98ed79aa54bc47b60dedb5ea0ec28, type: 3}
+  - iconId: icon.miniboss
+    sprite: {fileID: 21300000, guid: 4dc752ce982341043aa3686b259ae528, type: 3}
 --- !u!1 &1888676565
 GameObject:
   m_ObjectHideFlags: 0
@@ -4025,9 +4027,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PoolManager
   pools:
-  - prefab: {fileID: 3013966168478149684, guid: 6f88eea39272dc548a0f0360e50ceddd, type: 3}
-    initialSize: 150
-    expandAmount: 50
   - prefab: {fileID: 3005108400605144813, guid: 65f088b08ea010641be9167152f2d5c8, type: 3}
     initialSize: 30
     expandAmount: 5

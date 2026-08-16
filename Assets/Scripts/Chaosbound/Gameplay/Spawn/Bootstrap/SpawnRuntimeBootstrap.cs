@@ -224,12 +224,20 @@ namespace Chaosbound.Gameplay.Spawn.Bootstrap
                 BuildInstantiationService());
         }
 
+        private MiniBossMaterializer
+            BuildMiniBossMaterializer()
+        {
+            return new MiniBossMaterializer(
+                BuildInstantiationService());
+        }
+
         private SpawnMaterializerResolver
             BuildMaterializerResolver()
         {
             return new SpawnMaterializerResolver(
                 BuildEnemyMaterializer(),
-                BuildBossMaterializer());
+                BuildBossMaterializer(),
+                BuildMiniBossMaterializer());
         }
 
         private SpawnExecutionContextFactory

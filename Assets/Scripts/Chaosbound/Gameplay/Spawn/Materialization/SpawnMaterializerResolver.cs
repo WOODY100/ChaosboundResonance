@@ -1,7 +1,8 @@
+using Chaosbound.Content.Enemy.Bosses;
+using Chaosbound.Content.Enemy.MiniBosses;
+using Chaosbound.Gameplay.Spawn.Execution;
 using System;
 using System.Collections.Generic;
-using Chaosbound.Gameplay.Spawn.Execution;
-using Chaosbound.Content.Enemy.Bosses;
 
 namespace Chaosbound.Gameplay.Spawn.Materialization
 {
@@ -17,25 +18,36 @@ namespace Chaosbound.Gameplay.Spawn.Materialization
 
         public SpawnMaterializerResolver(
             ISpawnMaterializer enemyMaterializer,
-            ISpawnMaterializer bossMaterializer)
+            ISpawnMaterializer bossMaterializer,
+            ISpawnMaterializer miniBossMaterializer)
         {
             if (enemyMaterializer == null)
-                throw new ArgumentNullException(nameof(enemyMaterializer));
+                throw new ArgumentNullException(
+                    nameof(enemyMaterializer));
 
             if (bossMaterializer == null)
-                throw new ArgumentNullException(nameof(bossMaterializer));
+                throw new ArgumentNullException(
+                    nameof(bossMaterializer));
+
+            if (miniBossMaterializer == null)
+                throw new ArgumentNullException(
+                    nameof(miniBossMaterializer));
 
             materializers =
                 new Dictionary<Type, ISpawnMaterializer>
                 {
-                    {
-                        typeof(EnemyVariantData),
-                        enemyMaterializer
-                    },
-                    {
-                        typeof(BossData),
-                        bossMaterializer
-                    }
+            {
+                typeof(EnemyVariantData),
+                enemyMaterializer
+            },
+            {
+                typeof(BossData),
+                bossMaterializer
+            },
+            {
+                typeof(MiniBossData),
+                miniBossMaterializer
+            }
                 };
         }
 

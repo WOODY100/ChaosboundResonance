@@ -60,11 +60,11 @@ MonoBehaviour:
         m_TriggerReference:
           m_DomainId: 
           m_ContentId: 
-      - m_Id: npc_rescue
-        m_IconId: icon.npc
+      - m_Id: mini_boss
+        m_IconId: icon.miniboss
         m_TriggerReference:
-          m_DomainId: 
-          m_ContentId: 
+          m_DomainId: miniboss
+          m_ContentId: miniboss.start
       - m_Id: dynamic_event_02
         m_IconId: icon.dynamic
         m_TriggerReference:
@@ -86,7 +86,7 @@ MonoBehaviour:
       m_DistributedRules:
       - m_EventIds:
         - dynamic_event_01
-        - npc_rescue
+        - mini_boss
         - dynamic_event_02
         - dynamic_event_03
         m_StartTimeSeconds: 10

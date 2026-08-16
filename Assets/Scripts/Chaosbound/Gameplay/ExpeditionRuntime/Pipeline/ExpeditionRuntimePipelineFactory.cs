@@ -10,6 +10,9 @@ using Chaosbound.Gameplay.ExpeditionRuntime.Contracts;
 using Chaosbound.Gameplay.ExpeditionRuntime.Time.Contracts;
 using Chaosbound.Gameplay.ExpeditionRuntime.Time.Providers;
 using Chaosbound.Gameplay.ExpeditionRuntime.Time.Stages;
+using Chaosbound.Gameplay.MiniBosses;
+using Chaosbound.Gameplay.MiniBosses.Integration.Spawn;
+using Chaosbound.Gameplay.MiniBosses.Services;
 using Chaosbound.Gameplay.Spawn.Bootstrap;
 using Chaosbound.Gameplay.Spawn.Factories;
 using Chaosbound.Gameplay.Spawn.Runtime;
@@ -44,13 +47,14 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Pipeline
             BuildStages(
                 SpawnRuntime spawnRuntime)
                 {
-                    return new List<IExpeditionRuntimeStage>
-            {
-                BuildTimeStage(),
-                BuildTimelineStage(),
-                BuildBossStage(spawnRuntime),
-                BuildCombatStage(spawnRuntime)
-            };
+            return new List<IExpeditionRuntimeStage>
+                {
+                    BuildTimeStage(),
+                    BuildTimelineStage(),
+                    BuildMiniBossStage(spawnRuntime),
+                    BuildBossStage(spawnRuntime),
+                    BuildCombatStage(spawnRuntime)
+                };
         }
 
         private IExpeditionRuntimeStage
@@ -167,6 +171,17 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Pipeline
                     spawnRuntime));
         }
 
+        private IExpeditionRuntimeStage
+            BuildMiniBossStage(
+        SpawnRuntime spawnRuntime)
+        {
+            return new MiniBossStage(
+                new MiniBossDomainDirector(
+                    BuildMiniBossSpawnPlanner(),
+                    BuildMiniBossSpawnRequestTranslator(),
+                    spawnRuntime));
+        }
+
         private BossSpawnPlanner
             BuildBossSpawnPlanner()
         {
@@ -181,6 +196,25 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Pipeline
                     new MaterializableReferenceFactory());
 
             return new BossSpawnRequestTranslator(
+                new SpawnRequestFactory(),
+                entryFactory);
+        }
+
+        private MiniBossSpawnPlanner
+            BuildMiniBossSpawnPlanner()
+        {
+            return new MiniBossSpawnPlanner(
+                new MiniBossSpawnPlanBuilder());
+        }
+
+        private MiniBossSpawnRequestTranslator
+            BuildMiniBossSpawnRequestTranslator()
+        {
+            SpawnRequestEntryFactory entryFactory =
+                new SpawnRequestEntryFactory(
+                    new MaterializableReferenceFactory());
+
+            return new MiniBossSpawnRequestTranslator(
                 new SpawnRequestFactory(),
                 entryFactory);
         }

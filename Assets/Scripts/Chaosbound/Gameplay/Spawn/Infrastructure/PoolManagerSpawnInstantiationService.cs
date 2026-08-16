@@ -1,7 +1,8 @@
+using Chaosbound.Content.Enemy.Bosses;
+using Chaosbound.Content.Enemy.MiniBosses;
+using Chaosbound.Gameplay.Spawn.Integration;
 using System;
 using UnityEngine;
-using Chaosbound.Content.Enemy.Bosses;
-using Chaosbound.Gameplay.Spawn.Integration;
 
 namespace Chaosbound.Gameplay.Spawn.Infrastructure
 {
@@ -29,6 +30,13 @@ namespace Chaosbound.Gameplay.Spawn.Infrastructure
             {
                 return SpawnBoss(
                     boss,
+                    request);
+            }
+
+            if (request.Reference is MiniBossData miniBoss)
+            {
+                return SpawnMiniBoss(
+                    miniBoss,
                     request);
             }
 
@@ -76,6 +84,21 @@ namespace Chaosbound.Gameplay.Spawn.Infrastructure
 
             return GetFromPool(
                 boss.SpawnPrefab,
+                request);
+        }
+
+        private GameObject SpawnMiniBoss(
+            MiniBossData miniBoss,
+            SpawnInstantiationRequest request)
+        {
+            if (miniBoss.SpawnPrefab == null)
+            {
+                throw new InvalidOperationException(
+                    $"MiniBoss '{miniBoss.name}' does not define a spawn prefab.");
+            }
+
+            return GetFromPool(
+                miniBoss.SpawnPrefab,
                 request);
         }
 

@@ -12,6 +12,8 @@ namespace Chaosbound.Gameplay.Spawn.Contracts
 
         Boss,
 
+        MiniBoss,
+
         NPC,
 
         Event,
