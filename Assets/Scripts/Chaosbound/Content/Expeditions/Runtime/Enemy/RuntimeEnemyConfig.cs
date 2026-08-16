@@ -1,4 +1,3 @@
-using Chaosbound.Content.Expeditions.Enums.Enemy;
 using System;
 using System.Collections.Generic;
 
@@ -16,21 +15,13 @@ namespace Chaosbound.Content.Expeditions.Runtime.Enemy
         public IReadOnlyList<EnemyVariantData> Enemies { get; }
 
         /// <summary>
-        /// Gets the scheduling strategy used by the Enemy Scheduler.
-        /// </summary>
-        public EnemySchedulingPolicy SchedulingPolicy { get; }
-
-        /// <summary>
         /// Gets the tactical identity configured for the expedition.
         /// </summary>
 
         public RuntimeEnemyConfig(
-            IReadOnlyList<EnemyVariantData> enemies,
-            EnemySchedulingPolicy schedulingPolicy)
+            IReadOnlyList<EnemyVariantData> enemies)
         {
             Enemies = new List<EnemyVariantData>(enemies);
-
-            SchedulingPolicy = schedulingPolicy;
         }
     }
 }

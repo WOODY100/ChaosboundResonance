@@ -1,10 +1,8 @@
 using System;
-using UnityEngine;
 using Chaosbound.Gameplay.Spawn.Contracts;
 using Chaosbound.Gameplay.Spawn.Execution;
 using Chaosbound.Gameplay.Spawn.Models;
 using Chaosbound.Gameplay.Spawn.Services;
-using Chaosbound.Content.Expeditions.Runtime.Enemy;
 using Chaosbound.Content.Expeditions.Runtime.References;
 using Chaosbound.Content.Expeditions.Runtime.Spawn;
 using Chaosbound.Gameplay.ExpeditionRuntime.Runtime;
@@ -47,16 +45,12 @@ namespace Chaosbound.Gameplay.Spawn.Runtime
         /// </summary>
         public void Execute(
             SpawnRequest request,
-            RuntimeEnemyConfig enemyConfig,
             RuntimeSpawnConfig spawnConfig,
             RuntimeReferencesConfig references,
             ExpeditionRuntimeState expeditionRuntime)
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
-
-            if (enemyConfig == null)
-                throw new ArgumentNullException(nameof(enemyConfig));
 
             if (spawnConfig == null)
                 throw new ArgumentNullException(nameof(spawnConfig));
@@ -73,7 +67,6 @@ namespace Chaosbound.Gameplay.Spawn.Runtime
 
             executionPlanExecutor.Execute(
                 executionPlan,
-                enemyConfig,
                 spawnConfig,
                 references,
                 expeditionRuntime);

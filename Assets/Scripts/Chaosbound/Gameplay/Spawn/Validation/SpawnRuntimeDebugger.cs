@@ -69,7 +69,7 @@ namespace Chaosbound.Debugging
         /// Logs scheduling information.
         /// </summary>
         public static void LogScheduling(
-            EnemySchedulingContext context,
+            SpawnSchedulingContext context,
             int scheduledTaskCount)
         {
             if (context == null)

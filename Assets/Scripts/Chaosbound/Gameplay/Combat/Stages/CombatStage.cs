@@ -143,7 +143,6 @@ namespace Chaosbound.Gameplay.Combat.Stages
 
             spawnRuntime.Execute(
                 spawnRequest,
-                context.Config.Enemy,
                 context.Config.Spawn,
                 context.References.Runtime,
                 context.State);

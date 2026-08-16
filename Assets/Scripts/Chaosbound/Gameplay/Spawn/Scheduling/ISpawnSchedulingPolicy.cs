@@ -1,19 +1,19 @@
-using System.Collections.Generic;
 using Chaosbound.Gameplay.Spawn.Models;
+using System.Collections.Generic;
 
 namespace Chaosbound.Gameplay.Spawn.Scheduling
 {
     /// <summary>
     /// Defines the contract implemented by every
-    /// enemy scheduling policy.
+    /// Spawn Scheduling policy.
     /// </summary>
-    public interface IEnemySchedulingPolicy
+    public interface ISpawnSchedulingPolicy
     {
         /// <summary>
         /// Produces the scheduled spawn tasks required
         /// to execute the supplied scheduling context.
         /// </summary>
         IReadOnlyList<ScheduledSpawnTask> Schedule(
-            EnemySchedulingContext context);
+            SpawnSchedulingContext context);
     }
 }

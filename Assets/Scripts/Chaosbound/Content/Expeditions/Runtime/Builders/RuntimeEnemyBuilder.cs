@@ -31,8 +31,7 @@ namespace Chaosbound.Content.Expeditions.Runtime.Builders
                 ResolveEnemies(definition.Entries);
 
             return new RuntimeEnemyConfig(
-                resolvedEnemies,
-                definition.SchedulingPolicy);
+                resolvedEnemies);
         }
 
         private List<EnemyVariantData> ResolveEnemies(

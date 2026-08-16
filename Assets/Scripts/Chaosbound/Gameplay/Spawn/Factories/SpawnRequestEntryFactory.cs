@@ -23,8 +23,8 @@ namespace Chaosbound.Gameplay.Spawn.Factories
         }
 
         public SpawnRequestEntry Create(
-            IMaterializableReference reference,
-            int quantity)
+    IMaterializableReference reference,
+    int quantity)
         {
             if (reference == null)
             {
@@ -40,9 +40,13 @@ namespace Chaosbound.Gameplay.Spawn.Factories
                     "Spawn quantity must be greater than zero.");
             }
 
+            IMaterializableReference materializableReference =
+                materializableReferenceFactory.Create(
+                    reference);
+
             MaterializableDefinition materializable =
                 new MaterializableDefinition(
-                    reference);
+                    materializableReference);
 
             return new SpawnRequestEntry(
                 materializable,

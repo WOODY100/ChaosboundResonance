@@ -79,8 +79,8 @@ MonoBehaviour:
       - m_Id: boss
         m_IconId: icon.boss
         m_TriggerReference:
-          m_DomainId: 
-          m_ContentId: 
+          m_DomainId: boss
+          m_ContentId: boss.start
       m_FixedTimeRules:
       - m_EventId: boss
         m_TimeSeconds: 1500
@@ -98,7 +98,8 @@ MonoBehaviour:
     m_expeditionEvents:
       content: []
     m_miniBosses:
-      m_Content: []
+      m_Content:
+      - {fileID: 11400000, guid: 0bdf6c732541d3143ba8004392fcde9c, type: 2}
     m_bosses:
       m_Content:
       - {fileID: 11400000, guid: 8625fadf0741f644aa2ccf81c9cf1d0e, type: 2}

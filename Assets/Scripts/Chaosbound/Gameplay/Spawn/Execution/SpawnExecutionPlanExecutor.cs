@@ -21,7 +21,7 @@ namespace Chaosbound.Gameplay.Spawn.Execution
         private readonly SpawnJobFactory
             spawnJobFactory;
 
-        private readonly EnemySchedulingContextFactory
+        private readonly SpawnSchedulingContextFactory
             schedulingContextFactory;
 
         private readonly SpawnJobExecutor
@@ -32,7 +32,7 @@ namespace Chaosbound.Gameplay.Spawn.Execution
         /// </summary>
         public SpawnExecutionPlanExecutor(
             SpawnJobFactory spawnJobFactory,
-            EnemySchedulingContextFactory schedulingContextFactory,
+            SpawnSchedulingContextFactory schedulingContextFactory,
             SpawnJobExecutor spawnJobExecutor)
         {
             this.spawnJobFactory =
@@ -55,17 +55,13 @@ namespace Chaosbound.Gameplay.Spawn.Execution
         /// Executes the supplied SpawnExecutionPlan.
         /// </summary>
         public void Execute(
-    SpawnExecutionPlan executionPlan,
-    RuntimeEnemyConfig enemyConfig,
-    RuntimeSpawnConfig spawnConfig,
-    RuntimeReferencesConfig references,
-    ExpeditionRuntimeState expeditionRuntime)
+            SpawnExecutionPlan executionPlan,
+            RuntimeSpawnConfig spawnConfig,
+            RuntimeReferencesConfig references,
+            ExpeditionRuntimeState expeditionRuntime)
         {
             if (executionPlan == null)
                 throw new ArgumentNullException(nameof(executionPlan));
-
-            if (enemyConfig == null)
-                throw new ArgumentNullException(nameof(enemyConfig));
 
             if (spawnConfig == null)
                 throw new ArgumentNullException(nameof(spawnConfig));
@@ -82,10 +78,9 @@ namespace Chaosbound.Gameplay.Spawn.Execution
 
             foreach (SpawnJob job in jobs)
             {
-                EnemySchedulingContext schedulingContext =
+                SpawnSchedulingContext schedulingContext =
                     schedulingContextFactory.Create(
                         job,
-                        enemyConfig,
                         spawnConfig,
                         references,
                         expeditionRuntime);

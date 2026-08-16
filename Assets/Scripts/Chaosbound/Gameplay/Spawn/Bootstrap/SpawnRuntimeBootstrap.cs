@@ -52,8 +52,8 @@ namespace Chaosbound.Gameplay.Spawn.Bootstrap
             SpawnTaskFactory taskFactory =
                 BuildSpawnTaskFactory();
 
-            EnemyScheduler scheduler =
-                BuildEnemyScheduler(
+            SpawnScheduler scheduler =
+                BuildSpawnScheduler(
                     batchCalculator,
                     taskEntryFactory,
                     taskFactory);
@@ -86,7 +86,7 @@ namespace Chaosbound.Gameplay.Spawn.Bootstrap
         {
             return new SpawnExecutionPlanExecutor(
                 BuildSpawnJobFactory(),
-                BuildEnemySchedulingContextFactory(),
+                BuildSpawnSchedulingContextFactory(),
                 jobExecutor);
         }
 
@@ -102,10 +102,10 @@ namespace Chaosbound.Gameplay.Spawn.Bootstrap
             return new SpawnJobFactory();
         }
 
-        private EnemySchedulingContextFactory
-            BuildEnemySchedulingContextFactory()
+        private SpawnSchedulingContextFactory
+            BuildSpawnSchedulingContextFactory()
         {
-            return new EnemySchedulingContextFactory();
+            return new SpawnSchedulingContextFactory();
         }
 
         private SpawnBatchCalculator
@@ -126,29 +126,29 @@ namespace Chaosbound.Gameplay.Spawn.Bootstrap
             return new SpawnTaskFactory();
         }
 
-        private EnemyScheduler
-            BuildEnemyScheduler(
+        private SpawnScheduler
+            BuildSpawnScheduler(
                 SpawnBatchCalculator batchCalculator,
                 SpawnTaskEntryFactory taskEntryFactory,
                 SpawnTaskFactory taskFactory)
         {
-            EnemySchedulingPolicyResolver resolver =
+            SpawnSchedulingPolicyResolver resolver =
                 BuildSchedulingPolicyResolver(
                     batchCalculator,
                     taskEntryFactory,
                     taskFactory);
 
-            return new EnemyScheduler(
+            return new SpawnScheduler(
                 resolver);
         }
 
-        private EnemySchedulingPolicyResolver
+        private SpawnSchedulingPolicyResolver
             BuildSchedulingPolicyResolver(
                 SpawnBatchCalculator batchCalculator,
                 SpawnTaskEntryFactory taskEntryFactory,
                 SpawnTaskFactory taskFactory)
         {
-            return new EnemySchedulingPolicyResolver(
+            return new SpawnSchedulingPolicyResolver(
                 batchCalculator,
                 taskEntryFactory,
                 taskFactory);

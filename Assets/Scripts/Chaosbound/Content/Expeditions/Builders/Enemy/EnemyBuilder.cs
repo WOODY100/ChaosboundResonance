@@ -9,7 +9,7 @@ namespace Chaosbound.Content.Expeditions.Builders.Enemy
     public static class EnemyBuilder
     {
         public static EnemyDefinition Build(
-    EnemyAuthoring authoring)
+            EnemyAuthoring authoring)
         {
             if (authoring == null)
                 throw new ArgumentNullException(nameof(authoring));
@@ -18,8 +18,7 @@ namespace Chaosbound.Content.Expeditions.Builders.Enemy
                 BuildContent(authoring.Content);
 
             return new EnemyDefinition(
-                content,
-                authoring.SchedulingPolicy);
+                content);
         }
 
         private static List<ContentEntry> BuildContent(

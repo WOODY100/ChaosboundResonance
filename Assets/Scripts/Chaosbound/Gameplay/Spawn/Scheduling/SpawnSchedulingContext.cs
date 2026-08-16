@@ -1,27 +1,21 @@
-using Chaosbound.Gameplay.ExpeditionRuntime.Runtime;
-using Chaosbound.Content.Expeditions.Runtime.Enemy;
 using Chaosbound.Content.Expeditions.Runtime.References;
 using Chaosbound.Content.Expeditions.Runtime.Spawn;
+using Chaosbound.Gameplay.ExpeditionRuntime.Runtime;
 using Chaosbound.Gameplay.Spawn.Domain;
 using System;
 
 namespace Chaosbound.Gameplay.Spawn.Scheduling
 {
     /// <summary>
-    /// Represents the immutable context required by an enemy
-    /// scheduling policy to generate scheduled spawn tasks.
+    /// Represents the immutable context required by
+    /// Spawn Scheduling to generate scheduled spawn tasks.
     /// </summary>
-    public sealed class EnemySchedulingContext
+    public sealed class SpawnSchedulingContext
     {
         /// <summary>
         /// Gets the SpawnJob to schedule.
         /// </summary>
         public SpawnJob Job { get; }
-
-        /// <summary>
-        /// Gets the runtime enemy configuration.
-        /// </summary>
-        public RuntimeEnemyConfig EnemyConfig { get; }
 
         /// <summary>
         /// Gets the runtime spawn configuration.
@@ -38,27 +32,28 @@ namespace Chaosbound.Gameplay.Spawn.Scheduling
         /// </summary>
         public ExpeditionRuntimeState ExpeditionRuntime { get; }
 
-        public EnemySchedulingContext(
+        public SpawnSchedulingContext(
             SpawnJob job,
-            RuntimeEnemyConfig enemyConfig,
             RuntimeSpawnConfig spawnConfig,
             RuntimeReferencesConfig references,
             ExpeditionRuntimeState expeditionRuntime)
         {
-            Job = job
+            Job =
+                job
                 ?? throw new ArgumentNullException(nameof(job));
 
-            EnemyConfig = enemyConfig
-                ?? throw new ArgumentNullException(nameof(enemyConfig));
-
-            SpawnConfig = spawnConfig
+            SpawnConfig =
+                spawnConfig
                 ?? throw new ArgumentNullException(nameof(spawnConfig));
-            
-            References = references
+
+            References =
+                references
                 ?? throw new ArgumentNullException(nameof(references));
 
-            ExpeditionRuntime = expeditionRuntime
-                ?? throw new ArgumentNullException(nameof(expeditionRuntime));
+            ExpeditionRuntime =
+                expeditionRuntime
+                ?? throw new ArgumentNullException(
+                    nameof(expeditionRuntime));
         }
     }
 }

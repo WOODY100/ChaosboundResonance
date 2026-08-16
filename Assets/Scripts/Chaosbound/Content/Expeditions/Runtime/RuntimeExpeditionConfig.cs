@@ -50,7 +50,7 @@ namespace Chaosbound.Content.Expeditions.Runtime.Configs
             RuntimeCombatConfig combat,
             RuntimeTimelineConfig timeline,
             RuntimeExpeditionEventsConfig expeditionEvents,
-            RuntimeMiniBossesConfig miniBosses,
+            //RuntimeMiniBossesConfig miniBosses,
             RuntimeBossesConfig bosses,
             RuntimeRewardsConfig rewards)
         {
@@ -62,7 +62,7 @@ namespace Chaosbound.Content.Expeditions.Runtime.Configs
             Combat = combat ?? throw new ArgumentNullException(nameof(combat));
             Timeline = timeline ?? throw new ArgumentNullException(nameof(timeline));
             ExpeditionEvents = expeditionEvents ?? throw new ArgumentNullException(nameof(expeditionEvents));
-            MiniBosses = miniBosses ?? throw new ArgumentNullException(nameof(miniBosses));
+            //MiniBosses = miniBosses ?? throw new ArgumentNullException(nameof(miniBosses));
             Bosses = bosses ?? throw new ArgumentNullException(nameof(bosses));
             Rewards = rewards ?? throw new ArgumentNullException(nameof(rewards));
         }

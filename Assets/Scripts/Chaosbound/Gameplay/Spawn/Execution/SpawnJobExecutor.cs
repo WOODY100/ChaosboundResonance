@@ -20,7 +20,7 @@ namespace Chaosbound.Gameplay.Spawn.Execution
     /// </summary>
     public sealed class SpawnJobExecutor
     {
-        private readonly EnemyScheduler scheduler;
+        private readonly SpawnScheduler scheduler;
 
         private readonly SpawnJobRuntimeStateFactory
             runtimeStateFactory;
@@ -47,7 +47,7 @@ namespace Chaosbound.Gameplay.Spawn.Execution
             placementIntentFactory;
 
         public SpawnJobExecutor(
-            EnemyScheduler scheduler,
+            SpawnScheduler scheduler,
             SpawnJobRuntimeStateFactory runtimeStateFactory,
             ScheduledSpawnTaskExecutor taskExecutor,
 
@@ -102,7 +102,7 @@ namespace Chaosbound.Gameplay.Spawn.Execution
         /// Executes the supplied scheduling context.
         /// </summary>
         public void Execute(
-            EnemySchedulingContext schedulingContext)
+            SpawnSchedulingContext schedulingContext)
         {
             if (schedulingContext == null)
                 throw new ArgumentNullException(nameof(schedulingContext));

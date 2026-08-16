@@ -1,3 +1,4 @@
+using Chaosbound.Gameplay.Bosses;
 using Chaosbound.Gameplay.Combat.Director;
 using Chaosbound.Gameplay.Combat.Integration.Spawn;
 using Chaosbound.Gameplay.Combat.Runtime.Replenishment;
@@ -40,6 +41,7 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Pipeline
                 {
                     BuildTimeStage(),
                     BuildTimelineStage(),
+                    BuildBossStage(),
                     BuildCombatStage()
                 };
         }
@@ -144,6 +146,13 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Pipeline
         {
             return new TimelineStage(
                 new TimelineRuntime());
+        }
+
+        private IExpeditionRuntimeStage
+            BuildBossStage()
+        {
+            return new BossStage(
+                new BossDomainDirector());
         }
     }
 }

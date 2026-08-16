@@ -35,7 +35,7 @@ namespace Chaosbound.Gameplay.Spawn.Validation
             SpawnTaskFactory taskFactory =
                 BuildTaskFactory();
 
-            EnemyScheduler scheduler =
+            SpawnScheduler scheduler =
                 BuildScheduler(
                     batchCalculator,
                     taskEntryFactory,
@@ -78,26 +78,26 @@ namespace Chaosbound.Gameplay.Spawn.Validation
             return new SpawnTaskFactory();
         }
 
-        private EnemyScheduler BuildScheduler(
+        private SpawnScheduler BuildScheduler(
             SpawnBatchCalculator batchCalculator,
             SpawnTaskEntryFactory taskEntryFactory,
             SpawnTaskFactory taskFactory)
         {
-            EnemySchedulingPolicyResolver resolver =
+            SpawnSchedulingPolicyResolver resolver =
                 BuildSchedulingPolicyResolver(
                     batchCalculator,
                     taskEntryFactory,
                     taskFactory);
 
-            return new EnemyScheduler(resolver);
+            return new SpawnScheduler(resolver);
         }
 
-        private EnemySchedulingPolicyResolver BuildSchedulingPolicyResolver(
+        private SpawnSchedulingPolicyResolver BuildSchedulingPolicyResolver(
             SpawnBatchCalculator batchCalculator,
             SpawnTaskEntryFactory taskEntryFactory,
             SpawnTaskFactory taskFactory)
         {
-            return new EnemySchedulingPolicyResolver(
+            return new SpawnSchedulingPolicyResolver(
                 batchCalculator,
                 taskEntryFactory,
                 taskFactory);

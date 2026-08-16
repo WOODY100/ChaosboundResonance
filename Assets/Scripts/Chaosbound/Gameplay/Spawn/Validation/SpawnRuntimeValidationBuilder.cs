@@ -1,6 +1,4 @@
-using Chaosbound.Content.Expeditions.Enums.Enemy;
 using Chaosbound.Content.Expeditions.Enums.Spawn;
-using Chaosbound.Content.Expeditions.Runtime.Enemy;
 using Chaosbound.Content.Expeditions.Runtime.References;
 using Chaosbound.Content.Expeditions.Runtime.Spawn;
 using Chaosbound.Gameplay.Spawn.Definitions;
@@ -52,9 +50,6 @@ namespace Chaosbound.Gameplay.Spawn.Validation
                     identity,
                     executionEntry);
 
-            RuntimeEnemyConfig enemyConfig =
-                BuildRuntimeEnemyConfig(enemy);
-
             RuntimeSpawnConfig spawnConfig =
                 BuildRuntimeSpawnConfig();
 
@@ -64,17 +59,15 @@ namespace Chaosbound.Gameplay.Spawn.Validation
             ExpeditionRuntimeState expeditionRuntime =
                 BuildExpeditionRuntimeState();
 
-            EnemySchedulingContext schedulingContext =
+            SpawnSchedulingContext schedulingContext =
                 BuildSchedulingContext(
                     job,
-                    enemyConfig,
                     spawnConfig,
                     references,
                     expeditionRuntime);
 
             return new SpawnRuntimeValidationContext(
                 schedulingContext,
-                enemyConfig,
                 spawnConfig,
                 references);
         }
@@ -134,17 +127,6 @@ namespace Chaosbound.Gameplay.Spawn.Validation
                 executionEntry);
         }
 
-        private RuntimeEnemyConfig BuildRuntimeEnemyConfig(
-            EnemyVariantData enemy)
-        {
-            return new RuntimeEnemyConfig(
-                new[]
-                {
-            enemy
-                },
-                EnemySchedulingPolicy.Continuous);
-        }
-
         private RuntimeSpawnConfig BuildRuntimeSpawnConfig()
         {
             return new RuntimeSpawnConfig(
@@ -158,20 +140,18 @@ namespace Chaosbound.Gameplay.Spawn.Validation
             return new ExpeditionRuntimeState();
         }
 
-        private readonly EnemySchedulingContextFactory
+        private readonly SpawnSchedulingContextFactory
             schedulingContextFactory =
-        new EnemySchedulingContextFactory();
+        new SpawnSchedulingContextFactory();
 
-        private EnemySchedulingContext BuildSchedulingContext(
+        private SpawnSchedulingContext BuildSchedulingContext(
             SpawnJob job,
-            RuntimeEnemyConfig enemyConfig,
             RuntimeSpawnConfig spawnConfig,
             RuntimeReferencesConfig references,
             ExpeditionRuntimeState expeditionRuntime)
         {
             return schedulingContextFactory.Create(
                 job,
-                enemyConfig,
                 spawnConfig,
                 references,
                 expeditionRuntime);

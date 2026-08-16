@@ -1,3 +1,4 @@
+using Chaosbound.Gameplay.Bosses;
 using Chaosbound.Gameplay.Combat.Runtime;
 using Chaosbound.Gameplay.Combat.Runtime.Composition;
 using Chaosbound.Gameplay.Timeline;
@@ -22,6 +23,10 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Runtime
         private readonly TimelineRuntimeState
             timelineRuntime =
                 new TimelineRuntimeState();
+
+        private readonly BossRuntimeState
+            bossRuntime =
+                new BossRuntimeState();
 
         public CombatRuntimeComposition RuntimeComposition =>
             runtimeComposition;
@@ -56,6 +61,12 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Runtime
         /// </summary>
         public TimelineRuntimeState Timeline =>
             timelineRuntime;
+
+        /// <summary>
+        /// Gets the current boss runtime state.
+        /// </summary>
+        public BossRuntimeState Boss =>
+            bossRuntime;
 
         /// <summary>
         /// Advances the runtime clock.

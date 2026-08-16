@@ -1,5 +1,4 @@
 using Chaosbound.Shared.Enums;
-using Chaosbound.Content.Expeditions.Enums.Enemy;
 using System;
 
 namespace Chaosbound.Gameplay.Combat.Models

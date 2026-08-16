@@ -9,12 +9,13 @@ namespace Chaosbound.Gameplay.Spawn.Factories
     public sealed class MaterializableReferenceFactory
     {
         public IMaterializableReference Create(
-            EnemyVariantData enemy)
+            IMaterializableReference reference)
         {
-            if (enemy == null)
-                throw new ArgumentNullException(nameof(enemy));
+            if (reference == null)
+                throw new ArgumentNullException(
+                    nameof(reference));
 
-            return enemy;
+            return reference;
         }
     }
 }

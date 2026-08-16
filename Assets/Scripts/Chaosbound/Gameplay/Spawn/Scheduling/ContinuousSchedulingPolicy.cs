@@ -11,11 +11,10 @@ namespace Chaosbound.Gameplay.Spawn.Scheduling
     /// Schedules SpawnJobs using a continuous distribution strategy.
     /// </summary>
     public sealed class ContinuousSchedulingPolicy :
-        IEnemySchedulingPolicy
+        ISpawnSchedulingPolicy
     {
         /// <summary>
         /// Temporary spawn interval.
-        /// Will become configurable through RuntimeEnemyConfig.
         /// </summary>
         private static readonly TimeSpan DefaultSpawnInterval =
             TimeSpan.FromMilliseconds(500);
@@ -33,19 +32,22 @@ namespace Chaosbound.Gameplay.Spawn.Scheduling
         {
             this.batchCalculator =
                 batchCalculator
-                ?? throw new ArgumentNullException(nameof(batchCalculator));
+                ?? throw new ArgumentNullException(
+                    nameof(batchCalculator));
 
             this.taskEntryFactory =
                 taskEntryFactory
-                ?? throw new ArgumentNullException(nameof(taskEntryFactory));
+                ?? throw new ArgumentNullException(
+                    nameof(taskEntryFactory));
 
             this.taskFactory =
                 taskFactory
-                ?? throw new ArgumentNullException(nameof(taskFactory));
+                ?? throw new ArgumentNullException(
+                    nameof(taskFactory));
         }
 
         public IReadOnlyList<ScheduledSpawnTask> Schedule(
-            EnemySchedulingContext context)
+            SpawnSchedulingContext context)
         {
             if (context == null)
                 throw new ArgumentNullException(nameof(context));
@@ -75,7 +77,8 @@ namespace Chaosbound.Gameplay.Spawn.Scheduling
                     new ScheduledSpawnTask(
                         task,
                         TimeSpan.FromTicks(
-                            DefaultSpawnInterval.Ticks * batchIndex)));
+                            DefaultSpawnInterval.Ticks *
+                            batchIndex)));
 
                 batchIndex++;
             }
