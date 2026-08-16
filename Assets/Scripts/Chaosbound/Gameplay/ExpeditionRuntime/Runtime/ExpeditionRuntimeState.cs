@@ -1,6 +1,8 @@
 using Chaosbound.Gameplay.Bosses;
 using Chaosbound.Gameplay.Combat.Runtime;
 using Chaosbound.Gameplay.Combat.Runtime.Composition;
+using Chaosbound.Gameplay.ExpeditionRuntime.Completion.Contracts;
+using Chaosbound.Gameplay.ExpeditionRuntime.Completion.Runtime;
 using Chaosbound.Gameplay.MiniBosses;
 using Chaosbound.Gameplay.Timeline;
 using System;
@@ -31,7 +33,15 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Runtime
 
         private readonly MiniBossRuntimeState
             miniBossRuntime =
-        new MiniBossRuntimeState();
+                new MiniBossRuntimeState();
+
+        private readonly CompletionRuntimeState
+            completionRuntime =
+                new CompletionRuntimeState();
+
+        private readonly EventCompletionBuffer
+            eventCompletionBuffer =
+                new EventCompletionBuffer();
 
         public CombatRuntimeComposition RuntimeComposition =>
             runtimeComposition;
@@ -75,6 +85,19 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Runtime
 
         public MiniBossRuntimeState MiniBoss =>
             miniBossRuntime;
+
+        public CompletionRuntimeState Completion =>
+            completionRuntime;
+
+        public EventCompletionBuffer EventCompletions =>
+            eventCompletionBuffer;
+
+        public void ReportEventCompleted(
+            EventCompleted completedEvent)
+        {
+            eventCompletionBuffer.Add(
+                completedEvent);
+        }
 
         /// <summary>
         /// Advances the runtime clock.

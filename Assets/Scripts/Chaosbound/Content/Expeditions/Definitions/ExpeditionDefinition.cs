@@ -1,8 +1,8 @@
 using Chaosbound.Content.Expeditions.Definitions.Bosses;
 using Chaosbound.Content.Expeditions.Definitions.Combat;
+using Chaosbound.Content.Expeditions.Definitions.Completion;
 using Chaosbound.Content.Expeditions.Definitions.Enemy;
 using Chaosbound.Content.Expeditions.Definitions.ExpeditionEvents;
-using Chaosbound.Content.Expeditions.Definitions.General;
 using Chaosbound.Content.Expeditions.Definitions.Identity;
 using Chaosbound.Content.Expeditions.Definitions.MiniBosses;
 using Chaosbound.Content.Expeditions.Definitions.Presentation;
@@ -34,11 +34,6 @@ namespace Chaosbound.Content.Expeditions.Definitions
         /// Gets the presentation configuration.
         /// </summary>
         public PresentationDefinition Presentation { get; }
-
-        /// <summary>
-        /// Gets the general expedition configuration.
-        /// </summary>
-        public GeneralDefinition General { get; }
 
         /// <summary>
         /// Gets the world generation configuration.
@@ -85,11 +80,15 @@ namespace Chaosbound.Content.Expeditions.Definitions
         /// </summary>
         public RewardsDefinition Rewards { get; }
 
+        /// <summary>
+        /// Gets the expedition completion configuration.
+        /// </summary>
+        public CompletionDefinition Completion { get; }
+
         public ExpeditionDefinition(
             SceneDefinition scene,
             IdentityDefinition identity,
             PresentationDefinition presentation,
-            GeneralDefinition general,
             WorldDefinition world,
             EnemyDefinition enemy,
             SpawnDefinition spawn,
@@ -98,7 +97,8 @@ namespace Chaosbound.Content.Expeditions.Definitions
             ExpeditionEventsDefinition expeditionEvents,
             MiniBossesDefinition miniBosses,
             BossesDefinition bosses,
-            RewardsDefinition rewards)
+            RewardsDefinition rewards,
+            CompletionDefinition completion)
         {
             if (scene == null)
                 throw new ArgumentNullException(nameof(scene));
@@ -108,9 +108,6 @@ namespace Chaosbound.Content.Expeditions.Definitions
 
             if (presentation == null)
                 throw new ArgumentNullException(nameof(presentation));
-
-            if (general == null)
-                throw new ArgumentNullException(nameof(general));
 
             if (world == null)
                 throw new ArgumentNullException(nameof(world));
@@ -139,10 +136,12 @@ namespace Chaosbound.Content.Expeditions.Definitions
             if (rewards == null) 
                 throw new ArgumentNullException(nameof(rewards));
 
+            if (completion == null) 
+                throw new ArgumentNullException(nameof(completion));
+
             Scene = scene;
             Identity = identity;
             Presentation = presentation;
-            General = general;
             World = world;
             Enemy = enemy;
             Spawn = spawn;
@@ -152,6 +151,7 @@ namespace Chaosbound.Content.Expeditions.Definitions
             MiniBosses = miniBosses;
             Bosses = bosses;
             Rewards = rewards;
+            Completion = completion;
         }
     }
 }

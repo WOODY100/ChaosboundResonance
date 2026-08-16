@@ -4,6 +4,7 @@ using Chaosbound.Content.Expeditions.Runtime.Configs;
 using Chaosbound.Core.Composition;
 using Chaosbound.Gameplay.Bosses.Integration.Spawn;
 using Chaosbound.Gameplay.Bosses.Services;
+using Chaosbound.Gameplay.ExpeditionRuntime.Completion.Contracts;
 using Chaosbound.Gameplay.ExpeditionRuntime.Context;
 using Chaosbound.Gameplay.ExpeditionRuntime.Factories;
 using Chaosbound.Gameplay.ExpeditionRuntime.Runtime;
@@ -266,10 +267,42 @@ namespace Chaosbound.Gameplay.Bosses.Tests
                     "after Boss death.");
             }
 
+            if (context.State.EventCompletions.Count != 1)
+            {
+                throw new Exception(
+                    "Boss death did not produce exactly one " +
+                    "EventCompleted.");
+            }
+
+            EventCompleted bossCompletedEvent =
+                context.State.EventCompletions.Events[0];
+
+            string expectedEventId =
+                $"boss.{context.State.Boss.SelectedBoss.Id}";
+
+            if (bossCompletedEvent.DomainId !=
+                "boss")
+            {
+                throw new Exception(
+                    "Boss completion event has an incorrect DomainId. " +
+                    $"Expected=boss | " +
+                    $"Actual={bossCompletedEvent.DomainId}");
+            }
+
+            if (bossCompletedEvent.EventId !=
+                expectedEventId)
+            {
+                throw new Exception(
+                    "Boss completion event has an incorrect EventId. " +
+                    $"Expected={expectedEventId} | " +
+                    $"Actual={bossCompletedEvent.EventId}");
+            }
+
             Debug.Log(
                 "[Boss Domain Test] " +
-                "PASS 3: Boss death propagated through " +
-                "BossRuntimeLifecycle and completed the Boss Domain.");
+                "PASS 4: Boss death produced EventCompleted. " +
+                $"DomainId={bossCompletedEvent.DomainId} | " +
+                $"EventId={bossCompletedEvent.EventId}");
 
             Debug.Log(
                 "[Boss Domain Test] " +

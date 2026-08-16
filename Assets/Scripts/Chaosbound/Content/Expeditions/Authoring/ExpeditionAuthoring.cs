@@ -2,11 +2,11 @@ using Chaosbound.Content.Expeditions.Authoring.Bosses;
 using Chaosbound.Content.Expeditions.Authoring.Combat;
 using Chaosbound.Content.Expeditions.Authoring.Enemy;
 using Chaosbound.Content.Expeditions.Authoring.ExpeditionEvents;
-using Chaosbound.Content.Expeditions.Authoring.General;
 using Chaosbound.Content.Expeditions.Authoring.Identity;
 using Chaosbound.Content.Expeditions.Authoring.MiniBosses;
 using Chaosbound.Content.Expeditions.Authoring.Presentation;
 using Chaosbound.Content.Expeditions.Authoring.Rewards;
+using Chaosbound.Content.Expeditions.Authoring.Completion;
 using Chaosbound.Content.Expeditions.Authoring.Scene;
 using Chaosbound.Content.Expeditions.Authoring.Spawn;
 using Chaosbound.Content.Expeditions.Authoring.Timeline;
@@ -37,11 +37,6 @@ namespace Chaosbound.Content.Expeditions.Authoring
 
         [SerializeField]
         private PresentationAuthoring m_presentation = new();
-
-        [Header("General")]
-
-        [SerializeField]
-        private GeneralAuthoring m_general = new();
 
         [Header("World")]
 
@@ -88,13 +83,16 @@ namespace Chaosbound.Content.Expeditions.Authoring
         [SerializeField]
         private RewardsAuthoring m_rewards = new();
 
+        [Header("Completion")]
+
+        [SerializeField]
+        private CompletionAuthoring m_completion = new();
+
         public SceneAuthoring Scene => m_Scene;
 
         public IdentityAuthoring Identity => m_identity;
 
         public PresentationAuthoring Presentation => m_presentation;
-
-        public GeneralAuthoring General => m_general;
 
         public WorldAuthoring World => m_world;
 
@@ -113,5 +111,7 @@ namespace Chaosbound.Content.Expeditions.Authoring
         public BossesAuthoring Bosses => m_bosses;
 
         public RewardsAuthoring Rewards => m_rewards;
+
+        public CompletionAuthoring Completion => m_completion;
     }
 }

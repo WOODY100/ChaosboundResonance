@@ -2,13 +2,13 @@ using Chaosbound.Content.Expeditions.Runtime.Bosses;
 using Chaosbound.Content.Expeditions.Runtime.Combat;
 using Chaosbound.Content.Expeditions.Runtime.Enemy;
 using Chaosbound.Content.Expeditions.Runtime.ExpeditionEvents;
-using Chaosbound.Content.Expeditions.Runtime.General;
 using Chaosbound.Content.Expeditions.Runtime.MiniBosses;
 using Chaosbound.Content.Expeditions.Runtime.Rewards;
 using Chaosbound.Content.Expeditions.Runtime.Scene;
 using Chaosbound.Content.Expeditions.Runtime.Spawn;
 using Chaosbound.Content.Expeditions.Runtime.Timeline;
 using Chaosbound.Content.Expeditions.Runtime.World;
+using Chaosbound.Content.Expeditions.Runtime.Completion;
 using System;
 
 namespace Chaosbound.Content.Expeditions.Runtime.Configs
@@ -20,8 +20,6 @@ namespace Chaosbound.Content.Expeditions.Runtime.Configs
     public sealed class RuntimeExpeditionConfig
     {
         public RuntimeSceneConfig Scene { get; }
-
-        public RuntimeGeneralConfig General { get; }
 
         public RuntimeWorldConfig World { get; }
 
@@ -41,9 +39,10 @@ namespace Chaosbound.Content.Expeditions.Runtime.Configs
 
         public RuntimeRewardsConfig Rewards { get; }
 
+        public RuntimeCompletionConfig Completion { get; }
+
         public RuntimeExpeditionConfig(
             RuntimeSceneConfig scene,
-            RuntimeGeneralConfig general,
             RuntimeWorldConfig world,
             RuntimeEnemyConfig enemy,
             RuntimeSpawnConfig spawn,
@@ -52,10 +51,10 @@ namespace Chaosbound.Content.Expeditions.Runtime.Configs
             RuntimeExpeditionEventsConfig expeditionEvents,
             RuntimeMiniBossesConfig miniBosses,
             RuntimeBossesConfig bosses,
-            RuntimeRewardsConfig rewards)
+            RuntimeRewardsConfig rewards,
+            RuntimeCompletionConfig completion)
         {
             Scene = scene ?? throw new ArgumentNullException(nameof(scene));
-            General = general ?? throw new ArgumentNullException(nameof(general));
             World = world ?? throw new ArgumentNullException(nameof(world));
             Enemy = enemy ?? throw new ArgumentNullException(nameof(enemy));
             Spawn = spawn ?? throw new ArgumentNullException(nameof(spawn));
@@ -65,6 +64,7 @@ namespace Chaosbound.Content.Expeditions.Runtime.Configs
             MiniBosses = miniBosses ?? throw new ArgumentNullException(nameof(miniBosses));
             Bosses = bosses ?? throw new ArgumentNullException(nameof(bosses));
             Rewards = rewards ?? throw new ArgumentNullException(nameof(rewards));
+            Completion = completion ?? throw new ArgumentNullException(nameof(completion));
         }
     }
 }

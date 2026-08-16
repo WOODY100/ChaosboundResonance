@@ -1,3 +1,4 @@
+using Chaosbound.Gameplay.ExpeditionRuntime.Completion.Contracts;
 using System;
 using UnityEngine;
 
@@ -12,9 +13,14 @@ namespace Chaosbound.Gameplay.Bosses
     public sealed class BossRuntimeLifecycle :
         MonoBehaviour
     {
+        private const string BossDomainId =
+            "boss";
+
         private BossHealth health;
 
         private BossRuntimeContext runtimeContext;
+
+        private bool completionReported;
 
         private void Awake()
         {
@@ -35,6 +41,8 @@ namespace Chaosbound.Gameplay.Bosses
         {
             health.OnDeath -=
                 HandleDeath;
+
+            completionReported = false;
         }
 
         private void HandleDeath(
@@ -46,10 +54,27 @@ namespace Chaosbound.Gameplay.Bosses
                     "BossRuntimeContext has not been initialized.");
             }
 
+            if (completionReported)
+            {
+                return;
+            }
+
             runtimeContext
                 .ExpeditionRuntime
                 .Boss
                 .Complete();
+
+            string eventId =
+                $"{BossDomainId}.{runtimeContext.Boss.Id}";
+
+            runtimeContext
+                .ExpeditionRuntime
+                .ReportEventCompleted(
+                    new EventCompleted(
+                        BossDomainId,
+                        eventId));
+
+            completionReported = true;
         }
     }
 }

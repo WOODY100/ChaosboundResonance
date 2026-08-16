@@ -1,14 +1,15 @@
 using Chaosbound.Content.Expeditions.Assets;
 using Chaosbound.Content.Expeditions.Authoring;
+using Chaosbound.Content.Expeditions.Authoring.Completion;
 using Chaosbound.Content.Expeditions.Builders.Bosses;
 using Chaosbound.Content.Expeditions.Builders.Combat;
 using Chaosbound.Content.Expeditions.Builders.Enemy;
 using Chaosbound.Content.Expeditions.Builders.ExpeditionEvents;
-using Chaosbound.Content.Expeditions.Builders.General;
 using Chaosbound.Content.Expeditions.Builders.Identity;
 using Chaosbound.Content.Expeditions.Builders.MiniBosses;
 using Chaosbound.Content.Expeditions.Builders.Presentation;
 using Chaosbound.Content.Expeditions.Builders.Rewards;
+using Chaosbound.Content.Expeditions.Builders.Completion;
 using Chaosbound.Content.Expeditions.Builders.Scene;
 using Chaosbound.Content.Expeditions.Builders.Spawn;
 using Chaosbound.Content.Expeditions.Builders.Timeline;
@@ -16,9 +17,9 @@ using Chaosbound.Content.Expeditions.Builders.World;
 using Chaosbound.Content.Expeditions.Definitions;
 using Chaosbound.Content.Expeditions.Definitions.Bosses;
 using Chaosbound.Content.Expeditions.Definitions.Combat;
+using Chaosbound.Content.Expeditions.Definitions.Completion;
 using Chaosbound.Content.Expeditions.Definitions.Enemy;
 using Chaosbound.Content.Expeditions.Definitions.ExpeditionEvents;
-using Chaosbound.Content.Expeditions.Definitions.General;
 using Chaosbound.Content.Expeditions.Definitions.Identity;
 using Chaosbound.Content.Expeditions.Definitions.MiniBosses;
 using Chaosbound.Content.Expeditions.Definitions.Presentation;
@@ -57,9 +58,6 @@ namespace Chaosbound.Content.Expeditions.Builders.Expedition
             PresentationDefinition presentation =
                 PresentationBuilder.Build(authoring.Presentation);
 
-            GeneralDefinition general =
-                GeneralBuilder.Build(authoring.General);
-
             WorldDefinition world =
                 WorldBuilder.Build(authoring.World);
 
@@ -87,11 +85,13 @@ namespace Chaosbound.Content.Expeditions.Builders.Expedition
             RewardsDefinition rewards =
                 RewardsBuilder.Build(authoring.Rewards);
 
+            CompletionDefinition completion =
+                CompletionBuilder.Build(authoring.Completion);
+
             return new ExpeditionDefinition(
                 scene,
                 identity,
                 presentation,
-                general,
                 world,
                 enemy,
                 spawn,
@@ -100,7 +100,8 @@ namespace Chaosbound.Content.Expeditions.Builders.Expedition
                 expeditionEvents,
                 miniBosses,
                 bosses,
-                rewards);
+                rewards,
+                completion);
         }
     }
 }

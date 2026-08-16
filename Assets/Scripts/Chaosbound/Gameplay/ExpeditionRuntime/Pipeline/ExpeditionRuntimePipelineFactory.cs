@@ -6,6 +6,8 @@ using Chaosbound.Gameplay.Combat.Integration.Spawn;
 using Chaosbound.Gameplay.Combat.Runtime.Replenishment;
 using Chaosbound.Gameplay.Combat.Services;
 using Chaosbound.Gameplay.Combat.Stages;
+using Chaosbound.Gameplay.ExpeditionRuntime.Completion;
+using Chaosbound.Gameplay.ExpeditionRuntime.Completion.Services;
 using Chaosbound.Gameplay.ExpeditionRuntime.Contracts;
 using Chaosbound.Gameplay.ExpeditionRuntime.Time.Contracts;
 using Chaosbound.Gameplay.ExpeditionRuntime.Time.Providers;
@@ -53,6 +55,7 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Pipeline
                     BuildTimelineStage(),
                     BuildMiniBossStage(spawnRuntime),
                     BuildBossStage(spawnRuntime),
+                    BuildCompletionStage(),
                     BuildCombatStage(spawnRuntime)
                 };
         }
@@ -169,6 +172,14 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Pipeline
                     BuildBossSpawnPlanner(),
                     BuildBossSpawnRequestTranslator(),
                     spawnRuntime));
+        }
+
+        private IExpeditionRuntimeStage
+            BuildCompletionStage()
+        {
+            return new CompletionStage(
+                new CompletionDomainDirector(
+                    new CompletionRequirementMatcher()));
         }
 
         private IExpeditionRuntimeStage

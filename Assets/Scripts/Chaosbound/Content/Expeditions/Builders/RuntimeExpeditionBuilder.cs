@@ -1,7 +1,4 @@
-using Chaosbound.Content.Expeditions.Definitions.Bosses;
 using Chaosbound.Content.Expeditions.Definitions.ExpeditionEvents;
-using Chaosbound.Content.Expeditions.Definitions.General;
-using Chaosbound.Content.Expeditions.Definitions.MiniBosses;
 using Chaosbound.Content.Expeditions.Definitions.Rewards;
 using Chaosbound.Content.Expeditions.Definitions.Scene;
 using Chaosbound.Content.Expeditions.Definitions.Spawn;
@@ -11,10 +8,10 @@ using Chaosbound.Content.Expeditions.Directors.Timeline;
 using Chaosbound.Content.Expeditions.Requests;
 using Chaosbound.Content.Expeditions.Runtime.Bosses;
 using Chaosbound.Content.Expeditions.Runtime.Combat;
+using Chaosbound.Content.Expeditions.Runtime.Completion;
 using Chaosbound.Content.Expeditions.Runtime.Configs;
 using Chaosbound.Content.Expeditions.Runtime.Enemy;
 using Chaosbound.Content.Expeditions.Runtime.ExpeditionEvents;
-using Chaosbound.Content.Expeditions.Runtime.General;
 using Chaosbound.Content.Expeditions.Runtime.MiniBosses;
 using Chaosbound.Content.Expeditions.Runtime.Rewards;
 using Chaosbound.Content.Expeditions.Runtime.Scene;
@@ -38,6 +35,8 @@ namespace Chaosbound.Content.Expeditions.Runtime.Builders
 
         private readonly RuntimeMiniBossesBuilder runtimeMiniBossesBuilder;
 
+        private readonly RuntimeCompletionBuilder runtimeCompletionBuilder;
+
         public RuntimeExpeditionConfig BuildRunConfig(
             ExpeditionRequest request)
         {
@@ -46,7 +45,6 @@ namespace Chaosbound.Content.Expeditions.Runtime.Builders
 
             // Build runtime configurations.
             RuntimeSceneConfig scene = BuildScene(request.Definition.Scene);
-            RuntimeGeneralConfig general = BuildGeneral(request.Definition.General);
             RuntimeWorldConfig world = BuildWorld(request.Definition.World);
             RuntimeEnemyConfig enemy = runtimeEnemyBuilder.BuildEnemy(request.Definition.Enemy);
             RuntimeSpawnConfig spawn = BuildSpawn(request.Definition.Spawn);
@@ -56,12 +54,12 @@ namespace Chaosbound.Content.Expeditions.Runtime.Builders
             RuntimeMiniBossesConfig miniBosses = runtimeMiniBossesBuilder.BuildMiniBosses(request.Definition.MiniBosses);
             RuntimeBossesConfig bosses = runtimeBossesBuilder.BuildBosses(request.Definition.Bosses);
             RuntimeRewardsConfig rewards = BuildRewards(request.Definition.Rewards);
+            RuntimeCompletionConfig completion = runtimeCompletionBuilder.BuildCompletion(request.Definition.Completion);
 
             // Assemble runtime.
             RuntimeExpeditionConfig runtimeConfig =
                 new RuntimeExpeditionConfig(
                     scene,
-                    general,
                     world,
                     enemy,
                     spawn,
@@ -70,7 +68,8 @@ namespace Chaosbound.Content.Expeditions.Runtime.Builders
                     expeditionEvents,
                     miniBosses,
                     bosses,
-                    rewards);
+                    rewards,
+                    completion);
 
             return runtimeConfig;
         }
@@ -85,17 +84,6 @@ namespace Chaosbound.Content.Expeditions.Runtime.Builders
 
             return new RuntimeSceneConfig(
                 definition.SceneName);
-        }
-
-        private RuntimeGeneralConfig BuildGeneral(
-            GeneralDefinition definition)
-        {
-            if (definition == null)
-                throw new ArgumentNullException(nameof(definition));
-
-            return new RuntimeGeneralConfig(
-                definition.CompletionCondition,
-                definition.BaseDifficulty);
         }
 
         private RuntimeWorldConfig BuildWorld(
@@ -125,7 +113,8 @@ namespace Chaosbound.Content.Expeditions.Runtime.Builders
             RuntimeEnemyBuilder runtimeEnemyBuilder,
             RuntimeCombatBuilder runtimeCombatBuilder,
             RuntimeBossesBuilder runtimeBossesBuilder,
-            RuntimeMiniBossesBuilder runtimeMiniBossesBuilder)
+            RuntimeMiniBossesBuilder runtimeMiniBossesBuilder,
+            RuntimeCompletionBuilder runtimeCompletionBuilder)
         {
             this.runtimeEnemyBuilder =
                 runtimeEnemyBuilder
@@ -146,6 +135,11 @@ namespace Chaosbound.Content.Expeditions.Runtime.Builders
             runtimeMiniBossesBuilder
             ?? throw new ArgumentNullException(
                 nameof(runtimeMiniBossesBuilder));
+
+            this.runtimeCompletionBuilder =
+            runtimeCompletionBuilder
+            ?? throw new ArgumentNullException(
+                nameof(runtimeCompletionBuilder));
         }
 
         private RuntimeTimelineConfig BuildTimeline(

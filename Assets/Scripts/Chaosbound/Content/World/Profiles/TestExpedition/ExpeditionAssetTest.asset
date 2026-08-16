@@ -21,9 +21,6 @@ MonoBehaviour:
       m_displayName: New Expedition
       m_description: Escena de prueba
       m_iconId: 01
-    m_general:
-      m_CompletionCondition: 0
-      m_BaseDifficulty: 0
     m_world:
       m_Width: 21
       m_Height: 21
@@ -104,3 +101,6 @@ MonoBehaviour:
       - {fileID: 11400000, guid: 8625fadf0741f644aa2ccf81c9cf1d0e, type: 2}
     m_rewards:
       m_Content: []
+    m_completion:
+      m_DomainId: boss
+      m_EventId: boss.minotaur
