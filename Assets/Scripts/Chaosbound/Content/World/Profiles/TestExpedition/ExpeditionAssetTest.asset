@@ -30,6 +30,7 @@ MonoBehaviour:
       - {fileID: 11400000, guid: f5819a66bba33df429698f45f81dc0aa, type: 2}
       - {fileID: 11400000, guid: bd38301ec6fd209459cdc8d6199033cd, type: 2}
       - {fileID: 11400000, guid: e3af66caf09419f47a5046e7d60ef0e3, type: 2}
+      - {fileID: 11400000, guid: 9c8dab747c2ebb048a0f8a012bda248b, type: 2}
     m_Spawn:
       m_Placement: 0
       m_Activation: 0
@@ -38,10 +39,17 @@ MonoBehaviour:
       m_TargetProgression:
         m_Profile: {fileID: 11400000, guid: a6d178e8c653a1c4fb1077d8c043eab9, type: 2}
       m_Tactics:
-      - m_MaximumTarget: 6
-        m_NormalPercentage: 0.7
-        m_RunnerPercentage: 0.2
-        m_TankPercentage: 0.1
+      - m_MaximumTarget: 4
+        m_Melee:
+          m_Percentage: 0.5
+          m_NormalPercentage: 0.7
+          m_RunnerPercentage: 0.2
+          m_TankPercentage: 0.1
+        m_Ranged:
+          m_Percentage: 0.5
+          m_NormalPercentage: 1
+          m_RunnerPercentage: 0
+          m_TankPercentage: 0
         m_Replenishment:
           m_InitialDelay: 0.5
           m_RecoveryInterval: 0.5
@@ -52,22 +60,7 @@ MonoBehaviour:
           m_FlankPercentage: 0.25
     m_Timeline:
       m_EventDefinitions:
-      - m_Id: dynamic_event_01
-        m_IconId: icon.dynamic
-        m_TriggerReference:
-          m_DomainId: 
-          m_ContentId: 
-      - m_Id: mini_boss
-        m_IconId: icon.miniboss
-        m_TriggerReference:
-          m_DomainId: miniboss
-          m_ContentId: miniboss.start
-      - m_Id: dynamic_event_02
-        m_IconId: icon.dynamic
-        m_TriggerReference:
-          m_DomainId: 
-          m_ContentId: 
-      - m_Id: dynamic_event_03
+      - m_Id: dynamic
         m_IconId: icon.dynamic
         m_TriggerReference:
           m_DomainId: 
@@ -79,23 +72,19 @@ MonoBehaviour:
           m_ContentId: boss.start
       m_FixedTimeRules:
       - m_EventId: boss
-        m_TimeSeconds: 60
+        m_TimeSeconds: 600
       m_DistributedRules:
       - m_EventIds:
-        - dynamic_event_01
-        - mini_boss
-        - dynamic_event_02
-        - dynamic_event_03
-        m_StartTimeSeconds: 10
+        - dynamic
+        m_StartTimeSeconds: 5
         m_EndTimeType: 1
         m_EndTimeSeconds: 0
       m_CompletionTarget:
-        m_TimeSeconds: 60
+        m_TimeSeconds: 600
     m_expeditionEvents:
       content: []
     m_miniBosses:
-      m_Content:
-      - {fileID: 11400000, guid: 0bdf6c732541d3143ba8004392fcde9c, type: 2}
+      m_Content: []
     m_bosses:
       m_Content:
       - {fileID: 11400000, guid: 8625fadf0741f644aa2ccf81c9cf1d0e, type: 2}
@@ -103,4 +92,5 @@ MonoBehaviour:
       m_Content: []
     m_completion:
       m_DomainId: boss
-      m_EventId: boss.minotaur
+      m_EventId: boss
+      m_ExitPortal: {fileID: 11400000, guid: 5bb45a6a7e36f2446be456743d7fd510, type: 2}

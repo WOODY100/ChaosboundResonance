@@ -1,3 +1,4 @@
+#if CHAOSBOUND_LEGACY_ENEMY
 using UnityEngine;
 
 public class EnemyCore : MonoBehaviour
@@ -33,3 +34,4 @@ public class EnemyCore : MonoBehaviour
         DistanceToPlayer = Mathf.Max(0, centerDistance - enemyRadius - playerRadius);
     }
 }
+#endif

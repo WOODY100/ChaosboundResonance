@@ -1,5 +1,79 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1127098753558309531
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1513284614673940113}
+  - component: {fileID: 1708164764980877955}
+  - component: {fileID: 9174948421162488278}
+  m_Layer: 10
+  m_Name: ColliderNotWalkable
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1513284614673940113
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1127098753558309531}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 452178400687959877}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1708164764980877955
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1127098753558309531}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifier
+  m_SerializedVersion: 0
+  m_OverrideArea: 1
+  m_Area: 1
+  m_OverrideGenerateLinks: 0
+  m_GenerateLinks: 0
+  m_IgnoreFromBuild: 0
+  m_ApplyToChildren: 1
+  m_AffectedAgents: ffffffff
+--- !u!65 &9174948421162488278
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1127098753558309531}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.2296638, y: 1.4000001, z: 0.6308094}
+  m_Center: {x: 0.0061104298, y: 0.70000005, z: -0.000001013279}
 --- !u!1 &4761127996153371789
 GameObject:
   m_ObjectHideFlags: 0
@@ -12,7 +86,7 @@ GameObject:
   - component: {fileID: 5300568070287826139}
   - component: {fileID: 1709920423951907764}
   - component: {fileID: 6151884256369709591}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: P_PROP_gravestone_base_dungeon_02
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -123,7 +197,7 @@ GameObject:
   - component: {fileID: 2424769375248748655}
   - component: {fileID: 6417509067168513543}
   - component: {fileID: 6217612080140646000}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: P_PROP_gravestone_dungeon_02
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -211,7 +285,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 452178400687959877}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: Gravestone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -233,5 +307,6 @@ Transform:
   m_Children:
   - {fileID: 7619802878041757229}
   - {fileID: 2424769375248748655}
+  - {fileID: 1513284614673940113}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

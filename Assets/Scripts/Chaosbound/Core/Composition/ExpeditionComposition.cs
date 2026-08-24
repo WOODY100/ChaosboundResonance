@@ -1,6 +1,7 @@
 using Chaosbound.Content.Expeditions.Runtime;
 using Chaosbound.Content.Expeditions.Runtime.Configs;
 using Chaosbound.Content.Expeditions.Runtime.World;
+using Chaosbound.Gameplay.Navigation;
 using System;
 using UnityEngine;
 
@@ -33,10 +34,12 @@ namespace Chaosbound.Core.Composition
         public void Initialize()
         {
             Validate();
-            
+
             InitializeRuntime();
 
             InitializeWorld();
+
+            InitializeNavigation();
 
             InitializeGameplay();
 
@@ -120,6 +123,36 @@ namespace Chaosbound.Core.Composition
             decorationGenerator.Initialize(world);
 
             decorationGenerator.GenerateDecoration();
+        }
+
+        private void InitializeNavigation()
+        {
+            OpenWorldMapGenerator mapGenerator =
+                sceneContext.MapGenerator;
+
+            ExpeditionNavigation navigation =
+                sceneContext.Navigation;
+
+            if (mapGenerator == null)
+            {
+                throw new InvalidOperationException(
+                    "OpenWorldMapGenerator is missing.");
+            }
+
+            if (!mapGenerator.IsGenerated)
+            {
+                throw new InvalidOperationException(
+                    "World must be generated before initializing navigation.");
+            }
+
+            if (navigation == null)
+            {
+                throw new InvalidOperationException(
+                    "ExpeditionNavigation is missing.");
+            }
+
+            navigation.Initialize(
+                mapGenerator.GeneratedWorldBounds);
         }
 
         private void InitializeRuntime()

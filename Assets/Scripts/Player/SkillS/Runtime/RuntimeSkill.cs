@@ -252,20 +252,51 @@ public class RuntimeSkill
     // EVOLUTION LOGIC
     // ===============================
 
-    private void ApplyEvolutionToStats(SkillEvolutionDefinition evolution)
+    private void ApplyEvolutionToStats(
+    SkillEvolutionDefinition evolution)
     {
-        stats.FlatDamage += evolution.BonusFlatDamage;
-        stats.PercentDamage += evolution.BonusPercentDamage;
-        stats.PercentSpawnRadius += evolution.BonusSpawnRadiusPercent;
-        stats.PercentImpactRadius += evolution.BonusImpactRadiusPercent;
-        stats.PercentCooldownReduction += evolution.BonusCooldownPercent;
-        stats.ExtraCount += evolution.BonusExtraCount;
+        stats.FlatDamage +=
+            evolution.BonusFlatDamage;
+
+        stats.PercentDamage +=
+            evolution.BonusPercentDamage;
+
+        stats.PercentSpawnRadius +=
+            evolution.BonusSpawnRadiusPercent;
+
+        stats.PercentImpactRadius +=
+            evolution.BonusImpactRadiusPercent;
+
+        stats.PercentCooldownReduction +=
+            evolution.BonusCooldownPercent;
+
+        stats.PercentDuration +=
+            evolution.BonusDurationPercent;
+
+        stats.ExtraCount +=
+            evolution.BonusExtraCount;
+
+        stats.PenetrationCount +=
+            evolution.BonusPenetration;
+
+        stats.ChainCount +=
+            evolution.BonusChainCount;
+
+        if (evolution.GrantsExplosion ||
+            evolution.GrantsExplosionOnHit)
+        {
+            stats.GrantsExplosion = true;
+        }
+
+        if (evolution.GrantsSplit)
+        {
+            stats.GrantsSplit = true;
+        }
 
         if (evolution.GrantsChaining)
+        {
             stats.GrantsChaining = true;
-
-        if (evolution.GrantsExplosionOnHit)
-            stats.GrantsExplosion = true;
+        }
     }
 
     // ===============================

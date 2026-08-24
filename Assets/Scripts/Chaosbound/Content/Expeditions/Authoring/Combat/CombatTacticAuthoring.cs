@@ -19,22 +19,18 @@ namespace Chaosbound.Content.Expeditions.Authoring.Combat
         [Header("Composition")]
 
         [SerializeField]
-        private float m_NormalPercentage = 0.70f;
+        private CombatTypeCompositionAuthoring m_Melee =
+            new();
 
         [SerializeField]
-        private float m_RunnerPercentage = 0.20f;
+        private CombatTypeCompositionAuthoring m_Ranged =
+            new();
 
-        [SerializeField]
-        private float m_TankPercentage = 0.10f;
+        public CombatTypeCompositionAuthoring Melee =>
+            m_Melee;
 
-        public float NormalPercentage =>
-            m_NormalPercentage;
-
-        public float RunnerPercentage =>
-            m_RunnerPercentage;
-
-        public float TankPercentage =>
-            m_TankPercentage;
+        public CombatTypeCompositionAuthoring Ranged =>
+            m_Ranged;
 
         [Header("Replenishment")]
 

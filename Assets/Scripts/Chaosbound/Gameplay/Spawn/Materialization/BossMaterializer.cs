@@ -15,6 +15,9 @@ namespace Chaosbound.Gameplay.Spawn.Materialization
     public sealed class BossMaterializer :
         ISpawnMaterializer
     {
+        private const string BossDomainId =
+            "boss";
+
         private readonly ISpawnInstantiationService
             instantiationService;
 
@@ -27,7 +30,7 @@ namespace Chaosbound.Gameplay.Spawn.Materialization
                     nameof(instantiationService));
         }
 
-        public void Materialize(
+        public GameObject Materialize(
             SpawnExecutionContext context)
         {
             if (context == null)
@@ -63,6 +66,12 @@ namespace Chaosbound.Gameplay.Spawn.Materialization
                 instantiationService.Spawn(
                     request);
 
+            if (spawnedObject == null)
+            {
+                throw new InvalidOperationException(
+                    $"Boss '{boss.name}' could not be materialized.");
+            }
+
             BossRuntimeContext runtimeContext =
                 spawnedObject.GetComponent<BossRuntimeContext>();
 
@@ -76,6 +85,17 @@ namespace Chaosbound.Gameplay.Spawn.Materialization
             runtimeContext.Initialize(
                 boss,
                 context.RuntimeState.ExpeditionRuntime);
+
+            context
+                .RuntimeState
+                .ExpeditionRuntime
+                .RuntimeReferences
+                .Register(
+                    BossDomainId,
+                    boss.Id,
+                    spawnedObject.transform);
+
+            return spawnedObject;
         }
     }
 }

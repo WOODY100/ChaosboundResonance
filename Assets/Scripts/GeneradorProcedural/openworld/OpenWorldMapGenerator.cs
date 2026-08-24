@@ -75,6 +75,13 @@ public class OpenWorldMapGenerator : MonoBehaviour
 
     private bool[,] occupied;
 
+    private Bounds generatedWorldBounds;
+
+    public Bounds GeneratedWorldBounds =>
+        generatedWorldBounds;
+
+    public bool IsGenerated { get; private set; }
+
     private int GenerationWidth =>
         runtimeWorldConfig != null
             ? GetRuntimeWidth()
@@ -118,6 +125,10 @@ public class OpenWorldMapGenerator : MonoBehaviour
         GenerateCenterSpawnTile();
         GenerateCenterTiles();
 
+        UpdateGeneratedWorldBounds();
+
+        IsGenerated = true;
+
         if (generateDecorationAfterMap)
         {
             OpenWorldDecorationGenerator decorationGenerator =
@@ -126,6 +137,40 @@ public class OpenWorldMapGenerator : MonoBehaviour
             if (decorationGenerator != null)
                 decorationGenerator.GenerateDecoration();
         }
+    }
+
+    private void UpdateGeneratedWorldBounds()
+    {
+        int mapWidth = GenerationWidth;
+        int mapHeight = GenerationHeight;
+
+        float worldWidth =
+            mapWidth * tileSize;
+
+        float worldDepth =
+            mapHeight * tileSize;
+
+        Vector3 center;
+
+        if (centerMapOnOrigin)
+        {
+            center = Vector3.zero;
+        }
+        else
+        {
+            center = new Vector3(
+                (mapWidth - 1) * tileSize * 0.5f,
+                0f,
+                (mapHeight - 1) * tileSize * 0.5f);
+        }
+
+        generatedWorldBounds =
+            new Bounds(
+                center,
+                new Vector3(
+                    worldWidth,
+                    0f,
+                    worldDepth));
     }
 
     private int GetRuntimeWidth()
@@ -699,5 +744,10 @@ public class OpenWorldMapGenerator : MonoBehaviour
         propsParent = null;
         obstaclesParent = null;
         lightsParent = null;
+
+        generatedWorldBounds =
+            default;
+
+        IsGenerated = false;
     }
 }

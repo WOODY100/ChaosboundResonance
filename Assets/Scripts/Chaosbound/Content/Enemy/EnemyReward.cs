@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿#if CHAOSBOUND_LEGACY_ENEMY
+using Chaosbound.Gameplay.ExpeditionRuntime.Runtime;
+using UnityEngine;
 
 public class EnemyReward : MonoBehaviour
 {
@@ -57,6 +59,18 @@ public class EnemyReward : MonoBehaviour
         if (pickup != null)
         {
             pickup.Initialize(experienceReward);
+
+            ExpeditionRuntimeState runtimeState =
+                RunManager.Instance
+                    .ExpeditionDirector
+                    .RuntimeState;
+
+            if (runtimeState != null)
+            {
+                runtimeState
+                    .XPFragments
+                    .Register(pickup);
+            }
         }
     }
 
@@ -79,3 +93,4 @@ public class EnemyReward : MonoBehaviour
         return fallback;
     }
 }
+#endif

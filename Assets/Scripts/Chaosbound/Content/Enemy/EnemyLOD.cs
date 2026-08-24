@@ -1,3 +1,4 @@
+#if CHAOSBOUND_LEGACY_ENEMY
 using UnityEngine;
 
 public class EnemyLOD : MonoBehaviour
@@ -49,3 +50,4 @@ public class EnemyLOD : MonoBehaviour
         }
     }
 }
+#endif

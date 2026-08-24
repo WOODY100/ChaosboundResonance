@@ -1,12 +1,20 @@
 using UnityEngine;
 
 [RequireComponent(typeof(PlayerHealth))]
-public class PlayerDamageReceiver : MonoBehaviour
+public class PlayerDamageReceiver : MonoBehaviour, IDamageable
 {
     [Header("Damage Settings")]
     [SerializeField] private float globalDamageCooldown = 0.5f;
 
     public bool IsInvulnerable { get; set; }
+
+    public bool IsDead =>
+    health == null || health.CurrentHealth <= 0f;
+
+    public void TakeDamage(DamageData damageData)
+    {
+        ReceiveDamage(damageData);
+    }
 
     private PlayerHealth health;
     private float lastDamageTime;

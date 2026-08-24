@@ -8,11 +8,9 @@ namespace Chaosbound.Content.Expeditions.Runtime.Combat
     {
         public int MaximumTarget { get; }
 
-        public float NormalPercentage { get; }
+        public RuntimeCombatTypeComposition Melee { get; }
 
-        public float RunnerPercentage { get; }
-
-        public float TankPercentage { get; }
+        public RuntimeCombatTypeComposition Ranged { get; }
 
         public RuntimeReplenishmentProfile Replenishment { get; }
 
@@ -20,19 +18,23 @@ namespace Chaosbound.Content.Expeditions.Runtime.Combat
 
         public RuntimeCombatTactic(
             int maximumTarget,
-            float normalPercentage,
-            float runnerPercentage,
-            float tankPercentage,
+            RuntimeCombatTypeComposition melee,
+            RuntimeCombatTypeComposition ranged,
             RuntimeReplenishmentProfile replenishment,
             RuntimeSpawnPatternProfile spawnPattern)
         {
-            MaximumTarget = maximumTarget;
+            MaximumTarget =
+                maximumTarget;
 
-            NormalPercentage = normalPercentage;
+            Melee =
+                melee
+                ?? throw new ArgumentNullException(
+                    nameof(melee));
 
-            RunnerPercentage = runnerPercentage;
-
-            TankPercentage = tankPercentage;
+            Ranged =
+                ranged
+                ?? throw new ArgumentNullException(
+                    nameof(ranged));
 
             Replenishment =
                 replenishment

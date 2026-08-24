@@ -42,7 +42,7 @@ namespace Chaosbound.Gameplay.Spawn.Execution
 
         private readonly SpawnReferenceResolver
             referenceResolver;
-        
+
         private readonly PlacementIntentFactory
             placementIntentFactory;
 
@@ -50,15 +50,11 @@ namespace Chaosbound.Gameplay.Spawn.Execution
             SpawnScheduler scheduler,
             SpawnJobRuntimeStateFactory runtimeStateFactory,
             ScheduledSpawnTaskExecutor taskExecutor,
-
             PlacementIntentFactory placementIntentFactory,
-
             SpawnReferenceContextFactory referenceContextFactory,
             SpawnReferenceResolver referenceResolver,
-
             PlacementContextFactory placementContextFactory,
             PlacementResolver placementResolver,
-
             ResolvedSpawnTaskFactory resolvedTaskFactory)
         {
             this.scheduler =
@@ -101,11 +97,14 @@ namespace Chaosbound.Gameplay.Spawn.Execution
         /// <summary>
         /// Executes the supplied scheduling context.
         /// </summary>
-        public void Execute(
+        public IReadOnlyList<GameObject> Execute(
             SpawnSchedulingContext schedulingContext)
         {
             if (schedulingContext == null)
                 throw new ArgumentNullException(nameof(schedulingContext));
+
+            List<GameObject> materializedObjects =
+                new List<GameObject>();
 
             IReadOnlyList<ScheduledSpawnTask> tasks =
                 scheduler.Schedule(
@@ -119,14 +118,15 @@ namespace Chaosbound.Gameplay.Spawn.Execution
             foreach (ScheduledSpawnTask task in tasks)
             {
                 PlacementIntent placementIntent =
-                placementIntentFactory.Create(
-                    task,
-                    schedulingContext.SpawnConfig);
+                    placementIntentFactory.Create(
+                        task,
+                        schedulingContext.SpawnConfig);
 
                 SpawnReferenceContext referenceContext =
                     referenceContextFactory.Create(
                         schedulingContext.SpawnConfig,
-                        schedulingContext.References);
+                        schedulingContext.References,
+                        schedulingContext.ExpeditionRuntime);
 
                 SpawnReferenceResult reference =
                     referenceResolver.Resolve(
@@ -146,15 +146,35 @@ namespace Chaosbound.Gameplay.Spawn.Execution
                     placementResolver.Resolve(
                         placementContext);
 
+                if (!placement.IsSuccess)
+                {
+                    continue;
+                }
+
                 ResolvedSpawnTask resolvedTask =
                     resolvedTaskFactory.Create(
                         task,
                         placement);
 
-                taskExecutor.Execute(
-                    resolvedTask,
-                    runtimeState);
+                GameObject materializedObject =
+                    taskExecutor.Execute(
+                        resolvedTask,
+                        runtimeState);
+
+                if (materializedObject != null)
+                {
+                    materializedObjects.Add(
+                        materializedObject);
+                }
+
+                if (materializedObject != null)
+                {
+                    materializedObjects.Add(
+                        materializedObject);
+                }
             }
+
+            return materializedObjects;
         }
     }
 }

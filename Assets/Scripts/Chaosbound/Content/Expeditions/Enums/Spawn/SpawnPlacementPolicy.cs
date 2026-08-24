@@ -14,6 +14,8 @@ namespace Chaosbound.Content.Expeditions.Enums.Spawn
 
         RandomRegion = 3,
 
-        FixedPosition = 4
+        FixedPosition = 4,
+
+        AroundCompletionOrigin = 5
     }
 }

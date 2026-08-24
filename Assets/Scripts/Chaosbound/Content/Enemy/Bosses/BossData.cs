@@ -1,3 +1,4 @@
+using Chaosbound.Gameplay.Spawn.Contracts;
 using Chaosbound.Shared.Contracts;
 using Chaosbound.Shared.Identifiers;
 using UnityEngine;
@@ -8,7 +9,8 @@ namespace Chaosbound.Content.Enemy.Bosses
         menuName = "Chaosbound/Enemies/Boss")]
     public sealed class BossData :
         ScriptableObject,
-        IMaterializableReference
+        IMaterializableReference,
+        ISpawnPrefabReference
     {
         [Header("Identity")]
 

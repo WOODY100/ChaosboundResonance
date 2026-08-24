@@ -1,3 +1,4 @@
+using Chaosbound.Gameplay.Navigation;
 using System;
 using UnityEngine;
 
@@ -30,6 +31,9 @@ namespace Chaosbound.Core.Composition
         [SerializeField]
         private OpenWorldDecorationGenerator decorationGenerator;
 
+        [SerializeField]
+        private ExpeditionNavigation navigation;
+
         //==========================================================
         // Public Properties
         //==========================================================
@@ -41,6 +45,8 @@ namespace Chaosbound.Core.Composition
 
         public OpenWorldMapGenerator MapGenerator => mapGenerator;
         public OpenWorldDecorationGenerator DecorationGenerator => decorationGenerator;
+
+        public ExpeditionNavigation Navigation => navigation;
 
         //==========================================================
         // Unity
@@ -89,6 +95,7 @@ namespace Chaosbound.Core.Composition
             
             ValidateReference(mapGenerator, nameof(mapGenerator));
             ValidateReference(decorationGenerator, nameof(decorationGenerator));
+            ValidateReference(navigation, nameof(navigation));
         }
 
         private void ValidateReference(

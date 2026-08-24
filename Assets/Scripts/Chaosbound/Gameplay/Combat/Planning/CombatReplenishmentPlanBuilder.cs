@@ -34,6 +34,7 @@ namespace Chaosbound.Gameplay.Combat.Services
                 EnemyTier.Tier1;
 
             return new CombatReplenishmentPlan(
+                decision.CombatType,
                 decision.Role,
                 decision.Quantity,
                 tier);

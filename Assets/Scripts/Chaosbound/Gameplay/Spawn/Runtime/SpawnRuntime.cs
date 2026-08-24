@@ -1,11 +1,13 @@
-using System;
+using Chaosbound.Content.Expeditions.Runtime.References;
+using Chaosbound.Content.Expeditions.Runtime.Spawn;
+using Chaosbound.Gameplay.ExpeditionRuntime.Runtime;
 using Chaosbound.Gameplay.Spawn.Contracts;
 using Chaosbound.Gameplay.Spawn.Execution;
 using Chaosbound.Gameplay.Spawn.Models;
 using Chaosbound.Gameplay.Spawn.Services;
-using Chaosbound.Content.Expeditions.Runtime.References;
-using Chaosbound.Content.Expeditions.Runtime.Spawn;
-using Chaosbound.Gameplay.ExpeditionRuntime.Runtime;
+using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace Chaosbound.Gameplay.Spawn.Runtime
 {
@@ -21,6 +23,16 @@ namespace Chaosbound.Gameplay.Spawn.Runtime
 
         private readonly SpawnExecutionPlanExecutor
             executionPlanExecutor;
+
+        private readonly List<GameObject>
+            materializedObjects =
+                new List<GameObject>();
+
+        public IReadOnlyList<GameObject> MaterializedObjects =>
+            materializedObjects;
+
+        public int MaterializedObjectCount =>
+            materializedObjects.Count;
 
         /// <summary>
         /// Creates a new SpawnRuntime.
@@ -65,11 +77,34 @@ namespace Chaosbound.Gameplay.Spawn.Runtime
                 spawnExecutor.Execute(
                     request);
 
-            executionPlanExecutor.Execute(
-                executionPlan,
-                spawnConfig,
-                references,
-                expeditionRuntime);
+            IReadOnlyList<GameObject> spawnedObjects =
+                executionPlanExecutor.Execute(
+                    executionPlan,
+                    spawnConfig,
+                    references,
+                    expeditionRuntime);
+
+            materializedObjects.AddRange(
+                spawnedObjects);
+        }
+
+        public void Cleanup()
+        {
+            foreach (GameObject obj in materializedObjects)
+            {
+                if (obj == null)
+                    continue;
+
+                PooledObject pooledObject =
+                    obj.GetComponent<PooledObject>();
+
+                if (pooledObject != null)
+                {
+                    pooledObject.ReturnToPool();
+                }
+            }
+
+            materializedObjects.Clear();
         }
     }
 }

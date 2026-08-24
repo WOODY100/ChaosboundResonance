@@ -31,12 +31,26 @@ namespace Chaosbound.Content.Expeditions.Runtime.Spawn
             SpawnActivationPolicy activation,
             IReadOnlyList<SpawnConstraintPolicy> spawnConstraints)
         {
-            Placement = placement;
-            Activation = activation;
+            Placement =
+                placement;
+
+            Activation =
+                activation;
+
             SpawnConstraints =
                 new List<SpawnConstraintPolicy>(
                     spawnConstraints
-                        ?? throw new ArgumentNullException(nameof(spawnConstraints)));
+                    ?? throw new ArgumentNullException(
+                        nameof(spawnConstraints)));
+        }
+
+        public RuntimeSpawnConfig WithPlacement(
+            SpawnPlacementPolicy placement)
+        {
+            return new RuntimeSpawnConfig(
+                placement,
+                Activation,
+                SpawnConstraints);
         }
     }
 }

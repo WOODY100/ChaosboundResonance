@@ -205,6 +205,15 @@ namespace Chaosbound.Gameplay.MiniBosses.Tests
                 "ALL TESTS PASSED.");
         }
 
+        private sealed class NullTargetProvider :
+            ITargetProvider
+        {
+            public Transform GetTarget()
+            {
+                return null;
+            }
+        }
+
         private static TimelineEntry FindMiniBossTimelineEntry(
             RuntimeExpeditionConfig config)
         {

@@ -4,6 +4,7 @@ using Chaosbound.Gameplay.Spawn.Infrastructure;
 using Chaosbound.Gameplay.Spawn.Integration;
 using Chaosbound.Gameplay.Spawn.Placement.Models;
 using System;
+using UnityEngine;
 
 namespace Chaosbound.Gameplay.Spawn.Materialization
 {
@@ -25,7 +26,7 @@ namespace Chaosbound.Gameplay.Spawn.Materialization
                     nameof(instantiationService));
         }
 
-        public void Materialize(
+        public GameObject Materialize(
             SpawnExecutionContext context)
         {
             if (context == null)
@@ -57,8 +58,17 @@ namespace Chaosbound.Gameplay.Spawn.Materialization
                     placement.Position,
                     placement.Rotation);
 
-            instantiationService.Spawn(
-                request);
+            GameObject spawnedObject =
+                instantiationService.Spawn(
+                    request);
+
+            if (spawnedObject == null)
+            {
+                throw new InvalidOperationException(
+                    $"MiniBoss '{miniBoss.name}' could not be materialized.");
+            }
+
+            return spawnedObject;
         }
     }
 }

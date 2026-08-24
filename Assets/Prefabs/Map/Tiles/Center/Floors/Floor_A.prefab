@@ -2015,8 +2015,9 @@ GameObject:
   m_Component:
   - component: {fileID: 9217086266835270084}
   - component: {fileID: 4120259435684323300}
-  m_Layer: 0
-  m_Name: Collider
+  - component: {fileID: 3231348547859084374}
+  m_Layer: 12
+  m_Name: ColliderWallkable
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2058,6 +2059,26 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 12, y: 0.1, z: 12}
   m_Center: {x: 0, y: 0.05, z: 0}
+--- !u!114 &3231348547859084374
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7915429351177245104}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifier
+  m_SerializedVersion: 0
+  m_OverrideArea: 1
+  m_Area: 0
+  m_OverrideGenerateLinks: 0
+  m_GenerateLinks: 0
+  m_IgnoreFromBuild: 0
+  m_ApplyToChildren: 1
+  m_AffectedAgents: ffffffff
 --- !u!1 &8206954783757439846
 GameObject:
   m_ObjectHideFlags: 0

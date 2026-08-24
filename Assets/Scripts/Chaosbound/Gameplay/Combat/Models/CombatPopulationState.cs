@@ -1,67 +1,150 @@
+using Chaosbound.Shared.Enums;
 using System;
 
 namespace Chaosbound.Gameplay.Combat.Models
 {
+    /// <summary>
+    /// Represents the current number of alive enemies
+    /// grouped by combat type and tactical role.
+    /// </summary>
     public readonly struct CombatPopulationState
     {
-        public int NormalCount { get; }
+        private readonly int meleeNormalCount;
+        private readonly int meleeRunnerCount;
+        private readonly int meleeTankCount;
 
-        public int RunnerCount { get; }
+        private readonly int rangedNormalCount;
+        private readonly int rangedRunnerCount;
+        private readonly int rangedTankCount;
 
-        public int TankCount { get; }
-
+        /// <summary>
+        /// Gets the total number of alive enemies.
+        /// </summary>
         public int TotalCount =>
-            NormalCount +
-            RunnerCount +
-            TankCount;
+            meleeNormalCount +
+            meleeRunnerCount +
+            meleeTankCount +
+            rangedNormalCount +
+            rangedRunnerCount +
+            rangedTankCount;
 
         public CombatPopulationState(
-            int normalCount,
-            int runnerCount,
-            int tankCount)
+            int meleeNormalCount,
+            int meleeRunnerCount,
+            int meleeTankCount,
+            int rangedNormalCount,
+            int rangedRunnerCount,
+            int rangedTankCount)
         {
-            if (normalCount < 0)
-            {
-                throw new ArgumentOutOfRangeException(
-                    nameof(normalCount));
-            }
+            ValidateCount(
+                meleeNormalCount,
+                nameof(meleeNormalCount));
 
-            if (runnerCount < 0)
-            {
-                throw new ArgumentOutOfRangeException(
-                    nameof(runnerCount));
-            }
+            ValidateCount(
+                meleeRunnerCount,
+                nameof(meleeRunnerCount));
 
-            if (tankCount < 0)
-            {
-                throw new ArgumentOutOfRangeException(
-                    nameof(tankCount));
-            }
+            ValidateCount(
+                meleeTankCount,
+                nameof(meleeTankCount));
 
-            NormalCount = normalCount;
-            RunnerCount = runnerCount;
-            TankCount = tankCount;
+            ValidateCount(
+                rangedNormalCount,
+                nameof(rangedNormalCount));
+
+            ValidateCount(
+                rangedRunnerCount,
+                nameof(rangedRunnerCount));
+
+            ValidateCount(
+                rangedTankCount,
+                nameof(rangedTankCount));
+
+            this.meleeNormalCount =
+                meleeNormalCount;
+
+            this.meleeRunnerCount =
+                meleeRunnerCount;
+
+            this.meleeTankCount =
+                meleeTankCount;
+
+            this.rangedNormalCount =
+                rangedNormalCount;
+
+            this.rangedRunnerCount =
+                rangedRunnerCount;
+
+            this.rangedTankCount =
+                rangedTankCount;
         }
 
+        /// <summary>
+        /// Gets the current population for a specific
+        /// combat type and tactical role.
+        /// </summary>
         public int GetCount(
-            Shared.Enums.EnemyRole role)
+            EnemyCombatType combatType,
+            EnemyRole role)
         {
-            switch (role)
+            switch (combatType)
             {
-                case Shared.Enums.EnemyRole.Normal:
-                    return NormalCount;
+                case EnemyCombatType.Melee:
 
-                case Shared.Enums.EnemyRole.Runner:
-                    return RunnerCount;
+                    switch (role)
+                    {
+                        case EnemyRole.Normal:
+                            return meleeNormalCount;
 
-                case Shared.Enums.EnemyRole.Tank:
-                    return TankCount;
+                        case EnemyRole.Runner:
+                            return meleeRunnerCount;
+
+                        case EnemyRole.Tank:
+                            return meleeTankCount;
+
+                        default:
+                            throw new ArgumentOutOfRangeException(
+                                nameof(role),
+                                role,
+                                "Unsupported Combat EnemyRole.");
+                    }
+
+                case EnemyCombatType.Ranged:
+
+                    switch (role)
+                    {
+                        case EnemyRole.Normal:
+                            return rangedNormalCount;
+
+                        case EnemyRole.Runner:
+                            return rangedRunnerCount;
+
+                        case EnemyRole.Tank:
+                            return rangedTankCount;
+
+                        default:
+                            throw new ArgumentOutOfRangeException(
+                                nameof(role),
+                                role,
+                                "Unsupported Combat EnemyRole.");
+                    }
 
                 default:
                     throw new ArgumentOutOfRangeException(
-                        nameof(role),
-                        role,
-                        "Unsupported Combat EnemyRole.");
+                        nameof(combatType),
+                        combatType,
+                        "Unsupported EnemyCombatType.");
+            }
+        }
+
+        private static void ValidateCount(
+            int count,
+            string parameterName)
+        {
+            if (count < 0)
+            {
+                throw new ArgumentOutOfRangeException(
+                    parameterName);
             }
         }
     }

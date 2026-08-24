@@ -5,22 +5,29 @@ namespace Chaosbound.Gameplay.Combat.Models
 {
     /// <summary>
     /// Represents the reconciliation state for a single
-    /// enemy role within the current combat.
+    /// combat type and enemy role within the current combat.
     /// </summary>
     public sealed class CombatReconciliationEntry
     {
+        /// <summary>
+        /// Gets the combat type represented by this entry.
+        /// </summary>
+        public EnemyCombatType CombatType { get; }
+
         /// <summary>
         /// Gets the enemy role represented by this entry.
         /// </summary>
         public EnemyRole Role { get; }
 
         /// <summary>
-        /// Gets the desired number of enemies for this role.
+        /// Gets the desired number of enemies for this
+        /// combat type and role.
         /// </summary>
         public int TargetQuantity { get; }
 
         /// <summary>
-        /// Gets the current number of alive enemies for this role.
+        /// Gets the current number of alive enemies for this
+        /// combat type and role.
         /// </summary>
         public int CurrentQuantity { get; }
 
@@ -30,12 +37,14 @@ namespace Chaosbound.Gameplay.Combat.Models
         public int MissingQuantity { get; }
 
         /// <summary>
-        /// Gets whether this role requires replenishment.
+        /// Gets whether this combat type and role requires
+        /// replenishment.
         /// </summary>
         public bool RequiresReplenishment =>
             MissingQuantity > 0;
 
         public CombatReconciliationEntry(
+            EnemyCombatType combatType,
             EnemyRole role,
             int targetQuantity,
             int currentQuantity)
@@ -52,9 +61,17 @@ namespace Chaosbound.Gameplay.Combat.Models
                     nameof(currentQuantity));
             }
 
-            Role = role;
-            TargetQuantity = targetQuantity;
-            CurrentQuantity = currentQuantity;
+            CombatType =
+                combatType;
+
+            Role =
+                role;
+
+            TargetQuantity =
+                targetQuantity;
+
+            CurrentQuantity =
+                currentQuantity;
 
             MissingQuantity =
                 Math.Max(

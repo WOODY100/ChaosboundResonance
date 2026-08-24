@@ -10,7 +10,7 @@ public class MinotaurBossController : BossControllerBase
     [SerializeField] private GameObject jumpWarningPrefab;
     [SerializeField] private GameObject jumpImpactVFX;
     [SerializeField] private float jumpImpactRadius = 3f;
-    //[SerializeField] private float jumpRecoveryDuration = 1.2f;
+
     [SerializeField] private float meleeRadius = 2f;
     [SerializeField] private float stompRadius = 3f;
     [SerializeField] private float chargeRadius = 1.5f;
@@ -60,6 +60,13 @@ public class MinotaurBossController : BossControllerBase
         base.Update();
 
         HandleChargeDamage();
+    }
+
+    protected override void OnEnable()
+    {
+        base.OnEnable();
+
+        ResetMinotaurRuntimeState();
     }
 
     protected override void EvaluateCombat()
@@ -179,6 +186,39 @@ public class MinotaurBossController : BossControllerBase
     public void StopCharge()
     {
         movement?.StopCharge();
+    }
+
+    private void ResetMinotaurRuntimeState()
+    {
+        StopAllCoroutines();
+
+        chargeDamageTimer = 0f;
+        isChargeDamageActive = false;
+        ghostTimer = 0f;
+
+        jumpTargetPosition = Vector3.zero;
+
+        CleanupJumpWarning();
+    }
+
+    private void CleanupJumpWarning()
+    {
+        if (currentJumpWarning == null)
+        {
+            currentWarningScript = null;
+            return;
+        }
+
+        PooledObject pooled =
+            currentJumpWarning.GetComponent<PooledObject>();
+
+        if (pooled != null)
+            pooled.ReturnToPool();
+        else
+            Destroy(currentJumpWarning);
+
+        currentJumpWarning = null;
+        currentWarningScript = null;
     }
 
     public void StartJumpMovement()

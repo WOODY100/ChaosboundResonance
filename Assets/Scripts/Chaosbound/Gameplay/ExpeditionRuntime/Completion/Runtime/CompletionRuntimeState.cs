@@ -34,12 +34,24 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Completion.Runtime
             private set;
         }
 
+        /// <summary>
+        /// Gets the completed expedition result.
+        /// </summary>
+        public ExpeditionCompleted? CompletedExpedition
+        {
+            get;
+            private set;
+        }
+
         public CompletionRuntimeState()
         {
             State =
                 CompletionDomainState.Inactive;
 
             CompletedEvent =
+                null;
+
+            CompletedExpedition =
                 null;
         }
 
@@ -56,6 +68,9 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Completion.Runtime
             CompletedEvent =
                 null;
 
+            CompletedExpedition =
+                null;
+
             State =
                 CompletionDomainState.Waiting;
         }
@@ -68,6 +83,10 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Completion.Runtime
         {
             CompletedEvent =
                 completedEvent;
+
+            CompletedExpedition =
+                new ExpeditionCompleted(
+                    completedEvent.Origin);
 
             State =
                 CompletionDomainState.Completed;

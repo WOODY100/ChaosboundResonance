@@ -19,7 +19,8 @@ namespace Chaosbound.Content.Expeditions.Builders.Completion
 
             return new CompletionDefinition(
                 authoring.DomainId,
-                authoring.EventId);
+                authoring.EventId,
+                authoring.ExitPortal);
         }
     }
 }

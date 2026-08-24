@@ -1,5 +1,6 @@
 using Chaosbound.Content.Enemy.Bosses;
 using Chaosbound.Content.Enemy.MiniBosses;
+using Chaosbound.Content.Portal.Exit;
 using Chaosbound.Gameplay.Spawn.Integration;
 using System;
 using UnityEngine;
@@ -40,6 +41,13 @@ namespace Chaosbound.Gameplay.Spawn.Infrastructure
                     request);
             }
 
+            if (request.Reference is ExitPortalData exitPortal)
+            {
+                return SpawnExitPortal(
+                    exitPortal,
+                    request);
+            }
+
             throw new InvalidOperationException(
                 $"Unsupported materializable reference " +
                 $"'{request.Reference.GetType().Name}'.");
@@ -59,15 +67,6 @@ namespace Chaosbound.Gameplay.Spawn.Infrastructure
                 GetFromPool(
                     enemy.SpawnPrefab,
                     request);
-
-            EnemyVariantController controller =
-                instance.GetComponent<EnemyVariantController>();
-
-            if (controller != null)
-            {
-                controller.SetVariant(
-                    enemy);
-            }
 
             return instance;
         }
@@ -99,6 +98,22 @@ namespace Chaosbound.Gameplay.Spawn.Infrastructure
 
             return GetFromPool(
                 miniBoss.SpawnPrefab,
+                request);
+        }
+
+        private GameObject SpawnExitPortal(
+            ExitPortalData exitPortal,
+            SpawnInstantiationRequest request)
+        {
+            if (exitPortal.SpawnPrefab == null)
+            {
+                throw new InvalidOperationException(
+                    $"Exit Portal '{exitPortal.name}' " +
+                    "does not define a spawn prefab.");
+            }
+
+            return GetFromPool(
+                exitPortal.SpawnPrefab,
                 request);
         }
 

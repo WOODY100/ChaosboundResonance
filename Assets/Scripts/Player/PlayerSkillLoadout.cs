@@ -109,4 +109,23 @@ public class PlayerSkillLoadout : MonoBehaviour
 
         return count;
     }
+
+    public void ClearAllSkills()
+    {
+        bool changed = false;
+
+        for (int i = 0; i < MaxSlots; i++)
+        {
+            if (skillSlots[i] != null)
+            {
+                skillSlots[i] = null;
+                changed = true;
+            }
+        }
+
+        if (changed)
+        {
+            OnLoadoutChanged?.Invoke();
+        }
+    }
 }

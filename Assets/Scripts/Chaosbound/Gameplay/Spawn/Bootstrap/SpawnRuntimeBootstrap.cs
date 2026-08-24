@@ -13,6 +13,9 @@ using Chaosbound.Gameplay.Spawn.Reference.Resolvers;
 using Chaosbound.Gameplay.Spawn.Runtime;
 using Chaosbound.Gameplay.Spawn.Scheduling;
 using Chaosbound.Gameplay.Spawn.Services;
+using Chaosbound.Gameplay.Spawn.Placement.Contracts;
+using Chaosbound.Gameplay.Spawn.Placement.Validation;
+using UnityEngine;
 
 namespace Chaosbound.Gameplay.Spawn.Bootstrap
 {
@@ -82,7 +85,7 @@ namespace Chaosbound.Gameplay.Spawn.Bootstrap
 
         private SpawnExecutionPlanExecutor
             BuildSpawnExecutionPlanExecutor(
-        SpawnJobExecutor jobExecutor)
+                SpawnJobExecutor jobExecutor)
         {
             return new SpawnExecutionPlanExecutor(
                 BuildSpawnJobFactory(),
@@ -178,11 +181,19 @@ namespace Chaosbound.Gameplay.Spawn.Bootstrap
             return new AroundPlayerPlacementStrategy();
         }
 
+        private NearReferencePlacementStrategy
+            BuildNearReferencePlacementStrategy()
+        {
+            return new NearReferencePlacementStrategy();
+        }
+
         private PlacementResolver
             BuildPlacementResolver()
         {
             return new PlacementResolver(
-                BuildAroundPlayerPlacementStrategy());
+                BuildAroundPlayerPlacementStrategy(),
+                BuildNearReferencePlacementStrategy(),
+                BuildPlacementValidator());
         }
 
         private SpawnReferenceContextFactory
@@ -197,11 +208,18 @@ namespace Chaosbound.Gameplay.Spawn.Bootstrap
             return new PlayerReferenceProvider();
         }
 
+        private CompletionOriginReferenceProvider
+            BuildCompletionOriginReferenceProvider()
+        {
+            return new CompletionOriginReferenceProvider();
+        }
+
         private SpawnReferenceResolver
             BuildSpawnReferenceResolver()
         {
             return new SpawnReferenceResolver(
-                BuildPlayerReferenceProvider());
+                BuildPlayerReferenceProvider(),
+                BuildCompletionOriginReferenceProvider());
         }
 
         private ISpawnInstantiationService
@@ -231,13 +249,21 @@ namespace Chaosbound.Gameplay.Spawn.Bootstrap
                 BuildInstantiationService());
         }
 
+        private ExitPortalMaterializer
+            BuildExitPortalMaterializer()
+        {
+            return new ExitPortalMaterializer(
+                BuildInstantiationService());
+        }
+
         private SpawnMaterializerResolver
             BuildMaterializerResolver()
         {
             return new SpawnMaterializerResolver(
                 BuildEnemyMaterializer(),
                 BuildBossMaterializer(),
-                BuildMiniBossMaterializer());
+                BuildMiniBossMaterializer(),
+                BuildExitPortalMaterializer());
         }
 
         private SpawnExecutionContextFactory
@@ -247,7 +273,7 @@ namespace Chaosbound.Gameplay.Spawn.Bootstrap
         }
 
         private ScheduledSpawnTaskExecutor
-    BuildScheduledSpawnTaskExecutor()
+            BuildScheduledSpawnTaskExecutor()
         {
             return new ScheduledSpawnTaskExecutor(
                 BuildSpawnExecutionContextFactory(),
@@ -255,11 +281,32 @@ namespace Chaosbound.Gameplay.Spawn.Bootstrap
         }
 
         private ResolvedSpawnTaskFactory
-    BuildResolvedSpawnTaskFactory()
+            BuildResolvedSpawnTaskFactory()
         {
             return new ResolvedSpawnTaskFactory();
         }
 
+        private IPlacementFootprintResolver
+            cementFootprintResolver()
+        {
+            return new PlacementFootprintResolver();
+        }
 
+        private IPlacementFootprintResolver
+            BuildPlacementFootprintResolver()
+        {
+            return new PlacementFootprintResolver();
+        }
+
+        private PlacementValidator
+            BuildPlacementValidator()
+        {
+            LayerMask obstacleLayer =
+                LayerMask.GetMask("Obstacle");
+
+            return new PlacementValidator(
+                BuildPlacementFootprintResolver(),
+                obstacleLayer);
+        }
     }
 }

@@ -1,4 +1,5 @@
 using Chaosbound.Gameplay.Spawn.Execution;
+using UnityEngine;
 
 namespace Chaosbound.Gameplay.Spawn.Materialization
 {
@@ -10,7 +11,7 @@ namespace Chaosbound.Gameplay.Spawn.Materialization
         /// <summary>
         /// Materializes the supplied execution context.
         /// </summary>
-        void Materialize(
+        GameObject Materialize(
             SpawnExecutionContext context);
     }
 }

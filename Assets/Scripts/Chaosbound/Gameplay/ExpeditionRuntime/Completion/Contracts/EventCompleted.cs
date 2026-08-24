@@ -12,16 +12,24 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Completion.Contracts
         public string DomainId { get; }
 
         /// <summary>
-        /// Gets the identifier of the completed content.
+        /// Gets the identifier of the completed event.
         /// </summary>
         public string EventId { get; }
 
+        /// <summary>
+        /// Gets the semantic origin that produced
+        /// the completed event.
+        /// </summary>
+        public CompletionOrigin Origin { get; }
+
         public EventCompleted(
             string domainId,
-            string eventId)
+            string eventId,
+            CompletionOrigin origin)
         {
             DomainId = domainId;
             EventId = eventId;
+            Origin = origin;
         }
     }
 }

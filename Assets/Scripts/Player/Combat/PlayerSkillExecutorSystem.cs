@@ -7,6 +7,8 @@ public class PlayerSkillExecutorSystem : MonoBehaviour
 
     private readonly List<ISkillExecutor> activeExecutors = new();
 
+    private bool isCleaningUp;
+
     public int ExecutorCount => activeExecutors.Count;
 
     void Awake()
@@ -49,6 +51,9 @@ public class PlayerSkillExecutorSystem : MonoBehaviour
 
     private void RebuildExecutors()
     {
+        if (isCleaningUp)
+            return;
+
         DestroyExecutors();
 
         if (loadout == null)
@@ -67,12 +72,18 @@ public class PlayerSkillExecutorSystem : MonoBehaviour
 
     private void DestroyExecutors()
     {
-        foreach (var executor in activeExecutors)
+        foreach (ISkillExecutor executor in activeExecutors)
         {
+            if (executor == null)
+                continue;
+
+            executor.Cleanup();
             executor.ResetExecutor();
 
             if (executor is MonoBehaviour mb)
+            {
                 Destroy(mb);
+            }
         }
 
         activeExecutors.Clear();
@@ -125,5 +136,22 @@ public class PlayerSkillExecutorSystem : MonoBehaviour
 
         executor.Initialize(skill, transform);
         activeExecutors.Add(executor);
+    }
+
+    public void Cleanup()
+    {
+        if (isCleaningUp)
+            return;
+
+        isCleaningUp = true;
+
+        DestroyExecutors();
+
+        if (loadout != null)
+        {
+            loadout.ClearAllSkills();
+        }
+
+        isCleaningUp = false;
     }
 }

@@ -49,7 +49,5 @@ public class WorldInitializer : MonoBehaviour
             loadout,
             levelUpManager);
         }
-
-        EnemyBrain.ResetAttackSlots();
     }
 }

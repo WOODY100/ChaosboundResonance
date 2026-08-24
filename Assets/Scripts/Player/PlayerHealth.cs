@@ -60,12 +60,27 @@ public class PlayerHealth : MonoBehaviour
 
     public void TakeDamage(float amount)
     {
+        float previousHealth =
+            currentHealth;
+
         currentHealth -= amount;
-        float maxHealth = MaxHealth;
 
-        currentHealth = Mathf.Clamp(currentHealth, 0f, maxHealth);
+        float maxHealth =
+            MaxHealth;
 
-        OnHealthChanged?.Invoke(currentHealth, maxHealth);
+        currentHealth =
+            Mathf.Clamp(
+                currentHealth,
+                0f,
+                maxHealth);
+
+        Debug.Log(
+            $"[PlayerHealth] Damage: {amount} | " +
+            $"Health: {previousHealth} -> {currentHealth} / {maxHealth}");
+
+        OnHealthChanged?.Invoke(
+            currentHealth,
+            maxHealth);
 
         if (currentHealth <= 0f)
             Die();

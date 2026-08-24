@@ -71,21 +71,38 @@ public class BossMovementController : MonoBehaviour
     void Awake()
     {
         capsule = GetComponent<CapsuleCollider>();
-
-        if (player == null)
-            player = GameObject.FindGameObjectWithTag("Player")?.transform;
     }
 
     void Update()
     {
-        if (isDead || player == null)
+        if (isDead)
             return;
+
+        if (player == null)
+        {
+            ResolvePlayer();
+
+            if (player == null)
+                return;
+        }
 
         if (!isCharging && !rotationLocked)
             RotateToPlayer();
 
         HandleMovement();
         CheckIfStuck();
+    }
+
+    private void OnEnable()
+    {
+        ResetRuntimeState();
+    }
+
+    private void ResolvePlayer()
+    {
+        player =
+            GameObject.FindGameObjectWithTag("Player")
+            ?.transform;
     }
 
     // --------------------------------------------------------
@@ -450,9 +467,54 @@ public class BossMovementController : MonoBehaviour
 
         StopAllCoroutines();
 
-        currentSpeed = 0;
-        animator.SetFloat("Speed", 0);
+        isCharging = false;
+        isChargeRecovering = false;
+        isForcedMovement = false;
 
-        GetComponent<Collider>().enabled = false;
+        canMove = false;
+        rotationLocked = false;
+
+        currentSpeed = 0f;
+
+        chargeTimer = 0f;
+        chargeRecoveryTimer = 0f;
+
+        if (animator != null)
+            animator.SetFloat("Speed", 0f);
+
+        if (capsule != null)
+            capsule.enabled = false;
+    }
+
+    private void ResetRuntimeState()
+    {
+        StopAllCoroutines();
+
+        isDead = false;
+
+        isCharging = false;
+        isChargeRecovering = false;
+        isForcedMovement = false;
+
+        canMove = true;
+        rotationLocked = false;
+
+        currentSpeed = 0f;
+
+        chargeTimer = 0f;
+        chargeRecoveryTimer = 0f;
+
+        stuckTimer = 0f;
+        obstacleMemoryTimer = 0f;
+
+        lastTangent = Vector3.zero;
+        chargeDirection = Vector3.zero;
+
+        lastPosition = transform.position;
+
+        ResolvePlayer();
+
+        if (animator != null)
+            animator.SetFloat("Speed", 0f);
     }
 }

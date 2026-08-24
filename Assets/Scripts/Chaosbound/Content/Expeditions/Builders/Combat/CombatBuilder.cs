@@ -30,7 +30,7 @@ namespace Chaosbound.Content.Expeditions.Builders.Combat
         }
 
         private static List<CombatTacticDefinition> BuildTactics(
-            IReadOnlyList<CombatTacticAuthoring> authoring)
+    IReadOnlyList<CombatTacticAuthoring> authoring)
         {
             if (authoring == null)
                 throw new ArgumentNullException(nameof(authoring));
@@ -51,19 +51,44 @@ namespace Chaosbound.Content.Expeditions.Builders.Combat
                         tactic.SpawnPattern);
 
                 ReplenishmentDefinition replenishment =
-                BuildReplenishment(tactic.Replenishment);
+                    BuildReplenishment(
+                        tactic.Replenishment);
+
+                CombatTypeCompositionDefinition melee =
+                    BuildCombatTypeComposition(
+                        tactic.Melee);
+
+                CombatTypeCompositionDefinition ranged =
+                    BuildCombatTypeComposition(
+                        tactic.Ranged);
 
                 result.Add(
                     new CombatTacticDefinition(
                         tactic.MaximumTarget,
-                        tactic.NormalPercentage,
-                        tactic.RunnerPercentage,
-                        tactic.TankPercentage,
+                        melee,
+                        ranged,
                         replenishment,
                         spawnPattern));
             }
 
             return result;
+        }
+
+        private static CombatTypeCompositionDefinition
+            BuildCombatTypeComposition(
+                CombatTypeCompositionAuthoring authoring)
+        {
+            if (authoring == null)
+            {
+                throw new ArgumentNullException(
+                    nameof(authoring));
+            }
+
+            return new CombatTypeCompositionDefinition(
+                authoring.Percentage,
+                authoring.NormalPercentage,
+                authoring.RunnerPercentage,
+                authoring.TankPercentage);
         }
 
         private static ReplenishmentDefinition BuildReplenishment(

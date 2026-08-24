@@ -1,3 +1,4 @@
+#if CHAOSBOUND_LEGACY_ENEMY
 using UnityEngine;
 
 public class EnemyStats : MonoBehaviour
@@ -31,3 +32,4 @@ public class EnemyStats : MonoBehaviour
         CurrentHealth = baseHealth;
     }
 }
+#endif

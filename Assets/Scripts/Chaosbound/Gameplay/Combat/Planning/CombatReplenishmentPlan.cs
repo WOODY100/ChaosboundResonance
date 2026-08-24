@@ -13,6 +13,11 @@ namespace Chaosbound.Gameplay.Combat.Planning
     public sealed class CombatReplenishmentPlan
     {
         /// <summary>
+        /// Gets the enemy combat type that must be replenished.
+        /// </summary>
+        public EnemyCombatType CombatType { get; }
+
+        /// <summary>
         /// Gets the enemy role that must be replenished.
         /// </summary>
         public EnemyRole Role { get; }
@@ -28,6 +33,7 @@ namespace Chaosbound.Gameplay.Combat.Planning
         public EnemyTier Tier { get; }
 
         public CombatReplenishmentPlan(
+            EnemyCombatType combatType,
             EnemyRole role,
             int quantity,
             EnemyTier tier)
@@ -40,9 +46,17 @@ namespace Chaosbound.Gameplay.Combat.Planning
                     "Replenishment quantity must be greater than zero.");
             }
 
-            Role = role;
-            Quantity = quantity;
-            Tier = tier;
+            CombatType =
+                combatType;
+
+            Role =
+                role;
+
+            Quantity =
+                quantity;
+
+            Tier =
+                tier;
         }
     }
 }

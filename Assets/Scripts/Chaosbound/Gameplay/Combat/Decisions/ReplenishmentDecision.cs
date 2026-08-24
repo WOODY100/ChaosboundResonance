@@ -5,11 +5,13 @@ namespace Chaosbound.Gameplay.Combat.Decisions
 {
     /// <summary>
     /// Represents a request to replenish the current
-    /// combat population.
+    /// combat population for a specific combat type and role.
     /// </summary>
     public readonly struct ReplenishmentDecision
     {
         public bool IsRequired { get; }
+
+        public EnemyCombatType CombatType { get; }
 
         public EnemyRole Role { get; }
 
@@ -17,6 +19,7 @@ namespace Chaosbound.Gameplay.Combat.Decisions
 
         private ReplenishmentDecision(
             bool isRequired,
+            EnemyCombatType combatType,
             EnemyRole role,
             int quantity)
         {
@@ -27,17 +30,26 @@ namespace Chaosbound.Gameplay.Combat.Decisions
             }
 
             IsRequired = isRequired;
-            Role = role;
-            Quantity = quantity;
+
+            CombatType =
+                combatType;
+
+            Role =
+                role;
+
+            Quantity =
+                quantity;
         }
 
         public static ReplenishmentDecision None =>
             new ReplenishmentDecision(
                 false,
+                EnemyCombatType.Melee,
                 EnemyRole.Normal,
                 0);
 
         public static ReplenishmentDecision Replenish(
+            EnemyCombatType combatType,
             EnemyRole role,
             int quantity)
         {
@@ -51,6 +63,7 @@ namespace Chaosbound.Gameplay.Combat.Decisions
 
             return new ReplenishmentDecision(
                 true,
+                combatType,
                 role,
                 quantity);
         }

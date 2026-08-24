@@ -1,5 +1,10 @@
+using Chaosbound.Core.Runtime.SceneManagement;
+using Chaosbound.Gameplay.ExpeditionRuntime.Cleanup.Pipeline;
 using Chaosbound.Gameplay.ExpeditionRuntime.Director;
 using Chaosbound.Gameplay.ExpeditionRuntime.Pipeline;
+using Chaosbound.Gameplay.Spawn.Bootstrap;
+using Chaosbound.Gameplay.Spawn.Runtime;
+using System;
 
 namespace Chaosbound.Gameplay.ExpeditionRuntime.Bootstrap
 {
@@ -9,30 +14,69 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Bootstrap
     /// </summary>
     public sealed class ExpeditionRuntimeBootstrap
     {
+        private readonly SceneTransitionService
+            sceneTransitionService;
+
+        public ExpeditionRuntimeBootstrap(
+            SceneTransitionService sceneTransitionService)
+        {
+            this.sceneTransitionService =
+                sceneTransitionService
+                ?? throw new ArgumentNullException(
+                    nameof(sceneTransitionService));
+        }
+
         /// <summary>
         /// Builds a fully initialized Expedition Director.
         /// </summary>
         public ExpeditionDirector Build()
         {
-            ExpeditionRuntimePipeline pipeline =
-                BuildPipeline();
+            SpawnRuntime spawnRuntime =
+                new SpawnRuntimeBootstrap()
+                    .Build();
+
+            ExpeditionRuntimePipeline runtimePipeline =
+                BuildRuntimePipeline(
+                    spawnRuntime);
+
+            ExpeditionCleanupPipeline cleanupPipeline =
+                BuildCleanupPipeline(
+                    spawnRuntime);
 
             return new ExpeditionDirector(
-                pipeline);
+                runtimePipeline,
+                cleanupPipeline,
+                sceneTransitionService);
         }
 
-        private ExpeditionRuntimePipeline BuildPipeline()
+        private ExpeditionRuntimePipeline
+            BuildRuntimePipeline(
+                SpawnRuntime spawnRuntime)
         {
+            if (spawnRuntime == null)
+                throw new ArgumentNullException(
+                    nameof(spawnRuntime));
+
             ExpeditionRuntimePipelineFactory factory =
-                BuildPipelineFactory();
+                new ExpeditionRuntimePipelineFactory();
 
-            return factory.Create();
+            return factory.Create(
+                spawnRuntime);
         }
 
-        private ExpeditionRuntimePipelineFactory
-            BuildPipelineFactory()
+        private ExpeditionCleanupPipeline
+            BuildCleanupPipeline(
+                SpawnRuntime spawnRuntime)
         {
-            return new ExpeditionRuntimePipelineFactory();
+            if (spawnRuntime == null)
+                throw new ArgumentNullException(
+                    nameof(spawnRuntime));
+
+            ExpeditionCleanupPipelineFactory factory =
+                new ExpeditionCleanupPipelineFactory();
+
+            return factory.Create(
+                spawnRuntime);
         }
     }
 }

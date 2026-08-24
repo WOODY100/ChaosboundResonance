@@ -1,3 +1,4 @@
+using Chaosbound.Content.Portal.Exit;
 using Chaosbound.Gameplay.ExpeditionRuntime.Completion.Contracts;
 
 namespace Chaosbound.Content.Expeditions.Runtime.Completion
@@ -15,11 +16,24 @@ namespace Chaosbound.Content.Expeditions.Runtime.Completion
             get;
         }
 
+        /// <summary>
+        /// Gets the Exit Portal content that must be
+        /// materialized when the expedition completes.
+        /// </summary>
+        public ExitPortalData ExitPortal
+        {
+            get;
+        }
+
         public RuntimeCompletionConfig(
-            CompletionRequirement requirement)
+            CompletionRequirement requirement,
+            ExitPortalData exitPortal)
         {
             Requirement =
                 requirement;
+
+            ExitPortal =
+                exitPortal;
         }
     }
 }

@@ -12,7 +12,8 @@ namespace Chaosbound.Gameplay.Combat.Services
     /// This planner coordinates pool resolution, variant
     /// selection and spawn-plan construction.
     ///
-    /// It does not decide the combat role, quantity or tier.
+    /// It does not decide the combat type, combat role,
+    /// quantity or tier.
     /// It does not create SpawnRequests.
     /// It does not interact with Spawn Runtime.
     /// </summary>
@@ -72,6 +73,7 @@ namespace Chaosbound.Gameplay.Combat.Services
                 poolResolver.Resolve(
                     enemyConfig,
                     replenishmentPlan.Tier,
+                    replenishmentPlan.CombatType,
                     replenishmentPlan.Role);
 
             var variants =

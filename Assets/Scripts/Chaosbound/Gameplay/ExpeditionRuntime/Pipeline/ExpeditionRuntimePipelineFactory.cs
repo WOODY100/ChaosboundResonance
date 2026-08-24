@@ -9,17 +9,22 @@ using Chaosbound.Gameplay.Combat.Stages;
 using Chaosbound.Gameplay.ExpeditionRuntime.Completion;
 using Chaosbound.Gameplay.ExpeditionRuntime.Completion.Services;
 using Chaosbound.Gameplay.ExpeditionRuntime.Contracts;
+using Chaosbound.Gameplay.ExpeditionRuntime.ExitPortal;
+using Chaosbound.Gameplay.ExpeditionRuntime.ExitPortal.Integration.Spawn;
+using Chaosbound.Gameplay.ExpeditionRuntime.ExitPortal.Services;
 using Chaosbound.Gameplay.ExpeditionRuntime.Time.Contracts;
 using Chaosbound.Gameplay.ExpeditionRuntime.Time.Providers;
 using Chaosbound.Gameplay.ExpeditionRuntime.Time.Stages;
 using Chaosbound.Gameplay.MiniBosses;
 using Chaosbound.Gameplay.MiniBosses.Integration.Spawn;
 using Chaosbound.Gameplay.MiniBosses.Services;
-using Chaosbound.Gameplay.Spawn.Bootstrap;
 using Chaosbound.Gameplay.Spawn.Factories;
 using Chaosbound.Gameplay.Spawn.Runtime;
 using Chaosbound.Gameplay.Timeline;
 using Chaosbound.Gameplay.Timeline.Stages;
+using Chaosbound.Gameplay.ExpeditionRuntime.Modifiers;
+using Chaosbound.Gameplay.ExpeditionRuntime.Modifiers.Stages;
+using System;
 using System.Collections.Generic;
 
 namespace Chaosbound.Gameplay.ExpeditionRuntime.Pipeline
@@ -32,10 +37,12 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Pipeline
         /// <summary>
         /// Creates a new runtime pipeline.
         /// </summary>
-        public ExpeditionRuntimePipeline Create()
+        public ExpeditionRuntimePipeline Create(
+            SpawnRuntime spawnRuntime)
         {
-            SpawnRuntime spawnRuntime =
-                BuildSpawnRuntime();
+            if (spawnRuntime == null)
+                throw new ArgumentNullException(
+                    nameof(spawnRuntime));
 
             IReadOnlyList<IExpeditionRuntimeStage> stages =
                 BuildStages(
@@ -49,15 +56,17 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Pipeline
             BuildStages(
                 SpawnRuntime spawnRuntime)
                 {
-            return new List<IExpeditionRuntimeStage>
-                {
-                    BuildTimeStage(),
-                    BuildTimelineStage(),
-                    BuildMiniBossStage(spawnRuntime),
-                    BuildBossStage(spawnRuntime),
-                    BuildCompletionStage(),
-                    BuildCombatStage(spawnRuntime)
-                };
+                    return new List<IExpeditionRuntimeStage>
+                    {
+                        BuildTimeStage(),
+                        BuildModifierStage(),
+                        BuildTimelineStage(),
+                        BuildMiniBossStage(spawnRuntime),
+                        BuildBossStage(spawnRuntime),
+                        BuildCompletionStage(),
+                        BuildExitPortalStage(spawnRuntime),
+                        BuildCombatStage(spawnRuntime)
+                    };
         }
 
         private IExpeditionRuntimeStage
@@ -86,11 +95,11 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Pipeline
             return new UnityTimeProvider();
         }
 
-        private SpawnRuntime
-            BuildSpawnRuntime()
+        private IExpeditionRuntimeStage
+            BuildModifierStage()
         {
-            return new SpawnRuntimeBootstrap()
-                .Build();
+            return new ExpeditionModifierStage(
+                new ExpeditionModifierDomainDirector());
         }
 
         private CombatDirector
@@ -183,8 +192,37 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Pipeline
         }
 
         private IExpeditionRuntimeStage
+            BuildExitPortalStage(
+                SpawnRuntime spawnRuntime)
+        {
+            return new ExitPortalStage(
+                new ExitPortalDomainDirector(
+                    BuildExitPortalSpawnPlanner(),
+                    BuildExitPortalSpawnRequestTranslator(),
+                    spawnRuntime));
+        }
+
+        private ExitPortalSpawnPlanner
+            BuildExitPortalSpawnPlanner()
+        {
+            return new ExitPortalSpawnPlanner();
+        }
+
+        private ExitPortalSpawnRequestTranslator
+            BuildExitPortalSpawnRequestTranslator()
+        {
+            SpawnRequestEntryFactory entryFactory =
+                new SpawnRequestEntryFactory(
+                    new MaterializableReferenceFactory());
+
+            return new ExitPortalSpawnRequestTranslator(
+                new SpawnRequestFactory(),
+                entryFactory);
+        }
+
+        private IExpeditionRuntimeStage
             BuildMiniBossStage(
-        SpawnRuntime spawnRuntime)
+                SpawnRuntime spawnRuntime)
         {
             return new MiniBossStage(
                 new MiniBossDomainDirector(

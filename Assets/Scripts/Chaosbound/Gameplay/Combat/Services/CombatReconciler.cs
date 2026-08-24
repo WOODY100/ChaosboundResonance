@@ -1,6 +1,5 @@
 using Chaosbound.Gameplay.Combat.Models;
 using Chaosbound.Gameplay.Combat.Results;
-using Chaosbound.Shared.Enums;
 using System;
 using System.Collections.Generic;
 
@@ -48,10 +47,12 @@ namespace Chaosbound.Gameplay.Combat.Services
             {
                 int currentQuantity =
                     current.GetCount(
+                        desiredEntry.CombatType,
                         desiredEntry.Role);
 
                 entries.Add(
                     new CombatReconciliationEntry(
+                        desiredEntry.CombatType,
                         desiredEntry.Role,
                         desiredEntry.TargetQuantity,
                         currentQuantity));

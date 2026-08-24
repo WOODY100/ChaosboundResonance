@@ -54,7 +54,7 @@ namespace Chaosbound.Gameplay.Spawn.Execution
         /// <summary>
         /// Executes the supplied SpawnExecutionPlan.
         /// </summary>
-        public void Execute(
+        public IReadOnlyList<GameObject> Execute(
             SpawnExecutionPlan executionPlan,
             RuntimeSpawnConfig spawnConfig,
             RuntimeReferencesConfig references,
@@ -72,6 +72,9 @@ namespace Chaosbound.Gameplay.Spawn.Execution
             if (expeditionRuntime == null)
                 throw new ArgumentNullException(nameof(expeditionRuntime));
 
+            List<GameObject> materializedObjects =
+                new List<GameObject>();
+
             IReadOnlyList<SpawnJob> jobs =
                 spawnJobFactory.Create(
                     executionPlan);
@@ -85,9 +88,20 @@ namespace Chaosbound.Gameplay.Spawn.Execution
                         references,
                         expeditionRuntime);
 
-                spawnJobExecutor.Execute(
-                    schedulingContext);
+                IReadOnlyList<GameObject> jobObjects =
+                    spawnJobExecutor.Execute(
+                        schedulingContext);
+
+                foreach (GameObject obj in jobObjects)
+                {
+                    if (obj != null)
+                    {
+                        materializedObjects.Add(obj);
+                    }
+                }
             }
+
+            return materializedObjects;
         }
     }
 }

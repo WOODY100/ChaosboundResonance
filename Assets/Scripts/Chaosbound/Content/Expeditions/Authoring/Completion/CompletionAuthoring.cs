@@ -1,3 +1,4 @@
+using Chaosbound.Content.Portal.Exit;
 using System;
 using UnityEngine;
 
@@ -15,10 +16,16 @@ namespace Chaosbound.Content.Expeditions.Authoring.Completion
         [SerializeField]
         private string m_EventId;
 
+        [SerializeField]
+        private ExitPortalData m_ExitPortal;
+
         public string DomainId =>
             m_DomainId;
 
         public string EventId =>
             m_EventId;
+
+        public ExitPortalData ExitPortal =>
+            m_ExitPortal;
     }
 }

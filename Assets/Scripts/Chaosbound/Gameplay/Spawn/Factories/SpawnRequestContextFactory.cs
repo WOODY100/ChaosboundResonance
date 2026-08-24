@@ -17,10 +17,12 @@ namespace Chaosbound.Gameplay.Spawn.Factories
         {
             if (runtimeSpawnConfig == null)
             {
-                throw new ArgumentNullException(nameof(runtimeSpawnConfig));
+                throw new ArgumentNullException(
+                    nameof(runtimeSpawnConfig));
             }
 
-            return new SpawnRequestContext(runtimeSpawnConfig);
+            return new SpawnRequestContext(
+                runtimeSpawnConfig);
         }
     }
 }

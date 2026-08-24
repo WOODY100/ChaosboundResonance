@@ -1,3 +1,5 @@
+using Chaosbound.Content.Portal.Exit;
+
 namespace Chaosbound.Content.Expeditions.Definitions.Completion
 {
     /// <summary>
@@ -5,31 +7,34 @@ namespace Chaosbound.Content.Expeditions.Definitions.Completion
     /// </summary>
     public sealed class CompletionDefinition
     {
-        /// <summary>
-        /// Gets the domain that must report completion.
-        /// </summary>
         public string DomainId
         {
             get;
         }
 
-        /// <summary>
-        /// Gets the content event that must be completed.
-        /// </summary>
         public string EventId
+        {
+            get;
+        }
+
+        public ExitPortalData ExitPortal
         {
             get;
         }
 
         public CompletionDefinition(
             string domainId,
-            string eventId)
+            string eventId,
+            ExitPortalData exitPortal)
         {
             DomainId =
                 domainId;
 
             EventId =
                 eventId;
+
+            ExitPortal =
+                exitPortal;
         }
     }
 }

@@ -3,6 +3,12 @@ using Chaosbound.Gameplay.Combat.Runtime;
 using Chaosbound.Gameplay.Combat.Runtime.Composition;
 using Chaosbound.Gameplay.ExpeditionRuntime.Completion.Contracts;
 using Chaosbound.Gameplay.ExpeditionRuntime.Completion.Runtime;
+using Chaosbound.Gameplay.ExpeditionRuntime.ExitPortal.Runtime;
+using Chaosbound.Gameplay.ExpeditionRuntime.Interactions;
+using Chaosbound.Gameplay.ExpeditionRuntime.Modifiers;
+using Chaosbound.Gameplay.ExpeditionRuntime.References.Contracts;
+using Chaosbound.Gameplay.ExpeditionRuntime.References.Runtime;
+using Chaosbound.Gameplay.ExpeditionRuntime.XP.Runtime;
 using Chaosbound.Gameplay.MiniBosses;
 using Chaosbound.Gameplay.Timeline;
 using System;
@@ -18,6 +24,14 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Runtime
         private readonly CombatRuntimeComposition
             runtimeComposition =
                 new CombatRuntimeComposition();
+
+        private readonly ExpeditionModifierState
+            modifierState =
+                new ExpeditionModifierState();
+
+        private readonly ExpeditionInteractableUsageState
+            interactableUsageState =
+                new ExpeditionInteractableUsageState();
 
         private readonly CombatRuntimeState
             combatRuntime =
@@ -43,8 +57,30 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Runtime
             eventCompletionBuffer =
                 new EventCompletionBuffer();
 
+        private readonly ExitPortalRuntimeState
+            exitPortalRuntime =
+                new ExitPortalRuntimeState();
+
+        private readonly IRuntimeReferenceRegistry
+            runtimeReferences =
+                new RuntimeReferenceRegistry();
+
+        private readonly XPFragmentRuntimeState
+            xpFragments =
+                new XPFragmentRuntimeState();
+
         public CombatRuntimeComposition RuntimeComposition =>
             runtimeComposition;
+
+        public ExpeditionModifierState Modifiers =>
+            modifierState;
+
+        /// <summary>
+        /// Gets the runtime usage state of one-use
+        /// interactables during the current expedition.
+        /// </summary>
+        public ExpeditionInteractableUsageState InteractableUsage =>
+            interactableUsageState;
 
         /// <summary>
         /// Gets the delta time applied during the latest
@@ -91,6 +127,19 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Runtime
 
         public EventCompletionBuffer EventCompletions =>
             eventCompletionBuffer;
+
+        public ExitPortalRuntimeState ExitPortal =>
+            exitPortalRuntime;
+
+        public XPFragmentRuntimeState XPFragments =>
+            xpFragments;
+
+        /// <summary>
+        /// Gets the runtime reference registry
+        /// for the current expedition.
+        /// </summary>
+        public IRuntimeReferenceRegistry RuntimeReferences =>
+            runtimeReferences;
 
         public void ReportEventCompleted(
             EventCompleted completedEvent)

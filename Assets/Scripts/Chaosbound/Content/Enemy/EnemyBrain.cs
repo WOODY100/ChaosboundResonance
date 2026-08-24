@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿#if CHAOSBOUND_LEGACY_ENEMY
+using UnityEngine;
 
 public class EnemyBrain : MonoBehaviour, IEnemyTickable
 {
@@ -96,3 +97,4 @@ public class EnemyBrain : MonoBehaviour, IEnemyTickable
         activeAttackers = 0;
     }
 }
+#endif

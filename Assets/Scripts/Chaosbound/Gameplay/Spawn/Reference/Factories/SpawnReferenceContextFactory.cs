@@ -1,7 +1,8 @@
-using System;
 using Chaosbound.Content.Expeditions.Runtime.References;
 using Chaosbound.Content.Expeditions.Runtime.Spawn;
+using Chaosbound.Gameplay.ExpeditionRuntime.Runtime;
 using Chaosbound.Gameplay.Spawn.Reference.Models;
+using System;
 
 namespace Chaosbound.Gameplay.Spawn.Reference.Factories
 {
@@ -10,22 +11,27 @@ namespace Chaosbound.Gameplay.Spawn.Reference.Factories
     /// </summary>
     public sealed class SpawnReferenceContextFactory
     {
-        /// <summary>
-        /// Creates a SpawnReferenceContext.
-        /// </summary>
         public SpawnReferenceContext Create(
             RuntimeSpawnConfig spawnConfig,
-            RuntimeReferencesConfig references)
+            RuntimeReferencesConfig references,
+            ExpeditionRuntimeState expeditionRuntime)
         {
             if (spawnConfig == null)
-                throw new ArgumentNullException(nameof(spawnConfig));
+                throw new ArgumentNullException(
+                    nameof(spawnConfig));
 
             if (references == null)
-                throw new ArgumentNullException(nameof(references));
+                throw new ArgumentNullException(
+                    nameof(references));
+
+            if (expeditionRuntime == null)
+                throw new ArgumentNullException(
+                    nameof(expeditionRuntime));
 
             return new SpawnReferenceContext(
                 spawnConfig,
-                references);
+                references,
+                expeditionRuntime);
         }
     }
 }

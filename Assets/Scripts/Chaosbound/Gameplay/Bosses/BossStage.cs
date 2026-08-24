@@ -1,6 +1,7 @@
 using Chaosbound.Gameplay.ExpeditionRuntime.Context;
 using Chaosbound.Gameplay.ExpeditionRuntime.Contracts;
 using System;
+using UnityEngine;
 
 namespace Chaosbound.Gameplay.Bosses
 {

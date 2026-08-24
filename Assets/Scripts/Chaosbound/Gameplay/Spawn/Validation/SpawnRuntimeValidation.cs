@@ -1,7 +1,6 @@
 using Chaosbound.Debugging;
 using Chaosbound.Gameplay.Spawn.Execution;
 using System;
-using UnityEngine;
 
 namespace Chaosbound.Gameplay.Spawn.Validation
 {
@@ -29,27 +28,18 @@ namespace Chaosbound.Gameplay.Spawn.Validation
             SpawnRuntimeValidationContext context =
                 builder.Build();
 
-            /*SpawnRuntimeDebugger.Success(
-                "Validation context created.");
-            */
             SpawnRuntimeValidationBootstrap bootstrap =
                 new SpawnRuntimeValidationBootstrap();
 
             SpawnJobExecutor executor =
                 bootstrap.Build();
 
-            /*SpawnRuntimeDebugger.Success(
-                "Runtime graph assembled.");
-                        */
             SpawnRuntimeDebugger.Step(
                 "Executing Spawn Runtime...");
 
             executor.Execute(
                 context.SchedulingContext);
 
-            /*SpawnRuntimeDebugger.Success(
-                "Spawn Runtime Validation Completed.");
-            */
             SpawnRuntimeDebugger.Step(
                 "========================================");
         }

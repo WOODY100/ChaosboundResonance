@@ -18,7 +18,7 @@ public abstract class PooledBehaviour : MonoBehaviour
     {
     }
 
-    protected void ReturnToPool()
+    public void ReturnToPool()
     {
         if (pooledObject == null)
             pooledObject = GetComponent<PooledObject>();

@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
 
-public class OrbitalExecutor : MonoBehaviour, ISkillExecutor
+public class OrbitalExecutor :
+    MonoBehaviour,
+    ISkillExecutor
 {
     private RuntimeSkill skill;
     private Transform owner;
@@ -8,7 +11,12 @@ public class OrbitalExecutor : MonoBehaviour, ISkillExecutor
     private int activeOrbs;
     private bool isActive;
 
-    public void Initialize(RuntimeSkill runtimeSkill, Transform skillOwner)
+    private readonly List<GameObject> activeOrbObjects =
+        new();
+
+    public void Initialize(
+        RuntimeSkill runtimeSkill,
+        Transform skillOwner)
     {
         ResetExecutor();
 
@@ -21,6 +29,8 @@ public class OrbitalExecutor : MonoBehaviour, ISkillExecutor
         if (skill == null || owner == null)
             return;
 
+        CleanupInactiveOrbs();
+
         skill.TickCooldown(deltaTime);
 
         if (isActive)
@@ -32,7 +42,10 @@ public class OrbitalExecutor : MonoBehaviour, ISkillExecutor
         ActivateOrbit();
 
         if (!skill.Definition.CooldownStartsAfterDuration)
-            skill.StartCooldown(skill.Stats.FinalCooldown);
+        {
+            skill.StartCooldown(
+                skill.Stats.FinalCooldown);
+        }
     }
 
     private void ActivateOrbit()
@@ -42,7 +55,8 @@ public class OrbitalExecutor : MonoBehaviour, ISkillExecutor
 
         if (PoolManager.Instance == null)
         {
-            Debug.LogError("PoolManager not found.");
+            Debug.LogError(
+                "PoolManager not found.");
             return;
         }
 
@@ -55,27 +69,48 @@ public class OrbitalExecutor : MonoBehaviour, ISkillExecutor
 
         isActive = true;
 
-        int count = skill.Stats.FinalCount;
+        int count =
+            skill.Stats.FinalCount;
+
         activeOrbs = count;
 
-        float angleStep = 360f / count;
-        float randomOffset = Random.Range(0f, 360f);
+        float angleStep =
+            360f / count;
+
+        float randomOffset =
+            Random.Range(0f, 360f);
 
         for (int i = 0; i < count; i++)
         {
-            float startAngle = randomOffset + (i * angleStep);
+            float startAngle =
+                randomOffset +
+                (i * angleStep);
 
-            GameObject orbObj = PoolManager.Instance.Get(
-                skill.Definition.ExecutionPrefab,
-                owner.position,
-                Quaternion.identity
-            );
+            GameObject orbObj =
+                PoolManager.Instance.Get(
+                    skill.Definition.ExecutionPrefab,
+                    owner.position,
+                    Quaternion.identity
+                );
 
-            IOrbital orb = orbObj.GetComponent<IOrbital>();
+            if (orbObj == null)
+            {
+                OnSingleOrbFinished();
+                continue;
+            }
+
+            activeOrbObjects.Add(orbObj);
+
+            IOrbital orb =
+                orbObj.GetComponent<IOrbital>();
 
             if (orb != null)
             {
-                orb.Initialize(skill, owner, startAngle, OnSingleOrbFinished);
+                orb.Initialize(
+                    skill,
+                    owner,
+                    startAngle,
+                    OnSingleOrbFinished);
             }
             else
             {
@@ -100,12 +135,77 @@ public class OrbitalExecutor : MonoBehaviour, ISkillExecutor
         if (skill != null &&
             skill.Definition.CooldownStartsAfterDuration)
         {
-            skill.StartCooldown(skill.Stats.FinalCooldown);
+            skill.StartCooldown(
+                skill.Stats.FinalCooldown);
         }
+    }
+
+    private void CleanupInactiveOrbs()
+    {
+        activeOrbObjects.RemoveAll(
+            orb =>
+                orb == null ||
+                !orb.activeInHierarchy);
+    }
+
+    private void CleanupOrbs()
+    {
+        for (int i = activeOrbObjects.Count - 1; i >= 0; i--)
+        {
+            GameObject orb =
+                activeOrbObjects[i];
+
+            if (orb == null)
+            {
+                activeOrbObjects.RemoveAt(i);
+                continue;
+            }
+
+            if (!orb.activeInHierarchy)
+            {
+                activeOrbObjects.RemoveAt(i);
+                continue;
+            }
+
+            PooledBehaviour pooledBehaviour =
+                orb.GetComponent<PooledBehaviour>();
+
+            if (pooledBehaviour != null)
+            {
+                pooledBehaviour.ReturnToPool();
+            }
+
+            activeOrbObjects.RemoveAt(i);
+        }
+    }
+
+    public void Cleanup()
+    {
+        foreach (GameObject orb
+            in activeOrbObjects)
+        {
+            if (orb == null)
+                continue;
+
+            PooledObject pooledObject =
+                orb.GetComponent<PooledObject>();
+
+            if (pooledObject != null)
+            {
+                pooledObject.ReturnToPool();
+            }
+        }
+
+        activeOrbObjects.Clear();
+
+        activeOrbs = 0;
+        isActive = false;
     }
 
     public void ResetExecutor()
     {
+        CleanupOrbs();
+
         skill = null;
         owner = null;
 

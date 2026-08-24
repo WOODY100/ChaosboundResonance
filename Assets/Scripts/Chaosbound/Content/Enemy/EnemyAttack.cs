@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿#if CHAOSBOUND_LEGACY_ENEMY
+using UnityEngine;
 
 public class EnemyAttack : MonoBehaviour
 {
@@ -94,3 +95,4 @@ public class EnemyAttack : MonoBehaviour
             animator.ResetTrigger("Attack");
     }
 }
+#endif

@@ -11,6 +11,7 @@ namespace Chaosbound.Gameplay.Combat.Services
         public EnemyPool Resolve(
             RuntimeEnemyConfig enemyConfig,
             EnemyTier tier,
+            EnemyCombatType combatType,
             EnemyRole role)
         {
             if (enemyConfig == null)
@@ -32,6 +33,9 @@ namespace Chaosbound.Gameplay.Combat.Services
                 if (enemy.Tier != tier)
                     continue;
 
+                if (enemy.CombatType != combatType)
+                    continue;
+
                 EnemyRole combatRole =
                     CombatRoleResolver.Resolve(enemy);
 
@@ -44,13 +48,16 @@ namespace Chaosbound.Gameplay.Combat.Services
             EnemyPoolKey key =
                 new EnemyPoolKey(
                     tier,
+                    combatType,
                     role);
 
             if (variants.Count == 0)
             {
                 throw new InvalidOperationException(
                     $"No enemy variants available for " +
-                    $"Tier={tier}, Role={role}.");
+                    $"Tier={tier}, " +
+                    $"CombatType={combatType}, " +
+                    $"Role={role}.");
             }
 
             return new EnemyPool(

@@ -9,6 +9,7 @@ using Chaosbound.Gameplay.Spawn.Contracts;
 using Chaosbound.Gameplay.Spawn.Runtime;
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Chaosbound.Gameplay.Bosses
 {

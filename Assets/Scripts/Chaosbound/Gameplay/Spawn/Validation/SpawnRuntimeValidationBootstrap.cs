@@ -4,14 +4,17 @@ using Chaosbound.Gameplay.Spawn.Factories;
 using Chaosbound.Gameplay.Spawn.Infrastructure;
 using Chaosbound.Gameplay.Spawn.Integration;
 using Chaosbound.Gameplay.Spawn.Materialization;
+using Chaosbound.Gameplay.Spawn.Placement.Contracts;
 using Chaosbound.Gameplay.Spawn.Placement.Factories;
 using Chaosbound.Gameplay.Spawn.Placement.Resolvers;
 using Chaosbound.Gameplay.Spawn.Placement.Strategies;
+using Chaosbound.Gameplay.Spawn.Placement.Validation;
 using Chaosbound.Gameplay.Spawn.Reference.Factories;
 using Chaosbound.Gameplay.Spawn.Reference.Providers;
 using Chaosbound.Gameplay.Spawn.Reference.Resolvers;
 using Chaosbound.Gameplay.Spawn.Scheduling;
 using System;
+using UnityEngine;
 
 namespace Chaosbound.Gameplay.Spawn.Validation
 {
@@ -92,10 +95,11 @@ namespace Chaosbound.Gameplay.Spawn.Validation
             return new SpawnScheduler(resolver);
         }
 
-        private SpawnSchedulingPolicyResolver BuildSchedulingPolicyResolver(
-            SpawnBatchCalculator batchCalculator,
-            SpawnTaskEntryFactory taskEntryFactory,
-            SpawnTaskFactory taskFactory)
+        private SpawnSchedulingPolicyResolver
+            BuildSchedulingPolicyResolver(
+                SpawnBatchCalculator batchCalculator,
+                SpawnTaskEntryFactory taskEntryFactory,
+                SpawnTaskFactory taskFactory)
         {
             return new SpawnSchedulingPolicyResolver(
                 batchCalculator,
@@ -103,12 +107,14 @@ namespace Chaosbound.Gameplay.Spawn.Validation
                 taskFactory);
         }
 
-        private ISpawnInstantiationService BuildInstantiationService()
+        private ISpawnInstantiationService
+            BuildInstantiationService()
         {
             return new PoolManagerSpawnInstantiationService();
         }
 
-        private EnemyMaterializer BuildEnemyMaterializer()
+        private EnemyMaterializer
+            BuildEnemyMaterializer()
         {
             return new EnemyMaterializer(
                 BuildInstantiationService());
@@ -134,48 +140,71 @@ namespace Chaosbound.Gameplay.Spawn.Validation
             return new SpawnMaterializerResolver(
                 BuildEnemyMaterializer(),
                 BuildBossMaterializer(),
-                BuildMiniBossMaterializer());
+                BuildMiniBossMaterializer(),
+                BuildExitPortalMaterializer());
         }
 
-        private SpawnExecutionContextFactory BuildExecutionContextFactory()
+        private SpawnExecutionContextFactory
+            BuildExecutionContextFactory()
         {
             return new SpawnExecutionContextFactory();
         }
 
-        private ScheduledSpawnTaskExecutor BuildTaskExecutor()
+        private ScheduledSpawnTaskExecutor
+            BuildTaskExecutor()
         {
             return new ScheduledSpawnTaskExecutor(
                 BuildExecutionContextFactory(),
                 BuildMaterializerResolver());
         }
 
-        private SpawnJobRuntimeStateFactory BuildRuntimeStateFactory()
+        private SpawnJobRuntimeStateFactory
+            BuildRuntimeStateFactory()
         {
             return new SpawnJobRuntimeStateFactory();
         }
 
-        private PlacementIntentFactory BuildPlacementIntentFactory()
+        private PlacementIntentFactory
+            BuildPlacementIntentFactory()
         {
             return new PlacementIntentFactory();
         }
 
-        private SpawnReferenceContextFactory BuildReferenceContextFactory()
+        private SpawnReferenceContextFactory
+            BuildReferenceContextFactory()
         {
             return new SpawnReferenceContextFactory();
         }
 
-        private PlayerReferenceProvider BuildPlayerReferenceProvider()
+        private PlayerReferenceProvider
+            BuildPlayerReferenceProvider()
         {
             return new PlayerReferenceProvider();
         }
 
-        private SpawnReferenceResolver BuildReferenceResolver()
+        private ExitPortalMaterializer
+            BuildExitPortalMaterializer()
         {
-            return new SpawnReferenceResolver(
-                BuildPlayerReferenceProvider());
+            return new ExitPortalMaterializer(
+                BuildInstantiationService());
         }
 
-        private PlacementContextFactory BuildPlacementContextFactory()
+        private CompletionOriginReferenceProvider
+            BuildCompletionOriginReferenceProvider()
+        {
+            return new CompletionOriginReferenceProvider();
+        }
+
+        private SpawnReferenceResolver
+            BuildReferenceResolver()
+        {
+            return new SpawnReferenceResolver(
+                BuildPlayerReferenceProvider(),
+                BuildCompletionOriginReferenceProvider());
+        }
+
+        private PlacementContextFactory
+            BuildPlacementContextFactory()
         {
             return new PlacementContextFactory();
         }
@@ -186,11 +215,36 @@ namespace Chaosbound.Gameplay.Spawn.Validation
             return new AroundPlayerPlacementStrategy();
         }
 
+        private NearReferencePlacementStrategy
+            BuildNearReferencePlacementStrategy()
+        {
+            return new NearReferencePlacementStrategy();
+        }
+
+        private IPlacementFootprintResolver
+            BuildPlacementFootprintResolver()
+        {
+            return new PlacementFootprintResolver();
+        }
+
+        private PlacementValidator
+            BuildPlacementValidator()
+        {
+            LayerMask obstacleLayer =
+                LayerMask.GetMask("Obstacle");
+
+            return new PlacementValidator(
+                BuildPlacementFootprintResolver(),
+                obstacleLayer);
+        }
+
         private PlacementResolver
             BuildPlacementResolver()
         {
             return new PlacementResolver(
-                BuildAroundPlayerPlacementStrategy());
+                BuildAroundPlayerPlacementStrategy(),
+                BuildNearReferencePlacementStrategy(),
+                BuildPlacementValidator());
         }
 
         private ResolvedSpawnTaskFactory

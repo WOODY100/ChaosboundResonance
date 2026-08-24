@@ -1,6 +1,7 @@
-using System;
 using Chaosbound.Content.Expeditions.Runtime.References;
 using Chaosbound.Content.Expeditions.Runtime.Spawn;
+using Chaosbound.Gameplay.ExpeditionRuntime.Runtime;
+using System;
 
 namespace Chaosbound.Gameplay.Spawn.Reference.Models
 {
@@ -10,27 +11,31 @@ namespace Chaosbound.Gameplay.Spawn.Reference.Models
     /// </summary>
     public sealed class SpawnReferenceContext
     {
-        /// <summary>
-        /// Gets the runtime spawn configuration.
-        /// </summary>
         public RuntimeSpawnConfig SpawnConfig { get; }
 
-        /// <summary>
-        /// Gets the runtime world references.
-        /// </summary>
         public RuntimeReferencesConfig References { get; }
+
+        public ExpeditionRuntimeState ExpeditionRuntime { get; }
 
         public SpawnReferenceContext(
             RuntimeSpawnConfig spawnConfig,
-            RuntimeReferencesConfig references)
+            RuntimeReferencesConfig references,
+            ExpeditionRuntimeState expeditionRuntime)
         {
             SpawnConfig =
                 spawnConfig
-                ?? throw new ArgumentNullException(nameof(spawnConfig));
+                ?? throw new ArgumentNullException(
+                    nameof(spawnConfig));
 
             References =
                 references
-                ?? throw new ArgumentNullException(nameof(references));
+                ?? throw new ArgumentNullException(
+                    nameof(references));
+
+            ExpeditionRuntime =
+                expeditionRuntime
+                ?? throw new ArgumentNullException(
+                    nameof(expeditionRuntime));
         }
     }
 }

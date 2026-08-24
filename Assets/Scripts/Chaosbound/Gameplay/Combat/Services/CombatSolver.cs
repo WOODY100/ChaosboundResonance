@@ -4,7 +4,6 @@ using Chaosbound.Gameplay.Combat.Results;
 using Chaosbound.Shared.Enums;
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace Chaosbound.Gameplay.Combat.Services
 {
@@ -17,12 +16,19 @@ namespace Chaosbound.Gameplay.Combat.Services
     /// - use RNG;
     /// - manage replenishment;
     /// - create SpawnRequests;
-    /// - interact with Threat Budget or Pressure;
+    /// - interact with Spawn Runtime;
     /// - evaluate target progression.
     ///
     /// Its only responsibility is to translate the supplied
-    /// target and role percentages into a deterministic
-    /// CombatComposition.
+    /// target into a deterministic CombatType + Role composition.
+    ///
+    /// Composition is resolved hierarchically:
+    ///
+    /// 1. CombatType distribution:
+    ///    Melee / Ranged
+    ///
+    /// 2. Role distribution inside each CombatType:
+    ///    Normal / Runner / Tank
     /// </summary>
     public sealed class CombatSolver
     {
@@ -44,7 +50,8 @@ namespace Chaosbound.Gameplay.Combat.Services
                 tactic,
                 target);
 
-            ValidatePercentages(tactic);
+            ValidatePercentages(
+                tactic);
 
             CombatComposition composition =
                 BuildComposition(
@@ -60,49 +67,140 @@ namespace Chaosbound.Gameplay.Combat.Services
             RuntimeCombatTactic tactic,
             int target)
         {
-            List<RoleAllocation> allocations =
-                new List<RoleAllocation>();
+            List<CombatTypeAllocation> typeAllocations =
+                BuildCombatTypeAllocations(
+                    tactic,
+                    target);
 
-            AddAllocation(
-                allocations,
-                EnemyRole.Normal,
-                target,
-                tactic.NormalPercentage);
+            List<CombatRuntimeCompositionEntry> entries =
+                new List<CombatRuntimeCompositionEntry>();
 
-            AddAllocation(
-                allocations,
-                EnemyRole.Runner,
-                target,
-                tactic.RunnerPercentage);
+            foreach (
+                CombatTypeAllocation typeAllocation
+                in typeAllocations)
+            {
+                if (typeAllocation.Quantity <= 0)
+                    continue;
 
-            AddAllocation(
+                RuntimeCombatTypeComposition typeComposition =
+                    GetTypeComposition(
+                        tactic,
+                        typeAllocation.CombatType);
+
+                List<RoleAllocation> roleAllocations =
+                    BuildRoleAllocations(
+                        typeComposition,
+                        typeAllocation.Quantity);
+
+                foreach (
+                    RoleAllocation roleAllocation
+                    in roleAllocations)
+                {
+                    if (roleAllocation.Quantity <= 0)
+                        continue;
+
+                    entries.Add(
+                        new CombatRuntimeCompositionEntry(
+                            typeAllocation.CombatType,
+                            roleAllocation.Role,
+                            roleAllocation.Quantity));
+                }
+            }
+
+            return new CombatComposition(
+                entries);
+        }
+
+        private static List<CombatTypeAllocation>
+            BuildCombatTypeAllocations(
+                RuntimeCombatTactic tactic,
+                int target)
+        {
+            List<CombatTypeAllocation> allocations =
+                new List<CombatTypeAllocation>();
+
+            AddCombatTypeAllocation(
                 allocations,
-                EnemyRole.Tank,
+                EnemyCombatType.Melee,
                 target,
-                tactic.TankPercentage);
+                tactic.Melee.Percentage);
+
+            AddCombatTypeAllocation(
+                allocations,
+                EnemyCombatType.Ranged,
+                target,
+                tactic.Ranged.Percentage);
 
             DistributeRemainingUnits(
                 allocations,
                 target);
 
-            List<CombatRuntimeCompositionEntry> entries =
-                new List<CombatRuntimeCompositionEntry>();
-
-            foreach (RoleAllocation allocation in allocations)
-            {
-                if (allocation.Quantity <= 0)
-                    continue;
-
-                entries.Add(
-                    new CombatRuntimeCompositionEntry(
-                        allocation.Role,
-                        allocation.Quantity));
-            }
-
-            return new CombatComposition(entries);
+            return allocations;
         }
 
-        private static void AddAllocation(
+        private static void AddCombatTypeAllocation(
+            List<CombatTypeAllocation> allocations,
+            EnemyCombatType combatType,
+            int target,
+            float percentage)
+        {
+            float exactQuantity =
+                target * percentage;
+
+            int baseQuantity =
+                (int)Math.Floor(
+                    exactQuantity);
+
+            float remainder =
+                exactQuantity -
+                baseQuantity;
+
+            allocations.Add(
+                new CombatTypeAllocation(
+                    combatType,
+                    baseQuantity,
+                    remainder));
+        }
+
+        private static List<RoleAllocation>
+            BuildRoleAllocations(
+                RuntimeCombatTypeComposition composition,
+                int target)
+        {
+            List<RoleAllocation> allocations =
+                new List<RoleAllocation>();
+
+            AddRoleAllocation(
+                allocations,
+                EnemyRole.Normal,
+                target,
+                composition.NormalPercentage);
+
+            AddRoleAllocation(
+                allocations,
+                EnemyRole.Runner,
+                target,
+                composition.RunnerPercentage);
+
+            AddRoleAllocation(
+                allocations,
+                EnemyRole.Tank,
+                target,
+                composition.TankPercentage);
+
+            DistributeRemainingUnits(
+                allocations,
+                target);
+
+            allocations.Sort(
+                (a, b) =>
+                    ((int)a.Role).CompareTo(
+                        (int)b.Role));
+
+            return allocations;
+        }
+
+        private static void AddRoleAllocation(
             List<RoleAllocation> allocations,
             EnemyRole role,
             int target,
@@ -112,10 +210,12 @@ namespace Chaosbound.Gameplay.Combat.Services
                 target * percentage;
 
             int baseQuantity =
-                (int)Math.Floor(exactQuantity);
+                (int)Math.Floor(
+                    exactQuantity);
 
             float remainder =
-                exactQuantity - baseQuantity;
+                exactQuantity -
+                baseQuantity;
 
             allocations.Add(
                 new RoleAllocation(
@@ -125,38 +225,121 @@ namespace Chaosbound.Gameplay.Combat.Services
         }
 
         private static void DistributeRemainingUnits(
-            List<RoleAllocation> allocations,
+            List<CombatTypeAllocation> allocations,
             int target)
         {
             int allocated =
                 0;
 
-            foreach (RoleAllocation allocation in allocations)
+            foreach (
+                CombatTypeAllocation allocation
+                in allocations)
             {
                 allocated +=
                     allocation.Quantity;
             }
 
             int remaining =
-                target - allocated;
+                target -
+                allocated;
+
+            if (remaining <= 0)
+                return;
 
             allocations.Sort(
                 (a, b) =>
-                    b.Remainder.CompareTo(
-                        a.Remainder));
+                {
+                    int remainderComparison =
+                        b.Remainder.CompareTo(
+                            a.Remainder);
+
+                    if (remainderComparison != 0)
+                        return remainderComparison;
+
+                    return ((int)a.CombatType).CompareTo(
+                        (int)b.CombatType);
+                });
 
             for (int i = 0;
                  i < remaining;
                  i++)
             {
-                allocations[i % allocations.Count]
+                allocations[
+                    i % allocations.Count]
                     .Quantity++;
             }
 
             allocations.Sort(
                 (a, b) =>
-                    ((int)a.Role).CompareTo(
-                        (int)b.Role));
+                    ((int)a.CombatType).CompareTo(
+                        (int)b.CombatType));
+        }
+
+        private static void DistributeRemainingUnits(
+            List<RoleAllocation> allocations,
+            int target)
+        {
+            int allocated =
+                0;
+
+            foreach (
+                RoleAllocation allocation
+                in allocations)
+            {
+                allocated +=
+                    allocation.Quantity;
+            }
+
+            int remaining =
+                target -
+                allocated;
+
+            if (remaining <= 0)
+                return;
+
+            allocations.Sort(
+                (a, b) =>
+                {
+                    int remainderComparison =
+                        b.Remainder.CompareTo(
+                            a.Remainder);
+
+                    if (remainderComparison != 0)
+                        return remainderComparison;
+
+                    return ((int)a.Role).CompareTo(
+                        (int)b.Role);
+                });
+
+            for (int i = 0;
+                 i < remaining;
+                 i++)
+            {
+                allocations[
+                    i % allocations.Count]
+                    .Quantity++;
+            }
+        }
+
+        private static RuntimeCombatTypeComposition
+            GetTypeComposition(
+                RuntimeCombatTactic tactic,
+                EnemyCombatType combatType)
+        {
+            switch (combatType)
+            {
+                case EnemyCombatType.Melee:
+                    return tactic.Melee;
+
+                case EnemyCombatType.Ranged:
+                    return tactic.Ranged;
+
+                default:
+                    throw new ArgumentOutOfRangeException(
+                        nameof(combatType),
+                        combatType,
+                        "Unsupported EnemyCombatType.");
+            }
         }
 
         private static void ValidateTarget(
@@ -186,11 +369,6 @@ namespace Chaosbound.Gameplay.Combat.Services
             const float tolerance =
                 0.0001f;
 
-            float total =
-                tactic.NormalPercentage +
-                tactic.RunnerPercentage +
-                tactic.TankPercentage;
-
             if (tactic.MaximumTarget < 3)
             {
                 throw new ArgumentOutOfRangeException(
@@ -199,26 +377,108 @@ namespace Chaosbound.Gameplay.Combat.Services
                     "Combat MaximumTarget must be at least 3.");
             }
 
-            if (tactic.NormalPercentage < 0f ||
-                tactic.RunnerPercentage < 0f ||
-                tactic.TankPercentage < 0f)
-            {
-                throw new InvalidOperationException(
-                    "Combat role percentages cannot be negative.");
-            }
+            ValidateTypeComposition(
+                tactic.Melee,
+                nameof(tactic.Melee));
 
-            if (Math.Abs(total - 1f) > tolerance)
+            ValidateTypeComposition(
+                tactic.Ranged,
+                nameof(tactic.Ranged));
+
+            float combatTypeTotal =
+                tactic.Melee.Percentage +
+                tactic.Ranged.Percentage;
+
+            if (Math.Abs(
+                    combatTypeTotal - 1f) >
+                tolerance)
             {
                 throw new InvalidOperationException(
-                    $"Combat role percentages must total 1. " +
-                    $"Current total={total}.");
+                    "Combat type percentages must total 1. " +
+                    $"Current total={combatTypeTotal}.");
             }
         }
 
-        /// <summary>
-        /// Internal mutable allocation used only while
-        /// constructing the immutable CombatComposition.
-        /// </summary>
+        private static void ValidateTypeComposition(
+            RuntimeCombatTypeComposition composition,
+            string parameterName)
+        {
+            const float tolerance =
+                0.0001f;
+
+            if (composition == null)
+            {
+                throw new ArgumentNullException(
+                    parameterName);
+            }
+
+            if (composition.Percentage < 0f ||
+                composition.Percentage > 1f)
+            {
+                throw new InvalidOperationException(
+                    $"{parameterName} percentage must be between 0 and 1.");
+            }
+
+            if (composition.NormalPercentage < 0f ||
+                composition.NormalPercentage > 1f)
+            {
+                throw new InvalidOperationException(
+                    $"{parameterName}.NormalPercentage must be between 0 and 1.");
+            }
+
+            if (composition.RunnerPercentage < 0f ||
+                composition.RunnerPercentage > 1f)
+            {
+                throw new InvalidOperationException(
+                    $"{parameterName}.RunnerPercentage must be between 0 and 1.");
+            }
+
+            if (composition.TankPercentage < 0f ||
+                composition.TankPercentage > 1f)
+            {
+                throw new InvalidOperationException(
+                    $"{parameterName}.TankPercentage must be between 0 and 1.");
+            }
+
+            float roleTotal =
+                composition.NormalPercentage +
+                composition.RunnerPercentage +
+                composition.TankPercentage;
+
+            if (Math.Abs(
+                    roleTotal - 1f) >
+                tolerance)
+            {
+                throw new InvalidOperationException(
+                    $"{parameterName} role percentages must total 1. " +
+                    $"Current total={roleTotal}.");
+            }
+        }
+
+        private sealed class CombatTypeAllocation
+        {
+            public EnemyCombatType CombatType { get; }
+
+            public int Quantity { get; set; }
+
+            public float Remainder { get; }
+
+            public CombatTypeAllocation(
+                EnemyCombatType combatType,
+                int quantity,
+                float remainder)
+            {
+                CombatType =
+                    combatType;
+
+                Quantity =
+                    quantity;
+
+                Remainder =
+                    remainder;
+            }
+        }
+
         private sealed class RoleAllocation
         {
             public EnemyRole Role { get; }
@@ -232,9 +492,14 @@ namespace Chaosbound.Gameplay.Combat.Services
                 int quantity,
                 float remainder)
             {
-                Role = role;
-                Quantity = quantity;
-                Remainder = remainder;
+                Role =
+                    role;
+
+                Quantity =
+                    quantity;
+
+                Remainder =
+                    remainder;
             }
         }
     }

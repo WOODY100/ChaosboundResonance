@@ -20,8 +20,10 @@ namespace Chaosbound.Gameplay.Spawn.Contracts
         public SpawnRequestContext(
             RuntimeSpawnConfig runtimeSpawnConfig)
         {
-            RuntimeSpawnConfig = runtimeSpawnConfig
-                ?? throw new ArgumentNullException(nameof(runtimeSpawnConfig));
+            RuntimeSpawnConfig =
+                runtimeSpawnConfig
+                ?? throw new ArgumentNullException(
+                    nameof(runtimeSpawnConfig));
         }
     }
 }

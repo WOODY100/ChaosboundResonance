@@ -16,6 +16,9 @@ namespace Chaosbound.Gameplay.Bosses
         private const string BossDomainId =
             "boss";
 
+        private const string BossCompletionEventId =
+            "boss";
+
         private BossHealth health;
 
         private BossRuntimeContext runtimeContext;
@@ -64,15 +67,18 @@ namespace Chaosbound.Gameplay.Bosses
                 .Boss
                 .Complete();
 
-            string eventId =
-                $"{BossDomainId}.{runtimeContext.Boss.Id}";
+            CompletionOrigin origin =
+                new CompletionOrigin(
+                    BossDomainId,
+                    runtimeContext.Boss.Id);
 
             runtimeContext
                 .ExpeditionRuntime
                 .ReportEventCompleted(
                     new EventCompleted(
                         BossDomainId,
-                        eventId));
+                        BossCompletionEventId,
+                        origin));
 
             completionReported = true;
         }

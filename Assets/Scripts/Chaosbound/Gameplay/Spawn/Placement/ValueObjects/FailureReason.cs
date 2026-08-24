@@ -49,6 +49,12 @@ namespace Chaosbound.Gameplay.Spawn.Placement.ValueObjects
             new("spawn.spawn_point_occupied");
 
         /// <summary>
+        /// The candidate location intersects an obstacle.
+        /// </summary>
+        public static FailureReason ObstacleOccupied =>
+            new("spawn.obstacle_occupied");
+
+        /// <summary>
         /// The candidate location is outside
         /// the valid world bounds.
         /// </summary>

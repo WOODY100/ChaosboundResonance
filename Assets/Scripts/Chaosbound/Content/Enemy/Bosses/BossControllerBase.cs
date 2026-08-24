@@ -19,38 +19,123 @@ public abstract class BossControllerBase : MonoBehaviour
     [SerializeField] protected float furyCooldown = 20f;
 
     protected BossHealth health;
+
     protected float attackTimer;
     protected float stompTimer;
     protected float chargeTimer;
     protected float jumpTimer;
     protected float furyTimer;
 
-    [SerializeField] protected int currentPhase = 1;
+    [SerializeField]
+    protected int currentPhase = 1;
+
     protected bool isPerformingAction = false;
     protected bool isDead = false;
     protected bool furyUsed = false;
 
+    protected virtual void Awake()
+    {
+        if (movement == null)
+            movement =
+                GetComponent<BossMovementController>();
+    }
+
     protected virtual void Start()
     {
-        health = GetComponent<BossHealth>();
+        health =
+            GetComponent<BossHealth>();
+    }
+
+    protected virtual void OnEnable()
+    {
+        ResetRuntimeState();
+    }
+
+    protected virtual void ResetRuntimeState()
+    {
+        // =========================
+        // STATE
+        // =========================
+
+        isDead = false;
+        isPerformingAction = false;
+        furyUsed = false;
+
+        // =========================
+        // PHASE
+        // =========================
+
+        currentPhase = 1;
+
+        // =========================
+        // COOLDOWNS
+        // =========================
+
+        attackTimer = 0f;
+        stompTimer = 0f;
+        chargeTimer = 0f;
+        jumpTimer = 0f;
+        furyTimer = 0f;
+
+        // =========================
+        // PLAYER
+        // =========================
+
+        player = null;
+
+        ResolvePlayer();
+
+        // =========================
+        // MOVEMENT
+        // =========================
+
+        if (movement != null)
+        {
+            movement.SetCanMove(true);
+
+            if (player != null)
+                movement.SetPlayer(player);
+        }
+
+        // =========================
+        // ANIMATION
+        // =========================
+
+        if (animator != null)
+        {
+            animator.speed = 1f;
+            animator.SetFloat("Speed", 0f);
+        }
+    }
+
+    private void ResolvePlayer()
+    {
+        player =
+            GameObject.FindGameObjectWithTag(
+                "Player")?.transform;
     }
 
     protected virtual void Update()
     {
-        if (isDead || isPerformingAction || player == null)
+        if (isDead)
+            return;
+
+        if (player == null)
+        {
+            ResolvePlayer();
+
+            if (player != null &&
+                movement != null)
+            {
+                movement.SetPlayer(player);
+            }
+        }
+
+        if (isPerformingAction || player == null)
             return;
 
         UpdateCooldowns();
         EvaluateCombat();
-    }
-
-    protected virtual void Awake()
-    {
-        if (player == null)
-            player = GameObject.FindGameObjectWithTag("Player")?.transform;
-
-        if (movement != null && player != null)
-            movement.SetPlayer(player);
     }
 
     #region Cooldowns
@@ -64,11 +149,20 @@ public abstract class BossControllerBase : MonoBehaviour
         furyTimer -= Time.deltaTime;
     }
 
-    protected bool AttackReady() => attackTimer <= 0f;
-    protected bool StompReady() => stompTimer <= 0f;
-    protected bool ChargeReady() => chargeTimer <= 0f;
-    protected bool JumpReady() => jumpTimer <= 0f;
-    protected bool FuryReady() => furyTimer <= 0f;
+    protected bool AttackReady() =>
+        attackTimer <= 0f;
+
+    protected bool StompReady() =>
+        stompTimer <= 0f;
+
+    protected bool ChargeReady() =>
+        chargeTimer <= 0f;
+
+    protected bool JumpReady() =>
+        jumpTimer <= 0f;
+
+    protected bool FuryReady() =>
+        furyTimer <= 0f;
 
     #endregion
 
@@ -80,14 +174,16 @@ public abstract class BossControllerBase : MonoBehaviour
 
     #region Abilities
 
-    protected void TriggerAction(string triggerName)
+    protected void TriggerAction(
+        string triggerName)
     {
         isPerformingAction = true;
 
         if (movement != null)
             movement.SetCanMove(false);
 
-        animator.SetTrigger(triggerName);
+        if (animator != null)
+            animator.SetTrigger(triggerName);
     }
 
     protected void ResetAction()
@@ -101,12 +197,16 @@ public abstract class BossControllerBase : MonoBehaviour
     #endregion
 
     #region Health Callbacks
-    public void OnHealthChanged(float healthPercent)
+
+    public void OnHealthChanged(
+        float healthPercent)
     {
-        UpdatePhaseFromPercent(healthPercent);
+        UpdatePhaseFromPercent(
+            healthPercent);
     }
 
-    protected virtual void UpdatePhaseFromPercent(float healthPercent)
+    protected virtual void UpdatePhaseFromPercent(
+        float healthPercent)
     {
         if (healthPercent <= 0.4f)
             currentPhase = 3;
@@ -118,12 +218,18 @@ public abstract class BossControllerBase : MonoBehaviour
 
     public void OnDeath()
     {
+        if (isDead)
+            return;
+
         isDead = true;
+        isPerformingAction = false;
 
         if (movement != null)
             movement.OnBossDeath();
 
-        animator.SetTrigger("Die");
+        if (animator != null)
+            animator.SetTrigger("Die");
     }
+
     #endregion
 }

@@ -3,6 +3,7 @@ using Chaosbound.Gameplay.Spawn.Factories;
 using Chaosbound.Gameplay.Spawn.Models;
 using Chaosbound.Gameplay.Spawn.Runtime;
 using System;
+using UnityEngine;
 
 namespace Chaosbound.Gameplay.Spawn.Materialization
 {
@@ -33,12 +34,15 @@ namespace Chaosbound.Gameplay.Spawn.Materialization
         /// <summary>
         /// Executes the supplied scheduled task.
         /// </summary>
-        public void Execute(
+        public GameObject Execute(
             ResolvedSpawnTask resolvedTask,
             SpawnJobRuntimeState runtimeState)
         {
             if (resolvedTask == null)
                 throw new ArgumentNullException(nameof(resolvedTask));
+
+            if (runtimeState == null)
+                throw new ArgumentNullException(nameof(runtimeState));
 
             SpawnExecutionContext context =
                 contextFactory.Create(
@@ -49,7 +53,7 @@ namespace Chaosbound.Gameplay.Spawn.Materialization
                 materializerResolver.Resolve(
                     context);
 
-            materializer.Materialize(
+            return materializer.Materialize(
                 context);
         }
     }

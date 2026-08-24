@@ -29,7 +29,7 @@ namespace Chaosbound.Gameplay.Combat.Runtime.Replenishment
         /// Gets the index from which the next replenishment
         /// search should begin.
         /// </summary>
-        public int NextRoleIndex
+        public int NextEntryIndex
         {
             get;
             private set;
@@ -52,17 +52,17 @@ namespace Chaosbound.Gameplay.Combat.Runtime.Replenishment
             Timer = timer;
         }
 
-        public void SetNextRoleIndex(
+        public void SetNextEntryIndex(
             int index)
         {
-            NextRoleIndex = index;
+            NextEntryIndex = index;
         }
 
         public void Reset()
         {
             CurrentPhase = Phase.Ready;
             Timer = 0f;
-            NextRoleIndex = 0;
+            NextEntryIndex = 0;
         }
     }
 }

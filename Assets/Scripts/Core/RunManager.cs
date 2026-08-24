@@ -1,11 +1,12 @@
 using Chaosbound.Content.Expeditions.Runtime.Configs;
 using Chaosbound.Gameplay.ExpeditionRuntime.Bootstrap;
 using Chaosbound.Gameplay.ExpeditionRuntime.Director;
-using Chaosbound.Gameplay.Timeline;
+using Chaosbound.Gameplay.ExpeditionRuntime.Runtime;
+using Chaosbound.Core.Composition;
+using Chaosbound.Core.Runtime.SceneManagement;
 using Chaosbound.UI.Timeline;
 using System;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class RunManager : MonoBehaviour
 {
@@ -23,6 +24,11 @@ public class RunManager : MonoBehaviour
     public ExpeditionDirector ExpeditionDirector =>
         expeditionDirector;
 
+    public ExpeditionRuntimeState ExpeditionRuntimeState =>
+    expeditionDirector != null
+        ? expeditionDirector.RuntimeState
+        : null;
+
     private RuntimeExpeditionConfig _currentRunConfig;
 
     public RuntimeExpeditionConfig CurrentRunConfig => _currentRunConfig;
@@ -30,9 +36,35 @@ public class RunManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+    }
+
+    private void Start()
+    {
+        BootstrapContext context =
+            BootstrapContext.Current;
+
+        if (context == null)
+        {
+            Debug.LogError(
+                "BootstrapContext is not available.");
+
+            return;
+        }
+
+        SceneTransitionService sceneTransitionService =
+            context.SceneTransitionService;
+
+        if (sceneTransitionService == null)
+        {
+            Debug.LogError(
+                "SceneTransitionService is not available.");
+
+            return;
+        }
 
         ExpeditionRuntimeBootstrap bootstrap =
-            new ExpeditionRuntimeBootstrap();
+            new ExpeditionRuntimeBootstrap(
+                sceneTransitionService);
 
         expeditionDirector =
             bootstrap.Build();
@@ -120,6 +152,31 @@ public class RunManager : MonoBehaviour
         if (gameOverPanel != null)
             gameOverPanel.SetActive(false);
 
-        SceneManager.LoadScene("Expedition");
+        BootstrapContext context =
+            BootstrapContext.Current;
+
+        if (context == null)
+        {
+            Debug.LogError(
+                "BootstrapContext is not available.");
+
+            return;
+        }
+
+        expeditionDirector?.AbortExpedition();
+
+        SceneTransitionService sceneTransitionService =
+            context.SceneTransitionService;
+
+        if (sceneTransitionService == null)
+        {
+            Debug.LogError(
+                "SceneTransitionService is not available.");
+
+            return;
+        }
+
+        sceneTransitionService.LoadScene(
+            GameScene.Expedition);
     }
 }

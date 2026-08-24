@@ -38,8 +38,6 @@ public sealed class PlayerInteractor : MonoBehaviour
         }
 
         currentInteractable = null;
-
-        Debug.Log($"Interactable left: {other.name}");
     }
 
     public void TryInteract()

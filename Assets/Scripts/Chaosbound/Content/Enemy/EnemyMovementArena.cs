@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿#if CHAOSBOUND_LEGACY_ENEMY
+using UnityEngine;
 
 public class EnemyMovementArena : MonoBehaviour
 {
@@ -207,3 +208,4 @@ public class EnemyMovementArena : MonoBehaviour
         Gizmos.DrawRay(origin, transform.forward * steeringCheckDistance);
     }
 }
+#endif

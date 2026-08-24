@@ -27,7 +27,8 @@ namespace Chaosbound.Content.Expeditions.Runtime.Builders
                     definition.EventId);
 
             return new RuntimeCompletionConfig(
-                requirement);
+                requirement,
+                definition.ExitPortal);
         }
     }
 }

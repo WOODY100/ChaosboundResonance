@@ -28,7 +28,7 @@ namespace Chaosbound.Gameplay.Spawn.Materialization
         /// <summary>
         /// Materializes the supplied execution context.
         /// </summary>
-        public void Materialize(
+        public GameObject Materialize(
             SpawnExecutionContext context)
         {
             if (context == null)
@@ -62,24 +62,148 @@ namespace Chaosbound.Gameplay.Spawn.Materialization
             GameObject spawnedObject =
                 instantiationService.Spawn(request);
 
+            if (spawnedObject == null)
+            {
+                throw new InvalidOperationException(
+                    $"Enemy '{enemy.name}' could not be materialized.");
+            }
+
             EnemyRuntimeContext runtimeContext =
                 spawnedObject.GetComponent<EnemyRuntimeContext>();
 
             if (runtimeContext == null)
             {
                 throw new InvalidOperationException(
-                    $"Enemy '{spawnedObject.name}' is missing an EnemyRuntimeContext component.");
+                    $"Enemy '{spawnedObject.name}' " +
+                    "is missing an EnemyRuntimeContext component.");
             }
 
             runtimeContext.Initialize(
                 enemy,
                 context.RuntimeState.ExpeditionRuntime);
 
+            EnemyRuntimeStats runtimeStats =
+                spawnedObject.GetComponent<EnemyRuntimeStats>();
+
+            if (runtimeStats == null)
+            {
+                throw new InvalidOperationException(
+                    $"Enemy '{spawnedObject.name}' " +
+                    "is missing an EnemyRuntimeStats component.");
+            }
+
+            runtimeStats.Initialize();
+
+            EnemyHealth health =
+                spawnedObject.GetComponent<EnemyHealth>();
+
+            if (health == null)
+            {
+                throw new InvalidOperationException(
+                    $"Enemy '{spawnedObject.name}' " +
+                    "is missing an EnemyHealth component.");
+            }
+
+            health.Initialize();
+
+            EnemyReward reward =
+                spawnedObject.GetComponent<EnemyReward>();
+
+            if (reward == null)
+            {
+                throw new InvalidOperationException(
+                    $"Enemy '{spawnedObject.name}' " +
+                    "is missing an EnemyReward component.");
+            }
+
+            reward.Initialize();
+
+            EnemyRuntimePresentation presentation =
+                spawnedObject.GetComponent<EnemyRuntimePresentation>();
+
+            if (presentation == null)
+            {
+                throw new InvalidOperationException(
+                    $"Enemy '{spawnedObject.name}' " +
+                    "is missing an EnemyRuntimePresentation component.");
+            }
+
+            presentation.Initialize();
+
+            EnemyRuntimeTargeting targeting =
+                spawnedObject.GetComponent<EnemyRuntimeTargeting>();
+
+            if (targeting == null)
+            {
+                throw new InvalidOperationException(
+                    $"Enemy '{spawnedObject.name}' " +
+                    "is missing an EnemyRuntimeTargeting component.");
+            }
+
+            targeting.Initialize(
+                new ScenePlayerTargetProvider());
+
+            EnemyRuntimeNavigation navigation =
+                spawnedObject.GetComponent<EnemyRuntimeNavigation>();
+
+            if (navigation == null)
+            {
+                throw new InvalidOperationException(
+                    $"Enemy '{spawnedObject.name}' " +
+                    "is missing an EnemyRuntimeNavigation component.");
+            }
+
+            navigation.Initialize();
+
+            EnemyCombat combat =
+                spawnedObject.GetComponent<EnemyCombat>();
+
+            if (combat == null)
+            {
+                throw new InvalidOperationException(
+                    $"Enemy '{spawnedObject.name}' " +
+                    "is missing an EnemyCombat component.");
+            }
+
+            combat.Initialize();
+
+            EnemyRuntimeBehavior behavior =
+                spawnedObject.GetComponent<EnemyRuntimeBehavior>();
+
+            if (behavior == null)
+            {
+                throw new InvalidOperationException(
+                    $"Enemy '{spawnedObject.name}' " +
+                    "is missing an EnemyRuntimeBehavior component.");
+            }
+
+            IEnemyMovementPolicy movementPolicy =
+                EnemyMovementPolicyResolver.Resolve(
+                    enemy.MovementPolicy);
+
+            behavior.Initialize(
+                movementPolicy);
+
+            EnemyRuntimeBehaviorScheduler scheduler =
+                spawnedObject.GetComponent<
+                    EnemyRuntimeBehaviorScheduler>();
+
+            if (scheduler == null)
+            {
+                throw new InvalidOperationException(
+                    $"Enemy '{spawnedObject.name}' " +
+                    "is missing an EnemyRuntimeBehaviorScheduler component.");
+            }
+
+            scheduler.Initialize();
+
             context
                 .RuntimeState
                 .ExpeditionRuntime
                 .RuntimeComposition
                 .Increment(enemy);
+
+            return spawnedObject;
         }
     }
 }

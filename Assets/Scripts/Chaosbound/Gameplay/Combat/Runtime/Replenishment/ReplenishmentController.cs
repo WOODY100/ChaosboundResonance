@@ -186,7 +186,7 @@ namespace Chaosbound.Gameplay.Combat.Runtime.Replenishment
             }
 
             int startIndex =
-                state.NextRoleIndex;
+                state.NextEntryIndex;
 
             for (int offset = 0;
                  offset < entryCount;
@@ -203,10 +203,11 @@ namespace Chaosbound.Gameplay.Combat.Runtime.Replenishment
                     continue;
                 }
 
-                state.SetNextRoleIndex(
+                state.SetNextEntryIndex(
                     (index + 1) % entryCount);
 
                 return ReplenishmentDecision.Replenish(
+                    entry.CombatType,
                     entry.Role,
                     entry.MissingQuantity);
             }

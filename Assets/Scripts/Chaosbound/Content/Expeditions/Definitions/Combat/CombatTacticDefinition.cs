@@ -8,11 +8,9 @@ namespace Chaosbound.Content.Expeditions.Definitions.Combat
     {
         public int MaximumTarget { get; }
 
-        public float NormalPercentage { get; }
+        public CombatTypeCompositionDefinition Melee { get; }
 
-        public float RunnerPercentage { get; }
-
-        public float TankPercentage { get; }
+        public CombatTypeCompositionDefinition Ranged { get; }
 
         public ReplenishmentDefinition Replenishment { get; }
 
@@ -20,9 +18,8 @@ namespace Chaosbound.Content.Expeditions.Definitions.Combat
 
         public CombatTacticDefinition(
             int maximumTarget,
-            float normalPercentage,
-            float runnerPercentage,
-            float tankPercentage,
+            CombatTypeCompositionDefinition melee,
+            CombatTypeCompositionDefinition ranged,
             ReplenishmentDefinition replenishment,
             SpawnPatternDefinition spawnPattern)
         {
@@ -31,6 +28,18 @@ namespace Chaosbound.Content.Expeditions.Definitions.Combat
                 throw new ArgumentOutOfRangeException(
                     nameof(maximumTarget),
                     "Combat MaximumTarget must be greater than zero.");
+            }
+
+            if (melee == null)
+            {
+                throw new ArgumentNullException(
+                    nameof(melee));
+            }
+
+            if (ranged == null)
+            {
+                throw new ArgumentNullException(
+                    nameof(ranged));
             }
 
             if (replenishment == null)
@@ -45,50 +54,32 @@ namespace Chaosbound.Content.Expeditions.Definitions.Combat
                     nameof(spawnPattern));
             }
 
-            ValidatePercentage(
-                normalPercentage,
-                nameof(normalPercentage));
-
-            ValidatePercentage(
-                runnerPercentage,
-                nameof(runnerPercentage));
-
-            ValidatePercentage(
-                tankPercentage,
-                nameof(tankPercentage));
-
-            float total =
-                normalPercentage +
-                runnerPercentage +
-                tankPercentage;
+            float combatTypeTotal =
+                melee.Percentage +
+                ranged.Percentage;
 
             const float tolerance = 0.0001f;
 
-            if (Math.Abs(total - 1f) > tolerance)
+            if (Math.Abs(combatTypeTotal - 1f) > tolerance)
             {
                 throw new ArgumentException(
-                    "Combat composition percentages must total 100%.");
+                    "Combat type composition percentages must total 100%.");
             }
 
-            MaximumTarget = maximumTarget;
+            MaximumTarget =
+                maximumTarget;
 
-            NormalPercentage = normalPercentage;
-            RunnerPercentage = runnerPercentage;
-            TankPercentage = tankPercentage;
-            Replenishment = replenishment;
-            SpawnPattern = spawnPattern;
-        }
+            Melee =
+                melee;
 
-        private static void ValidatePercentage(
-            float value,
-            string parameterName)
-        {
-            if (value < 0f || value > 1f)
-            {
-                throw new ArgumentOutOfRangeException(
-                    parameterName,
-                    "Composition percentage must be between 0 and 1.");
-            }
+            Ranged =
+                ranged;
+
+            Replenishment =
+                replenishment;
+
+            SpawnPattern =
+                spawnPattern;
         }
     }
 }

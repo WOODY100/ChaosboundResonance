@@ -27,7 +27,9 @@ namespace Chaosbound.Gameplay.Combat.Models
             {
                 int total = 0;
 
-                foreach (CombatRuntimeCompositionEntry entry in entries)
+                foreach (
+                    CombatRuntimeCompositionEntry entry
+                    in entries)
                 {
                     total += entry.TargetQuantity;
                 }
@@ -58,7 +60,9 @@ namespace Chaosbound.Gameplay.Combat.Models
                 new List<CombatRuntimeCompositionEntry>(
                     entries.Count);
 
-            foreach (CombatRuntimeCompositionEntry entry in entries)
+            foreach (
+                CombatRuntimeCompositionEntry entry
+                in entries)
             {
                 if (entry == null)
                 {
@@ -66,10 +70,13 @@ namespace Chaosbound.Gameplay.Combat.Models
                         "CombatComposition contains a null entry.");
                 }
 
-                if (ContainsRole(entry.Role))
+                if (ContainsEntry(
+                    entry.CombatType,
+                    entry.Role))
                 {
                     throw new InvalidOperationException(
-                        $"CombatComposition contains duplicate role '{entry.Role}'.");
+                        $"CombatComposition contains duplicate " +
+                        $"entry '{entry.CombatType}/{entry.Role}'.");
                 }
 
                 this.entries.Add(entry);
@@ -78,15 +85,21 @@ namespace Chaosbound.Gameplay.Combat.Models
 
         /// <summary>
         /// Determines whether the composition contains
-        /// an entry for the specified role.
+        /// an entry for the specified combat type and role.
         /// </summary>
-        public bool ContainsRole(
+        public bool ContainsEntry(
+            EnemyCombatType combatType,
             EnemyRole role)
         {
-            foreach (CombatRuntimeCompositionEntry entry in entries)
+            foreach (
+                CombatRuntimeCompositionEntry entry
+                in entries)
             {
-                if (entry.Role == role)
+                if (entry.CombatType == combatType &&
+                    entry.Role == role)
+                {
                     return true;
+                }
             }
 
             return false;
@@ -94,15 +107,19 @@ namespace Chaosbound.Gameplay.Combat.Models
 
         /// <summary>
         /// Attempts to retrieve the composition entry
-        /// associated with the specified role.
+        /// associated with the specified combat type and role.
         /// </summary>
         public bool TryGetEntry(
+            EnemyCombatType combatType,
             EnemyRole role,
             out CombatRuntimeCompositionEntry entry)
         {
-            foreach (CombatRuntimeCompositionEntry current in entries)
+            foreach (
+                CombatRuntimeCompositionEntry current
+                in entries)
             {
-                if (current.Role == role)
+                if (current.CombatType == combatType &&
+                    current.Role == role)
                 {
                     entry = current;
                     return true;

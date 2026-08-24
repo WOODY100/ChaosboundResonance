@@ -17,11 +17,16 @@ namespace Chaosbound.Gameplay.Spawn.Reference.Resolvers
             ISpawnReferenceProvider> providers;
 
         public SpawnReferenceResolver(
-            ISpawnReferenceProvider playerProvider)
+            ISpawnReferenceProvider playerProvider,
+            ISpawnReferenceProvider completionOriginProvider)
         {
             if (playerProvider == null)
                 throw new ArgumentNullException(
                     nameof(playerProvider));
+
+            if (completionOriginProvider == null)
+                throw new ArgumentNullException(
+                    nameof(completionOriginProvider));
 
             providers =
                 new Dictionary<
@@ -31,6 +36,10 @@ namespace Chaosbound.Gameplay.Spawn.Reference.Resolvers
                     {
                         SpawnPlacementPolicy.AroundPlayer,
                         playerProvider
+                    },
+                    {
+                        SpawnPlacementPolicy.AroundCompletionOrigin,
+                        completionOriginProvider
                     }
                 };
         }

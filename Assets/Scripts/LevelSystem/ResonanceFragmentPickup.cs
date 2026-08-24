@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class ResonanceFragmentPickup : MonoBehaviour
+public class ResonanceFragmentPickup : PooledBehaviour
 {
     [Header("XP")]
     [SerializeField] private int xpAmount = 5;
@@ -16,7 +16,6 @@ public class ResonanceFragmentPickup : MonoBehaviour
     private Transform player;
     private PlayerModifierSystem modifierSystem;
     private PlayerExperienceSystem xpSystem;
-    private PooledObject pooledObject;
 
     private bool isAttracted;
     private bool isAbsorbing;
@@ -24,19 +23,20 @@ public class ResonanceFragmentPickup : MonoBehaviour
     private float absorbTimer;
     private Vector3 startScale;
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
+
         startScale = transform.localScale;
 
         if (startScale == Vector3.zero)
             startScale = Vector3.one;
-
-        pooledObject = GetComponent<PooledObject>();
     }
 
-    private void OnEnable()
+    protected override void OnEnable()
     {
-        ResetState();
+        base.OnEnable();
+
         ResolvePlayer();
     }
 
@@ -44,7 +44,7 @@ public class ResonanceFragmentPickup : MonoBehaviour
     {
         xpAmount = Mathf.Max(0, xp);
 
-        ResetState();
+        ResetPooledState();
         ResolvePlayer();
     }
 
@@ -132,10 +132,13 @@ public class ResonanceFragmentPickup : MonoBehaviour
 
         absorbTimer += Time.deltaTime;
 
-        float duration = Mathf.Max(0.01f, absorbDuration);
-        float t = Mathf.Clamp01(absorbTimer / duration);
+        float duration =
+            Mathf.Max(0.01f, absorbDuration);
 
-        // Smooth acceleration toward the player.
+        float t =
+            Mathf.Clamp01(
+                absorbTimer / duration);
+
         float curved = t * t;
 
         transform.position = Vector3.Lerp(
@@ -160,7 +163,8 @@ public class ResonanceFragmentPickup : MonoBehaviour
     private void GiveXP()
     {
         if (xpSystem == null && player != null)
-            xpSystem = player.GetComponent<PlayerExperienceSystem>();
+            xpSystem =
+                player.GetComponent<PlayerExperienceSystem>();
 
         if (xpSystem != null)
             xpSystem.AddXP(xpAmount);
@@ -173,9 +177,7 @@ public class ResonanceFragmentPickup : MonoBehaviour
             return Mathf.Max(
                 0f,
                 modifierSystem.GetStat(
-                    StatType.ExpAttractionRadius
-                )
-            );
+                    StatType.ExpAttractionRadius));
         }
 
         return defaultAttractionRadius;
@@ -189,51 +191,56 @@ public class ResonanceFragmentPickup : MonoBehaviour
         if (EnemyManager.Instance == null)
             return;
 
-        player = EnemyManager.Instance.Player;
+        player =
+            EnemyManager.Instance.Player;
 
         if (player == null)
             return;
 
-        xpSystem = player.GetComponent<PlayerExperienceSystem>();
-        modifierSystem = player.GetComponent<PlayerModifierSystem>();
+        xpSystem =
+            player.GetComponent<PlayerExperienceSystem>();
+
+        modifierSystem =
+            player.GetComponent<PlayerModifierSystem>();
     }
 
-    private void ReturnToPool()
-    {
-        if (pooledObject == null)
-            pooledObject = GetComponent<PooledObject>();
-
-        if (pooledObject != null)
-        {
-            pooledObject.ReturnToPool();
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-    }
-
-    private void ResetState()
+    protected override void ResetPooledState()
     {
         isAttracted = false;
         isAbsorbing = false;
         absorbTimer = 0f;
+
+        transform.localScale = startScale;
     }
 
     private void OnValidate()
     {
-        xpAmount = Mathf.Max(0, xpAmount);
+        xpAmount =
+            Mathf.Max(0, xpAmount);
 
         defaultAttractionRadius =
-            Mathf.Max(0f, defaultAttractionRadius);
+            Mathf.Max(
+                0f,
+                defaultAttractionRadius);
 
         attractSpeed =
-            Mathf.Max(0f, attractSpeed);
+            Mathf.Max(
+                0f,
+                attractSpeed);
 
         absorbDistance =
-            Mathf.Max(0.01f, absorbDistance);
+            Mathf.Max(
+                0.01f,
+                absorbDistance);
 
         absorbDuration =
-            Mathf.Max(0.01f, absorbDuration);
+            Mathf.Max(
+                0.01f,
+                absorbDuration);
+    }
+
+    public void Cleanup()
+    {
+        ReturnToPool();
     }
 }

@@ -1,5 +1,6 @@
 using Chaosbound.Content.Enemy.Bosses;
 using Chaosbound.Content.Enemy.MiniBosses;
+using Chaosbound.Content.Portal.Exit;
 using Chaosbound.Gameplay.Spawn.Execution;
 using System;
 using System.Collections.Generic;
@@ -19,7 +20,8 @@ namespace Chaosbound.Gameplay.Spawn.Materialization
         public SpawnMaterializerResolver(
             ISpawnMaterializer enemyMaterializer,
             ISpawnMaterializer bossMaterializer,
-            ISpawnMaterializer miniBossMaterializer)
+            ISpawnMaterializer miniBossMaterializer,
+            ISpawnMaterializer exitPortalMaterializer)
         {
             if (enemyMaterializer == null)
                 throw new ArgumentNullException(
@@ -33,21 +35,29 @@ namespace Chaosbound.Gameplay.Spawn.Materialization
                 throw new ArgumentNullException(
                     nameof(miniBossMaterializer));
 
+            if (exitPortalMaterializer == null)
+                throw new ArgumentNullException(
+                    nameof(exitPortalMaterializer));
+
             materializers =
                 new Dictionary<Type, ISpawnMaterializer>
                 {
-            {
-                typeof(EnemyVariantData),
-                enemyMaterializer
-            },
-            {
-                typeof(BossData),
-                bossMaterializer
-            },
-            {
-                typeof(MiniBossData),
-                miniBossMaterializer
-            }
+                    {
+                        typeof(EnemyVariantData),
+                        enemyMaterializer
+                    },
+                    {
+                        typeof(BossData),
+                        bossMaterializer
+                    },
+                    {
+                        typeof(MiniBossData),
+                        miniBossMaterializer
+                    },
+                    {
+                        typeof(ExitPortalData),
+                        exitPortalMaterializer
+                    }
                 };
         }
 
