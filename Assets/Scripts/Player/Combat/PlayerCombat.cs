@@ -1,254 +1,369 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerCombat : MonoBehaviour
+public sealed class PlayerCombat : MonoBehaviour
 {
     public Transform CurrentTarget { get; private set; }
     public bool IsAttacking { get; private set; }
 
     [Header("Attack Settings")]
-    public float attackRange = 3f;
-    public float attackAngle = 60f;
-    public float attackRotationSpeed = 720f;
+    [SerializeField] private float attackRange = 3f;
+    [SerializeField] private float attackAngle = 60f;
+    [SerializeField] private float attackRotationSpeed = 720f;
 
     [Header("Cooldown")]
     [SerializeField] private CooldownComponent autoAttackCooldown;
+    [SerializeField] private float baseAttackCooldown = 0.9f;
 
-    public LayerMask enemyLayer;
-    public GameObject slashPrefab;
-    public Transform attackSpawnPoint;
+    [Header("Targeting")]
+    [SerializeField] private LayerMask enemyLayer;
+
+    [Header("Presentation")]
+    [SerializeField] private GameObject slashPrefab;
+    [SerializeField] private Transform attackSpawnPoint;
 
     private Animator animator;
     private PlayerStats playerStats;
     private PlayerModifierSystem modifierSystem;
     private PlayerController controller;
 
-    private static readonly Collider[] attackHits = new Collider[64];
+    private static readonly Collider[] attackHits =
+        new Collider[64];
 
     private void Awake()
     {
-        animator = GetComponentInChildren<Animator>();
-        playerStats = GetComponent<PlayerStats>();
-        modifierSystem = GetComponent<PlayerModifierSystem>();
-        controller = GetComponent<PlayerController>();
+        animator =
+            GetComponentInChildren<Animator>();
 
-        if (playerStats == null)
-            Debug.LogError("PlayerStats NOT FOUND");
+        playerStats =
+            GetComponent<PlayerStats>();
 
-        if (modifierSystem == null)
-            Debug.LogError("PlayerModifierSystem NOT FOUND");
+        modifierSystem =
+            GetComponent<PlayerModifierSystem>();
 
-        if (autoAttackCooldown == null)
-            Debug.LogError("CooldownComponent NOT ASSIGNED");
+        controller =
+            GetComponent<PlayerController>();
 
-        autoAttackCooldown.SetBaseCooldown(0.9f);
+        ValidateReferences();
+
+        if (autoAttackCooldown != null)
+        {
+            autoAttackCooldown.SetBaseCooldown(
+                baseAttackCooldown);
+        }
     }
 
     private void Update()
     {
-        if (GameStateManager.Instance.CurrentState != GameState.Playing)
+        if (!CanProcessCombat())
             return;
 
-        if (controller != null && controller.IsDashing)
-            return;
+        UpdateAttackSpeed();
+
+        autoAttackCooldown.Tick(
+            Time.deltaTime);
+
+        IDamageable target =
+            FindBestTarget();
+
+        UpdateCurrentTarget(target);
 
         if (CurrentTarget != null)
         {
             RotateTowards(CurrentTarget);
         }
 
+        if (target != null)
+        {
+            TryExecuteAttack(target);
+        }
+    }
+
+    // =========================================================
+    // COMBAT STATE
+    // =========================================================
+
+    private bool CanProcessCombat()
+    {
+        if (GameStateManager.Instance == null)
+            return false;
+
+        if (GameStateManager.Instance.CurrentState !=
+            GameState.Playing)
+        {
+            return false;
+        }
+
+        if (controller != null &&
+            controller.IsDashing)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    private void UpdateAttackSpeed()
+    {
+        if (modifierSystem == null ||
+            autoAttackCooldown == null)
+        {
+            return;
+        }
+
         float attackSpeed =
-    modifierSystem.GetStat(StatType.AttackSpeed);
+            Mathf.Max(
+                0.01f,
+                modifierSystem.GetStat(
+                    StatType.AttackSpeed));
 
         autoAttackCooldown.CooldownMultiplier =
-            1f / Mathf.Max(0.01f, attackSpeed);
+            1f / attackSpeed;
 
-        animator.SetFloat("AttackSpeed", attackSpeed);
-
-        autoAttackCooldown.Tick(Time.deltaTime);
-
-        UpdateTarget();
-        HandleAutoAttack();
+        if (animator != null)
+        {
+            animator.SetFloat(
+                "AttackSpeed",
+                attackSpeed);
+        }
     }
 
-    private void UpdateTarget()
+    private void UpdateCurrentTarget(
+        IDamageable target)
     {
-        IDamageable target = FindBestTarget();
-
-        if (target != null)
-            CurrentTarget = ((MonoBehaviour)target).transform;
-        else
-            CurrentTarget = null;
-    }
-
-    private void HandleAutoAttack()
-    {
-        if (!autoAttackCooldown.IsReady)
-            return;
-
-        IDamageable target = FindBestTarget();
         if (target == null)
-            return;
-
-        ExecuteAttack(target);
-    }
-
-    private void HandleDynamicRetarget()
-    {
-        if (!IsAttacking)
-            return;
-
-        IDamageable newTarget = FindBestTarget();
-
-        if (newTarget == null)
-            return;
-
-        Transform newTransform = ((MonoBehaviour)newTarget).transform;
-
-        if (CurrentTarget == null)
         {
-            CurrentTarget = newTransform;
+            CurrentTarget = null;
             return;
         }
 
-        float currentDist = Vector3.SqrMagnitude(
-            CurrentTarget.position - transform.position);
+        MonoBehaviour targetBehaviour =
+            target as MonoBehaviour;
 
-        float newDist = Vector3.SqrMagnitude(
-            newTransform.position - transform.position);
-
-        if (newDist + 0.1f < currentDist)
+        if (targetBehaviour == null)
         {
-            CurrentTarget = newTransform;
+            CurrentTarget = null;
+            return;
         }
+
+        CurrentTarget =
+            targetBehaviour.transform;
     }
+
+    // =========================================================
+    // TARGETING
+    // =========================================================
 
     private IDamageable FindBestTarget()
     {
-        int hitCount = Physics.OverlapSphereNonAlloc(
-            transform.position,
-            attackRange,
-            attackHits,
-            enemyLayer
-        );
+        int hitCount =
+            Physics.OverlapSphereNonAlloc(
+                transform.position,
+                attackRange,
+                attackHits,
+                enemyLayer);
 
-        if (hitCount == 0)
+        if (hitCount <= 0)
             return null;
 
         IDamageable bestTarget = null;
         float bestScore = float.MinValue;
 
-        bool surrounded = hitCount > 4;
+        bool surrounded =
+            hitCount > 4;
 
         for (int i = 0; i < hitCount; i++)
         {
-            Collider hit = attackHits[i];
+            Collider hit =
+                attackHits[i];
+
             if (hit == null)
                 continue;
 
-            IDamageable damageable = hit.GetComponentInParent<IDamageable>();
-            if (damageable == null || damageable.IsDead)
+            IDamageable damageable =
+                hit.GetComponentInParent<IDamageable>();
+
+            if (damageable == null ||
+                damageable.IsDead)
+            {
+                continue;
+            }
+
+            MonoBehaviour targetBehaviour =
+                damageable as MonoBehaviour;
+
+            if (targetBehaviour == null)
                 continue;
 
-            Transform enemyTransform = hit.GetComponentInParent<Transform>();
+            Vector3 toTarget =
+                targetBehaviour.transform.position -
+                transform.position;
 
-            Vector3 toEnemy = enemyTransform.position - transform.position;
-            toEnemy.y = 0f;
+            toTarget.y = 0f;
 
-            float distance = toEnemy.magnitude;
-            if (distance <= 0.01f)
+            float distanceSqr =
+                toTarget.sqrMagnitude;
+
+            if (distanceSqr <= 0.0001f)
                 continue;
 
-            Vector3 dir = toEnemy / distance;
-            float dot = Vector3.Dot(transform.forward, dir);
+            float distance =
+                Mathf.Sqrt(distanceSqr);
+
+            Vector3 direction =
+                toTarget / distance;
+
+            float dot =
+                Vector3.Dot(
+                    transform.forward,
+                    direction);
 
             float score = surrounded
                 ? 1f / distance
                 : dot * 2f + (1f / distance);
 
-            if (score > bestScore)
-            {
-                bestScore = score;
-                bestTarget = damageable;
-            }
+            if (score <= bestScore)
+                continue;
+
+            bestScore = score;
+            bestTarget = damageable;
         }
 
         return bestTarget;
     }
 
-    private void RotateTowards(Transform target)
-    {
-        Vector3 direction = target.position - transform.position;
-        direction.y = 0f;
+    // =========================================================
+    // ATTACK
+    // =========================================================
 
-        if (direction.sqrMagnitude < 0.001f)
+    private void TryExecuteAttack(
+        IDamageable target)
+    {
+        if (autoAttackCooldown == null)
             return;
 
-        Quaternion targetRotation = Quaternion.LookRotation(direction);
+        if (!autoAttackCooldown.IsReady)
+            return;
 
-        transform.rotation = Quaternion.RotateTowards(
-            transform.rotation,
-            targetRotation,
-            attackRotationSpeed * Time.deltaTime
-        );
+        if (IsAttacking)
+            return;
+
+        ExecuteAttack(target);
     }
 
-    private void ExecuteAttack(IDamageable target)
+    private void ExecuteAttack(
+        IDamageable target)
     {
+        if (target == null)
+            return;
+
+        MonoBehaviour targetBehaviour =
+            target as MonoBehaviour;
+
+        if (targetBehaviour == null)
+            return;
+
         autoAttackCooldown.Trigger();
 
         IsAttacking = true;
-        CurrentTarget = ((MonoBehaviour)target).transform;
 
-        animator.SetTrigger("Attack");
+        CurrentTarget =
+            targetBehaviour.transform;
+
+        if (animator != null)
+        {
+            animator.SetTrigger("Attack");
+        }
     }
 
-    // 🔥 Animation Event
-    public void SpawnSlash()
+    // =========================================================
+    // ROTATION
+    // =========================================================
+
+    private void RotateTowards(
+        Transform target)
     {
-        if (slashPrefab == null)
+        if (target == null)
             return;
 
-        GameObject slash = PoolManager.Instance.Get(
-            slashPrefab,
-            attackSpawnPoint.position,
-            attackSpawnPoint.rotation
-        );
+        Vector3 direction =
+            target.position -
+            transform.position;
 
-        slash.transform.SetParent(transform);
+        direction.y = 0f;
 
-        SlashVFX vfx = slash.GetComponent<SlashVFX>();
+        if (direction.sqrMagnitude <= 0.001f)
+            return;
 
-        if (vfx != null && playerStats != null)
-            vfx.SetColor(
-                DamageVisuals.GetColor(playerStats.CurrentDamageType));
+        Quaternion targetRotation =
+            Quaternion.LookRotation(
+                direction);
+
+        transform.rotation =
+            Quaternion.RotateTowards(
+                transform.rotation,
+                targetRotation,
+                attackRotationSpeed *
+                Time.deltaTime);
     }
 
-    // 🔥 Animation Event
+    // =========================================================
+    // DAMAGE
+    // =========================================================
+
+    // Animation Event
     public void DealDamageInCone()
     {
-        int hitCount = Physics.OverlapSphereNonAlloc(
-            transform.position,
-            attackRange,
-            attackHits,
-            enemyLayer
-        );
+        if (!IsAttacking)
+            return;
 
-        HashSet<IDamageable> damaged = new HashSet<IDamageable>();
-        float cosHalfAngle = Mathf.Cos(attackAngle * 0.5f * Mathf.Deg2Rad);
+        int hitCount =
+            Physics.OverlapSphereNonAlloc(
+                transform.position,
+                attackRange,
+                attackHits,
+                enemyLayer);
+
+        if (hitCount <= 0)
+            return;
+
+        HashSet<IDamageable> damaged =
+            new HashSet<IDamageable>();
+
+        float cosHalfAngle =
+            Mathf.Cos(
+                attackAngle *
+                0.5f *
+                Mathf.Deg2Rad);
 
         for (int i = 0; i < hitCount; i++)
         {
-            Collider hit = attackHits[i];
-            if (hit == null) continue;
+            Collider hit =
+                attackHits[i];
 
-            IDamageable damageable = hit.GetComponentInParent<IDamageable>();
-            if (damageable == null || damageable.IsDead || damaged.Contains(damageable))
+            if (hit == null)
                 continue;
 
-            Transform targetTransform = hit.GetComponentInParent<Transform>();
-            Vector3 toTarget = targetTransform.position - transform.position;
+            IDamageable damageable =
+                hit.GetComponentInParent<IDamageable>();
+
+            if (damageable == null ||
+                damageable.IsDead ||
+                damaged.Contains(damageable))
+            {
+                continue;
+            }
+
+            MonoBehaviour targetBehaviour =
+                damageable as MonoBehaviour;
+
+            if (targetBehaviour == null)
+                continue;
+
+            Vector3 toTarget =
+                targetBehaviour.transform.position -
+                transform.position;
+
             toTarget.y = 0f;
 
             if (toTarget.sqrMagnitude < 0.04f)
@@ -259,7 +374,11 @@ public class PlayerCombat : MonoBehaviour
             }
 
             toTarget.Normalize();
-            float dot = Vector3.Dot(transform.forward, toTarget);
+
+            float dot =
+                Vector3.Dot(
+                    transform.forward,
+                    toTarget);
 
             if (dot >= cosHalfAngle)
             {
@@ -269,69 +388,230 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
-    private void ApplyDamage(IDamageable target)
+    private void ApplyDamage(
+        IDamageable target)
     {
-        if (modifierSystem == null || playerStats == null)
+        if (target == null)
             return;
 
-        float damageAmount =
-            modifierSystem.GetStat(StatType.Damage);
+        if (modifierSystem == null ||
+            playerStats == null)
+        {
+            return;
+        }
 
-        DamageData damage = new DamageData(
-            damageAmount,
-            playerStats.CurrentDamageType
-        );
+        float damageAmount =
+            Mathf.Max(
+                0f,
+                modifierSystem.GetStat(
+                    StatType.Damage));
+
+        DamageData damage =
+            new DamageData(
+                damageAmount,
+                playerStats.CurrentDamageType);
 
         target.TakeDamage(damage);
     }
 
-    // 🔥 Animation Event (solo libera animación, NO cooldown)
+    // =========================================================
+    // PRESENTATION
+    // =========================================================
+
+    // Animation Event
+    public void SpawnSlash()
+    {
+        if (slashPrefab == null ||
+            attackSpawnPoint == null)
+        {
+            return;
+        }
+
+        if (PoolManager.Instance == null)
+            return;
+
+        GameObject slash =
+            PoolManager.Instance.Get(
+                slashPrefab,
+                attackSpawnPoint.position,
+                attackSpawnPoint.rotation);
+
+        if (slash == null)
+            return;
+
+        slash.transform.SetParent(transform);
+
+        SlashVFX vfx =
+            slash.GetComponent<SlashVFX>();
+
+        if (vfx != null &&
+            playerStats != null)
+        {
+            vfx.SetColor(
+                DamageVisuals.GetColor(
+                    playerStats.CurrentDamageType));
+        }
+    }
+
+    // =========================================================
+    // ATTACK END / CANCELLATION
+    // =========================================================
+
+    // Animation Event
     public void EndAttack()
     {
         IsAttacking = false;
         CurrentTarget = null;
     }
 
-    public static class DamageVisuals
+    public void CancelAttack()
     {
-        public static Color GetColor(DamageType type)
+        IsAttacking = false;
+        CurrentTarget = null;
+
+        if (animator != null)
         {
-            switch (type)
-            {
-                case DamageType.Fire: return new Color(1f, 0.3f, 0f);
-                case DamageType.Poison: return new Color(0.2f, 1f, 0.2f);
-                case DamageType.Chaos: return new Color(0.6f, 0f, 1f);
-                default: return Color.white;
-            }
+            animator.ResetTrigger("Attack");
         }
     }
+
+    // =========================================================
+    // VALIDATION
+    // =========================================================
+
+    private void ValidateReferences()
+    {
+        if (animator == null)
+        {
+            Debug.LogError(
+                $"{name}: PlayerCombat requires an Animator.",
+                this);
+        }
+
+        if (playerStats == null)
+        {
+            Debug.LogError(
+                $"{name}: PlayerCombat requires PlayerStats.",
+                this);
+        }
+
+        if (modifierSystem == null)
+        {
+            Debug.LogError(
+                $"{name}: PlayerCombat requires PlayerModifierSystem.",
+                this);
+        }
+
+        if (controller == null)
+        {
+            Debug.LogError(
+                $"{name}: PlayerCombat requires PlayerController.",
+                this);
+        }
+
+        if (autoAttackCooldown == null)
+        {
+            Debug.LogError(
+                $"{name}: Auto Attack Cooldown is not assigned.",
+                this);
+        }
+
+        if (slashPrefab == null)
+        {
+            Debug.LogWarning(
+                $"{name}: Slash Prefab is not assigned.",
+                this);
+        }
+
+        if (attackSpawnPoint == null)
+        {
+            Debug.LogWarning(
+                $"{name}: Attack Spawn Point is not assigned.",
+                this);
+        }
+
+        if (enemyLayer.value == 0)
+        {
+            Debug.LogWarning(
+                $"{name}: Enemy LayerMask is empty.",
+                this);
+        }
+    }
+
+    // =========================================================
+    // GIZMOS
+    // =========================================================
 
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, attackRange);
 
-        Vector3 forward = transform.forward;
+        Gizmos.DrawWireSphere(
+            transform.position,
+            attackRange);
 
-        Quaternion leftRayRotation = Quaternion.AngleAxis(-attackAngle / 2f, Vector3.up);
-        Quaternion rightRayRotation = Quaternion.AngleAxis(attackAngle / 2f, Vector3.up);
+        Vector3 forward =
+            transform.forward;
 
-        Vector3 leftRayDirection = leftRayRotation * forward;
-        Vector3 rightRayDirection = rightRayRotation * forward;
+        Quaternion leftRotation =
+            Quaternion.AngleAxis(
+                -attackAngle * 0.5f,
+                Vector3.up);
+
+        Quaternion rightRotation =
+            Quaternion.AngleAxis(
+                attackAngle * 0.5f,
+                Vector3.up);
+
+        Vector3 leftDirection =
+            leftRotation * forward;
+
+        Vector3 rightDirection =
+            rightRotation * forward;
 
         Gizmos.color = Color.yellow;
-        Gizmos.DrawRay(transform.position, leftRayDirection * attackRange);
-        Gizmos.DrawRay(transform.position, rightRayDirection * attackRange);
+
+        Gizmos.DrawRay(
+            transform.position,
+            leftDirection * attackRange);
+
+        Gizmos.DrawRay(
+            transform.position,
+            rightDirection * attackRange);
     }
 
-    public void CancelAttack()
+    // =========================================================
+    // DAMAGE VISUALS
+    // =========================================================
+
+    public static class DamageVisuals
     {
-        if (!IsAttacking)
-            return;
+        public static Color GetColor(
+            DamageType type)
+        {
+            switch (type)
+            {
+                case DamageType.Fire:
+                    return new Color(
+                        1f,
+                        0.3f,
+                        0f);
 
-        animator.ResetTrigger("Attack");
+                case DamageType.Poison:
+                    return new Color(
+                        0.2f,
+                        1f,
+                        0.2f);
 
-        IsAttacking = false;
-        CurrentTarget = null;
+                case DamageType.Chaos:
+                    return new Color(
+                        0.6f,
+                        0f,
+                        1f);
+
+                default:
+                    return Color.white;
+            }
+        }
     }
 }

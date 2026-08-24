@@ -3,14 +3,18 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(CharacterController))]
-public class PlayerController : MonoBehaviour
+public sealed class PlayerController : MonoBehaviour
 {
     public Vector3 Velocity { get; private set; }
-    public bool IsMoving => moveInput.magnitude > 0.1f;
+
+    public bool IsMoving =>
+        moveInput.sqrMagnitude > 0.01f;
+
+    public bool IsDashing =>
+        isDashing;
 
     [Header("Movement")]
-    public float moveSpeed = 6f;
-    public float rotationSpeed = 15f;
+    [SerializeField] private float rotationSpeed = 15f;
 
     [Header("Dash")]
     [SerializeField] private float dashDistance = 5f;
@@ -18,51 +22,73 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float dashCooldown = 1f;
 
     [Header("Gravity")]
-    [SerializeField] float gravity = -20f;
-    [SerializeField] float groundCheckDistance = 1.5f;
-    [SerializeField] LayerMask groundLayer;
+    [SerializeField] private float gravity = -20f;
 
-    float verticalVelocity;
-
-    public bool IsDashing => isDashing;
-
-    private bool isDashing;
-    private float dashCooldownTimer;
-    private bool dashPressed;
-
-    private PlayerDamageReceiver damageReceiver;
     private CharacterController controller;
     private PlayerInputActions inputActions;
+
     private Animator animator;
     private PlayerCombat combat;
-    private PlayerStats stats;
+    private PlayerModifierSystem modifierSystem;
+    private PlayerDamageReceiver damageReceiver;
     private PlayerInteractor interactor;
+
     private Transform cameraTransform;
 
     private Vector2 moveInput;
     private Vector3 moveDirection;
 
-    private void Start()
-    {
-        EnemyManager.Instance.SetPlayer(transform);
-        cameraTransform = Camera.main.transform;
-    }
+    private float verticalVelocity;
+    private float dashCooldownTimer;
+
+    private bool isDashing;
+    private bool dashPressed;
+
+    private Coroutine dashRoutine;
+
+    private int playerLayer = -1;
+    private int enemyLayer = -1;
 
     private void Awake()
     {
-        controller = GetComponent<CharacterController>();
-        animator = GetComponentInChildren<Animator>();
-        combat = GetComponent<PlayerCombat>();
-        stats = GetComponent<PlayerStats>();
-        damageReceiver = GetComponent<PlayerDamageReceiver>();
-        interactor = GetComponentInChildren<PlayerInteractor>();
+        controller =
+            GetComponent<CharacterController>();
 
-        inputActions = new PlayerInputActions();
+        animator =
+            GetComponentInChildren<Animator>();
 
-        inputActions.Player.Move.performed += OnMovePerformed;
-        inputActions.Player.Move.canceled += OnMoveCanceled;
-        inputActions.Player.Dash.performed += OnDashPerformed;
-        inputActions.Player.Interact.performed += OnInteractPerformed;
+        combat =
+            GetComponent<PlayerCombat>();
+
+        modifierSystem =
+            GetComponent<PlayerModifierSystem>();
+
+        damageReceiver =
+            GetComponent<PlayerDamageReceiver>();
+
+        interactor =
+            GetComponentInChildren<PlayerInteractor>();
+
+        inputActions =
+            new PlayerInputActions();
+
+        playerLayer =
+            LayerMask.NameToLayer("Player");
+
+        enemyLayer =
+            LayerMask.NameToLayer("Enemy");
+
+        inputActions.Player.Move.performed +=
+            OnMovePerformed;
+
+        inputActions.Player.Move.canceled +=
+            OnMoveCanceled;
+
+        inputActions.Player.Dash.performed +=
+            OnDashPerformed;
+
+        inputActions.Player.Interact.performed +=
+            OnInteractPerformed;
     }
 
     private void OnEnable()
@@ -74,183 +100,380 @@ public class PlayerController : MonoBehaviour
     {
         inputActions.Disable();
 
-        inputActions.Player.Move.performed -= OnMovePerformed;
-        inputActions.Player.Move.canceled -= OnMoveCanceled;
-        inputActions.Player.Dash.performed -= OnDashPerformed;
-        inputActions.Player.Interact.performed -= OnInteractPerformed;
+        inputActions.Player.Move.performed -=
+            OnMovePerformed;
+
+        inputActions.Player.Move.canceled -=
+            OnMoveCanceled;
+
+        inputActions.Player.Dash.performed -=
+            OnDashPerformed;
+
+        inputActions.Player.Interact.performed -=
+            OnInteractPerformed;
+
+        StopDash();
+
+        moveInput = Vector2.zero;
+        moveDirection = Vector3.zero;
+        dashPressed = false;
+    }
+
+    private void Start()
+    {
+        ResolveCamera();
+
+        if (EnemyManager.Instance != null)
+        {
+            EnemyManager.Instance.SetPlayer(transform);
+        }
     }
 
     private void Update()
     {
-        ApplyGravity();
+        UpdateDashCooldown();
+        HandleGravity();
 
-        if (dashCooldownTimer > 0f)
-            dashCooldownTimer -= Time.deltaTime;
-
-        if (dashPressed && dashCooldownTimer <= 0f && !isDashing)
+        if (dashPressed)
         {
-            StartCoroutine(Dash());
+            dashPressed = false;
+
+            TryStartDash();
         }
 
-        dashPressed = false;
-
         if (!isDashing)
+        {
             HandleMovement();
+        }
+        else
+        {
+            Velocity = controller.velocity;
+        }
     }
 
-    private void OnMovePerformed(InputAction.CallbackContext context)
+    // =========================================================
+    // INPUT
+    // =========================================================
+
+    private void OnMovePerformed(
+        InputAction.CallbackContext context)
     {
-        moveInput = context.ReadValue<Vector2>();
+        moveInput =
+            context.ReadValue<Vector2>();
     }
 
-    private void OnMoveCanceled(InputAction.CallbackContext context)
+    private void OnMoveCanceled(
+        InputAction.CallbackContext context)
     {
         moveInput = Vector2.zero;
     }
 
-    private void OnDashPerformed(InputAction.CallbackContext context)
+    private void OnDashPerformed(
+        InputAction.CallbackContext context)
     {
         dashPressed = true;
     }
 
-    private void OnInteractPerformed(InputAction.CallbackContext context)
+    private void OnInteractPerformed(
+        InputAction.CallbackContext context)
     {
         interactor?.TryInteract();
     }
 
-    private void ApplyGravity()
-    {
-        if (controller.isGrounded && verticalVelocity < 0)
-        {
-            verticalVelocity = -2f;
-        }
-        else
-        {
-            verticalVelocity += gravity * Time.deltaTime;
-        }
-
-        Ray ray = new Ray(transform.position + Vector3.up * 0.5f, Vector3.down);
-
-        if (Physics.Raycast(ray, out RaycastHit hit, groundCheckDistance, groundLayer))
-        {
-            float targetY = hit.point.y;
-
-            Vector3 pos = transform.position;
-            pos.y = Mathf.Lerp(pos.y, targetY, Time.deltaTime * 15f);
-
-            transform.position = pos;
-        }
-
-        controller.Move(Vector3.up * verticalVelocity * Time.deltaTime);
-    }
+    // =========================================================
+    // MOVEMENT
+    // =========================================================
 
     private void HandleMovement()
     {
-        Vector3 camForward = cameraTransform.forward;
-        Vector3 camRight = cameraTransform.right;
-
-        camForward.y = 0f;
-        camRight.y = 0f;
-
-        camForward.Normalize();
-        camRight.Normalize();
-
-        moveDirection = camForward * moveInput.y + camRight * moveInput.x;
-
-        float dynamicSpeed = moveSpeed;
-
-        if (stats != null)
+        if (cameraTransform == null)
         {
-            var modifierSystem = stats.GetComponent<PlayerModifierSystem>();
+            ResolveCamera();
 
-            if (modifierSystem != null)
-            {
-                dynamicSpeed = modifierSystem.GetStat(StatType.MovementSpeed);
-            }
+            if (cameraTransform == null)
+                return;
         }
 
-        if (moveDirection.magnitude > 0.1f)
+        Vector3 cameraForward =
+            cameraTransform.forward;
+
+        Vector3 cameraRight =
+            cameraTransform.right;
+
+        cameraForward.y = 0f;
+        cameraRight.y = 0f;
+
+        cameraForward.Normalize();
+        cameraRight.Normalize();
+
+        moveDirection =
+            cameraForward * moveInput.y +
+            cameraRight * moveInput.x;
+
+        float movementSpeed =
+            GetMovementSpeed();
+
+        if (moveDirection.sqrMagnitude > 0.01f)
         {
             moveDirection.Normalize();
 
-            if (combat.CurrentTarget == null)
+            if (combat == null ||
+                combat.CurrentTarget == null)
             {
-                Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
-
-                transform.rotation = Quaternion.Slerp(
-                    transform.rotation,
-                    targetRotation,
-                    rotationSpeed * Time.deltaTime
-                );
+                RotateTowardsMovement();
             }
 
-            controller.Move(moveDirection * dynamicSpeed * Time.deltaTime);
+            controller.Move(
+                moveDirection *
+                movementSpeed *
+                Time.deltaTime);
         }
 
-        float currentSpeed = moveInput.magnitude * dynamicSpeed;
+        float animationSpeed =
+            moveInput.magnitude *
+            movementSpeed;
 
-        animator.SetFloat("Speed", currentSpeed);
+        if (animator != null)
+        {
+            animator.SetFloat(
+                "Speed",
+                animationSpeed);
+        }
 
-        Velocity = controller.velocity;
+        Velocity =
+            controller.velocity;
     }
 
-    private IEnumerator Dash()
+    private float GetMovementSpeed()
     {
-        int playerLayer = LayerMask.NameToLayer("Player");
-        int enemyLayer = LayerMask.NameToLayer("Enemy");
+        if (modifierSystem == null)
+            return 0f;
 
-        Physics.IgnoreLayerCollision(playerLayer, enemyLayer, true);
+        return Mathf.Max(
+            0f,
+            modifierSystem.GetStat(
+                StatType.MovementSpeed));
+    }
 
+    private void RotateTowardsMovement()
+    {
+        Quaternion targetRotation =
+            Quaternion.LookRotation(
+                moveDirection);
+
+        transform.rotation =
+            Quaternion.Slerp(
+                transform.rotation,
+                targetRotation,
+                rotationSpeed *
+                Time.deltaTime);
+    }
+
+    // =========================================================
+    // GRAVITY
+    // =========================================================
+
+    private void HandleGravity()
+    {
+        if (controller.isGrounded)
+        {
+            if (verticalVelocity < 0f)
+            {
+                verticalVelocity = -2f;
+            }
+        }
+        else
+        {
+            verticalVelocity +=
+                gravity *
+                Time.deltaTime;
+        }
+
+        controller.Move(
+            Vector3.up *
+            verticalVelocity *
+            Time.deltaTime);
+    }
+
+    // =========================================================
+    // DASH
+    // =========================================================
+
+    private void UpdateDashCooldown()
+    {
+        if (dashCooldownTimer <= 0f)
+            return;
+
+        dashCooldownTimer -=
+            Time.deltaTime;
+
+        if (dashCooldownTimer < 0f)
+        {
+            dashCooldownTimer = 0f;
+        }
+    }
+
+    private void TryStartDash()
+    {
+        if (isDashing)
+            return;
+
+        if (dashCooldownTimer > 0f)
+            return;
+
+        dashRoutine =
+            StartCoroutine(
+                DashRoutine());
+    }
+
+    private IEnumerator DashRoutine()
+    {
         isDashing = true;
         dashCooldownTimer = dashCooldown;
+
+        IgnoreEnemyCollision(true);
 
         if (combat != null)
         {
             combat.CancelAttack();
         }
 
-        animator.SetTrigger("Dash");
+        if (animator != null)
+        {
+            animator.SetTrigger("Dash");
+        }
 
         if (damageReceiver != null)
         {
             damageReceiver.IsInvulnerable = true;
         }
 
-        Vector3 dashDir = moveDirection;
+        Vector3 dashDirection =
+            moveDirection;
 
-        if (dashDir.magnitude < 0.1f)
+        if (dashDirection.sqrMagnitude < 0.01f)
         {
-            dashDir = transform.forward;
+            dashDirection =
+                transform.forward;
         }
 
-        dashDir.Normalize();
+        dashDirection.y = 0f;
 
-        float timer = 0f;
-
-        Vector3 startPos = transform.position;
-        Vector3 targetPos = startPos + dashDir * dashDistance;
-
-        while (timer < dashDuration)
+        if (dashDirection.sqrMagnitude < 0.01f)
         {
-            timer += Time.deltaTime;
+            dashDirection = Vector3.forward;
+        }
 
-            float t = timer / dashDuration;
+        dashDirection.Normalize();
 
-            Vector3 newPos = Vector3.Lerp(startPos, targetPos, t);
-            Vector3 delta = newPos - transform.position;
+        float elapsed = 0f;
+
+        while (elapsed < dashDuration)
+        {
+            elapsed +=
+                Time.deltaTime;
+
+            float normalizedTime =
+                Mathf.Clamp01(
+                    elapsed /
+                    dashDuration);
+
+            Vector3 delta =
+                dashDirection *
+                (dashDistance /
+                 Mathf.Max(
+                     0.0001f,
+                     dashDuration)) *
+                Time.deltaTime;
 
             controller.Move(delta);
 
             yield return null;
         }
 
+        EndDash();
+    }
+
+    private void EndDash()
+    {
+        if (!isDashing)
+            return;
+
         if (damageReceiver != null)
         {
             damageReceiver.IsInvulnerable = false;
         }
 
-        Physics.IgnoreLayerCollision(playerLayer, enemyLayer, false);
+        IgnoreEnemyCollision(false);
 
         isDashing = false;
+        dashRoutine = null;
+
+        Velocity =
+            controller.velocity;
+    }
+
+    private void StopDash()
+    {
+        if (dashRoutine != null)
+        {
+            StopCoroutine(dashRoutine);
+            dashRoutine = null;
+        }
+
+        if (isDashing)
+        {
+            EndDash();
+        }
+        else
+        {
+            IgnoreEnemyCollision(false);
+
+            if (damageReceiver != null)
+            {
+                damageReceiver.IsInvulnerable = false;
+            }
+        }
+
+        isDashing = false;
+    }
+
+    private void IgnoreEnemyCollision(
+        bool ignore)
+    {
+        if (playerLayer < 0 ||
+            enemyLayer < 0)
+        {
+            return;
+        }
+
+        Physics.IgnoreLayerCollision(
+            playerLayer,
+            enemyLayer,
+            ignore);
+    }
+
+    // =========================================================
+    // CAMERA
+    // =========================================================
+
+    private void ResolveCamera()
+    {
+        Camera mainCamera =
+            Camera.main;
+
+        if (mainCamera == null)
+        {
+            cameraTransform = null;
+
+            Debug.LogError(
+                "PlayerController could not find the Main Camera.",
+                this);
+
+            return;
+        }
+
+        cameraTransform =
+            mainCamera.transform;
     }
 }

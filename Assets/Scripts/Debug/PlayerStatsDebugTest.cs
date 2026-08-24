@@ -2,13 +2,10 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerStatsDebugTest : MonoBehaviour
-{
-    private PlayerStats stats;
-    private PlayerExperienceSystem experience;
+{    private PlayerExperienceSystem experience;
 
     void Awake()
     {
-        stats = GetComponent<PlayerStats>();
         experience = GetComponent<PlayerExperienceSystem>();
     }
 

@@ -30,7 +30,6 @@ public class MinotaurBossController : BossControllerBase
     private GameObject currentJumpWarning;
     private JumpWarning_Bestial currentWarningScript;
     private BossMovementController movementController;
-    private Mesh bakedMesh;
     private Collider[] hitBuffer = new Collider[20];
 
     // Impacto

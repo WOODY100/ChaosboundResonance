@@ -123,11 +123,6 @@ public sealed class EnemyProjectile : PooledBehaviour
         rb.linearVelocity =
             direction * speed;
 
-        Debug.Log(
-            $"EnemyProjectile initialized. " +
-            $"Velocity={rb.linearVelocity} " +
-            $"Position={transform.position}");
-
         initialized = true;
     }
 
@@ -137,11 +132,6 @@ public sealed class EnemyProjectile : PooledBehaviour
             return;
 
         lifetimeRemaining -= Time.deltaTime;
-
-        Debug.Log(
-            $"EnemyProjectile position={transform.position} " +
-            $"velocity={rb.linearVelocity} " +
-            $"lifetime={lifetimeRemaining}");
 
         if (lifetimeRemaining <= 0f)
         {
@@ -157,29 +147,15 @@ public sealed class EnemyProjectile : PooledBehaviour
         if (other == null)
             return;
 
-        Debug.Log(
-            $"[EnemyProjectile] HIT " +
-            $"Object='{other.name}' " +
-            $"Layer='{LayerMask.LayerToName(other.gameObject.layer)}' " +
-            $"Root='{other.transform.root.name}'"
-        );
-
         if (owner != null &&
             other.transform.IsChildOf(owner))
         {
-            Debug.Log(
-                "[EnemyProjectile] Ignored: owner."
-            );
-
             return;
         }
 
 
         if (other.gameObject.layer == obstacleLayer)
         {
-            Debug.Log(
-                "[EnemyProjectile] Ignored: obstacle."
-            );
 
             hasImpacted = true;
             ReturnToPool();
@@ -188,17 +164,8 @@ public sealed class EnemyProjectile : PooledBehaviour
 
         if (other.gameObject.layer != playerLayer)
         {
-            Debug.Log(
-                $"[EnemyProjectile] Ignored: layer is " +
-                $"{LayerMask.LayerToName(other.gameObject.layer)}"
-            );
-
             return;
         }
-
-        Debug.Log(
-            "[EnemyProjectile] Accepted as PLAYER target."
-        );
 
         IDamageable damageable =
             other.GetComponentInParent<IDamageable>();

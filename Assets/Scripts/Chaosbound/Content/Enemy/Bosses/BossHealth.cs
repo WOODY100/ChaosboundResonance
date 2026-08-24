@@ -1,18 +1,22 @@
 ﻿using System;
 using UnityEngine;
 
+[RequireComponent(typeof(BossControllerBase))]
 public class BossHealth :
     MonoBehaviour,
     IDamageable
 {
+    [Header("Health")]
     [SerializeField]
     private float maxHealth = 1000f;
 
-    [SerializeField]
     private float currentHealth;
 
     public float CurrentHealth =>
         currentHealth;
+
+    public float MaxHealth =>
+        maxHealth;
 
     public bool IsDead =>
         currentHealth <= 0f;
@@ -25,8 +29,6 @@ public class BossHealth :
     {
         controller =
             GetComponent<BossControllerBase>();
-
-        Initialize();
     }
 
     private void OnEnable()
@@ -36,8 +38,7 @@ public class BossHealth :
 
     private void Initialize()
     {
-        currentHealth =
-            maxHealth;
+        currentHealth = maxHealth;
     }
 
     public void TakeDamage(
@@ -46,8 +47,16 @@ public class BossHealth :
         if (IsDead)
             return;
 
-        currentHealth -=
-            damage.amount;
+        if (damage.amount <= 0f)
+            return;
+
+        currentHealth -= damage.amount;
+
+        currentHealth =
+            Mathf.Clamp(
+                currentHealth,
+                0f,
+                maxHealth);
 
         if (FloatingDamageManager.Instance != null)
         {
@@ -73,7 +82,7 @@ public class BossHealth :
 
     private void Die()
     {
-        if (IsDead == false)
+        if (!IsDead)
             return;
 
         controller?.OnDeath();
@@ -87,5 +96,10 @@ public class BossHealth :
             return 0f;
 
         return currentHealth / maxHealth;
+    }
+
+    private void OnValidate()
+    {
+        maxHealth = Mathf.Max(1f, maxHealth);
     }
 }
