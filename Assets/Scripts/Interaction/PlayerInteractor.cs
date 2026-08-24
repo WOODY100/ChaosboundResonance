@@ -6,6 +6,11 @@ public sealed class PlayerInteractor : MonoBehaviour
 
     public bool CanInteract => currentInteractable != null;
 
+    private void OnDisable()
+    {
+        currentInteractable = null;
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         IInteractable interactable = other.GetComponentInParent<IInteractable>();
