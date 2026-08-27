@@ -1,4 +1,8 @@
 using Chaosbound.Core.Runtime.SceneManagement;
+using Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Config;
+using Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Markers;
+using Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Rendering;
+using Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Runtime;
 using System;
 using UnityEngine;
 
@@ -33,6 +37,30 @@ namespace Chaosbound.Core.Composition
         [SerializeField] private SkillBarUI skillBarUI;
 
         //==========================================================
+        // Minimap
+        //==========================================================
+
+        [Header("Minimap")]
+
+        [SerializeField]
+        private MinimapStaticMapView minimapStaticMapView;
+
+        [SerializeField]
+        private MinimapConfig minimapConfig;
+
+        [SerializeField]
+        private MinimapRuntimeUpdater minimapRuntimeUpdater;
+
+        [SerializeField]
+        private MinimapMarkerView minimapPlayerMarkerView;
+
+        [SerializeField]
+        private RectTransform minimapMapViewport;
+
+        [SerializeField]
+        private RectTransform minimapMapContent;
+
+        //==========================================================
         // Private Fields
         //==========================================================
 
@@ -55,6 +83,24 @@ namespace Chaosbound.Core.Composition
         public HUDLevelUI HUDLevelUI => hudLevelUI;
         public SkillBarUI SkillBarUI => skillBarUI;
 
+        public MinimapStaticMapView MinimapStaticMapView =>
+            minimapStaticMapView;
+
+        public MinimapConfig MinimapConfig =>
+            minimapConfig;
+
+        public MinimapRuntimeUpdater MinimapRuntimeUpdater =>
+            minimapRuntimeUpdater;
+
+        public MinimapMarkerView MinimapPlayerMarkerView =>
+            minimapPlayerMarkerView;
+
+        public RectTransform MinimapMapViewport =>
+            minimapMapViewport;
+
+        public RectTransform MinimapMapContent =>
+            minimapMapContent;
+
         //==========================================================
         // Unity
         //==========================================================
@@ -63,7 +109,8 @@ namespace Chaosbound.Core.Composition
         {
             RegisterCurrentContext();
 
-            sceneTransitionService = new SceneTransitionService();
+            sceneTransitionService =
+                new SceneTransitionService();
         }
 
         private void OnDestroy()
@@ -98,18 +145,79 @@ namespace Chaosbound.Core.Composition
         private void OnValidate()
         {
             // Persistent Managers
-            ValidateReference(runSession, nameof(runSession));
-            ValidateReference(runManager, nameof(runManager));
-            ValidateReference(poolManager, nameof(poolManager));
-            ValidateReference(enemyManager, nameof(enemyManager));
-            ValidateReference(gameStateManager, nameof(gameStateManager));
-            ValidateReference(levelUpManager, nameof(levelUpManager));
+            ValidateReference(
+                runSession,
+                nameof(runSession));
+
+            ValidateReference(
+                runManager,
+                nameof(runManager));
+
+            ValidateReference(
+                poolManager,
+                nameof(poolManager));
+
+            ValidateReference(
+                enemyManager,
+                nameof(enemyManager));
+
+            ValidateReference(
+                gameStateManager,
+                nameof(gameStateManager));
+
+            ValidateReference(
+                levelUpManager,
+                nameof(levelUpManager));
 
             // HUD
-            ValidateReference(hudController, nameof(hudController));
-            ValidateReference(hudXPBarUI, nameof(hudXPBarUI));
-            ValidateReference(hudLevelUI, nameof(hudLevelUI));
-            ValidateReference(skillBarUI, nameof(skillBarUI));
+            ValidateReference(
+                hudController,
+                nameof(hudController));
+
+            ValidateReference(
+                hudXPBarUI,
+                nameof(hudXPBarUI));
+
+            ValidateReference(
+                hudLevelUI,
+                nameof(hudLevelUI));
+
+            ValidateReference(
+                skillBarUI,
+                nameof(skillBarUI));
+
+            // Minimap
+            ValidateReference(
+                minimapStaticMapView,
+                nameof(minimapStaticMapView));
+
+            ValidateMinimapConfig();
+
+            ValidateReference(
+                minimapRuntimeUpdater,
+                nameof(minimapRuntimeUpdater));
+
+            ValidateReference(
+                minimapPlayerMarkerView,
+                nameof(minimapPlayerMarkerView));
+
+            ValidateReference(
+                minimapMapViewport,
+                nameof(minimapMapViewport));
+
+            ValidateReference(
+                minimapMapContent,
+                nameof(minimapMapContent));
+        }
+
+        private void ValidateMinimapConfig()
+        {
+            if (minimapConfig == null)
+            {
+                Debug.LogWarning(
+                    $"{nameof(BootstrapContext)}: '{nameof(minimapConfig)}' is not assigned.",
+                    this);
+            }
         }
 
         private void ValidateReference(

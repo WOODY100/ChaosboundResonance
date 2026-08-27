@@ -31,6 +31,10 @@ namespace Chaosbound.Content.World.Themes.TileSets
         [SerializeField]
         private bool randomYRotation = false;
 
+        [Header("Minimap")]
+        [SerializeField]
+        private MinimapTileMask minimapMask = new MinimapTileMask();
+
         public GameObject Prefab => prefab;
 
         public int Weight => weight;
@@ -42,5 +46,17 @@ namespace Chaosbound.Content.World.Themes.TileSets
         public bool AllowRotate90 => allowRotate90;
 
         public bool RandomYRotation => randomYRotation;
+
+        public MinimapTileMask MinimapMask
+        {
+            get
+            {
+                if (minimapMask == null)
+                    minimapMask = new MinimapTileMask();
+
+                minimapMask.EnsureStorage();
+                return minimapMask;
+            }
+        }
     }
 }

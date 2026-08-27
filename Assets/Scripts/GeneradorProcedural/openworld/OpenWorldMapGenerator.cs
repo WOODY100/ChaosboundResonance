@@ -2,6 +2,7 @@ using Chaosbound.Content.Expeditions.Runtime.World;
 using Chaosbound.Content.World.Runtime.Services;
 using Chaosbound.Content.World.Themes;
 using Chaosbound.Content.World.Themes.TileSets;
+using Chaosbound.Gameplay.ExpeditionRuntime.World;
 using System;
 using UnityEngine;
 
@@ -42,6 +43,11 @@ public class OpenWorldMapGenerator : MonoBehaviour
     private Transform propsParent;
     private Transform obstaclesParent;
     private Transform lightsParent;
+
+    private WorldLayout worldLayout;
+
+    public WorldLayout WorldLayout =>
+        worldLayout;
 
     private TileSetProfile TileSet
     {
@@ -118,6 +124,11 @@ public class OpenWorldMapGenerator : MonoBehaviour
             ClearMap();
 
         occupied = new bool[mapWidth, mapHeight];
+
+        worldLayout =
+            new WorldLayout(
+                mapWidth,
+                mapHeight);
 
         CreateGeneratedHierarchy();
 
@@ -309,6 +320,13 @@ public class OpenWorldMapGenerator : MonoBehaviour
             Quaternion.identity,
             terrainParent);
 
+        RegisterTile(
+            centerX,
+            centerZ,
+            tile,
+            Quaternion.identity,
+            TileContext.Center);
+
         occupied[centerX, centerZ] = true;
     }
 
@@ -364,6 +382,13 @@ public class OpenWorldMapGenerator : MonoBehaviour
             GetWorldPosition(x, z, mapWidth, mapHeight),
             rotation,
             terrainParent);
+
+        RegisterTile(
+            x,
+            z,
+            tile,
+            rotation,
+            context);
     }
 
     private void SpawnCenterTile(
@@ -412,6 +437,15 @@ public class OpenWorldMapGenerator : MonoBehaviour
                 rotation,
                 terrainParent);
 
+            RegisterTile(
+                x,
+                z,
+                tile,
+                rotation,
+                TileContext.Center,
+                sizeX,
+                sizeZ);
+
             MarkOccupied(
                 x,
                 z,
@@ -434,8 +468,14 @@ public class OpenWorldMapGenerator : MonoBehaviour
             TileSet,
             TileContext.Center);
 
+        int sizeX = tile.SizeX;
+        int sizeZ = tile.SizeZ;
+
         Quaternion rotation =
-            ApplyTileRotationModifiers(tile);
+            ApplyTileRotationModifiers(
+                tile,
+                ref sizeX,
+                ref sizeZ);
 
         Instantiate(
             tile.Prefab,
@@ -446,6 +486,15 @@ public class OpenWorldMapGenerator : MonoBehaviour
                 mapHeight),
             rotation,
             terrainParent);
+
+        RegisterTile(
+            x,
+            z,
+            tile,
+            rotation,
+            TileContext.Center,
+            sizeX,
+            sizeZ);
     }
 
     private Quaternion GetBorderRotation(
@@ -748,6 +797,93 @@ public class OpenWorldMapGenerator : MonoBehaviour
         generatedWorldBounds =
             default;
 
+        worldLayout = null;
+
         IsGenerated = false;
+    }
+
+    private void RegisterTile(
+    int x,
+    int z,
+    TileEntry tile,
+    Quaternion rotation,
+    TileContext context)
+    {
+        if (tile == null)
+            throw new ArgumentNullException(
+                nameof(tile));
+
+        RegisterTile(
+            x,
+            z,
+            tile,
+            rotation,
+            context,
+            tile.SizeX,
+            tile.SizeZ);
+    }
+
+    private void RegisterTile(
+        int x,
+        int z,
+        TileEntry tile,
+        Quaternion rotation,
+        TileContext context,
+        int sizeX,
+        int sizeZ)
+    {
+        if (worldLayout == null)
+        {
+            throw new InvalidOperationException(
+                "WorldLayout has not been initialized.");
+        }
+
+        TileRotation tileRotation =
+            GetTileRotation(rotation);
+
+        WorldTileData tileData =
+            new WorldTileData(
+                new Vector2Int(x, z),
+                new Vector2Int(sizeX, sizeZ),
+                tileRotation,
+                context,
+                tile.MinimapMask);
+
+        worldLayout.Add(
+            tileData);
+    }
+
+    private TileRotation GetTileRotation(
+    Quaternion rotation)
+    {
+        float normalizedAngle =
+            Mathf.Repeat(
+                rotation.eulerAngles.y,
+                360f);
+
+        int angle =
+            Mathf.RoundToInt(
+                normalizedAngle / 90f) * 90;
+
+        angle %= 360;
+
+        switch (angle)
+        {
+            case 0:
+                return TileRotation.Rotation0;
+
+            case 90:
+                return TileRotation.Rotation90;
+
+            case 180:
+                return TileRotation.Rotation180;
+
+            case 270:
+                return TileRotation.Rotation270;
+
+            default:
+                throw new InvalidOperationException(
+                    $"Unsupported tile rotation: {normalizedAngle}.");
+        }
     }
 }

@@ -1,6 +1,9 @@
-using Chaosbound.Content.Expeditions.Runtime;
 using Chaosbound.Content.Expeditions.Runtime.Configs;
 using Chaosbound.Content.Expeditions.Runtime.World;
+using Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Config;
+using Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Markers;
+using Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Rendering;
+using Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Runtime;
 using Chaosbound.Gameplay.Navigation;
 using System;
 using UnityEngine;
@@ -17,6 +20,8 @@ namespace Chaosbound.Core.Composition
         private readonly RuntimeExpeditionConfig runtimeConfig;
         private readonly ExpeditionSceneContext sceneContext;
         private readonly BootstrapContext bootstrapContext;
+
+        private MinimapRuntime minimapRuntime;
 
         public ExpeditionComposition(
                 BootstrapContext bootstrapContext,
@@ -40,6 +45,8 @@ namespace Chaosbound.Core.Composition
             InitializeWorld();
 
             InitializeNavigation();
+
+            InitializeMinimap();
 
             InitializeGameplay();
 
@@ -69,28 +76,42 @@ namespace Chaosbound.Core.Composition
 
         private void InitializeUI()
         {
-            PlayerHealth player = sceneContext.Player;
-            PlayerExperienceSystem xpSystem = sceneContext.PlayerExperienceSystem;
+            PlayerHealth player =
+                sceneContext.Player;
 
-            RunManager runManager = bootstrapContext.RunManager;
+            PlayerExperienceSystem xpSystem =
+                sceneContext.PlayerExperienceSystem;
 
-            HUDController hud = bootstrapContext.HUDController;
-            HUDXPBarUI xpUI = bootstrapContext.HUDXPBarUI;
-            HUDLevelUI levelUI = bootstrapContext.HUDLevelUI;
+            RunManager runManager =
+                bootstrapContext.RunManager;
+
+            HUDController hud =
+                bootstrapContext.HUDController;
+
+            HUDXPBarUI xpUI =
+                bootstrapContext.HUDXPBarUI;
+
+            HUDLevelUI levelUI =
+                bootstrapContext.HUDLevelUI;
 
             if (hud != null)
-                hud.Initialize(player, runManager);
+                hud.Initialize(
+                    player,
+                    runManager);
 
             if (xpUI != null)
-                xpUI.Bind(xpSystem);
+                xpUI.Bind(
+                    xpSystem);
 
             if (levelUI != null)
-                levelUI.Bind(xpSystem);
+                levelUI.Bind(
+                    xpSystem);
         }
 
         private void InitializeWorld()
         {
-            RuntimeWorldConfig world = runtimeConfig.World;
+            RuntimeWorldConfig world =
+                runtimeConfig.World;
 
             OpenWorldMapGenerator mapGenerator =
                 sceneContext.MapGenerator;
@@ -116,13 +137,133 @@ namespace Chaosbound.Core.Composition
                     "OpenWorldDecorationGenerator is missing.");
             }
 
-            mapGenerator.Initialize(world);
+            mapGenerator.Initialize(
+                world);
 
             mapGenerator.GenerateMap();
 
-            decorationGenerator.Initialize(world);
+            decorationGenerator.Initialize(
+                world);
 
             decorationGenerator.GenerateDecoration();
+        }
+
+        private void InitializeMinimap()
+        {
+            OpenWorldMapGenerator mapGenerator =
+                sceneContext.MapGenerator;
+
+            MinimapStaticMapView minimapView =
+                bootstrapContext.MinimapStaticMapView;
+
+            MinimapConfig minimapConfig =
+                bootstrapContext.MinimapConfig;
+
+            RectTransform minimapMapViewport =
+                bootstrapContext.MinimapMapViewport;
+
+            RectTransform minimapMapContent =
+                bootstrapContext.MinimapMapContent;
+
+            MinimapRuntimeUpdater minimapRuntimeUpdater =
+                bootstrapContext.MinimapRuntimeUpdater;
+
+            MinimapMarkerView playerMarkerView =
+                bootstrapContext.MinimapPlayerMarkerView;
+
+            PlayerHealth player =
+                sceneContext.Player;
+
+            if (mapGenerator == null)
+            {
+                throw new InvalidOperationException(
+                    "OpenWorldMapGenerator is missing.");
+            }
+
+            if (!mapGenerator.IsGenerated)
+            {
+                throw new InvalidOperationException(
+                    "World must be generated before initializing minimap.");
+            }
+
+            if (minimapView == null)
+            {
+                throw new InvalidOperationException(
+                    "MinimapStaticMapView is missing.");
+            }
+
+            if (minimapConfig == null)
+            {
+                throw new InvalidOperationException(
+                    "MinimapConfig is missing.");
+            }
+
+            if (minimapMapViewport == null)
+            {
+                throw new InvalidOperationException(
+                    "MinimapMapViewport is missing.");
+            }
+
+            if (minimapMapContent == null)
+            {
+                throw new InvalidOperationException(
+                    "MinimapMapContent is missing.");
+            }
+
+            if (minimapRuntimeUpdater == null)
+            {
+                throw new InvalidOperationException(
+                    "MinimapRuntimeUpdater is missing.");
+            }
+
+            if (playerMarkerView == null)
+            {
+                throw new InvalidOperationException(
+                    "MinimapPlayerMarkerView is missing.");
+            }
+
+            if (player == null)
+            {
+                throw new InvalidOperationException(
+                    "Player is missing.");
+            }
+
+            Bounds worldBounds =
+                mapGenerator.GeneratedWorldBounds;
+
+            MinimapRuntime minimapRuntime =
+                new MinimapRuntime(
+                    minimapView,
+                    minimapConfig,
+                    minimapMapViewport,
+                    minimapMapContent);
+
+            //==========================================================
+            // 1. Build static map and coordinate system.
+            //==========================================================
+
+            minimapRuntime.Build(
+                mapGenerator.WorldLayout,
+                worldBounds);
+
+            //==========================================================
+            // 2. Initialize centered player marker.
+            //==========================================================
+
+            minimapRuntime.InitializePlayerMarker(
+                player.transform,
+                playerMarkerView);
+
+            //==========================================================
+            // 3. Connect player position to the minimap runtime.
+            //==========================================================
+
+            minimapRuntimeUpdater.Initialize(
+                minimapRuntime,
+                player.transform);
+
+            this.minimapRuntime =
+                minimapRuntime;
         }
 
         private void InitializeNavigation()
@@ -168,6 +309,7 @@ namespace Chaosbound.Core.Composition
 
             runManager.StartRun(
                 runtimeConfig);
+
             // V1
             // Runtime initialization will be migrated here
             // incrementally in future sprints.

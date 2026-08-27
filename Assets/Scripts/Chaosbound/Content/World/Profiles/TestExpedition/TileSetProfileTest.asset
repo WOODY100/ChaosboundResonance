@@ -19,85 +19,113 @@ MonoBehaviour:
     sizeZ: 1
     allowRotate90: 0
     randomYRotation: 0
+    minimapMask:
+      blockedCells: 00000000000000000000000000000000
   centerTiles:
-  - prefab: {fileID: 3081057624354527429, guid: cae7ce590b2752a4885faf9970535aa8, type: 3}
-    weight: 10
-    sizeX: 1
-    sizeZ: 1
-    allowRotate90: 0
-    randomYRotation: 1
-  - prefab: {fileID: 3081057624354527429, guid: 49f33d4f1c8d1e54c98e7fdeca880b91, type: 3}
-    weight: 10
-    sizeX: 1
-    sizeZ: 1
-    allowRotate90: 0
-    randomYRotation: 1
-  - prefab: {fileID: 3081057624354527429, guid: da7708766dc07c04e979ac6254033974, type: 3}
-    weight: 10
-    sizeX: 1
-    sizeZ: 1
-    allowRotate90: 0
-    randomYRotation: 1
-  - prefab: {fileID: 2727965222850802433, guid: 5e8ed1998dddb7c448d23200c72017ed, type: 3}
-    weight: 10
-    sizeX: 1
-    sizeZ: 1
-    allowRotate90: 0
-    randomYRotation: 1
-  - prefab: {fileID: 1224543127206095383, guid: 7624e14183587a44690ca70963b284a6, type: 3}
-    weight: 2
-    sizeX: 1
-    sizeZ: 1
-    allowRotate90: 0
-    randomYRotation: 1
-  - prefab: {fileID: 8904258048133790258, guid: eb6cd16d5f7c0054dbc04e5df796c6c8, type: 3}
-    weight: 2
-    sizeX: 1
-    sizeZ: 1
-    allowRotate90: 0
-    randomYRotation: 1
-  - prefab: {fileID: 8825882994636879928, guid: 40f6153f21b8ad342b2d87686d800f23, type: 3}
-    weight: 2
-    sizeX: 1
-    sizeZ: 1
-    allowRotate90: 0
-    randomYRotation: 1
-  - prefab: {fileID: 7899302415955980874, guid: 51480c995744a844a9c4a05653bd56b5, type: 3}
-    weight: 2
-    sizeX: 1
-    sizeZ: 1
-    allowRotate90: 0
-    randomYRotation: 1
-  - prefab: {fileID: 5160355720070855563, guid: 8187b2a3b3a785f4bb8d0e0646b3123e, type: 3}
-    weight: 1
-    sizeX: 2
-    sizeZ: 1
-    allowRotate90: 0
-    randomYRotation: 0
-  - prefab: {fileID: 1660900895906228890, guid: e22d57869957fed4598a5cbaea957b7c, type: 3}
-    weight: 1
-    sizeX: 2
-    sizeZ: 1
-    allowRotate90: 0
-    randomYRotation: 0
-  - prefab: {fileID: 7959894147642283016, guid: 941ae2f0f27161044a1c63f1ec7f7d85, type: 3}
-    weight: 1
-    sizeX: 1
-    sizeZ: 1
-    allowRotate90: 0
-    randomYRotation: 1
-  - prefab: {fileID: 6143537789332269093, guid: f202d6aaca2aade4394acf9d55546751, type: 3}
-    weight: 1
-    sizeX: 1
-    sizeZ: 1
-    allowRotate90: 0
-    randomYRotation: 1
   - prefab: {fileID: 3081057624354527429, guid: 529b8dd53a1204248937583fb1cef0d3, type: 3}
     weight: 1
     sizeX: 1
     sizeZ: 1
     allowRotate90: 0
     randomYRotation: 1
+    minimapMask:
+      blockedCells: 00000000000000000000000000000000
+  - prefab: {fileID: 3081057624354527429, guid: cae7ce590b2752a4885faf9970535aa8, type: 3}
+    weight: 10
+    sizeX: 1
+    sizeZ: 1
+    allowRotate90: 0
+    randomYRotation: 1
+    minimapMask:
+      blockedCells: 00000000000000000000000000000000
+  - prefab: {fileID: 3081057624354527429, guid: 49f33d4f1c8d1e54c98e7fdeca880b91, type: 3}
+    weight: 10
+    sizeX: 1
+    sizeZ: 1
+    allowRotate90: 0
+    randomYRotation: 1
+    minimapMask:
+      blockedCells: 00000000000000000000000000000000
+  - prefab: {fileID: 3081057624354527429, guid: da7708766dc07c04e979ac6254033974, type: 3}
+    weight: 10
+    sizeX: 1
+    sizeZ: 1
+    allowRotate90: 0
+    randomYRotation: 1
+    minimapMask:
+      blockedCells: 00000000000000000000000000000000
+  - prefab: {fileID: 2727965222850802433, guid: 5e8ed1998dddb7c448d23200c72017ed, type: 3}
+    weight: 10
+    sizeX: 1
+    sizeZ: 1
+    allowRotate90: 0
+    randomYRotation: 1
+    minimapMask:
+      blockedCells: 00000000000000000000000000000000
+  - prefab: {fileID: 1224543127206095383, guid: 7624e14183587a44690ca70963b284a6, type: 3}
+    weight: 2
+    sizeX: 1
+    sizeZ: 1
+    allowRotate90: 0
+    randomYRotation: 1
+    minimapMask:
+      blockedCells: 00000000000101000001010000000000
+  - prefab: {fileID: 8904258048133790258, guid: eb6cd16d5f7c0054dbc04e5df796c6c8, type: 3}
+    weight: 2
+    sizeX: 1
+    sizeZ: 1
+    allowRotate90: 0
+    randomYRotation: 0
+    minimapMask:
+      blockedCells: 01000000010100000101010001010101
+  - prefab: {fileID: 8825882994636879928, guid: 40f6153f21b8ad342b2d87686d800f23, type: 3}
+    weight: 2
+    sizeX: 1
+    sizeZ: 1
+    allowRotate90: 0
+    randomYRotation: 1
+    minimapMask:
+      blockedCells: 00000000000101000001010000000000
+  - prefab: {fileID: 7899302415955980874, guid: 51480c995744a844a9c4a05653bd56b5, type: 3}
+    weight: 2
+    sizeX: 1
+    sizeZ: 1
+    allowRotate90: 0
+    randomYRotation: 1
+    minimapMask:
+      blockedCells: 00000000010101000101010000000000
+  - prefab: {fileID: 5160355720070855563, guid: 8187b2a3b3a785f4bb8d0e0646b3123e, type: 3}
+    weight: 1
+    sizeX: 2
+    sizeZ: 1
+    allowRotate90: 0
+    randomYRotation: 0
+    minimapMask:
+      blockedCells: 00000000000101000001010000000000
+  - prefab: {fileID: 1660900895906228890, guid: e22d57869957fed4598a5cbaea957b7c, type: 3}
+    weight: 1
+    sizeX: 2
+    sizeZ: 1
+    allowRotate90: 0
+    randomYRotation: 0
+    minimapMask:
+      blockedCells: 00010101000101010001010000010100
+  - prefab: {fileID: 7959894147642283016, guid: 941ae2f0f27161044a1c63f1ec7f7d85, type: 3}
+    weight: 1
+    sizeX: 1
+    sizeZ: 1
+    allowRotate90: 0
+    randomYRotation: 1
+    minimapMask:
+      blockedCells: 01010101010101010101010101010101
+  - prefab: {fileID: 6143537789332269093, guid: f202d6aaca2aade4394acf9d55546751, type: 3}
+    weight: 1
+    sizeX: 1
+    sizeZ: 1
+    allowRotate90: 0
+    randomYRotation: 1
+    minimapMask:
+      blockedCells: 00000100000101010101010000010000
   edgeTiles:
   - prefab: {fileID: 1039108247317628220, guid: 18fafd7ca9707754a9eee5a1f51ab595, type: 3}
     weight: 1
@@ -105,54 +133,72 @@ MonoBehaviour:
     sizeZ: 1
     allowRotate90: 0
     randomYRotation: 0
+    minimapMask:
+      blockedCells: 01000000010000000100000001000000
   - prefab: {fileID: 1766241749739405014, guid: 250276a81efd05f4f8ea03c9fc9175bf, type: 3}
     weight: 2
     sizeX: 1
     sizeZ: 1
     allowRotate90: 0
     randomYRotation: 0
+    minimapMask:
+      blockedCells: 01000000010000000100000001000000
   - prefab: {fileID: 1766241749739405014, guid: 2a78e936d690c154e9e81ede200b6b97, type: 3}
     weight: 2
     sizeX: 1
     sizeZ: 1
     allowRotate90: 0
     randomYRotation: 0
+    minimapMask:
+      blockedCells: 01000000010000000100000001000000
   - prefab: {fileID: 1766241749739405014, guid: 5d522fd2b0274314d9c83d443abc702d, type: 3}
     weight: 2
     sizeX: 1
     sizeZ: 1
     allowRotate90: 0
     randomYRotation: 0
+    minimapMask:
+      blockedCells: 01010000010100000100000001000000
   - prefab: {fileID: 1766241749739405014, guid: 3fffbadc8db9aaa49ac6d77b54440839, type: 3}
     weight: 3
     sizeX: 1
     sizeZ: 1
     allowRotate90: 0
     randomYRotation: 0
+    minimapMask:
+      blockedCells: 01000000010000000100000001000000
   - prefab: {fileID: 1766241749739405014, guid: f89a7c7c4f0c6f9469e97cd334527950, type: 3}
     weight: 4
     sizeX: 1
     sizeZ: 1
     allowRotate90: 0
     randomYRotation: 0
+    minimapMask:
+      blockedCells: 01000000010000000100000001000000
   - prefab: {fileID: 1766241749739405014, guid: fd6055a94b3604945a8f691dcba47e79, type: 3}
     weight: 4
     sizeX: 1
     sizeZ: 1
     allowRotate90: 0
     randomYRotation: 0
+    minimapMask:
+      blockedCells: 01000000010000000100000001000000
   - prefab: {fileID: 1766241749739405014, guid: 44f80c011378c2c49ac8c4c63e425f27, type: 3}
     weight: 4
     sizeX: 1
     sizeZ: 1
     allowRotate90: 0
     randomYRotation: 0
+    minimapMask:
+      blockedCells: 01000000010000000100000001010000
   - prefab: {fileID: 6045806558579088540, guid: e75f9321a42e8e0449057de25496ccd5, type: 3}
     weight: 1
     sizeX: 1
     sizeZ: 1
     allowRotate90: 0
     randomYRotation: 0
+    minimapMask:
+      blockedCells: 01000000010000000100000001000000
   cornerTiles:
   - prefab: {fileID: 4361663232910228153, guid: e29181f8db123034fa4c0f17d1b557dd, type: 3}
     weight: 1
@@ -160,15 +206,21 @@ MonoBehaviour:
     sizeZ: 1
     allowRotate90: 0
     randomYRotation: 0
+    minimapMask:
+      blockedCells: 01010101010001010100000001000000
   - prefab: {fileID: 8928989179419764019, guid: 8559586e0ca2b294d8c90178c35aedf5, type: 3}
     weight: 2
     sizeX: 1
     sizeZ: 1
     allowRotate90: 0
     randomYRotation: 0
+    minimapMask:
+      blockedCells: 01010101010100010100000001010000
   - prefab: {fileID: 5391564172015307412, guid: 646ee33f8871da7459680a766917fa00, type: 3}
     weight: 2
     sizeX: 1
     sizeZ: 1
     allowRotate90: 0
     randomYRotation: 0
+    minimapMask:
+      blockedCells: 01010101010101000101000001000000

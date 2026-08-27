@@ -29,7 +29,7 @@ namespace Chaosbound.Gameplay.Spawn.Materialization
         }
 
         public GameObject Materialize(
-    SpawnExecutionContext context)
+            SpawnExecutionContext context)
         {
             if (context == null)
                 throw new ArgumentNullException(
