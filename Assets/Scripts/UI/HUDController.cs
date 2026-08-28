@@ -10,6 +10,7 @@ public class HUDController : MonoBehaviour
     [Header("UI")]
     [SerializeField] private Image healthFill;
     [SerializeField] private TMP_Text timerText;
+    [SerializeField] private HealthOrbController healthOrb;
 
     private PlayerHealth playerHealth;
     private RunManager runManager;
@@ -76,7 +77,13 @@ public class HUDController : MonoBehaviour
         if (playerHealth != null)
         {
             playerHealth.OnHealthChanged += UpdateHealth;
-            UpdateHealth(playerHealth.CurrentHealth, playerHealth.MaxHealth);
+
+            UpdateHealth(
+                playerHealth.CurrentHealth,
+                playerHealth.MaxHealth);
+
+            if (healthOrb != null)
+                healthOrb.BindPlayer(playerHealth);
         }
     }
 
