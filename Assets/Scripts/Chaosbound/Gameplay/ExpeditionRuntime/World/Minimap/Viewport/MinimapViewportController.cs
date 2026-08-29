@@ -55,11 +55,12 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Viewport
         }
 
         public void Initialize(
-            Bounds worldBounds)
+            MinimapCoordinateMapper coordinateMapper)
         {
-            coordinateMapper =
-                new MinimapCoordinateMapper(
-                    worldBounds);
+            this.coordinateMapper =
+                coordinateMapper
+                ?? throw new ArgumentNullException(
+                    nameof(coordinateMapper));
 
             ApplyZoom();
         }

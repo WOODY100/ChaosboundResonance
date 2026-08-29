@@ -23,6 +23,18 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Config
         private float tileSize = 12f;
 
         //==========================================================
+        // Orientation
+        //==========================================================
+
+        [Header("Orientation")]
+
+        [SerializeField]
+        private float orientationDegrees = 45f;
+
+        public float OrientationDegrees =>
+            orientationDegrees;
+
+        //==========================================================
         // Texture
         //==========================================================
 

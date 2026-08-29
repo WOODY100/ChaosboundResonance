@@ -1,6 +1,10 @@
 using Chaosbound.Content.Expeditions.Runtime.Configs;
+using Chaosbound.Content.Expeditions.Runtime.Minimap;
 using Chaosbound.Content.Expeditions.Runtime.World;
+using Chaosbound.Content.Portal.Exit;
+using Chaosbound.Gameplay.ExpeditionRuntime.Runtime;
 using Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Config;
+using Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Coordinates;
 using Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Markers;
 using Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Rendering;
 using Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Runtime;
@@ -153,11 +157,17 @@ namespace Chaosbound.Core.Composition
             OpenWorldMapGenerator mapGenerator =
                 sceneContext.MapGenerator;
 
+            OpenWorldDecorationGenerator decorationGenerator =
+                sceneContext.DecorationGenerator;
+
             MinimapStaticMapView minimapView =
                 bootstrapContext.MinimapStaticMapView;
 
             MinimapConfig minimapConfig =
                 bootstrapContext.MinimapConfig;
+
+            RuntimeMinimapConfig runtimeMinimapConfig =
+                runtimeConfig.Minimap;
 
             RectTransform minimapMapViewport =
                 bootstrapContext.MinimapMapViewport;
@@ -171,8 +181,27 @@ namespace Chaosbound.Core.Composition
             MinimapMarkerView playerMarkerView =
                 bootstrapContext.MinimapPlayerMarkerView;
 
+            MinimapMarkerView bossMarkerView =
+                bootstrapContext.MinimapBossMarkerView;
+
+            MinimapMarkerView portalMarkerView =
+                bootstrapContext.MinimapExitPortalMarkerView;
+
             PlayerHealth player =
                 sceneContext.Player;
+
+            RunManager runManager =
+                bootstrapContext.RunManager;
+
+            ExpeditionRuntimeState expeditionRuntimeState =
+                runManager != null
+                    ? runManager.ExpeditionRuntimeState
+                    : null;
+
+            ExitPortalData exitPortal =
+                runtimeConfig.Completion != null
+                    ? runtimeConfig.Completion.ExitPortal
+                    : null;
 
             if (mapGenerator == null)
             {
@@ -186,6 +215,12 @@ namespace Chaosbound.Core.Composition
                     "World must be generated before initializing minimap.");
             }
 
+            if (decorationGenerator == null)
+            {
+                throw new InvalidOperationException(
+                    "OpenWorldDecorationGenerator is missing.");
+            }
+
             if (minimapView == null)
             {
                 throw new InvalidOperationException(
@@ -196,6 +231,12 @@ namespace Chaosbound.Core.Composition
             {
                 throw new InvalidOperationException(
                     "MinimapConfig is missing.");
+            }
+
+            if (runtimeMinimapConfig == null)
+            {
+                throw new InvalidOperationException(
+                    "RuntimeMinimapConfig is missing.");
             }
 
             if (minimapMapViewport == null)
@@ -228,15 +269,44 @@ namespace Chaosbound.Core.Composition
                     "Player is missing.");
             }
 
+            if (runManager == null)
+            {
+                throw new InvalidOperationException(
+                    "RunManager is missing.");
+            }
+
+            if (expeditionRuntimeState == null)
+            {
+                throw new InvalidOperationException(
+                    "ExpeditionRuntimeState is missing.");
+            }
+
+            if (bossMarkerView == null)
+            {
+                throw new InvalidOperationException(
+                    "MinimapBossMarkerView is missing.");
+            }
+
+            if (portalMarkerView == null)
+            {
+                throw new InvalidOperationException(
+                    "MinimapExitPortalMarkerView is missing.");
+            }
+
             Bounds worldBounds =
                 mapGenerator.GeneratedWorldBounds;
+
+            MinimapOrientationBasis orientationBasis =
+                MinimapOrientationBasis.NorthUp;
 
             MinimapRuntime minimapRuntime =
                 new MinimapRuntime(
                     minimapView,
                     minimapConfig,
+                    runtimeMinimapConfig,
                     minimapMapViewport,
-                    minimapMapContent);
+                    minimapMapContent,
+                    orientationBasis);
 
             //==========================================================
             // 1. Build static map and coordinate system.
@@ -255,7 +325,37 @@ namespace Chaosbound.Core.Composition
                 playerMarkerView);
 
             //==========================================================
-            // 3. Connect player position to the minimap runtime.
+            // 3. Initialize Boss marker.
+            //==========================================================
+
+            minimapRuntime.InitializeBossMarker(
+                expeditionRuntimeState.Boss,
+                expeditionRuntimeState.RuntimeReferences,
+                bossMarkerView);
+
+            //==========================================================
+            // 4. Initialize Exit Portal marker.
+            //==========================================================
+
+            minimapRuntime.InitializePortalMarker(
+                expeditionRuntimeState.ExitPortal,
+                exitPortal,
+                expeditionRuntimeState.RuntimeReferences,
+                portalMarkerView);
+
+            //==========================================================
+            // 5. Initialize fixed world markers.
+            //==========================================================
+
+            MinimapMarkerView modifierStructureMarkerView =
+                bootstrapContext.MinimapModifierStructureMarkerView;
+
+            minimapRuntime.InitializeWorldMarkers(
+                decorationGenerator.ModifierStructurePositions,
+                modifierStructureMarkerView);
+
+            //==========================================================
+            // 6. Connect player position to the minimap runtime.
             //==========================================================
 
             minimapRuntimeUpdater.Initialize(

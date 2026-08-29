@@ -1,12 +1,13 @@
 using Chaosbound.Content.Expeditions.Authoring.Bosses;
 using Chaosbound.Content.Expeditions.Authoring.Combat;
+using Chaosbound.Content.Expeditions.Authoring.Completion;
 using Chaosbound.Content.Expeditions.Authoring.Enemy;
 using Chaosbound.Content.Expeditions.Authoring.ExpeditionEvents;
 using Chaosbound.Content.Expeditions.Authoring.Identity;
 using Chaosbound.Content.Expeditions.Authoring.MiniBosses;
+using Chaosbound.Content.Expeditions.Authoring.Minimap;
 using Chaosbound.Content.Expeditions.Authoring.Presentation;
 using Chaosbound.Content.Expeditions.Authoring.Rewards;
-using Chaosbound.Content.Expeditions.Authoring.Completion;
 using Chaosbound.Content.Expeditions.Authoring.Scene;
 using Chaosbound.Content.Expeditions.Authoring.Spawn;
 using Chaosbound.Content.Expeditions.Authoring.Timeline;
@@ -86,7 +87,13 @@ namespace Chaosbound.Content.Expeditions.Authoring
         [Header("Completion")]
 
         [SerializeField]
+
         private CompletionAuthoring m_completion = new();
+
+        [Header("Minimap")]
+
+        [SerializeField]
+        private MinimapAuthoring m_minimap = new();
 
         public SceneAuthoring Scene => m_Scene;
 
@@ -113,5 +120,7 @@ namespace Chaosbound.Content.Expeditions.Authoring
         public RewardsAuthoring Rewards => m_rewards;
 
         public CompletionAuthoring Completion => m_completion;
+
+        public MinimapAuthoring Minimap => m_minimap;
     }
 }

@@ -3,13 +3,14 @@ using Chaosbound.Content.Expeditions.Authoring;
 using Chaosbound.Content.Expeditions.Authoring.Completion;
 using Chaosbound.Content.Expeditions.Builders.Bosses;
 using Chaosbound.Content.Expeditions.Builders.Combat;
+using Chaosbound.Content.Expeditions.Builders.Completion;
 using Chaosbound.Content.Expeditions.Builders.Enemy;
 using Chaosbound.Content.Expeditions.Builders.ExpeditionEvents;
 using Chaosbound.Content.Expeditions.Builders.Identity;
 using Chaosbound.Content.Expeditions.Builders.MiniBosses;
+using Chaosbound.Content.Expeditions.Builders.Minimap;
 using Chaosbound.Content.Expeditions.Builders.Presentation;
 using Chaosbound.Content.Expeditions.Builders.Rewards;
-using Chaosbound.Content.Expeditions.Builders.Completion;
 using Chaosbound.Content.Expeditions.Builders.Scene;
 using Chaosbound.Content.Expeditions.Builders.Spawn;
 using Chaosbound.Content.Expeditions.Builders.Timeline;
@@ -22,6 +23,7 @@ using Chaosbound.Content.Expeditions.Definitions.Enemy;
 using Chaosbound.Content.Expeditions.Definitions.ExpeditionEvents;
 using Chaosbound.Content.Expeditions.Definitions.Identity;
 using Chaosbound.Content.Expeditions.Definitions.MiniBosses;
+using Chaosbound.Content.Expeditions.Definitions.Minimap;
 using Chaosbound.Content.Expeditions.Definitions.Presentation;
 using Chaosbound.Content.Expeditions.Definitions.Rewards;
 using Chaosbound.Content.Expeditions.Definitions.Scene;
@@ -88,6 +90,9 @@ namespace Chaosbound.Content.Expeditions.Builders.Expedition
             CompletionDefinition completion =
                 CompletionBuilder.Build(authoring.Completion);
 
+            MinimapDefinition minimap =
+                MinimapBuilder.Build(authoring.Minimap);
+
             return new ExpeditionDefinition(
                 scene,
                 identity,
@@ -101,7 +106,8 @@ namespace Chaosbound.Content.Expeditions.Builders.Expedition
                 miniBosses,
                 bosses,
                 rewards,
-                completion);
+                completion,
+                minimap);
         }
     }
 }

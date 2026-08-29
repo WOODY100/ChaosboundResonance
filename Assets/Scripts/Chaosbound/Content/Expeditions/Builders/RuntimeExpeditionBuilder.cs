@@ -1,4 +1,5 @@
 using Chaosbound.Content.Expeditions.Definitions.ExpeditionEvents;
+using Chaosbound.Content.Expeditions.Definitions.Minimap;
 using Chaosbound.Content.Expeditions.Definitions.Rewards;
 using Chaosbound.Content.Expeditions.Definitions.Scene;
 using Chaosbound.Content.Expeditions.Definitions.Spawn;
@@ -13,6 +14,7 @@ using Chaosbound.Content.Expeditions.Runtime.Configs;
 using Chaosbound.Content.Expeditions.Runtime.Enemy;
 using Chaosbound.Content.Expeditions.Runtime.ExpeditionEvents;
 using Chaosbound.Content.Expeditions.Runtime.MiniBosses;
+using Chaosbound.Content.Expeditions.Runtime.Minimap;
 using Chaosbound.Content.Expeditions.Runtime.Rewards;
 using Chaosbound.Content.Expeditions.Runtime.Scene;
 using Chaosbound.Content.Expeditions.Runtime.Spawn;
@@ -55,6 +57,7 @@ namespace Chaosbound.Content.Expeditions.Runtime.Builders
             RuntimeBossesConfig bosses = runtimeBossesBuilder.BuildBosses(request.Definition.Bosses);
             RuntimeRewardsConfig rewards = BuildRewards(request.Definition.Rewards);
             RuntimeCompletionConfig completion = runtimeCompletionBuilder.BuildCompletion(request.Definition.Completion);
+            RuntimeMinimapConfig minimap = BuildMinimap(request.Definition.Minimap);
 
             // Assemble runtime.
             RuntimeExpeditionConfig runtimeConfig =
@@ -69,7 +72,8 @@ namespace Chaosbound.Content.Expeditions.Runtime.Builders
                     miniBosses,
                     bosses,
                     rewards,
-                    completion);
+                    completion,
+                    minimap);
 
             return runtimeConfig;
         }
@@ -172,6 +176,17 @@ namespace Chaosbound.Content.Expeditions.Runtime.Builders
                 throw new ArgumentNullException(nameof(definition));
             return new RuntimeRewardsConfig(
                 definition.Content);
+        }
+
+        private RuntimeMinimapConfig BuildMinimap(
+            MinimapDefinition definition)
+        {
+            if (definition == null)
+                throw new ArgumentNullException(
+                    nameof(definition));
+
+            return new RuntimeMinimapConfig(
+                definition.WalkableTexture);
         }
 
         #endregion

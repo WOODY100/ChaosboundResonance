@@ -19,7 +19,7 @@ MonoBehaviour:
     scaleRange: {x: 1, y: 1}
   obstacles:
   - prefab: {fileID: 3041320360790562386, guid: df88a7b41cac1684bb2f15575f9e5771, type: 3}
-    weight: 1
+    weight: 2
     randomYRotation: 1
     scaleRange: {x: 1, y: 1}
   largeObstacles:
@@ -32,12 +32,20 @@ MonoBehaviour:
     weight: 1
     randomYRotation: 1
     scaleRange: {x: 1, y: 1}
+  modifierStructures:
+  - prefab: {fileID: 3950276161504991627, guid: 32ff7825cce045244ad96448eb10d8ae, type: 3}
+    weight: 1
+    randomYRotation: 1
+    scaleRange: {x: 1, y: 1}
   minPropsPerTile: 1
   maxPropsPerTile: 3
   minObstaclesPerTile: 0
-  maxObstaclesPerTile: 2
+  maxObstaclesPerTile: 1
+  maxModifierStructuresPerTile: 1
   largeObstacleChance: 0.25
   lightChance: 0.15
+  modifierStructureChance: 1
+  maxBlockedNeighbors: 4
   spawnHeight: 0
   largeObstacleSpawnHeight: 0
   randomOffsetRadius: 0.25

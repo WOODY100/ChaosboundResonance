@@ -1,5 +1,5 @@
 using Chaosbound.Content.World.Themes.TileSets;
-using Chaosbound.Gameplay.ExpeditionRuntime.World;
+using Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Coordinates;
 using Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Data;
 using System;
 using UnityEngine;
@@ -10,27 +10,41 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Rendering
     /// Generates the static cartographic representation
     /// of the expedition world.
     ///
-    /// This renderer does not render the physical world.
-    /// It converts MinimapMapData into a procedural
-    /// cartographic texture.
+    /// Walkable cells are rendered using the configured
+    /// seamless walkable texture.
+    /// Blocked cells are rendered using the configured
+    /// blocked color.
+    ///
+    /// The walkable texture is mapped in world space and
+    /// repeats once per world tile.
     /// </summary>
     public sealed class MinimapStaticMapRenderer
     {
         private const int CellResolution =
             MinimapTileMask.Resolution;
 
+        private const int MaxWalkableTextureResolution =
+            256;
+
         private readonly float tileSize;
 
         private readonly int pixelsPerCell;
 
-        private readonly Color walkableColor;
         private readonly Color blockedColor;
+
+        private readonly Texture2D walkableTexture;
+
+        private readonly MinimapOrientationBasis
+            orientationBasis;
+
+        private Texture2D readableWalkableTexture;
 
         public MinimapStaticMapRenderer(
             float tileSize,
             int pixelsPerCell,
-            Color walkableColor,
-            Color blockedColor)
+            Color blockedColor,
+            Texture2D walkableTexture,
+            MinimapOrientationBasis orientationBasis)
         {
             if (tileSize <= 0f)
             {
@@ -44,23 +58,32 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Rendering
                     nameof(pixelsPerCell));
             }
 
+            if (walkableTexture == null)
+            {
+                throw new ArgumentNullException(
+                    nameof(walkableTexture));
+            }
+
             this.tileSize =
                 tileSize;
 
             this.pixelsPerCell =
                 pixelsPerCell;
 
-            this.walkableColor =
-                walkableColor;
-
             this.blockedColor =
                 blockedColor;
+
+            this.walkableTexture =
+                walkableTexture;
+
+            this.orientationBasis =
+                orientationBasis;
         }
 
-        /// <summary>
-        /// Generates a cartographic texture from
-        /// the provided minimap map data.
-        /// </summary>
+        //==========================================================
+        // Render
+        //==========================================================
+
         public Texture2D Render(
             MinimapMapData mapData)
         {
@@ -70,47 +93,185 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Rendering
                     nameof(mapData));
             }
 
-            int textureWidth =
-                CalculateTextureDimension(
-                    mapData.WorldBounds.size.x);
+            PrepareReadableWalkableTexture();
 
-            int textureHeight =
-                CalculateTextureDimension(
-                    mapData.WorldBounds.size.z);
-
-            Texture2D texture =
-                new Texture2D(
-                    textureWidth,
-                    textureHeight,
-                    TextureFormat.RGBA32,
-                    false);
-
-            texture.name =
-                "Minimap_StaticMap";
-
-            texture.filterMode =
-                FilterMode.Point;
-
-            texture.wrapMode =
-                TextureWrapMode.Clamp;
-
-            ClearTexture(
-                texture);
-
-            foreach (
-                MinimapTileData tile
-                in mapData.Tiles)
+            try
             {
-                DrawTile(
-                    texture,
-                    mapData,
-                    tile);
+                int textureWidth =
+                    CalculateTextureDimension(
+                        mapData.WorldBounds.size.x);
+
+                int textureHeight =
+                    CalculateTextureDimension(
+                        mapData.WorldBounds.size.z);
+
+                Texture2D texture =
+                    new Texture2D(
+                        textureWidth,
+                        textureHeight,
+                        TextureFormat.RGBA32,
+                        false);
+
+                texture.name =
+                    "Minimap_StaticMap";
+
+                texture.filterMode =
+                    FilterMode.Point;
+
+                texture.wrapMode =
+                    TextureWrapMode.Clamp;
+
+                ClearTexture(
+                    texture);
+
+                foreach (
+                    MinimapTileData tile
+                    in mapData.Tiles)
+                {
+                    DrawTile(
+                        texture,
+                        mapData,
+                        tile);
+                }
+
+                texture.Apply();
+
+                return texture;
+            }
+            finally
+            {
+                ReleaseReadableWalkableTexture();
+            }
+        }
+
+        //==========================================================
+        // Readable Walkable Texture
+        //==========================================================
+
+        private void PrepareReadableWalkableTexture()
+        {
+            if (walkableTexture == null)
+            {
+                throw new InvalidOperationException(
+                    "Walkable texture is not configured.");
             }
 
-            texture.Apply();
+            int sourceWidth =
+                walkableTexture.width;
 
-            return texture;
+            int sourceHeight =
+                walkableTexture.height;
+
+            int targetWidth =
+                sourceWidth;
+
+            int targetHeight =
+                sourceHeight;
+
+            int maxDimension =
+                Mathf.Max(
+                    sourceWidth,
+                    sourceHeight);
+
+            if (maxDimension >
+                MaxWalkableTextureResolution)
+            {
+                float scale =
+                    (float)MaxWalkableTextureResolution /
+                    maxDimension;
+
+                targetWidth =
+                    Mathf.Max(
+                        1,
+                        Mathf.RoundToInt(
+                            sourceWidth * scale));
+
+                targetHeight =
+                    Mathf.Max(
+                        1,
+                        Mathf.RoundToInt(
+                            sourceHeight * scale));
+            }
+
+            RenderTexture temporaryRenderTexture =
+                RenderTexture.GetTemporary(
+                    targetWidth,
+                    targetHeight,
+                    0,
+                    RenderTextureFormat.ARGB32);
+
+            RenderTexture previousActive =
+                RenderTexture.active;
+
+            try
+            {
+                Graphics.Blit(
+                    walkableTexture,
+                    temporaryRenderTexture);
+
+                RenderTexture.active =
+                    temporaryRenderTexture;
+
+                readableWalkableTexture =
+                    new Texture2D(
+                        targetWidth,
+                        targetHeight,
+                        TextureFormat.RGBA32,
+                        false);
+
+                readableWalkableTexture.name =
+                    "Minimap_ReadableWalkableTexture";
+
+                readableWalkableTexture.filterMode =
+                    FilterMode.Bilinear;
+
+                readableWalkableTexture.wrapMode =
+                    TextureWrapMode.Repeat;
+
+                readableWalkableTexture.ReadPixels(
+                    new Rect(
+                        0,
+                        0,
+                        targetWidth,
+                        targetHeight),
+                    0,
+                    0);
+
+                readableWalkableTexture.Apply();
+            }
+            finally
+            {
+                RenderTexture.active =
+                    previousActive;
+
+                RenderTexture.ReleaseTemporary(
+                    temporaryRenderTexture);
+            }
         }
+
+        private void ReleaseReadableWalkableTexture()
+        {
+            if (readableWalkableTexture == null)
+                return;
+
+            if (Application.isPlaying)
+            {
+                UnityEngine.Object.Destroy(
+                    readableWalkableTexture);
+            }
+            else
+            {
+                UnityEngine.Object.DestroyImmediate(
+                    readableWalkableTexture);
+            }
+
+            readableWalkableTexture =
+                null;
+        }
+
+        //==========================================================
+        // Texture Size
+        //==========================================================
 
         private int CalculateTextureDimension(
             float worldSize)
@@ -126,6 +287,10 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Rendering
                 logicalCells *
                 pixelsPerCell);
         }
+
+        //==========================================================
+        // Clear
+        //==========================================================
 
         private void ClearTexture(
             Texture2D texture)
@@ -146,6 +311,10 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Rendering
             texture.SetPixels(
                 pixels);
         }
+
+        //==========================================================
+        // Tile
+        //==========================================================
 
         private void DrawTile(
             Texture2D texture,
@@ -198,21 +367,32 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Rendering
                         tileCenter +
                         localPosition;
 
-                    Color color =
-                        blocked
-                        ? blockedColor
-                        : walkableColor;
-
-                    DrawWorldCell(
-                        texture,
-                        mapData.WorldBounds,
-                        worldPosition,
-                        cellWidth,
-                        cellDepth,
-                        color);
+                    if (blocked)
+                    {
+                        DrawWorldCell(
+                            texture,
+                            mapData.WorldBounds,
+                            worldPosition,
+                            cellWidth,
+                            cellDepth,
+                            blockedColor);
+                    }
+                    else
+                    {
+                        DrawWorldTextureCell(
+                            texture,
+                            mapData.WorldBounds,
+                            worldPosition,
+                            cellWidth,
+                            cellDepth);
+                    }
                 }
             }
         }
+
+        //==========================================================
+        // Tile Position
+        //==========================================================
 
         private Vector3 GetTileCenter(
             MinimapMapData mapData,
@@ -255,6 +435,10 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Rendering
                 centerZ + footprintOffsetZ);
         }
 
+        //==========================================================
+        // Cell Position
+        //==========================================================
+
         private Vector3 GetCellLocalPosition(
             MinimapTileData tile,
             int x,
@@ -286,6 +470,10 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Rendering
                 local,
                 tile.Rotation);
         }
+
+        //==========================================================
+        // Tile Rotation
+        //==========================================================
 
         private Vector3 RotateLocalPosition(
             Vector3 position,
@@ -322,6 +510,10 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Rendering
             }
         }
 
+        //==========================================================
+        // Solid World Cell
+        //==========================================================
+
         private void DrawWorldCell(
             Texture2D texture,
             Bounds worldBounds,
@@ -330,47 +522,16 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Rendering
             float worldCellDepth,
             Color color)
         {
-            float normalizedX =
-                (worldPosition.x -
-                 worldBounds.min.x) /
-                worldBounds.size.x;
-
-            float normalizedZ =
-                (worldPosition.z -
-                 worldBounds.min.z) /
-                worldBounds.size.z;
-
-            float normalizedWidth =
-                worldCellWidth /
-                worldBounds.size.x;
-
-            float normalizedDepth =
-                worldCellDepth /
-                worldBounds.size.z;
-
-            int centerX =
-                Mathf.RoundToInt(
-                    normalizedX *
-                    texture.width);
-
-            int centerZ =
-                Mathf.RoundToInt(
-                    normalizedZ *
-                    texture.height);
-
-            int pixelWidth =
-                Mathf.Max(
-                    1,
-                    Mathf.RoundToInt(
-                        normalizedWidth *
-                        texture.width));
-
-            int pixelHeight =
-                Mathf.Max(
-                    1,
-                    Mathf.RoundToInt(
-                        normalizedDepth *
-                        texture.height));
+            CalculatePixelRect(
+                texture,
+                worldBounds,
+                worldPosition,
+                worldCellWidth,
+                worldCellDepth,
+                out int centerX,
+                out int centerZ,
+                out int pixelWidth,
+                out int pixelHeight);
 
             int startX =
                 centerX -
@@ -412,6 +573,232 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Rendering
                         color);
                 }
             }
+        }
+
+        //==========================================================
+        // Textured World Cell
+        //==========================================================
+
+        private void DrawWorldTextureCell(
+            Texture2D texture,
+            Bounds worldBounds,
+            Vector3 worldPosition,
+            float worldCellWidth,
+            float worldCellDepth)
+        {
+            CalculatePixelRect(
+                texture,
+                worldBounds,
+                worldPosition,
+                worldCellWidth,
+                worldCellDepth,
+                out int centerX,
+                out int centerZ,
+                out int pixelWidth,
+                out int pixelHeight);
+
+            int startX =
+                centerX -
+                (pixelWidth / 2);
+
+            int startZ =
+                centerZ -
+                (pixelHeight / 2);
+
+            for (int z = 0;
+                 z < pixelHeight;
+                 z++)
+            {
+                int textureZ =
+                    startZ + z;
+
+                if (textureZ < 0 ||
+                    textureZ >= texture.height)
+                {
+                    continue;
+                }
+
+                float worldZ =
+                    GetWorldCoordinate(
+                        textureZ,
+                        texture.height,
+                        worldBounds.min.z,
+                        worldBounds.size.z);
+
+                for (int x = 0;
+                     x < pixelWidth;
+                     x++)
+                {
+                    int textureX =
+                        startX + x;
+
+                    if (textureX < 0 ||
+                        textureX >= texture.width)
+                    {
+                        continue;
+                    }
+
+                    float worldX =
+                        GetWorldCoordinate(
+                            textureX,
+                            texture.width,
+                            worldBounds.min.x,
+                            worldBounds.size.x);
+
+                    Color color =
+                        SampleWalkableTexture(
+                            worldX,
+                            worldZ);
+
+                    texture.SetPixel(
+                        textureX,
+                        textureZ,
+                        color);
+                }
+            }
+        }
+
+        //==========================================================
+        // Pixel Rectangle
+        //==========================================================
+
+        private void CalculatePixelRect(
+            Texture2D texture,
+            Bounds worldBounds,
+            Vector3 worldPosition,
+            float worldCellWidth,
+            float worldCellDepth,
+            out int centerX,
+            out int centerZ,
+            out int pixelWidth,
+            out int pixelHeight)
+        {
+            Vector2 relativePosition =
+                new Vector2(
+                    worldPosition.x -
+                    worldBounds.center.x,
+
+                    worldPosition.z -
+                    worldBounds.center.z);
+
+            float minimapX =
+                Vector2.Dot(
+                    relativePosition,
+                    orientationBasis.Right);
+
+            float minimapY =
+                Vector2.Dot(
+                    relativePosition,
+                    orientationBasis.Up);
+
+            float normalizedX =
+                (minimapX /
+                 worldBounds.size.x) +
+                0.5f;
+
+            float normalizedY =
+                (minimapY /
+                 worldBounds.size.z) +
+                0.5f;
+
+            float normalizedWidth =
+                worldCellWidth /
+                worldBounds.size.x;
+
+            float normalizedDepth =
+                worldCellDepth /
+                worldBounds.size.z;
+
+            centerX =
+                Mathf.RoundToInt(
+                    normalizedX *
+                    texture.width);
+
+            centerZ =
+                Mathf.RoundToInt(
+                    normalizedY *
+                    texture.height);
+
+            pixelWidth =
+                Mathf.Max(
+                    1,
+                    Mathf.RoundToInt(
+                        normalizedWidth *
+                        texture.width));
+
+            pixelHeight =
+                Mathf.Max(
+                    1,
+                    Mathf.RoundToInt(
+                        normalizedDepth *
+                        texture.height));
+        }
+
+        //==========================================================
+        // World Coordinate
+        //==========================================================
+
+        private float GetWorldCoordinate(
+            int pixel,
+            int textureDimension,
+            float worldMin,
+            float worldSize)
+        {
+            float normalized =
+                (pixel + 0.5f) /
+                textureDimension;
+
+            return
+                worldMin +
+                (normalized *
+                 worldSize);
+        }
+
+        //==========================================================
+        // Walkable Texture Sampling
+        //==========================================================
+
+        private Color SampleWalkableTexture(
+            float worldX,
+            float worldZ)
+        {
+            if (readableWalkableTexture == null)
+            {
+                throw new InvalidOperationException(
+                    "Readable walkable texture has not been prepared.");
+            }
+
+            float textureU =
+                Mathf.Repeat(
+                    worldX /
+                    tileSize,
+                    1f);
+
+            float textureV =
+                Mathf.Repeat(
+                    worldZ /
+                    tileSize,
+                    1f);
+
+            int textureX =
+                Mathf.Clamp(
+                    Mathf.FloorToInt(
+                        textureU *
+                        readableWalkableTexture.width),
+                    0,
+                    readableWalkableTexture.width - 1);
+
+            int textureZ =
+                Mathf.Clamp(
+                    Mathf.FloorToInt(
+                        textureV *
+                        readableWalkableTexture.height),
+                    0,
+                    readableWalkableTexture.height - 1);
+
+            return readableWalkableTexture.GetPixel(
+                textureX,
+                textureZ);
         }
     }
 }

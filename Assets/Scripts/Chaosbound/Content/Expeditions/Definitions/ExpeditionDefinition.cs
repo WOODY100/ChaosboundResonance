@@ -5,6 +5,7 @@ using Chaosbound.Content.Expeditions.Definitions.Enemy;
 using Chaosbound.Content.Expeditions.Definitions.ExpeditionEvents;
 using Chaosbound.Content.Expeditions.Definitions.Identity;
 using Chaosbound.Content.Expeditions.Definitions.MiniBosses;
+using Chaosbound.Content.Expeditions.Definitions.Minimap;
 using Chaosbound.Content.Expeditions.Definitions.Presentation;
 using Chaosbound.Content.Expeditions.Definitions.Rewards;
 using Chaosbound.Content.Expeditions.Definitions.Scene;
@@ -85,6 +86,11 @@ namespace Chaosbound.Content.Expeditions.Definitions
         /// </summary>
         public CompletionDefinition Completion { get; }
 
+        /// <summary>
+        /// Gets the minimap configuration.
+        /// </summary>
+        public MinimapDefinition Minimap { get; }
+
         public ExpeditionDefinition(
             SceneDefinition scene,
             IdentityDefinition identity,
@@ -98,7 +104,8 @@ namespace Chaosbound.Content.Expeditions.Definitions
             MiniBossesDefinition miniBosses,
             BossesDefinition bosses,
             RewardsDefinition rewards,
-            CompletionDefinition completion)
+            CompletionDefinition completion,
+            MinimapDefinition minimap)
         {
             if (scene == null)
                 throw new ArgumentNullException(nameof(scene));
@@ -139,6 +146,9 @@ namespace Chaosbound.Content.Expeditions.Definitions
             if (completion == null) 
                 throw new ArgumentNullException(nameof(completion));
 
+            if (minimap == null)
+                throw new ArgumentNullException(nameof(minimap));
+
             Scene = scene;
             Identity = identity;
             Presentation = presentation;
@@ -152,6 +162,7 @@ namespace Chaosbound.Content.Expeditions.Definitions
             Bosses = bosses;
             Rewards = rewards;
             Completion = completion;
+            Minimap = minimap;
         }
     }
 }

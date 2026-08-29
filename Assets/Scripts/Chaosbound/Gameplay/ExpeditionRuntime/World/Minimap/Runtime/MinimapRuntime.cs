@@ -1,4 +1,8 @@
-using Chaosbound.Core.Domain.Spatial;
+using Chaosbound.Content.Expeditions.Runtime.Minimap;
+using Chaosbound.Content.Portal.Exit;
+using Chaosbound.Gameplay.Bosses;
+using Chaosbound.Gameplay.ExpeditionRuntime.ExitPortal.Runtime;
+using Chaosbound.Gameplay.ExpeditionRuntime.References.Contracts;
 using Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Builders;
 using Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Config;
 using Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Coordinates;
@@ -7,6 +11,7 @@ using Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Markers;
 using Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Rendering;
 using Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Viewport;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Runtime
@@ -22,6 +27,7 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Runtime
     /// - static map construction
     /// - map viewport movement
     /// - player marker presentation
+    /// - Boss marker presentation
     /// </summary>
     public sealed class MinimapRuntime
     {
@@ -31,6 +37,8 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Runtime
 
         private readonly MinimapViewportController viewportController;
 
+        private readonly MinimapOrientationBasis orientationBasis;
+
         private MinimapCoordinateMapper coordinateMapper;
 
         private MinimapMapData mapData;
@@ -38,6 +46,32 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Runtime
         private readonly MinimapMarkerCollection markerCollection;
 
         private MinimapPlayerMarkerController playerMarkerController;
+
+        private MinimapBossMarkerController bossMarkerController;
+
+        private MinimapPortalMarkerController portalMarkerController;
+
+        private readonly List<MinimapWorldMarkerController>
+            worldMarkerControllers =
+                new List<MinimapWorldMarkerController>();
+
+        private int nextWorldMarkerId =
+            100000;
+
+        private int GetNextWorldMarkerId()
+        {
+            while (
+                markerCollection.TryGet(
+                    nextWorldMarkerId,
+                    out _))
+            {
+                nextWorldMarkerId++;
+            }
+
+            return nextWorldMarkerId++;
+        }
+
+        private readonly RuntimeMinimapConfig runtimeConfig;
 
         //==========================================================
         // Public Properties
@@ -59,8 +93,10 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Runtime
         public MinimapRuntime(
             MinimapStaticMapView staticMapView,
             MinimapConfig config,
+            RuntimeMinimapConfig runtimeConfig,
             RectTransform viewport,
-            RectTransform mapContent)
+            RectTransform mapContent,
+            MinimapOrientationBasis orientationBasis)
         {
             this.staticMapView =
                 staticMapView
@@ -85,6 +121,14 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Runtime
                     nameof(mapContent));
             }
 
+            this.runtimeConfig =
+                runtimeConfig
+                ?? throw new ArgumentNullException(
+                    nameof(runtimeConfig));
+
+            this.orientationBasis =
+                orientationBasis;
+
             mapBuilder =
                 new MinimapMapBuilder();
 
@@ -92,8 +136,9 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Runtime
                 new MinimapStaticMapRenderer(
                     config.TileSize,
                     config.PixelsPerCell,
-                    config.WalkableColor,
-                    config.BlockedColor);
+                    config.BlockedColor,
+                    runtimeConfig.WalkableTexture,
+                    orientationBasis);
 
             markerCollection =
                 new MinimapMarkerCollection();
@@ -119,6 +164,23 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Runtime
             {
                 playerMarkerController.Update();
             }
+
+            if (bossMarkerController != null)
+            {
+                bossMarkerController.Update();
+            }
+
+            if (portalMarkerController != null)
+            {
+                portalMarkerController.Update();
+            }
+
+            for (int i = 0;
+                 i < worldMarkerControllers.Count;
+                 i++)
+            {
+                worldMarkerControllers[i].Update();
+            }
         }
 
         //==========================================================
@@ -126,8 +188,8 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Runtime
         //==========================================================
 
         public void InitializePlayerMarker(
-    Transform playerTransform,
-    MinimapMarkerView playerMarkerView)
+            Transform playerTransform,
+            MinimapMarkerView playerMarkerView)
         {
             if (playerTransform == null)
             {
@@ -176,6 +238,203 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Runtime
         }
 
         //==========================================================
+        // Boss Marker
+        //==========================================================
+
+        public void InitializeBossMarker(
+            BossRuntimeState bossState,
+            IRuntimeReferenceRegistry runtimeReferences,
+            MinimapMarkerView bossMarkerView)
+        {
+            if (bossState == null)
+            {
+                throw new ArgumentNullException(
+                    nameof(bossState));
+            }
+
+            if (runtimeReferences == null)
+            {
+                throw new ArgumentNullException(
+                    nameof(runtimeReferences));
+            }
+
+            if (bossMarkerView == null)
+            {
+                throw new ArgumentNullException(
+                    nameof(bossMarkerView));
+            }
+
+            if (coordinateMapper == null)
+            {
+                throw new InvalidOperationException(
+                    "Coordinate mapper must be initialized before the Boss marker.");
+            }
+
+            RectTransform markerParent =
+                bossMarkerView.transform.parent
+                as RectTransform;
+
+            if (markerParent == null)
+            {
+                throw new InvalidOperationException(
+                    "Boss marker must have a RectTransform parent.");
+            }
+
+            if (markerParent != viewportController.Viewport)
+            {
+                throw new InvalidOperationException(
+                    "Boss marker must be a child of the minimap viewport.");
+            }
+
+            bossMarkerController =
+                new MinimapBossMarkerController(
+                    bossState,
+                    runtimeReferences,
+                    coordinateMapper,
+                    viewportController.Viewport,
+                    viewportController.MapContent,
+                    markerCollection,
+                    bossMarkerView);
+        }
+
+        //==========================================================
+        // Exit Portal Marker
+        //==========================================================
+
+        public void InitializePortalMarker(
+            ExitPortalRuntimeState portalState,
+            ExitPortalData portalData,
+            IRuntimeReferenceRegistry runtimeReferences,
+            MinimapMarkerView portalMarkerView)
+        {
+            if (portalState == null)
+            {
+                throw new ArgumentNullException(
+                    nameof(portalState));
+            }
+
+            if (portalData == null)
+            {
+                throw new ArgumentNullException(
+                    nameof(portalData));
+            }
+
+            if (runtimeReferences == null)
+            {
+                throw new ArgumentNullException(
+                    nameof(runtimeReferences));
+            }
+
+            if (portalMarkerView == null)
+            {
+                throw new ArgumentNullException(
+                    nameof(portalMarkerView));
+            }
+
+            if (coordinateMapper == null)
+            {
+                throw new InvalidOperationException(
+                    "Coordinate mapper must be initialized before the Exit Portal marker.");
+            }
+
+            RectTransform markerParent =
+                portalMarkerView.transform.parent
+                as RectTransform;
+
+            if (markerParent == null)
+            {
+                throw new InvalidOperationException(
+                    "Exit Portal marker must have a RectTransform parent.");
+            }
+
+            if (markerParent != viewportController.Viewport)
+            {
+                throw new InvalidOperationException(
+                    "Exit Portal marker must be a child of the minimap viewport.");
+            }
+
+            portalMarkerController =
+                new MinimapPortalMarkerController(
+                    portalState,
+                    portalData,
+                    runtimeReferences,
+                    coordinateMapper,
+                    viewportController.Viewport,
+                    viewportController.MapContent,
+                    markerCollection,
+                    portalMarkerView);
+        }
+
+        //==========================================================
+        // Fixed World Markers
+        //==========================================================
+
+        public void InitializeWorldMarkers(
+            IReadOnlyList<Vector3> worldPositions,
+            MinimapMarkerView markerPrefab)
+        {
+            if (worldPositions == null)
+            {
+                throw new ArgumentNullException(
+                    nameof(worldPositions));
+            }
+
+            if (markerPrefab == null)
+            {
+                throw new ArgumentNullException(
+                    nameof(markerPrefab));
+            }
+
+            if (coordinateMapper == null)
+            {
+                throw new InvalidOperationException(
+                    "Coordinate mapper must be initialized before world markers.");
+            }
+
+            RectTransform markerParent =
+                viewportController.Viewport;
+
+            if (markerParent == null)
+            {
+                throw new InvalidOperationException(
+                    "Minimap viewport is missing.");
+            }
+
+            ClearWorldMarkers();
+
+            for (int i = 0;
+                 i < worldPositions.Count;
+                 i++)
+            {
+                MinimapMarkerData marker =
+                    new MinimapMarkerData(
+                        GetNextWorldMarkerId(),
+                        MinimapMarkerType.ModifierStructure,
+                        worldPositions[i]);
+
+                MinimapMarkerView markerView =
+                    UnityEngine.Object.Instantiate(
+                        markerPrefab,
+                        markerParent);
+
+                MinimapWorldMarkerController controller =
+                    new MinimapWorldMarkerController(
+                        marker,
+                        coordinateMapper,
+                        viewportController.Viewport,
+                        viewportController.MapContent,
+                        markerCollection,
+                        markerView,
+                        viewportController.Zoom);
+
+                worldMarkerControllers.Add(
+                    controller);
+
+                controller.Update();
+            }
+        }
+
+        //==========================================================
         // Build
         //==========================================================
 
@@ -196,10 +455,11 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Runtime
 
             coordinateMapper =
                 new MinimapCoordinateMapper(
-                    worldBounds);
+                    worldBounds,
+                    orientationBasis);
 
             viewportController.Initialize(
-                worldBounds);
+                coordinateMapper);
 
             Texture2D texture =
                 staticMapRenderer.Render(
@@ -213,6 +473,18 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Runtime
         // Clear
         //==========================================================
 
+        private void ClearWorldMarkers()
+        {
+            for (int i = 0;
+                 i < worldMarkerControllers.Count;
+                 i++)
+            {
+                worldMarkerControllers[i].Clear();
+            }
+
+            worldMarkerControllers.Clear();
+        }
+
         public void Clear()
         {
             mapData =
@@ -221,6 +493,24 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Runtime
             staticMapView.Clear();
 
             playerMarkerController =
+                null;
+
+            bossMarkerController?.Clear();
+
+            bossMarkerController =
+                null;
+
+            portalMarkerController?.Clear();
+
+            portalMarkerController =
+                null;
+
+            ClearWorldMarkers();
+
+            nextWorldMarkerId =
+                100000;
+
+            coordinateMapper =
                 null;
         }
     }

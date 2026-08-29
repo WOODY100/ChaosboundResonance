@@ -1,14 +1,15 @@
 using Chaosbound.Content.Expeditions.Runtime.Bosses;
 using Chaosbound.Content.Expeditions.Runtime.Combat;
+using Chaosbound.Content.Expeditions.Runtime.Completion;
 using Chaosbound.Content.Expeditions.Runtime.Enemy;
 using Chaosbound.Content.Expeditions.Runtime.ExpeditionEvents;
 using Chaosbound.Content.Expeditions.Runtime.MiniBosses;
+using Chaosbound.Content.Expeditions.Runtime.Minimap;
 using Chaosbound.Content.Expeditions.Runtime.Rewards;
 using Chaosbound.Content.Expeditions.Runtime.Scene;
 using Chaosbound.Content.Expeditions.Runtime.Spawn;
 using Chaosbound.Content.Expeditions.Runtime.Timeline;
 using Chaosbound.Content.Expeditions.Runtime.World;
-using Chaosbound.Content.Expeditions.Runtime.Completion;
 using System;
 
 namespace Chaosbound.Content.Expeditions.Runtime.Configs
@@ -41,6 +42,8 @@ namespace Chaosbound.Content.Expeditions.Runtime.Configs
 
         public RuntimeCompletionConfig Completion { get; }
 
+        public RuntimeMinimapConfig Minimap { get; }
+
         public RuntimeExpeditionConfig(
             RuntimeSceneConfig scene,
             RuntimeWorldConfig world,
@@ -52,7 +55,8 @@ namespace Chaosbound.Content.Expeditions.Runtime.Configs
             RuntimeMiniBossesConfig miniBosses,
             RuntimeBossesConfig bosses,
             RuntimeRewardsConfig rewards,
-            RuntimeCompletionConfig completion)
+            RuntimeCompletionConfig completion,
+            RuntimeMinimapConfig minimap)
         {
             Scene = scene ?? throw new ArgumentNullException(nameof(scene));
             World = world ?? throw new ArgumentNullException(nameof(world));
@@ -65,6 +69,7 @@ namespace Chaosbound.Content.Expeditions.Runtime.Configs
             Bosses = bosses ?? throw new ArgumentNullException(nameof(bosses));
             Rewards = rewards ?? throw new ArgumentNullException(nameof(rewards));
             Completion = completion ?? throw new ArgumentNullException(nameof(completion));
+            Minimap = minimap ?? throw new ArgumentNullException(nameof(minimap));
         }
     }
 }

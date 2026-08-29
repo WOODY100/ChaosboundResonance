@@ -55,6 +55,15 @@ namespace Chaosbound.Core.Composition
         private MinimapMarkerView minimapPlayerMarkerView;
 
         [SerializeField]
+        private MinimapMarkerView minimapBossMarkerView;
+
+        [SerializeField]
+        private MinimapMarkerView minimapExitPortalMarkerView;
+
+        [SerializeField]
+        private MinimapMarkerView minimapModifierStructureMarkerView;
+
+        [SerializeField]
         private RectTransform minimapMapViewport;
 
         [SerializeField]
@@ -94,6 +103,15 @@ namespace Chaosbound.Core.Composition
 
         public MinimapMarkerView MinimapPlayerMarkerView =>
             minimapPlayerMarkerView;
+
+        public MinimapMarkerView MinimapBossMarkerView =>
+            minimapBossMarkerView;
+
+        public MinimapMarkerView MinimapExitPortalMarkerView =>
+            minimapExitPortalMarkerView;
+
+        public MinimapMarkerView MinimapModifierStructureMarkerView =>
+            minimapModifierStructureMarkerView;
 
         public RectTransform MinimapMapViewport =>
             minimapMapViewport;
@@ -200,6 +218,18 @@ namespace Chaosbound.Core.Composition
             ValidateReference(
                 minimapPlayerMarkerView,
                 nameof(minimapPlayerMarkerView));
+
+            ValidateReference(
+                minimapBossMarkerView,
+                nameof(minimapBossMarkerView));
+
+            ValidateReference(
+                minimapExitPortalMarkerView,
+                nameof(minimapExitPortalMarkerView));
+
+            ValidateReference(
+                minimapModifierStructureMarkerView,
+                nameof(minimapModifierStructureMarkerView));
 
             ValidateReference(
                 minimapMapViewport,

@@ -7,19 +7,22 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Coordinates
     /// Converts positions from world space into normalized
     /// minimap coordinates.
     ///
-    /// X represents the horizontal axis.
-    /// Y represents the vertical minimap axis and is derived
-    /// from world Z.
+    /// The minimap coordinate system is defined by a
+    /// MinimapOrientationBasis.
     ///
-    /// The mapper does not know about UI objects, textures
-    /// or markers.
+    /// The mapper does not know about cameras, UI objects,
+    /// textures or markers.
     /// </summary>
     public sealed class MinimapCoordinateMapper
     {
         private readonly Bounds worldBounds;
 
+        private readonly MinimapOrientationBasis
+            orientationBasis;
+
         public MinimapCoordinateMapper(
-            Bounds worldBounds)
+            Bounds worldBounds,
+            MinimapOrientationBasis orientationBasis)
         {
             if (worldBounds.size.x <= 0f)
             {
@@ -37,37 +40,64 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Coordinates
 
             this.worldBounds =
                 worldBounds;
+
+            this.orientationBasis =
+                orientationBasis;
         }
+
+        //==========================================================
+        // World → Minimap
+        //==========================================================
 
         /// <summary>
         /// Converts a world position into normalized minimap
-        /// coordinates.
+        /// coordinates using the configured minimap orientation.
         ///
-        /// X = 0 represents the west/left edge.
-        /// X = 1 represents the east/right edge.
+        /// X = 0 represents the left edge.
+        /// X = 1 represents the right edge.
         ///
-        /// Y = 0 represents the south/bottom edge.
-        /// Y = 1 represents the north/top edge.
+        /// Y = 0 represents the bottom edge.
+        /// Y = 1 represents the top edge.
         /// </summary>
         public Vector2 WorldToNormalized(
             Vector3 worldPosition)
         {
+            Vector2 relativePosition =
+                new Vector2(
+                    worldPosition.x -
+                    worldBounds.center.x,
+
+                    worldPosition.z -
+                    worldBounds.center.z);
+
+            float minimapX =
+                Vector2.Dot(
+                    relativePosition,
+                    orientationBasis.Right);
+
+            float minimapY =
+                Vector2.Dot(
+                    relativePosition,
+                    orientationBasis.Up);
+
             float normalizedX =
-                Mathf.InverseLerp(
-                    worldBounds.min.x,
-                    worldBounds.max.x,
-                    worldPosition.x);
+                (minimapX /
+                 worldBounds.size.x) +
+                0.5f;
 
             float normalizedY =
-                Mathf.InverseLerp(
-                    worldBounds.min.z,
-                    worldBounds.max.z,
-                    worldPosition.z);
+                (minimapY /
+                 worldBounds.size.z) +
+                0.5f;
 
             return new Vector2(
                 normalizedX,
                 normalizedY);
         }
+
+        //==========================================================
+        // Minimap → World
+        //==========================================================
 
         /// <summary>
         /// Converts normalized minimap coordinates into
@@ -77,23 +107,31 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Coordinates
             Vector2 normalizedPosition,
             float y)
         {
-            float worldX =
-                Mathf.Lerp(
-                    worldBounds.min.x,
-                    worldBounds.max.x,
-                    normalizedPosition.x);
+            float minimapX =
+                (normalizedPosition.x - 0.5f) *
+                worldBounds.size.x;
 
-            float worldZ =
-                Mathf.Lerp(
-                    worldBounds.min.z,
-                    worldBounds.max.z,
-                    normalizedPosition.y);
+            float minimapY =
+                (normalizedPosition.y - 0.5f) *
+                worldBounds.size.z;
+
+            Vector2 worldRelativePosition =
+                (orientationBasis.Right * minimapX) +
+                (orientationBasis.Up * minimapY);
 
             return new Vector3(
-                worldX,
+                worldRelativePosition.x +
+                    worldBounds.center.x,
+
                 y,
-                worldZ);
+
+                worldRelativePosition.y +
+                    worldBounds.center.z);
         }
+
+        //==========================================================
+        // World → Pixel
+        //==========================================================
 
         /// <summary>
         /// Converts a world position directly into texture
@@ -123,14 +161,16 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Coordinates
             int pixelX =
                 Mathf.Clamp(
                     Mathf.FloorToInt(
-                        normalized.x * textureWidth),
+                        normalized.x *
+                        textureWidth),
                     0,
                     textureWidth - 1);
 
             int pixelY =
                 Mathf.Clamp(
                     Mathf.FloorToInt(
-                        normalized.y * textureHeight),
+                        normalized.y *
+                        textureHeight),
                     0,
                     textureHeight - 1);
 

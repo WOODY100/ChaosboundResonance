@@ -1,5 +1,6 @@
 using Chaosbound.Content.Portal.Exit;
 using Chaosbound.Gameplay.ExpeditionRuntime.ExitPortal;
+using Chaosbound.Gameplay.ExpeditionRuntime.References.Contracts;
 using Chaosbound.Gameplay.Spawn.Execution;
 using Chaosbound.Gameplay.Spawn.Infrastructure;
 using Chaosbound.Gameplay.Spawn.Integration;
@@ -16,6 +17,9 @@ namespace Chaosbound.Gameplay.Spawn.Materialization
     public sealed class ExitPortalMaterializer :
         ISpawnMaterializer
     {
+        private const string ExitPortalDomainId =
+            "exitPortal";
+
         private readonly ISpawnInstantiationService
             instantiationService;
 
@@ -63,6 +67,21 @@ namespace Chaosbound.Gameplay.Spawn.Materialization
             GameObject instance =
                 instantiationService.Spawn(
                     request);
+
+            if (instance == null)
+            {
+                throw new InvalidOperationException(
+                    $"Exit Portal '{exitPortal.name}' could not be materialized.");
+            }
+
+            context
+                .RuntimeState
+                .ExpeditionRuntime
+                .RuntimeReferences
+                .Register(
+                    ExitPortalDomainId,
+                    exitPortal.Id,
+                    instance.transform);
 
             ExitPortalInteractable interactable =
                 instance.GetComponent<ExitPortalInteractable>();

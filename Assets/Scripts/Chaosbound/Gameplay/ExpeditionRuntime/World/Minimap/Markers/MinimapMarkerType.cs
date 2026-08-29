@@ -11,6 +11,7 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Markers
         Boss = 3,
         Objective = 4,
         Event = 5,
-        PointOfInterest = 6
+        PointOfInterest = 6,
+        ModifierStructure = 7
     }
 }

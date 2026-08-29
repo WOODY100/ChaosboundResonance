@@ -72,7 +72,7 @@ MonoBehaviour:
           m_ContentId: boss.start
       m_FixedTimeRules:
       - m_EventId: boss
-        m_TimeSeconds: 300
+        m_TimeSeconds: 15
       m_DistributedRules:
       - m_EventIds:
         - dynamic
@@ -80,7 +80,7 @@ MonoBehaviour:
         m_EndTimeType: 1
         m_EndTimeSeconds: 0
       m_CompletionTarget:
-        m_TimeSeconds: 300
+        m_TimeSeconds: 15
     m_expeditionEvents:
       content: []
     m_miniBosses:
@@ -94,3 +94,5 @@ MonoBehaviour:
       m_DomainId: boss
       m_EventId: boss
       m_ExitPortal: {fileID: 11400000, guid: 5bb45a6a7e36f2446be456743d7fd510, type: 2}
+    m_minimap:
+      m_walkableTexture: {fileID: 2800000, guid: 461e4f4280bdcdc498e0d3dd15e223e6, type: 3}

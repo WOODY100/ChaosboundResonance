@@ -24,11 +24,13 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Markers
         public Vector3 WorldPosition
         {
             get;
+            private set;
         }
 
         public bool IsVisible
         {
             get;
+            private set;
         }
 
         public MinimapMarkerData(
@@ -54,6 +56,30 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Markers
 
             IsVisible =
                 isVisible;
+        }
+
+        //==========================================================
+        // Runtime State
+        //==========================================================
+
+        /// <summary>
+        /// Updates the world position represented by this marker.
+        /// </summary>
+        public void SetWorldPosition(
+            Vector3 worldPosition)
+        {
+            WorldPosition =
+                worldPosition;
+        }
+
+        /// <summary>
+        /// Updates the visibility state of this marker.
+        /// </summary>
+        public void SetVisible(
+            bool visible)
+        {
+            IsVisible =
+                visible;
         }
     }
 }

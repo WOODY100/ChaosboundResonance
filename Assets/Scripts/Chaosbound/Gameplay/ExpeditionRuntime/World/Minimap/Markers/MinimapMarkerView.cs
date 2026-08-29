@@ -9,12 +9,16 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Markers
     /// This component owns only the UI representation.
     /// It does not know about world coordinates or gameplay systems.
     /// </summary>
-    public sealed class MinimapMarkerView : MonoBehaviour
+    public sealed class MinimapMarkerView :
+        MonoBehaviour
     {
         [Header("View")]
 
         [SerializeField]
         private Image image;
+
+        [SerializeField]
+        private Image offscreenImage;
 
         public RectTransform RectTransform =>
             transform as RectTransform;
@@ -25,7 +29,34 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Markers
             if (image == null)
                 return;
 
-            image.sprite = sprite;
+            image.sprite =
+                sprite;
+        }
+
+        public void SetOffscreenSprite(
+            Sprite sprite)
+        {
+            if (offscreenImage == null)
+                return;
+
+            offscreenImage.sprite =
+                sprite;
+        }
+
+        public void SetUseOffscreenImage(
+            bool useOffscreenImage)
+        {
+            if (image != null)
+            {
+                image.enabled =
+                    !useOffscreenImage;
+            }
+
+            if (offscreenImage != null)
+            {
+                offscreenImage.enabled =
+                    useOffscreenImage;
+            }
         }
 
         public void SetVisible(
@@ -46,6 +77,22 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Markers
 
             rectTransform.anchoredPosition =
                 position;
+        }
+
+        public void SetRotation(
+            float angleDegrees)
+        {
+            RectTransform rectTransform =
+                RectTransform;
+
+            if (rectTransform == null)
+                return;
+
+            rectTransform.localRotation =
+                Quaternion.Euler(
+                    0f,
+                    0f,
+                    angleDegrees);
         }
     }
 }
