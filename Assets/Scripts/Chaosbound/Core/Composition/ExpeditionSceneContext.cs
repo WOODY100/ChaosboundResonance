@@ -1,4 +1,9 @@
+using Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Config;
+using Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Markers;
+using Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Rendering;
+using Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Runtime;
 using Chaosbound.Gameplay.Navigation;
+using Chaosbound.UI.Timeline;
 using System;
 using UnityEngine;
 
@@ -14,10 +19,17 @@ namespace Chaosbound.Core.Composition
 
         [Header("Player")]
 
-        [SerializeField] private PlayerHealth player;
-        [SerializeField] private PlayerStats playerStats;
-        [SerializeField] private PlayerExperienceSystem playerExperienceSystem;
-        [SerializeField] private PlayerSkillLoadout playerSkillLoadout;
+        [SerializeField]
+        private PlayerHealth player;
+
+        [SerializeField]
+        private PlayerStats playerStats;
+
+        [SerializeField]
+        private PlayerExperienceSystem playerExperienceSystem;
+
+        [SerializeField]
+        private PlayerSkillLoadout playerSkillLoadout;
 
         //==========================================================
         // World
@@ -35,18 +47,133 @@ namespace Chaosbound.Core.Composition
         private ExpeditionNavigation navigation;
 
         //==========================================================
+        // UI
+        //==========================================================
+
+        [Header("UI")]
+
+        [SerializeField]
+        private HUDController hudController;
+
+        [SerializeField]
+        private HUDXPBarUI hudXPBarUI;
+
+        [SerializeField]
+        private HUDLevelUI hudLevelUI;
+
+        [SerializeField]
+        private SkillBarUI skillBarUI;
+
+        [SerializeField]
+        private TimelineUI timelineUI;
+
+        //==========================================================
+        // Minimap
+        //==========================================================
+
+        [Header("Minimap")]
+
+        [SerializeField]
+        private MinimapStaticMapView minimapStaticMapView;
+
+        [SerializeField]
+        private MinimapConfig minimapConfig;
+
+        [SerializeField]
+        private MinimapRuntimeUpdater minimapRuntimeUpdater;
+
+        [SerializeField]
+        private MinimapMarkerView minimapPlayerMarkerView;
+
+        [SerializeField]
+        private MinimapMarkerView minimapBossMarkerView;
+
+        [SerializeField]
+        private MinimapMarkerView minimapExitPortalMarkerView;
+
+        [SerializeField]
+        private MinimapMarkerView minimapModifierStructureMarkerView;
+
+        [SerializeField]
+        private RectTransform minimapMapViewport;
+
+        [SerializeField]
+        private RectTransform minimapMapContent;
+
+        //==========================================================
         // Public Properties
         //==========================================================
 
-        public PlayerHealth Player => player;
-        public PlayerStats PlayerStats => playerStats;
-        public PlayerExperienceSystem PlayerExperienceSystem => playerExperienceSystem;
-        public PlayerSkillLoadout PlayerSkillLoadout => playerSkillLoadout;
+        // Player
 
-        public OpenWorldMapGenerator MapGenerator => mapGenerator;
-        public OpenWorldDecorationGenerator DecorationGenerator => decorationGenerator;
+        public PlayerHealth Player =>
+            player;
 
-        public ExpeditionNavigation Navigation => navigation;
+        public PlayerStats PlayerStats =>
+            playerStats;
+
+        public PlayerExperienceSystem PlayerExperienceSystem =>
+            playerExperienceSystem;
+
+        public PlayerSkillLoadout PlayerSkillLoadout =>
+            playerSkillLoadout;
+
+        // World
+
+        public OpenWorldMapGenerator MapGenerator =>
+            mapGenerator;
+
+        public OpenWorldDecorationGenerator DecorationGenerator =>
+            decorationGenerator;
+
+        public ExpeditionNavigation Navigation =>
+            navigation;
+
+        // UI
+
+        public HUDController HUDController =>
+            hudController;
+
+        public HUDXPBarUI HUDXPBarUI =>
+            hudXPBarUI;
+
+        public HUDLevelUI HUDLevelUI =>
+            hudLevelUI;
+
+        public SkillBarUI SkillBarUI =>
+            skillBarUI;
+
+        public TimelineUI TimelineUI => 
+            timelineUI;
+
+        // Minimap
+
+        public MinimapStaticMapView MinimapStaticMapView =>
+            minimapStaticMapView;
+
+        public MinimapConfig MinimapConfig =>
+            minimapConfig;
+
+        public MinimapRuntimeUpdater MinimapRuntimeUpdater =>
+            minimapRuntimeUpdater;
+
+        public MinimapMarkerView MinimapPlayerMarkerView =>
+            minimapPlayerMarkerView;
+
+        public MinimapMarkerView MinimapBossMarkerView =>
+            minimapBossMarkerView;
+
+        public MinimapMarkerView MinimapExitPortalMarkerView =>
+            minimapExitPortalMarkerView;
+
+        public MinimapMarkerView MinimapModifierStructureMarkerView =>
+            minimapModifierStructureMarkerView;
+
+        public RectTransform MinimapMapViewport =>
+            minimapMapViewport;
+
+        public RectTransform MinimapMapContent =>
+            minimapMapContent;
 
         //==========================================================
         // Unity
@@ -86,16 +213,103 @@ namespace Chaosbound.Core.Composition
         // Validation
         //==========================================================
 
+        private void ValidateMinimapConfig()
+        {
+            if (minimapConfig == null)
+            {
+                Debug.LogWarning(
+                    $"{nameof(ExpeditionSceneContext)}: '{nameof(minimapConfig)}' is not assigned.",
+                    this);
+            }
+        }
+
         private void OnValidate()
         {
-            ValidateReference(player, nameof(player));
-            ValidateReference(playerStats, nameof(playerStats));
-            ValidateReference(playerExperienceSystem, nameof(playerExperienceSystem));
-            ValidateReference(playerSkillLoadout, nameof(playerSkillLoadout));
-            
-            ValidateReference(mapGenerator, nameof(mapGenerator));
-            ValidateReference(decorationGenerator, nameof(decorationGenerator));
-            ValidateReference(navigation, nameof(navigation));
+            // Player
+            ValidateReference(
+                player,
+                nameof(player));
+
+            ValidateReference(
+                playerStats,
+                nameof(playerStats));
+
+            ValidateReference(
+                playerExperienceSystem,
+                nameof(playerExperienceSystem));
+
+            ValidateReference(
+                playerSkillLoadout,
+                nameof(playerSkillLoadout));
+
+            // World
+            ValidateReference(
+                mapGenerator,
+                nameof(mapGenerator));
+
+            ValidateReference(
+                decorationGenerator,
+                nameof(decorationGenerator));
+
+            ValidateReference(
+                navigation,
+                nameof(navigation));
+
+            // UI
+            ValidateReference(
+                hudController,
+                nameof(hudController));
+
+            ValidateReference(
+                hudXPBarUI,
+                nameof(hudXPBarUI));
+
+            ValidateReference(
+                hudLevelUI,
+                nameof(hudLevelUI));
+
+            ValidateReference(
+                skillBarUI,
+                nameof(skillBarUI));
+
+            ValidateReference(
+                timelineUI,
+                nameof(timelineUI));
+
+            // Minimap
+            ValidateReference(
+                minimapStaticMapView,
+                nameof(minimapStaticMapView));
+
+            ValidateMinimapConfig();
+
+            ValidateReference(
+                minimapRuntimeUpdater,
+                nameof(minimapRuntimeUpdater));
+
+            ValidateReference(
+                minimapPlayerMarkerView,
+                nameof(minimapPlayerMarkerView));
+
+            ValidateReference(
+                minimapBossMarkerView,
+                nameof(minimapBossMarkerView));
+
+            ValidateReference(
+                minimapExitPortalMarkerView,
+                nameof(minimapExitPortalMarkerView));
+
+            ValidateReference(
+                minimapModifierStructureMarkerView,
+                nameof(minimapModifierStructureMarkerView));
+
+            ValidateReference(
+                minimapMapViewport,
+                nameof(minimapMapViewport));
+
+            ValidateReference(
+                minimapMapContent,
+                nameof(minimapMapContent));
         }
 
         private void ValidateReference(

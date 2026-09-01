@@ -3,12 +3,10 @@ using Chaosbound.Gameplay.ExpeditionRuntime.Runtime;
 using System;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class HUDController : MonoBehaviour
 {
     [Header("UI")]
-    [SerializeField] private Image healthFill;
     [SerializeField] private TMP_Text timerText;
     [SerializeField] private HealthOrbController healthOrb;
 
@@ -40,7 +38,7 @@ public class HUDController : MonoBehaviour
     }
 
     private void UpdateTimer(
-    TimeSpan elapsedTime)
+        TimeSpan elapsedTime)
     {
         if (timerText == null)
             return;
@@ -69,39 +67,24 @@ public class HUDController : MonoBehaviour
 
     public void BindPlayer(PlayerHealth health)
     {
-        if (playerHealth != null)
-            playerHealth.OnHealthChanged -= UpdateHealth;
-
         playerHealth = health;
 
-        if (playerHealth != null)
+        if (playerHealth != null &&
+            healthOrb != null)
         {
-            playerHealth.OnHealthChanged += UpdateHealth;
-
-            UpdateHealth(
-                playerHealth.CurrentHealth,
-                playerHealth.MaxHealth);
-
-            if (healthOrb != null)
-                healthOrb.BindPlayer(playerHealth);
+            healthOrb.BindPlayer(playerHealth);
         }
     }
 
     public void BindRunManager(
-    RunManager manager)
+        RunManager manager)
     {
         runManager = manager;
     }
 
-    void UpdateHealth(float current, float max)
-    {
-        if (healthFill != null)
-            healthFill.fillAmount = current / max;
-    }
-
     public void Initialize(
-    PlayerHealth player,
-    RunManager manager)
+        PlayerHealth player,
+        RunManager manager)
     {
         ShowHUD();
 

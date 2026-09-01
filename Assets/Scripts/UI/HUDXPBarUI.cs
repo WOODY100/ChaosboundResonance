@@ -1,32 +1,41 @@
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 
 public class HUDXPBarUI : MonoBehaviour
 {
     [SerializeField] private Image fillImage;
-    [SerializeField] private TMP_Text xpText;
     [SerializeField] private float fillSpeed = 5f;
 
     private PlayerExperienceSystem experience;
     private float targetFill;
 
-    void Update()
+    private void Update()
     {
+        if (fillImage == null)
+            return;
+
         fillImage.fillAmount = Mathf.Lerp(
             fillImage.fillAmount,
             targetFill,
-            Time.deltaTime * fillSpeed
-        );
+            Time.deltaTime * fillSpeed);
     }
 
-    public void Bind(PlayerExperienceSystem xpSystem)
+    public void Bind(
+        PlayerExperienceSystem xpSystem)
     {
+        if (experience != null)
+            experience.OnXPChanged -= UpdateXP;
+
         experience = xpSystem;
+
+        if (experience == null)
+            return;
 
         experience.OnXPChanged += UpdateXP;
 
-        UpdateXP(experience.CurrentXP, experience.RequiredXP);
+        UpdateXP(
+            experience.CurrentXP,
+            experience.RequiredXP);
     }
 
     private void OnDestroy()
@@ -35,16 +44,17 @@ public class HUDXPBarUI : MonoBehaviour
             experience.OnXPChanged -= UpdateXP;
     }
 
-    private void UpdateXP(float current, float max)
+    private void UpdateXP(
+        float current,
+        float max)
     {
-        targetFill = current / max;
-
-        if (xpText != null)
+        if (max <= 0f)
         {
-            xpText.SetText("{0} / {1}",
-                Mathf.FloorToInt(current),
-                Mathf.FloorToInt(max)
-            );
+            targetFill = 0f;
+            return;
         }
+
+        targetFill =
+            Mathf.Clamp01(current / max);
     }
 }

@@ -10,20 +10,32 @@ namespace Chaosbound.Core.Composition
         [SerializeField]
         private ExpeditionSceneContext sceneContext;
 
+        private ExpeditionComposition composition;
+
         private void Start()
         {
             Initialize();
+        }
+
+        private void Update()
+        {
+            composition?.Tick();
         }
 
         private void Initialize()
         {
             Validate();
 
-            BootstrapContext bootstrap = BootstrapContext.Current;
-            RunSession runSession = bootstrap.RunSession;
-            RuntimeExpeditionConfig runtimeConfig = runSession.CurrentRun;
+            BootstrapContext bootstrap =
+                BootstrapContext.Current;
 
-            ExpeditionComposition composition =
+            RunSession runSession =
+                bootstrap.RunSession;
+
+            RuntimeExpeditionConfig runtimeConfig =
+                runSession.CurrentRun;
+
+            composition =
                 CreateComposition(
                     bootstrap,
                     runtimeConfig);

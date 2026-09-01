@@ -9,6 +9,7 @@ using Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Markers;
 using Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Rendering;
 using Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Runtime;
 using Chaosbound.Gameplay.Navigation;
+using Chaosbound.UI.Timeline;
 using System;
 using UnityEngine;
 
@@ -57,6 +58,32 @@ namespace Chaosbound.Core.Composition
             FinalizeInitialization();
         }
 
+        public void Tick()
+        {
+            RunManager runManager =
+                bootstrapContext.RunManager;
+
+            TimelineUI timelineUI =
+                sceneContext.TimelineUI;
+
+            if (runManager == null ||
+                timelineUI == null)
+            {
+                return;
+            }
+
+            ExpeditionRuntimeState runtimeState =
+                runManager.ExpeditionRuntimeState;
+
+            if (runtimeState == null)
+            {
+                return;
+            }
+
+            timelineUI.UpdateProgress(
+                (float)runtimeState.ElapsedTime.TotalSeconds);
+        }
+
         #region Validation
 
         private void Validate()
@@ -86,17 +113,29 @@ namespace Chaosbound.Core.Composition
             PlayerExperienceSystem xpSystem =
                 sceneContext.PlayerExperienceSystem;
 
+            PlayerSkillLoadout loadout =
+                sceneContext.PlayerSkillLoadout;
+
             RunManager runManager =
                 bootstrapContext.RunManager;
 
+            LevelUpManager levelUpManager =
+                bootstrapContext.LevelUpManager;
+
             HUDController hud =
-                bootstrapContext.HUDController;
+                sceneContext.HUDController;
 
             HUDXPBarUI xpUI =
-                bootstrapContext.HUDXPBarUI;
+                sceneContext.HUDXPBarUI;
 
             HUDLevelUI levelUI =
-                bootstrapContext.HUDLevelUI;
+                sceneContext.HUDLevelUI;
+
+            SkillBarUI skillBar =
+                sceneContext.SkillBarUI;
+
+            TimelineUI timelineUI =
+                sceneContext.TimelineUI;
 
             if (hud != null)
                 hud.Initialize(
@@ -110,6 +149,19 @@ namespace Chaosbound.Core.Composition
             if (levelUI != null)
                 levelUI.Bind(
                     xpSystem);
+
+            if (skillBar != null)
+                skillBar.Initialize(
+                    loadout,
+                    levelUpManager);
+
+            if (timelineUI != null &&
+                runtimeConfig.Timeline != null &&
+                runtimeConfig.Timeline.Agenda != null)
+            {
+                timelineUI.SetAgenda(
+                    runtimeConfig.Timeline.Agenda);
+            }
         }
 
         private void InitializeWorld()
@@ -161,31 +213,31 @@ namespace Chaosbound.Core.Composition
                 sceneContext.DecorationGenerator;
 
             MinimapStaticMapView minimapView =
-                bootstrapContext.MinimapStaticMapView;
+                sceneContext.MinimapStaticMapView;
 
             MinimapConfig minimapConfig =
-                bootstrapContext.MinimapConfig;
+                sceneContext.MinimapConfig;
 
             RuntimeMinimapConfig runtimeMinimapConfig =
                 runtimeConfig.Minimap;
 
             RectTransform minimapMapViewport =
-                bootstrapContext.MinimapMapViewport;
+                sceneContext.MinimapMapViewport;
 
             RectTransform minimapMapContent =
-                bootstrapContext.MinimapMapContent;
+                sceneContext.MinimapMapContent;
 
             MinimapRuntimeUpdater minimapRuntimeUpdater =
-                bootstrapContext.MinimapRuntimeUpdater;
+                sceneContext.MinimapRuntimeUpdater;
 
             MinimapMarkerView playerMarkerView =
-                bootstrapContext.MinimapPlayerMarkerView;
+                sceneContext.MinimapPlayerMarkerView;
 
             MinimapMarkerView bossMarkerView =
-                bootstrapContext.MinimapBossMarkerView;
+                sceneContext.MinimapBossMarkerView;
 
             MinimapMarkerView portalMarkerView =
-                bootstrapContext.MinimapExitPortalMarkerView;
+                sceneContext.MinimapExitPortalMarkerView;
 
             PlayerHealth player =
                 sceneContext.Player;
@@ -348,7 +400,7 @@ namespace Chaosbound.Core.Composition
             //==========================================================
 
             MinimapMarkerView modifierStructureMarkerView =
-                bootstrapContext.MinimapModifierStructureMarkerView;
+                sceneContext.MinimapModifierStructureMarkerView;
 
             minimapRuntime.InitializeWorldMarkers(
                 decorationGenerator.ModifierStructurePositions,
@@ -424,14 +476,82 @@ namespace Chaosbound.Core.Composition
 
         private void InitializeGameplaySystems()
         {
-            // V1
-            // Reserved for future initialization completion logic.
+            PlayerHealth player =
+                sceneContext.Player;
+
+            RunManager runManager =
+                bootstrapContext.RunManager;
+
+            EnemyManager enemyManager =
+                bootstrapContext.EnemyManager;
+
+            if (player == null)
+            {
+                throw new InvalidOperationException(
+                    "Player is missing.");
+            }
+
+            if (runManager == null)
+            {
+                throw new InvalidOperationException(
+                    "RunManager is missing.");
+            }
+
+            if (enemyManager == null)
+            {
+                throw new InvalidOperationException(
+                    "EnemyManager is missing.");
+            }
+
+            runManager.BindPlayer(
+                player);
+
+            enemyManager.SetPlayer(
+                player.transform);
         }
 
         private void InitializeProgression()
         {
-            // V1
-            // Reserved for future initialization completion logic.
+            PlayerExperienceSystem xpSystem =
+                sceneContext.PlayerExperienceSystem;
+
+            PlayerSkillLoadout loadout =
+                sceneContext.PlayerSkillLoadout;
+
+            PlayerStats stats =
+                sceneContext.PlayerStats;
+
+            LevelUpManager levelUpManager =
+                bootstrapContext.LevelUpManager;
+
+            if (xpSystem == null)
+            {
+                throw new InvalidOperationException(
+                    "PlayerExperienceSystem is missing.");
+            }
+
+            if (loadout == null)
+            {
+                throw new InvalidOperationException(
+                    "PlayerSkillLoadout is missing.");
+            }
+
+            if (stats == null)
+            {
+                throw new InvalidOperationException(
+                    "PlayerStats is missing.");
+            }
+
+            if (levelUpManager == null)
+            {
+                throw new InvalidOperationException(
+                    "LevelUpManager is missing.");
+            }
+
+            levelUpManager.Initialize(
+                xpSystem,
+                loadout,
+                stats);
         }
 
         private void FinalizeInitialization()
