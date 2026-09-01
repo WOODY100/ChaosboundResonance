@@ -1,9 +1,12 @@
-﻿using System.Collections;
+﻿using Chaosbound.Core.GameFlow;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(CharacterController))]
-public sealed class PlayerController : MonoBehaviour
+public sealed class PlayerController :
+    MonoBehaviour,
+    IGameplayInputTarget
 {
     public Vector3 Velocity { get; private set; }
 
@@ -91,14 +94,9 @@ public sealed class PlayerController : MonoBehaviour
             OnInteractPerformed;
     }
 
-    private void OnEnable()
-    {
-        inputActions.Enable();
-    }
-
     private void OnDisable()
     {
-        inputActions.Disable();
+        inputActions.Player.Disable();
 
         inputActions.Player.Move.performed -=
             OnMovePerformed;
@@ -117,6 +115,30 @@ public sealed class PlayerController : MonoBehaviour
         moveInput = Vector2.zero;
         moveDirection = Vector3.zero;
         dashPressed = false;
+    }
+
+    public void SetGameplayInputEnabled(
+    bool enabled)
+    {
+        if (inputActions == null)
+        {
+            return;
+        }
+
+        if (enabled)
+            inputActions.Player.Enable();
+        else
+            inputActions.Player.Disable();
+
+        if (!enabled)
+        {
+            moveInput = Vector2.zero;
+            moveDirection = Vector3.zero;
+            dashPressed = false;
+
+            if (isDashing)
+                StopDash();
+        }
     }
 
     private void Start()
@@ -156,7 +178,7 @@ public sealed class PlayerController : MonoBehaviour
     // =========================================================
 
     private void OnMovePerformed(
-        InputAction.CallbackContext context)
+    InputAction.CallbackContext context)
     {
         moveInput =
             context.ReadValue<Vector2>();
@@ -169,7 +191,7 @@ public sealed class PlayerController : MonoBehaviour
     }
 
     private void OnDashPerformed(
-        InputAction.CallbackContext context)
+    InputAction.CallbackContext context)
     {
         dashPressed = true;
     }
@@ -465,10 +487,6 @@ public sealed class PlayerController : MonoBehaviour
         if (mainCamera == null)
         {
             cameraTransform = null;
-
-            Debug.LogError(
-                "PlayerController could not find the Main Camera.",
-                this);
 
             return;
         }

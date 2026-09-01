@@ -1,15 +1,19 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Chaosbound.Core.Composition;
+using Chaosbound.Core.GameFlow;
 
 public class PlayerStatsDebugTest : MonoBehaviour
-{    private PlayerExperienceSystem experience;
+{
+    private PlayerExperienceSystem experience;
 
-    void Awake()
+    private void Awake()
     {
-        experience = GetComponent<PlayerExperienceSystem>();
+        experience =
+            GetComponent<PlayerExperienceSystem>();
     }
 
-    void Update()
+    private void Update()
     {
         if (Keyboard.current.lKey.wasPressedThisFrame)
         {
@@ -18,7 +22,41 @@ public class PlayerStatsDebugTest : MonoBehaviour
 
         if (Keyboard.current.kKey.wasPressedThisFrame)
         {
-            GameStateManager.Instance.SetState(GameState.LevelUp);
+            BootstrapContext context =
+                BootstrapContext.Current;
+
+            if (context != null &&
+                context.GameFlow != null)
+            {
+                context.GameFlow.Request(
+                    GameFlowContext.Confirmation);
+            }
+        }
+
+        if (Keyboard.current.pKey.wasPressedThisFrame)
+        {
+            BootstrapContext context =
+                BootstrapContext.Current;
+
+            if (context != null &&
+                context.GameFlow != null)
+            {
+                context.GameFlow.Request(
+                    GameFlowContext.Pause);
+            }
+        }
+
+        if (Keyboard.current.oKey.wasPressedThisFrame)
+        {
+            BootstrapContext context =
+                BootstrapContext.Current;
+
+            if (context != null &&
+                context.GameFlow != null)
+            {
+                context.GameFlow.Pop(
+                    GameFlowContext.Pause);
+            }
         }
     }
 }

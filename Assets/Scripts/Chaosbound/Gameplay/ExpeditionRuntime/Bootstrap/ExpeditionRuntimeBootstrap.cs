@@ -4,6 +4,8 @@ using Chaosbound.Gameplay.ExpeditionRuntime.Director;
 using Chaosbound.Gameplay.ExpeditionRuntime.Pipeline;
 using Chaosbound.Gameplay.Spawn.Bootstrap;
 using Chaosbound.Gameplay.Spawn.Runtime;
+using Chaosbound.Core.GameFlow;
+using Chaosbound.Gameplay.ExpeditionRuntime.Exit;
 using System;
 
 namespace Chaosbound.Gameplay.ExpeditionRuntime.Bootstrap
@@ -77,6 +79,24 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Bootstrap
 
             return factory.Create(
                 spawnRuntime);
+        }
+
+        public ExpeditionExitService BuildExitService(
+            ExpeditionDirector expeditionDirector,
+            GameFlow gameFlow)
+        {
+            if (expeditionDirector == null)
+                throw new ArgumentNullException(
+                    nameof(expeditionDirector));
+
+            if (gameFlow == null)
+                throw new ArgumentNullException(
+                    nameof(gameFlow));
+
+            return new ExpeditionExitService(
+                expeditionDirector,
+                gameFlow,
+                sceneTransitionService);
         }
     }
 }

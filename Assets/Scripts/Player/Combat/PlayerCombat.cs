@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Chaosbound.Core.Composition;
+using System.Collections.Generic;
 using UnityEngine;
 
 public sealed class PlayerCombat : MonoBehaviour
@@ -85,14 +86,17 @@ public sealed class PlayerCombat : MonoBehaviour
 
     private bool CanProcessCombat()
     {
-        if (GameStateManager.Instance == null)
-            return false;
+        BootstrapContext context =
+            BootstrapContext.Current;
 
-        if (GameStateManager.Instance.CurrentState !=
-            GameState.Playing)
+        if (context == null ||
+            context.GameFlow == null)
         {
             return false;
         }
+
+        if (!context.GameFlow.CanRunGameplay)
+            return false;
 
         if (controller != null &&
             controller.IsDashing)

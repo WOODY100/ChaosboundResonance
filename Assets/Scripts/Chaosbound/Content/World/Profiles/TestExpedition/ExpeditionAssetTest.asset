@@ -39,14 +39,14 @@ MonoBehaviour:
       m_TargetProgression:
         m_Profile: {fileID: 11400000, guid: a6d178e8c653a1c4fb1077d8c043eab9, type: 2}
       m_Tactics:
-      - m_MaximumTarget: 4
+      - m_MaximumTarget: 30
         m_Melee:
-          m_Percentage: 0.5
+          m_Percentage: 1
           m_NormalPercentage: 0.7
           m_RunnerPercentage: 0.2
           m_TankPercentage: 0.1
         m_Ranged:
-          m_Percentage: 0.5
+          m_Percentage: 0
           m_NormalPercentage: 1
           m_RunnerPercentage: 0
           m_TankPercentage: 0
@@ -72,7 +72,7 @@ MonoBehaviour:
           m_ContentId: boss.start
       m_FixedTimeRules:
       - m_EventId: boss
-        m_TimeSeconds: 15
+        m_TimeSeconds: 600
       m_DistributedRules:
       - m_EventIds:
         - dynamic
@@ -80,7 +80,7 @@ MonoBehaviour:
         m_EndTimeType: 1
         m_EndTimeSeconds: 0
       m_CompletionTarget:
-        m_TimeSeconds: 15
+        m_TimeSeconds: 600
     m_expeditionEvents:
       content: []
     m_miniBosses:

@@ -1,5 +1,6 @@
-using UnityEngine;
+using Chaosbound.Core.Composition;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class PlayerSkillExecutorSystem : MonoBehaviour
 {
@@ -35,10 +36,16 @@ public class PlayerSkillExecutorSystem : MonoBehaviour
 
     void Update()
     {
-        if (GameStateManager.Instance == null)
-            return;
+        BootstrapContext context =
+            BootstrapContext.Current;
 
-        if (GameStateManager.Instance.CurrentState != GameState.Playing)
+        if (context == null ||
+            context.GameFlow == null)
+        {
+            return;
+        }
+
+        if (!context.GameFlow.CanRunGameplay)
             return;
 
         float delta = Time.deltaTime;

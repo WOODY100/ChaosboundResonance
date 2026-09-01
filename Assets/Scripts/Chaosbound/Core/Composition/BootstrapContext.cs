@@ -1,3 +1,5 @@
+using Chaosbound.Core.GameFlow;
+using GameFlowService = Chaosbound.Core.GameFlow.GameFlow;
 using Chaosbound.Core.Runtime.SceneManagement;
 using Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Config;
 using Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Markers;
@@ -22,8 +24,18 @@ namespace Chaosbound.Core.Composition
         [SerializeField] private RunManager runManager;
         [SerializeField] private PoolManager poolManager;
         [SerializeField] private EnemyManager enemyManager;
-        [SerializeField] private GameStateManager gameStateManager;
         [SerializeField] private LevelUpManager levelUpManager;
+
+        //==========================================================
+        // Game Flow
+        //==========================================================
+
+        [Header("Game Flow")]
+
+        [SerializeField]
+        private GameFlowConfiguration gameFlowConfiguration;
+
+        private GameFlowService gameFlow;
 
         //==========================================================
         // HUD
@@ -83,9 +95,10 @@ namespace Chaosbound.Core.Composition
         public RunManager RunManager => runManager;
         public PoolManager PoolManager => poolManager;
         public EnemyManager EnemyManager => enemyManager;
-        public GameStateManager GameStateManager => gameStateManager;
         public LevelUpManager LevelUpManager => levelUpManager;
         public SceneTransitionService SceneTransitionService => sceneTransitionService;
+
+        public GameFlowService GameFlow => gameFlow;
 
         public HUDController HUDController => hudController;
         public HUDXPBarUI HUDXPBarUI => hudXPBarUI;
@@ -129,6 +142,9 @@ namespace Chaosbound.Core.Composition
 
             sceneTransitionService =
                 new SceneTransitionService();
+
+            CreateGameFlow();
+            InitializeGameFlow();
         }
 
         private void OnDestroy()
@@ -152,6 +168,37 @@ namespace Chaosbound.Core.Composition
             }
 
             Current = this;
+        }
+
+        private void CreateGameFlow()
+        {
+            if (gameFlowConfiguration == null)
+            {
+                throw new InvalidOperationException(
+                    $"{nameof(BootstrapContext)} requires a " +
+                    $"{nameof(GameFlowConfiguration)}.");
+            }
+
+            GameFlowSimulationController
+                simulationController =
+                    new GameFlowSimulationController();
+
+            gameFlow =
+                new GameFlowService(
+                    gameFlowConfiguration,
+                    simulationController);
+        }
+
+        public void InitializeGameFlow()
+        {
+            if (gameFlow == null)
+            {
+                throw new InvalidOperationException(
+                    $"{nameof(BootstrapContext)} GameFlow " +
+                    "has not been created.");
+            }
+
+            gameFlow.Initialize();
         }
 
 #if UNITY_EDITOR
@@ -180,12 +227,13 @@ namespace Chaosbound.Core.Composition
                 nameof(enemyManager));
 
             ValidateReference(
-                gameStateManager,
-                nameof(gameStateManager));
-
-            ValidateReference(
                 levelUpManager,
                 nameof(levelUpManager));
+
+            // Game Flow
+            ValidateReference(
+                gameFlowConfiguration,
+                nameof(gameFlowConfiguration));
 
             // HUD
             ValidateReference(

@@ -1,9 +1,11 @@
 using Chaosbound.Content.Expeditions.Runtime.Configs;
+using Chaosbound.Core.Composition;
+using Chaosbound.Core.GameFlow;
+using Chaosbound.Core.Runtime.SceneManagement;
 using Chaosbound.Gameplay.ExpeditionRuntime.Bootstrap;
 using Chaosbound.Gameplay.ExpeditionRuntime.Director;
+using Chaosbound.Gameplay.ExpeditionRuntime.Exit;
 using Chaosbound.Gameplay.ExpeditionRuntime.Runtime;
-using Chaosbound.Core.Composition;
-using Chaosbound.Core.Runtime.SceneManagement;
 using Chaosbound.UI.Timeline;
 using System;
 using UnityEngine;
@@ -11,8 +13,6 @@ using UnityEngine;
 public class RunManager : MonoBehaviour
 {
     public static RunManager Instance;
-
-    [SerializeField] private GameObject gameOverPanel;
 
     [SerializeField]
     private TimelineUI timelineUI;
@@ -25,13 +25,18 @@ public class RunManager : MonoBehaviour
         expeditionDirector;
 
     public ExpeditionRuntimeState ExpeditionRuntimeState =>
-    expeditionDirector != null
-        ? expeditionDirector.RuntimeState
-        : null;
+        expeditionDirector != null
+            ? expeditionDirector.RuntimeState
+            : null;
 
     private RuntimeExpeditionConfig _currentRunConfig;
 
     public RuntimeExpeditionConfig CurrentRunConfig => _currentRunConfig;
+
+    private ExpeditionExitService expeditionExitService;
+
+    public ExpeditionExitService ExpeditionExitService =>
+        expeditionExitService;
 
     private void Awake()
     {
@@ -62,6 +67,14 @@ public class RunManager : MonoBehaviour
             return;
         }
 
+        if (context.GameFlow == null)
+        {
+            Debug.LogError(
+                "GameFlow is not available.");
+
+            return;
+        }
+
         ExpeditionRuntimeBootstrap bootstrap =
             new ExpeditionRuntimeBootstrap(
                 sceneTransitionService);
@@ -69,18 +82,24 @@ public class RunManager : MonoBehaviour
         expeditionDirector =
             bootstrap.Build();
 
-        if (gameOverPanel != null)
-            gameOverPanel.SetActive(false);
+        expeditionExitService =
+            bootstrap.BuildExitService(
+                expeditionDirector,
+                context.GameFlow);
     }
 
     private void Update()
     {
-        if (GameStateManager.Instance == null)
+        BootstrapContext context =
+            BootstrapContext.Current;
+
+        if (context == null ||
+            context.GameFlow == null)
         {
             return;
         }
 
-        if (!GameStateManager.Instance.CanSimulate)
+        if (!context.GameFlow.CanSimulate)
         {
             return;
         }
@@ -106,8 +125,6 @@ public class RunManager : MonoBehaviour
 
         _currentRunConfig = config;
 
-        Time.timeScale = 1f;
-
         expeditionDirector.StartExpedition(
             config);
 
@@ -118,9 +135,6 @@ public class RunManager : MonoBehaviour
             timelineUI.SetAgenda(
                 config.Timeline.Agenda);
         }
-
-        if (gameOverPanel != null)
-            gameOverPanel.SetActive(false);
     }
 
     public void BindPlayer(PlayerHealth health)
@@ -132,51 +146,47 @@ public class RunManager : MonoBehaviour
 
         if (player != null)
             player.OnDeath += HandlePlayerDeath;
-
-        if (gameOverPanel != null)
-            gameOverPanel.SetActive(false);
     }
 
-    void HandlePlayerDeath()
+    private void HandlePlayerDeath()
     {
-        Time.timeScale = 0f;
-
-        if (gameOverPanel != null)
-            gameOverPanel.SetActive(true);
-    }
-
-    public void RestartRun()
-    {
-        Time.timeScale = 1f;
-
-        if (gameOverPanel != null)
-            gameOverPanel.SetActive(false);
-
         BootstrapContext context =
             BootstrapContext.Current;
 
         if (context == null)
         {
             Debug.LogError(
-                "BootstrapContext is not available.");
+                "BootstrapContext is not available.",
+                this);
 
             return;
         }
 
-        expeditionDirector?.AbortExpedition();
-
-        SceneTransitionService sceneTransitionService =
-            context.SceneTransitionService;
-
-        if (sceneTransitionService == null)
+        if (context.GameFlow == null)
         {
             Debug.LogError(
-                "SceneTransitionService is not available.");
+                "GameFlow is not available.",
+                this);
 
             return;
         }
 
-        sceneTransitionService.LoadScene(
-            GameScene.Expedition);
+        context.GameFlow.Replace(
+            GameFlowContext.GameOver);
+    }
+
+    public void AbandonExpedition()
+    {
+        if (expeditionExitService == null)
+        {
+            Debug.LogError(
+                "ExpeditionExitService is not available.",
+                this);
+
+            return;
+        }
+
+        expeditionExitService.Exit(
+            ExpeditionExitReason.Abandoned);
     }
 }

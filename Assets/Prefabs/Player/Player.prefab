@@ -57,6 +57,7 @@ GameObject:
   - component: {fileID: 755046934357331053}
   - component: {fileID: 1864340752066512939}
   - component: {fileID: 101089627876951994}
+  - component: {fileID: 7562626657679166679}
   m_Layer: 3
   m_Name: Player
   m_TagString: Player
@@ -191,16 +192,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c94770bcc094ed541a023f6cd1b56583, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
-  moveSpeed: 2
   rotationSpeed: 15
   dashDistance: 5
   dashDuration: 0.18
   dashCooldown: 1
   gravity: -20
-  groundCheckDistance: 1.5
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 0
 --- !u!114 &4092326677262735991
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -230,6 +226,7 @@ MonoBehaviour:
   attackRotationSpeed: 720
   autoAttackCooldown:
     baseCooldown: 1
+  baseAttackCooldown: 0.9
   enemyLayer:
     serializedVersion: 2
     m_Bits: 64
@@ -349,6 +346,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9c2b29000908be45a3c0bf34b1fd482, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInteractor
+--- !u!114 &7562626657679166679
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1545538594216743131}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b0b3b7759526b34ea9df970c2dc3ef8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Chaosbound.Core.GameFlow.GameplayInputBinding
 --- !u!1 &5831844168756715225
 GameObject:
   m_ObjectHideFlags: 0
