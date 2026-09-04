@@ -45,6 +45,13 @@ namespace Chaosbound.Core.GameFlow
                         gameplayInput: false,
                         uiInput: true);
 
+                case GameFlowContext.Evolution:
+                    return new GameFlowPolicy(
+                        simulation: false,
+                        gameplay: false,
+                        gameplayInput: false,
+                        uiInput: true);
+
                 case GameFlowContext.Inventory:
                     return new GameFlowPolicy(
                         simulation: false,
@@ -69,6 +76,13 @@ namespace Chaosbound.Core.GameFlow
                         uiInput: true);
 
                 case GameFlowContext.GameOver:
+                    return new GameFlowPolicy(
+                        simulation: false,
+                        gameplay: false,
+                        gameplayInput: false,
+                        uiInput: true);
+
+                case GameFlowContext.Result:
                     return new GameFlowPolicy(
                         simulation: false,
                         gameplay: false,

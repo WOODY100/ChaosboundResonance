@@ -21,9 +21,6 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Director
         private readonly ExpeditionCleanupPipeline
             cleanupPipeline;
 
-        private readonly SceneTransitionService
-            sceneTransitionService;
-
         private ExpeditionRuntimeContextFactory
             contextFactory;
 
@@ -33,10 +30,11 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Director
         private float
             debugTimer;
 
+        public event Action ExpeditionExitAccepted;
+
         public ExpeditionDirector(
             ExpeditionRuntimePipeline runtimePipeline,
-            ExpeditionCleanupPipeline cleanupPipeline,
-            SceneTransitionService sceneTransitionService)
+            ExpeditionCleanupPipeline cleanupPipeline)
         {
             this.runtimePipeline =
                 runtimePipeline
@@ -47,11 +45,6 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Director
                 cleanupPipeline
                 ?? throw new ArgumentNullException(
                     nameof(cleanupPipeline));
-
-            this.sceneTransitionService =
-                sceneTransitionService
-                ?? throw new ArgumentNullException(
-                    nameof(sceneTransitionService));
         }
 
         public bool IsRunning
@@ -98,31 +91,17 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Director
             runtimePipeline.Execute(
                 context);
 
-            if (runtimeState.ExitPortal.InteractionRequested)
+            if (runtimeState.ExitPortal.ExitAccepted)
             {
-                CompleteExpedition();
+                runtimeState.ExitPortal.ClearExitAccepted();
+
+                ExpeditionExitAccepted?.Invoke();
+
                 return;
             }
 
             debugTimer +=
                 UnityEngine.Time.unscaledDeltaTime;
-        }
-
-        /// <summary>
-        /// Completes the current expedition through
-        /// the Exit Portal flow.
-        /// </summary>
-        private void CompleteExpedition()
-        {
-            if (!IsRunning)
-                return;
-
-            runtimeState.ExitPortal.ClearInteractionRequest();
-
-            CleanupCurrentExpedition();
-
-            sceneTransitionService.LoadScene(
-                GameScene.Sanctuary);
         }
 
         /// <summary>

@@ -51,6 +51,7 @@ namespace Chaosbound.Content.Expeditions.Runtime.Builders
             RuntimeEnemyConfig enemy = runtimeEnemyBuilder.BuildEnemy(request.Definition.Enemy);
             RuntimeSpawnConfig spawn = BuildSpawn(request.Definition.Spawn);
             RuntimeCombatConfig combat = runtimeCombatBuilder.BuildCombat(request.Definition.Combat);
+            RuntimeSkillProgressionConfig skillProgression = new RuntimeSkillProgressionConfig(request.Definition.SkillProgression);
             RuntimeTimelineConfig timeline = BuildTimeline(request.Definition.Timeline);
             RuntimeExpeditionEventsConfig expeditionEvents = BuildExpeditionEvents(request.Definition.ExpeditionEvents);
             RuntimeMiniBossesConfig miniBosses = runtimeMiniBossesBuilder.BuildMiniBosses(request.Definition.MiniBosses);
@@ -67,6 +68,7 @@ namespace Chaosbound.Content.Expeditions.Runtime.Builders
                     enemy,
                     spawn,
                     combat,
+                    skillProgression,
                     timeline,
                     expeditionEvents,
                     miniBosses,

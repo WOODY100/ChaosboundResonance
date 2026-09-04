@@ -112,11 +112,6 @@ public sealed class PlayerHealth : MonoBehaviour
                 0f,
                 maxHealth);
 
-        Debug.Log(
-            $"[PlayerHealth] Damage: {amount} | " +
-            $"Health: {previousHealth} -> " +
-            $"{currentHealth} / {maxHealth}");
-
         OnHealthChanged?.Invoke(
             currentHealth,
             maxHealth);

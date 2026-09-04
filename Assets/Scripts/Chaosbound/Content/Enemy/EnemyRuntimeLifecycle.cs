@@ -150,6 +150,11 @@ public sealed class EnemyRuntimeLifecycle :
             .Decrement(
                 runtimeContext.Variant);
 
+        runtimeContext
+            .ExpeditionRuntime
+            .Statistics
+            .RegisterEnemyDefeated();
+
         deathRoutine =
             StartCoroutine(
                 DeathRoutine(

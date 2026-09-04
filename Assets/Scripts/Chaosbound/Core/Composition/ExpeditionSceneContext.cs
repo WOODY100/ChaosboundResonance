@@ -3,6 +3,7 @@ using Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Markers;
 using Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Rendering;
 using Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Runtime;
 using Chaosbound.Gameplay.Navigation;
+using Chaosbound.UI.ExpeditionResult;
 using Chaosbound.UI.Timeline;
 using System;
 using UnityEngine;
@@ -66,6 +67,13 @@ namespace Chaosbound.Core.Composition
 
         [SerializeField]
         private TimelineUI timelineUI;
+
+        [SerializeField]
+        private ExpeditionResultPanel expeditionResultPanel;
+
+        [SerializeField] 
+        private SkillEvolutionPanel skillEvolutionPanel;
+
 
         //==========================================================
         // Minimap
@@ -145,6 +153,12 @@ namespace Chaosbound.Core.Composition
 
         public TimelineUI TimelineUI => 
             timelineUI;
+
+        public ExpeditionResultPanel ExpeditionResultPanel =>
+            expeditionResultPanel;
+
+        public SkillEvolutionPanel SkillEvolutionPanel =>
+            skillEvolutionPanel;
 
         // Minimap
 
@@ -275,6 +289,10 @@ namespace Chaosbound.Core.Composition
             ValidateReference(
                 timelineUI,
                 nameof(timelineUI));
+
+            ValidateReference(
+                expeditionResultPanel,
+                nameof(expeditionResultPanel));
 
             // Minimap
             ValidateReference(

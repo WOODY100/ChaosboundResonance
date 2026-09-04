@@ -6,9 +6,11 @@ namespace Chaosbound.Core.GameFlow
         Pause,
         Confirmation,
         LevelUp,
+        Evolution,
         Inventory,
         Stats,
         Dialogue,
-        GameOver
+        GameOver,
+        Result
     }
 }

@@ -26,6 +26,8 @@ namespace Chaosbound.Core.Composition
         private readonly ExpeditionSceneContext sceneContext;
         private readonly BootstrapContext bootstrapContext;
 
+        private SkillEvolutionManager skillEvolutionManager;
+
         private MinimapRuntime minimapRuntime;
 
         public ExpeditionComposition(
@@ -548,10 +550,44 @@ namespace Chaosbound.Core.Composition
                     "LevelUpManager is missing.");
             }
 
+            loadout.Initialize(
+                runtimeConfig.SkillProgression);
+
             levelUpManager.Initialize(
                 xpSystem,
                 loadout,
                 stats);
+
+            skillEvolutionManager =
+                new SkillEvolutionManager(
+                    loadout,
+                    bootstrapContext.GameFlow);
+
+            skillEvolutionManager.Initialize();
+
+            SkillEvolutionPanel evolutionPanel =
+                sceneContext.SkillEvolutionPanel;
+
+            if (evolutionPanel == null)
+            {
+                throw new InvalidOperationException(
+                    "SkillEvolutionPanel is missing.");
+            }
+
+            evolutionPanel.Initialize(
+                skillEvolutionManager);
+
+            SkillBarUI skillBar =
+                sceneContext.SkillBarUI;
+
+            if (skillBar == null)
+            {
+                throw new InvalidOperationException(
+                    "SkillBarUI is missing.");
+            }
+
+            skillBar.BindEvolutionManager(
+                skillEvolutionManager);
         }
 
         private void FinalizeInitialization()
@@ -561,5 +597,11 @@ namespace Chaosbound.Core.Composition
         }
 
         #endregion
+
+        public void Cleanup()
+        {
+            skillEvolutionManager?.Cleanup();
+            skillEvolutionManager = null;
+        }
     }
 }

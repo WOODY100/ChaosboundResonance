@@ -1,5 +1,6 @@
 using Chaosbound.Content.Expeditions.Definitions.Bosses;
 using Chaosbound.Content.Expeditions.Definitions.Combat;
+using Chaosbound.Content.Expeditions.Definitions.SkillProgression;
 using Chaosbound.Content.Expeditions.Definitions.Completion;
 using Chaosbound.Content.Expeditions.Definitions.Enemy;
 using Chaosbound.Content.Expeditions.Definitions.ExpeditionEvents;
@@ -57,6 +58,11 @@ namespace Chaosbound.Content.Expeditions.Definitions
         public CombatDefinition Combat { get; }
 
         /// <summary>
+        /// Gets the skill progression configuration.
+        /// </summary>
+        public SkillProgressionDefinition SkillProgression { get; }
+
+        /// <summary>
         /// Gets the timeline configuration.
         /// </summary>
         public TimelineContent Timeline { get; }
@@ -99,6 +105,7 @@ namespace Chaosbound.Content.Expeditions.Definitions
             EnemyDefinition enemy,
             SpawnDefinition spawn,
             CombatDefinition combat,
+            SkillProgressionDefinition skillProgression,
             TimelineContent timeline,
             ExpeditionEventsDefinition expeditionEvents,
             MiniBossesDefinition miniBosses,
@@ -128,6 +135,9 @@ namespace Chaosbound.Content.Expeditions.Definitions
             if (combat == null)
                 throw new ArgumentNullException(nameof(combat));
 
+            if (skillProgression == null)
+                throw new ArgumentNullException(nameof(skillProgression));
+
             if (timeline == null)
                 throw new ArgumentNullException(nameof(timeline));
 
@@ -156,6 +166,7 @@ namespace Chaosbound.Content.Expeditions.Definitions
             Enemy = enemy;
             Spawn = spawn;
             Combat = combat;
+            SkillProgression = skillProgression;
             Timeline = timeline;
             ExpeditionEvents = expeditionEvents;
             MiniBosses = miniBosses;

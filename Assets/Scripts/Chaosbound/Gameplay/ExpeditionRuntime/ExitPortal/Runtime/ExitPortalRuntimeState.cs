@@ -1,49 +1,26 @@
 namespace Chaosbound.Gameplay.ExpeditionRuntime.ExitPortal.Runtime
 {
-    /// <summary>
-    /// Mutable runtime state owned by the Exit Portal Domain.
-    /// </summary>
     public sealed class ExitPortalRuntimeState
     {
-        /// <summary>
-        /// Gets the current lifecycle state of the
-        /// Exit Portal Domain.
-        /// </summary>
-        public ExitPortalDomainState State
-        {
-            get;
-            private set;
-        }
+        public ExitPortalDomainState State { get; private set; }
+
+        public bool InteractionRequested { get; private set; }
+
+        public bool ExitAccepted { get; private set; }
 
         public ExitPortalRuntimeState()
         {
-            State =
-                ExitPortalDomainState.Inactive;
+            State = ExitPortalDomainState.Inactive;
         }
 
-        public bool InteractionRequested
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Activates the Exit Portal Domain for
-        /// the current expedition.
-        /// </summary>
         public void Start()
         {
-            State =
-                ExitPortalDomainState.Waiting;
+            State = ExitPortalDomainState.Waiting;
         }
 
-        /// <summary>
-        /// Marks the Exit Portal as spawned.
-        /// </summary>
         public void MarkSpawned()
         {
-            State =
-                ExitPortalDomainState.Spawned;
+            State = ExitPortalDomainState.Spawned;
         }
 
         public void RequestInteraction()
@@ -54,6 +31,16 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.ExitPortal.Runtime
         public void ClearInteractionRequest()
         {
             InteractionRequested = false;
+        }
+
+        public void MarkExitAccepted()
+        {
+            ExitAccepted = true;
+        }
+
+        public void ClearExitAccepted()
+        {
+            ExitAccepted = false;
         }
     }
 }

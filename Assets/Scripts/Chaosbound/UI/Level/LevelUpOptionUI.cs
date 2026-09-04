@@ -119,9 +119,6 @@ public class LevelUpOptionUI : MonoBehaviour,
             if (effect.SkillModifier != null)
                 return effect.SkillModifier.Icon;
 
-            if (effect.SkillEvolution != null)
-                return effect.SkillEvolution.Icon;
-
             if (effect.GlobalDefinition != null)
                 return effect.GlobalDefinition.Icon;
         }
@@ -138,9 +135,6 @@ public class LevelUpOptionUI : MonoBehaviour,
         {
             if (effect.SkillModifier != null)
                 return effect.SkillModifier.DisplayName;
-
-            if (effect.SkillEvolution != null)
-                return effect.SkillEvolution.DisplayName;
 
             if (effect.GlobalDefinition != null)
                 return effect.GlobalDefinition.DisplayName;
@@ -159,9 +153,6 @@ public class LevelUpOptionUI : MonoBehaviour,
             if (effect.SkillModifier != null)
                 return effect.SkillModifier.Description;
 
-            if (effect.SkillEvolution != null)
-                return effect.SkillEvolution.Description;
-
             if (effect.GlobalDefinition != null)
                 return effect.GlobalDefinition.Description;
         }
@@ -178,9 +169,6 @@ public class LevelUpOptionUI : MonoBehaviour,
         {
             if (effect.SkillModifier != null)
                 return effect.SkillModifier.Rarity;
-
-            if (effect.SkillEvolution != null)
-                return effect.SkillEvolution.Rarity;
 
             if (effect.GlobalDefinition != null)
                 return effect.GlobalDefinition.Rarity;

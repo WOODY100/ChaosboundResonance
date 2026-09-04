@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using TMPro;
+using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Collections;
@@ -16,14 +17,14 @@ public class SkillSlotUI : MonoBehaviour,
     [SerializeField] private Image cooldownOverlay;
     [SerializeField] private GameObject frameNormal;
     [SerializeField] private GameObject frameReplace;
-    [SerializeField] private GameObject evolutionsContainer;
-    [SerializeField] private GameObject[] evolutionSlots; // Evolution_0,1,2
-    [SerializeField] private Image[] evolutionIcons;      // solo los Icon
+    [SerializeField] private TMP_Text levelText;
+    
     [Header("Rune FX")]
     [SerializeField] private float rotationSpeed = 15f;
     [SerializeField] private float breatheSpeed = 1.5f;
     [SerializeField] private float minAlpha = 0.55f;
     [SerializeField] private float maxAlpha = 0.8f;
+    
     [Header("Hover & Swap FX")]
     [SerializeField] private float hoverScale = 1.1f;
     [SerializeField] private float hoverSpeed = 10f;
@@ -50,12 +51,11 @@ public class SkillSlotUI : MonoBehaviour,
         levelUpManager = FindFirstObjectByType<LevelUpManager>();
         DisableReplaceMode();
 
-        // 🔥 Ocultar evoluciones al iniciar
-        if (evolutionsContainer != null)
-            evolutionsContainer.SetActive(false);
-
         if (emptyIcon != null)
             emptyIcon.SetActive(true);
+
+        if (levelText != null)
+            levelText.gameObject.SetActive(false);
 
         if (flashImage != null)
         {
@@ -69,7 +69,7 @@ public class SkillSlotUI : MonoBehaviour,
         if (currentSkill != null)
         {
             currentSkill.OnCooldownFinished -= HandleCooldownFinished;
-            currentSkill.OnEvolutionApplied -= HandleEvolutionApplied;
+            currentSkill.OnLevelChanged -= HandleLevelChanged;
         }
 
     }
@@ -123,7 +123,7 @@ public class SkillSlotUI : MonoBehaviour,
         if (currentSkill != null)
         {
             currentSkill.OnCooldownFinished -= HandleCooldownFinished;
-            currentSkill.OnEvolutionApplied -= HandleEvolutionApplied;
+            currentSkill.OnLevelChanged -= HandleLevelChanged;
         }
 
         currentSkill = skill;
@@ -145,7 +145,7 @@ public class SkillSlotUI : MonoBehaviour,
             if (runeImage != null)
                 runeImage.color = Color.white;
 
-            RefreshEvolutionsUI();
+            RefreshLevelUI();
             return;
         }
 
@@ -161,10 +161,10 @@ public class SkillSlotUI : MonoBehaviour,
 
         // Suscribirse eventos
         currentSkill.OnCooldownFinished += HandleCooldownFinished;
-        currentSkill.OnEvolutionApplied += HandleEvolutionApplied;
+        currentSkill.OnLevelChanged += HandleLevelChanged;
 
+        RefreshLevelUI();
         DisableReplaceMode();
-        RefreshEvolutionsUI();
     }
 
     public void EnableReplaceMode()
@@ -326,44 +326,24 @@ public class SkillSlotUI : MonoBehaviour,
         PlayPulse();
     }
 
-    private void RefreshEvolutionsUI()
+    private void HandleLevelChanged(RuntimeSkill skill)
     {
-        if (evolutionsContainer == null)
+        RefreshLevelUI();
+    }
+
+    private void RefreshLevelUI()
+    {
+        if (levelText == null)
             return;
 
         if (currentSkill == null)
         {
-            evolutionsContainer.SetActive(false);
+            levelText.gameObject.SetActive(false);
             return;
         }
 
-        var evolutions = currentSkill.Evolutions;
-
-        if (evolutions == null || evolutions.Count == 0)
-        {
-            evolutionsContainer.SetActive(false);
-            return;
-        }
-
-        evolutionsContainer.SetActive(true);
-
-        for (int i = 0; i < evolutionSlots.Length; i++)
-        {
-            if (i < evolutions.Count)
-            {
-                evolutionSlots[i].SetActive(true);
-                evolutionIcons[i].sprite = evolutions[i].Icon;
-            }
-            else
-            {
-                evolutionSlots[i].SetActive(false);
-            }
-        }
-    }
-
-    private void HandleEvolutionApplied(RuntimeSkill skill)
-    {
-        RefreshEvolutionsUI();
+        levelText.gameObject.SetActive(true);
+        levelText.text = $"Lv. {currentSkill.Level}";
     }
 
     private void UpdateRuneFX()

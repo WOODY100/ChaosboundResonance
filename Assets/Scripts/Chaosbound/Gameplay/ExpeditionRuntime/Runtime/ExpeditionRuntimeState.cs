@@ -8,6 +8,7 @@ using Chaosbound.Gameplay.ExpeditionRuntime.Interactions;
 using Chaosbound.Gameplay.ExpeditionRuntime.Modifiers;
 using Chaosbound.Gameplay.ExpeditionRuntime.References.Contracts;
 using Chaosbound.Gameplay.ExpeditionRuntime.References.Runtime;
+using Chaosbound.Gameplay.ExpeditionRuntime.Statistics;
 using Chaosbound.Gameplay.ExpeditionRuntime.XP.Runtime;
 using Chaosbound.Gameplay.MiniBosses;
 using Chaosbound.Gameplay.Timeline;
@@ -69,11 +70,18 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Runtime
             xpFragments =
                 new XPFragmentRuntimeState();
 
+        private readonly ExpeditionRuntimeStatistics
+            statistics =
+                new ExpeditionRuntimeStatistics();
+
         public CombatRuntimeComposition RuntimeComposition =>
             runtimeComposition;
 
         public ExpeditionModifierState Modifiers =>
             modifierState;
+
+        public ExpeditionRuntimeStatistics Statistics =>
+            statistics;
 
         /// <summary>
         /// Gets the runtime usage state of one-use

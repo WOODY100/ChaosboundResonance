@@ -1,3 +1,4 @@
+using Chaosbound.Content.Expeditions.Runtime.Configs;
 using UnityEngine;
 using System;
 
@@ -7,7 +8,30 @@ public class PlayerSkillLoadout : MonoBehaviour
 
     private RuntimeSkill[] skillSlots = new RuntimeSkill[MaxSlots];
 
+    private RuntimeSkillProgressionConfig skillProgressionConfig;
+
+    private bool isInitialized;
+
     public event Action OnLoadoutChanged;
+
+    // ===============================
+    // INICIALIZACIÓN
+    // ===============================
+
+    public void Initialize(
+        RuntimeSkillProgressionConfig progressionConfig)
+    {
+        if (progressionConfig == null)
+            throw new ArgumentNullException(
+                nameof(progressionConfig));
+
+        if (isInitialized)
+            throw new InvalidOperationException(
+                "PlayerSkillLoadout has already been initialized.");
+
+        skillProgressionConfig = progressionConfig;
+        isInitialized = true;
+    }
 
     // ===============================
     // CONSULTAS
@@ -54,12 +78,19 @@ public class PlayerSkillLoadout : MonoBehaviour
 
     public bool AssignSkill(SkillDefinition definition)
     {
+        if (!isInitialized)
+            throw new InvalidOperationException(
+                "PlayerSkillLoadout must be initialized before assigning skills.");
+
         int index = GetFirstFreeSlotIndex();
 
         if (index == -1)
             return false;
 
-        skillSlots[index] = new RuntimeSkill(definition);
+        skillSlots[index] =
+            new RuntimeSkill(
+                definition,
+                skillProgressionConfig);
 
         OnLoadoutChanged?.Invoke();
         return true;
@@ -71,12 +102,42 @@ public class PlayerSkillLoadout : MonoBehaviour
 
     public void ReplaceSkill(int slotIndex, SkillDefinition newDefinition)
     {
+        if (!isInitialized)
+            throw new InvalidOperationException(
+                "PlayerSkillLoadout must be initialized before replacing skills.");
+
         if (slotIndex < 0 || slotIndex >= MaxSlots)
             return;
 
-        skillSlots[slotIndex] = new RuntimeSkill(newDefinition);
+        skillSlots[slotIndex] =
+            new RuntimeSkill(
+                newDefinition,
+                skillProgressionConfig);
 
         OnLoadoutChanged?.Invoke();
+    }
+
+    public bool ReplaceSkill(
+    int slotIndex,
+    RuntimeSkill runtimeSkill)
+    {
+        if (!isInitialized)
+            return false;
+
+        if (runtimeSkill == null)
+            return false;
+
+        if (slotIndex < 0 || slotIndex >= MaxSlots)
+            return false;
+
+        if (skillSlots[slotIndex] == null)
+            return false;
+
+        skillSlots[slotIndex] = runtimeSkill;
+
+        OnLoadoutChanged?.Invoke();
+
+        return true;
     }
 
     // ===============================

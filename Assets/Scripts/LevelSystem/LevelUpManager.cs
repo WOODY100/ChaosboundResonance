@@ -302,17 +302,6 @@ public class LevelUpManager : MonoBehaviour
 
                 break;
 
-            case UpgradeEffectType.SkillEvolution:
-
-                RuntimeSkill evoSkill =
-                    loadout.GetSkill(
-                        effect.TargetSlotIndex);
-
-                evoSkill?.ApplyEvolution(
-                    effect.SkillEvolution);
-
-                break;
-
             case UpgradeEffectType.GlobalModifier:
 
                 ApplyGlobalModifier(

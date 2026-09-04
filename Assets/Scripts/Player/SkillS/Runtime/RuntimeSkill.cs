@@ -1,18 +1,27 @@
-﻿using System;
+﻿using Chaosbound.Content.Expeditions.Runtime.Configs;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class RuntimeSkill
 {
     public SkillDefinition Definition { get; private set; }
 
+    public int Level { get; private set; }
+
     public float CurrentCooldown { get; private set; }
+
     public float CooldownDuration { get; private set; }
 
     public bool IsOnCooldown => CurrentCooldown > 0f;
+
     public int ModifierCount => appliedModifiers.Count;
+
     public bool HasModifiers => appliedModifiers.Count > 0;
-    public bool HasEvolutions => appliedEvolutions.Count > 0;
+
+    public bool IsAtMaxLevel =>
+        Level >= progressionConfig.MaxSkillLevel;
 
     public float CooldownNormalized =>
         CooldownDuration <= 0f
@@ -20,25 +29,41 @@ public class RuntimeSkill
             : CurrentCooldown / CooldownDuration;
 
     private readonly List<SkillModifierDefinition> appliedModifiers = new();
-    private readonly List<SkillEvolutionDefinition> appliedEvolutions = new();
+
+    private readonly HashSet<SkillModifierDefinition> modifierHistory = new();
+
+    private readonly RuntimeSkillProgressionConfig progressionConfig;
 
     private SkillStats stats;
 
+    private bool evolutionPending;
+
+    public bool CanEvolve =>
+        Level >= progressionConfig.EvolutionRequiredLevel &&
+        Definition.HasEvolutions;
+
+    public bool IsEvolutionPending => evolutionPending;
+
     public SkillStats Stats => stats;
 
-    public event System.Action<RuntimeSkill> OnCooldownFinished;
-    public event System.Action<RuntimeSkill> OnEvolutionApplied;
+    public IReadOnlyList<SkillModifierDefinition> Modifiers =>
+        appliedModifiers;
 
-    public IReadOnlyList<SkillModifierDefinition> Modifiers => appliedModifiers;
-    public IReadOnlyList<SkillEvolutionDefinition> Evolutions => appliedEvolutions;
+    public event Action<RuntimeSkill> OnCooldownFinished;
 
-    // ===============================
-    // CONSTRUCTOR
-    // ===============================
+    public event Action<RuntimeSkill> OnLevelChanged;
 
-    public RuntimeSkill(SkillDefinition definition)
+    public RuntimeSkill(
+        SkillDefinition definition,
+        RuntimeSkillProgressionConfig progressionConfig)
     {
-        Definition = definition ?? throw new ArgumentNullException(nameof(definition));
+        Definition =
+            definition ?? throw new ArgumentNullException(nameof(definition));
+
+        this.progressionConfig =
+            progressionConfig ?? throw new ArgumentNullException(nameof(progressionConfig));
+
+        Level = 1;
 
         stats = new SkillStats
         {
@@ -48,101 +73,200 @@ public class RuntimeSkill
             BaseImpactRadius = definition.BaseImpactRadius,
             BaseRange = definition.BaseRange,
             BaseDuration = definition.BaseDuration,
+            BaseTickRate = definition.BaseTickRate,
             BaseCount = definition.BaseCount
         };
 
         RecalculateStats();
+
+        CooldownDuration = stats.FinalCooldown;
+        CurrentCooldown = 0f;
     }
 
-    // ===============================
-    // APPLY MODIFIER
-    // ===============================
+    // =========================================================
+    // MODIFIERS
+    // =========================================================
 
-    public void ApplyModifier(SkillModifierDefinition modifier)
+    public bool CanApplyModifier(SkillModifierDefinition modifier)
     {
+        if (modifier == null)
+            return false;
+
+        if (IsAtMaxLevel)
+            return false;
+
+        if (!modifier.IsStackable &&
+            modifierHistory.Contains(modifier))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    public bool ApplyModifier(SkillModifierDefinition modifier)
+    {
+        if (!CanApplyModifier(modifier))
+            return false;
+
         appliedModifiers.Add(modifier);
 
+        modifierHistory.Add(modifier);
+
         RecalculateStats();
+
+        Level++;
+
+        OnLevelChanged?.Invoke(this);
+
+        return true;
     }
 
-    // ===============================
-    // APPLY EVOLUTION
-    // ===============================
+    // =========================================================
+    // EVOLUTION TRANSFER
+    // =========================================================
 
-    public void ApplyEvolution(SkillEvolutionDefinition evolution)
+    public SkillEvolutionTransferPreview BuildEvolutionTransferPreview(
+        SkillDefinition resultingDefinition)
     {
-        if (appliedEvolutions.Contains(evolution))
+        if (resultingDefinition == null)
+            throw new ArgumentNullException(nameof(resultingDefinition));
+
+        List<SkillModifierDefinition> retained = new();
+        List<SkillModifierDefinition> dropped = new();
+
+        foreach (SkillModifierDefinition modifier in appliedModifiers)
+        {
+            if (resultingDefinition.PossibleModifiers.Contains(modifier))
+                retained.Add(modifier);
+            else
+                dropped.Add(modifier);
+        }
+
+        return new SkillEvolutionTransferPreview(
+            retained,
+            dropped);
+    }
+
+    public RuntimeSkill CreateEvolvedSkill(
+        SkillDefinition resultingDefinition)
+    {
+        if (resultingDefinition == null)
+            throw new ArgumentNullException(nameof(resultingDefinition));
+
+        SkillEvolutionTransferPreview preview =
+            BuildEvolutionTransferPreview(resultingDefinition);
+
+        RuntimeSkill evolvedSkill =
+            new RuntimeSkill(
+                resultingDefinition,
+                progressionConfig);
+
+        evolvedSkill.appliedModifiers.Clear();
+
+        foreach (SkillModifierDefinition modifier in preview.RetainedModifiers)
+        {
+            evolvedSkill.appliedModifiers.Add(modifier);
+        }
+
+        foreach (SkillModifierDefinition modifier in modifierHistory)
+        {
+            evolvedSkill.modifierHistory.Add(modifier);
+        }
+
+        evolvedSkill.RecalculateStats();
+
+        evolvedSkill.CooldownDuration =
+            evolvedSkill.stats.FinalCooldown;
+
+        // Evolution explicitly starts ready.
+        evolvedSkill.CurrentCooldown = 0f;
+
+        return evolvedSkill;
+    }
+
+    // =========================================================
+    // EVOLUTION PENDING
+    // =========================================================
+
+    public void MarkEvolutionPending()
+    {
+        if (!CanEvolve)
             return;
 
-        appliedEvolutions.Add(evolution);
-
-        RecalculateStats();
-
-        OnEvolutionApplied?.Invoke(this);
+        evolutionPending = true;
     }
 
-    // ===============================
-    // RECALCULATION
-    // ===============================
+    public void ClearEvolutionPending()
+    {
+        evolutionPending = false;
+    }
+
+    // =========================================================
+    // COOLDOWN
+    // =========================================================
+
+    public void StartCooldown(float duration)
+    {
+        duration = Mathf.Max(0f, duration);
+
+        CooldownDuration = duration;
+        CurrentCooldown = duration;
+    }
+
+    public void TickCooldown(float deltaTime)
+    {
+        if (CurrentCooldown <= 0f)
+            return;
+
+        CurrentCooldown =
+            Mathf.Max(
+                0f,
+                CurrentCooldown - deltaTime);
+
+        if (CurrentCooldown == 0f)
+            OnCooldownFinished?.Invoke(this);
+    }
+
+    // =========================================================
+    // STATS
+    // =========================================================
 
     private void RecalculateStats()
     {
         ResetStats();
 
-        // =========================
-        // APPLY MODIFIERS
-        // =========================
-        foreach (var mod in appliedModifiers)
+        foreach (SkillModifierDefinition modifier in appliedModifiers)
         {
-            ApplyModifierToStatsFlexible(mod);
+            ApplyModifierToStatsFlexible(modifier);
         }
 
-        // =========================
-        // APPLY EVOLUTIONS
-        // =========================
-        foreach (var evo in appliedEvolutions)
-        {
-            ApplyEvolutionToStats(evo);
-        }
-
-        // =========================
-        // FINAL CALCULATION
-        // =========================
         stats.Calculate();
     }
 
     private void ResetStats()
     {
-        // =========================
-        // RESET BASE VALUES
-        // =========================
         stats.BaseDamage = Definition.BaseDamage;
         stats.BaseCooldown = Definition.BaseCooldown;
         stats.BaseSpawnRadius = Definition.BaseSpawnRadius;
         stats.BaseImpactRadius = Definition.BaseImpactRadius;
         stats.BaseRange = Definition.BaseRange;
         stats.BaseDuration = Definition.BaseDuration;
+        stats.BaseTickRate = Definition.BaseTickRate;
         stats.BaseCount = Definition.BaseCount;
 
-        // =========================
-        // RESET DAMAGE LAYERS
-        // =========================
         stats.FlatDamage = 0f;
         stats.PercentDamage = 0f;
         stats.FinalDamageMultiplier = 1f;
+
         stats.CriticalChance = 0f;
         stats.CriticalMultiplier = 1f;
+
         stats.PercentTickRate = 0f;
 
-        // =========================
-        // RESET COOLDOWN
-        // =========================
         stats.FlatCooldownReduction = 0f;
         stats.PercentCooldownReduction = 0f;
 
-        // =========================
-        // RESET AREA / COVERAGE
-        // =========================
         stats.PercentSpawnRadius = 0f;
         stats.PercentImpactRadius = 0f;
         stats.PercentRange = 0f;
@@ -153,25 +277,41 @@ public class RuntimeSkill
         stats.BounceCount = 0;
         stats.ChainCount = 0;
 
-        // =========================
-        // RESET FLAGS
-        // =========================
         stats.GrantsExplosion = false;
         stats.GrantsChaining = false;
         stats.GrantsSplit = false;
+
         stats.SpawnZoneOnHit = false;
         stats.SpawnZoneChance = 0f;
     }
 
-    // ===============================
-    // MODIFIER LOGIC
-    // ===============================
+    private void ApplyModifierToStatsFlexible(
+        SkillModifierDefinition modifier)
+    {
+        if (modifier.Modifiers != null &&
+            modifier.Modifiers.Length > 0)
+        {
+            foreach (ModifierEntry entry in modifier.Modifiers)
+            {
+                ApplySingleModifier(
+                    entry.Type,
+                    entry.Value);
+            }
+        }
+        else
+        {
+            ApplySingleModifier(
+                modifier.ModifierType,
+                modifier.Value);
+        }
+    }
 
-    private void ApplySingleModifier(SkillModifierType type, float value)
+    private void ApplySingleModifier(
+        SkillModifierType type,
+        float value)
     {
         switch (type)
         {
-            // DAMAGE
             case SkillModifierType.FlatDamage:
                 stats.FlatDamage += value;
                 break;
@@ -188,7 +328,6 @@ public class RuntimeSkill
                 stats.CriticalMultiplier += value;
                 break;
 
-            // TEMPO
             case SkillModifierType.CooldownPercent:
                 stats.PercentCooldownReduction += value;
                 break;
@@ -197,7 +336,6 @@ public class RuntimeSkill
                 stats.PercentTickRate += value;
                 break;
 
-            // AREA
             case SkillModifierType.SpawnRadiusPercent:
                 stats.PercentSpawnRadius += value;
                 break;
@@ -226,7 +364,6 @@ public class RuntimeSkill
                 stats.ChainCount += Mathf.RoundToInt(value);
                 break;
 
-            // SPECIAL
             case SkillModifierType.SplitOnImpact:
                 stats.GrantsSplit = true;
                 break;
@@ -241,100 +378,10 @@ public class RuntimeSkill
                 break;
 
             default:
-                case SkillModifierType.ApplyPoison:
-                case SkillModifierType.ApplyBurn:
-                case SkillModifierType.ApplyShock:
+            case SkillModifierType.ApplyPoison:
+            case SkillModifierType.ApplyBurn:
+            case SkillModifierType.ApplyShock:
                 break;
-        }
-    }
-
-    // ===============================
-    // EVOLUTION LOGIC
-    // ===============================
-
-    private void ApplyEvolutionToStats(
-    SkillEvolutionDefinition evolution)
-    {
-        stats.FlatDamage +=
-            evolution.BonusFlatDamage;
-
-        stats.PercentDamage +=
-            evolution.BonusPercentDamage;
-
-        stats.PercentSpawnRadius +=
-            evolution.BonusSpawnRadiusPercent;
-
-        stats.PercentImpactRadius +=
-            evolution.BonusImpactRadiusPercent;
-
-        stats.PercentCooldownReduction +=
-            evolution.BonusCooldownPercent;
-
-        stats.PercentDuration +=
-            evolution.BonusDurationPercent;
-
-        stats.ExtraCount +=
-            evolution.BonusExtraCount;
-
-        stats.PenetrationCount +=
-            evolution.BonusPenetration;
-
-        stats.ChainCount +=
-            evolution.BonusChainCount;
-
-        if (evolution.GrantsExplosion ||
-            evolution.GrantsExplosionOnHit)
-        {
-            stats.GrantsExplosion = true;
-        }
-
-        if (evolution.GrantsSplit)
-        {
-            stats.GrantsSplit = true;
-        }
-
-        if (evolution.GrantsChaining)
-        {
-            stats.GrantsChaining = true;
-        }
-    }
-
-    // ===============================
-    // COOLDOWN MANAGEMENT
-    // ===============================
-    public void StartCooldown(float duration)
-    {
-        duration = Mathf.Max(0f, duration);
-
-        CooldownDuration = duration;
-        CurrentCooldown = duration;
-    }
-
-    public void TickCooldown(float deltaTime)
-    {
-        if (CurrentCooldown <= 0f)
-            return;
-
-        CurrentCooldown = Mathf.Max(0f, CurrentCooldown - deltaTime);
-
-        if (CurrentCooldown == 0f)
-            OnCooldownFinished?.Invoke(this);
-    }
-
-    private void ApplyModifierToStatsFlexible(SkillModifierDefinition modifier)
-    {
-        // 🔥 NUEVO SISTEMA (multi-modifier)
-        if (modifier.Modifiers != null && modifier.Modifiers.Length > 0)
-        {
-            foreach (var entry in modifier.Modifiers)
-            {
-                ApplySingleModifier(entry.Type, entry.Value);
-            }
-        }
-        else
-        {
-            // 🔹 LEGACY
-            ApplySingleModifier(modifier.ModifierType, modifier.Value);
         }
     }
 }

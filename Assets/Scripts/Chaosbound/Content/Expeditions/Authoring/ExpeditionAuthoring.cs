@@ -1,5 +1,6 @@
 using Chaosbound.Content.Expeditions.Authoring.Bosses;
 using Chaosbound.Content.Expeditions.Authoring.Combat;
+using Chaosbound.Content.Expeditions.Authoring.SkillProgression;
 using Chaosbound.Content.Expeditions.Authoring.Completion;
 using Chaosbound.Content.Expeditions.Authoring.Enemy;
 using Chaosbound.Content.Expeditions.Authoring.ExpeditionEvents;
@@ -59,6 +60,11 @@ namespace Chaosbound.Content.Expeditions.Authoring
         [SerializeField]
         private CombatAuthoring m_combat = new();
 
+        [Header("Skill Progression")]
+
+        [SerializeField]
+        private SkillProgressionAuthoring m_skillProgression = new();
+
         [Header("Timeline")]
 
         [SerializeField]
@@ -108,6 +114,8 @@ namespace Chaosbound.Content.Expeditions.Authoring
         public SpawnAuthoring Spawn => m_Spawn;
 
         public CombatAuthoring Combat => m_combat;
+
+        public SkillProgressionAuthoring SkillProgression => m_skillProgression;
 
         public TimelineAuthoring Timeline => m_Timeline;
 

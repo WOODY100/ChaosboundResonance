@@ -30,6 +30,8 @@ namespace Chaosbound.Content.Expeditions.Runtime.Configs
 
         public RuntimeCombatConfig Combat { get; }
 
+        public RuntimeSkillProgressionConfig SkillProgression { get; }
+
         public RuntimeTimelineConfig Timeline { get; }
 
         public RuntimeExpeditionEventsConfig ExpeditionEvents { get; }
@@ -50,6 +52,7 @@ namespace Chaosbound.Content.Expeditions.Runtime.Configs
             RuntimeEnemyConfig enemy,
             RuntimeSpawnConfig spawn,
             RuntimeCombatConfig combat,
+            RuntimeSkillProgressionConfig skillProgression,
             RuntimeTimelineConfig timeline,
             RuntimeExpeditionEventsConfig expeditionEvents,
             RuntimeMiniBossesConfig miniBosses,
@@ -63,6 +66,7 @@ namespace Chaosbound.Content.Expeditions.Runtime.Configs
             Enemy = enemy ?? throw new ArgumentNullException(nameof(enemy));
             Spawn = spawn ?? throw new ArgumentNullException(nameof(spawn));
             Combat = combat ?? throw new ArgumentNullException(nameof(combat));
+            SkillProgression = skillProgression ?? throw new ArgumentNullException(nameof(skillProgression));
             Timeline = timeline ?? throw new ArgumentNullException(nameof(timeline));
             ExpeditionEvents = expeditionEvents ?? throw new ArgumentNullException(nameof(expeditionEvents));
             MiniBosses = miniBosses ?? throw new ArgumentNullException(nameof(miniBosses));

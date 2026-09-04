@@ -47,8 +47,7 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Bootstrap
 
             return new ExpeditionDirector(
                 runtimePipeline,
-                cleanupPipeline,
-                sceneTransitionService);
+                cleanupPipeline);
         }
 
         private ExpeditionRuntimePipeline

@@ -19,11 +19,11 @@ MonoBehaviour:
   ExecutionPrefab: {fileID: 3005108400605144813, guid: 65f088b08ea010641be9167152f2d5c8, type: 3}
   ExecutorPrefab: {fileID: 7964401843832349356, guid: b1e424e30d61cf045bda664a45a764f9, type: 3}
   DamageType: 2
-  BaseDamage: 45
+  BaseDamage: 15
   BaseCooldown: 1.8
   BaseSpawnRadius: 0
   BaseImpactRadius: 0
-  BaseRange: 10
+  BaseRange: 8
   BaseDuration: 0
   BaseTickRate: 1
   BaseCount: 1
@@ -37,4 +37,5 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 2643cdd8d405c3343a894db0161fda05, type: 2}
   - {fileID: 11400000, guid: bc233f11ac8878347a08a1771bf36f28, type: 2}
   - {fileID: 11400000, guid: 024403476060f0048a1c8f9afc8205ee, type: 2}
-  evolutions: []
+  evolutions:
+  - {fileID: 11400000, guid: 77b6d7c38c806a1458d24467207ae060, type: 2}

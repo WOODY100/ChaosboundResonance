@@ -154,11 +154,6 @@ public class PlayerSkillExecutorSystem : MonoBehaviour
 
         DestroyExecutors();
 
-        if (loadout != null)
-        {
-            loadout.ClearAllSkills();
-        }
-
         isCleaningUp = false;
     }
 }

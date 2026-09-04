@@ -13,7 +13,7 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Cleanup.Stages
         IExpeditionCleanupStage
     {
         public void Execute(
-            ExpeditionCleanupContext context)
+    ExpeditionCleanupContext context)
         {
             if (context == null)
                 throw new ArgumentNullException(
@@ -31,10 +31,14 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Cleanup.Stages
             PlayerSkillExecutorSystem skillExecutorSystem =
                 player.GetComponent<PlayerSkillExecutorSystem>();
 
-            if (skillExecutorSystem == null)
-                return;
+            PlayerSkillLoadout skillLoadout =
+                player.GetComponent<PlayerSkillLoadout>();
 
-            skillExecutorSystem.Cleanup();
+            if (skillExecutorSystem != null)
+                skillExecutorSystem.Cleanup();
+
+            if (skillLoadout != null)
+                skillLoadout.ClearAllSkills();
         }
     }
 }

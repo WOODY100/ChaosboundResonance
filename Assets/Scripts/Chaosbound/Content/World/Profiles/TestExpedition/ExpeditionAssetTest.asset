@@ -72,7 +72,7 @@ MonoBehaviour:
           m_ContentId: boss.start
       m_FixedTimeRules:
       - m_EventId: boss
-        m_TimeSeconds: 600
+        m_TimeSeconds: 30
       m_DistributedRules:
       - m_EventIds:
         - dynamic
@@ -80,7 +80,7 @@ MonoBehaviour:
         m_EndTimeType: 1
         m_EndTimeSeconds: 0
       m_CompletionTarget:
-        m_TimeSeconds: 600
+        m_TimeSeconds: 30
     m_expeditionEvents:
       content: []
     m_miniBosses:

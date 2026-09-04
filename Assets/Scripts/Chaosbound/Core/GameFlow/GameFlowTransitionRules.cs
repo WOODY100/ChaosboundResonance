@@ -24,10 +24,32 @@ namespace Chaosbound.Core.GameFlow
                 return GameFlowTransitionDecision.Reject;
 
             //======================================================
+            // Result
+            //======================================================
+
+            if (requested == GameFlowContext.Result)
+                return GameFlowTransitionDecision.Replace;
+
+            if (current == GameFlowContext.Result)
+                return GameFlowTransitionDecision.Reject;
+
+            //======================================================
             // LevelUp
             //======================================================
 
             if (requested == GameFlowContext.LevelUp)
+            {
+                if (current == GameFlowContext.Playing)
+                    return GameFlowTransitionDecision.Push;
+
+                return GameFlowTransitionDecision.Pending;
+            }
+
+            //======================================================
+            // Evolution
+            //======================================================
+
+            if (requested == GameFlowContext.Evolution)
             {
                 if (current == GameFlowContext.Playing)
                     return GameFlowTransitionDecision.Push;

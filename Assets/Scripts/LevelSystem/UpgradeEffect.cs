@@ -11,9 +11,6 @@ public class UpgradeEffect
     // ===== Skill Modifier =====
     public SkillModifierDefinition SkillModifier;
 
-    // ===== Skill Evolution =====
-    public SkillEvolutionDefinition SkillEvolution;
-
     // ===== Global Modifier =====
     public GlobalUpgradeDefinition GlobalDefinition;
     public StatType TargetStat;
