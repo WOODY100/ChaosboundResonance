@@ -34,7 +34,7 @@ namespace Chaosbound.Gameplay.Spawn.Placement.Strategies
                 * DefaultSpawnRadius;
 
             Vector3 position =
-                context.Reference.position + offset;
+                context.SpatialOrigin.Position + offset;
 
             Quaternion rotation =
                 Quaternion.LookRotation(

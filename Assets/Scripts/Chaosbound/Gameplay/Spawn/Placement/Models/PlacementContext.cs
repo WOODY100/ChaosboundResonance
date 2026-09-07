@@ -1,5 +1,5 @@
 using System;
-using UnityEngine;
+using Chaosbound.Gameplay.Spawn.Reference.Models;
 
 namespace Chaosbound.Gameplay.Spawn.Placement.Models
 {
@@ -15,25 +15,24 @@ namespace Chaosbound.Gameplay.Spawn.Placement.Models
         public PlacementIntent Intent { get; }
 
         /// <summary>
-        /// Gets the world-space reference transform
+        /// Gets the world-space spatial origin
         /// used during placement resolution.
         /// </summary>
-        public Transform Reference { get; }
+        public SpawnSpatialOrigin SpatialOrigin { get; }
 
         /// <summary>
         /// Creates a new placement context.
         /// </summary>
         public PlacementContext(
             PlacementIntent intent,
-            Transform reference)
+            SpawnSpatialOrigin spatialOrigin)
         {
             Intent =
                 intent
                 ?? throw new ArgumentNullException(nameof(intent));
 
-            Reference =
-                reference
-                ?? throw new ArgumentNullException(nameof(reference));
+            SpatialOrigin =
+                spatialOrigin;
         }
     }
 }

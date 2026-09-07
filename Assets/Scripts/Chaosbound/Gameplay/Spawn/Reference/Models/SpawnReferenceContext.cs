@@ -17,10 +17,13 @@ namespace Chaosbound.Gameplay.Spawn.Reference.Models
 
         public ExpeditionRuntimeState ExpeditionRuntime { get; }
 
+        public SpawnSpatialOrigin? SpatialOrigin { get; }
+
         public SpawnReferenceContext(
             RuntimeSpawnConfig spawnConfig,
             RuntimeReferencesConfig references,
-            ExpeditionRuntimeState expeditionRuntime)
+            ExpeditionRuntimeState expeditionRuntime,
+            SpawnSpatialOrigin? spatialOrigin)
         {
             SpawnConfig =
                 spawnConfig
@@ -36,6 +39,9 @@ namespace Chaosbound.Gameplay.Spawn.Reference.Models
                 expeditionRuntime
                 ?? throw new ArgumentNullException(
                     nameof(expeditionRuntime));
+
+            SpatialOrigin =
+                spatialOrigin;
         }
     }
 }

@@ -134,6 +134,20 @@ namespace Chaosbound.Gameplay.Spawn.Validation
                 BuildInstantiationService());
         }
 
+        private ResourceMaterializer
+            BuildResourceMaterializer()
+        {
+            return new ResourceMaterializer(
+                BuildInstantiationService());
+        }
+
+        private ItemMaterializer
+            BuildItemMaterializer()
+        {
+            return new ItemMaterializer(
+                BuildInstantiationService());
+        }
+
         private SpawnMaterializerResolver
             BuildMaterializerResolver()
         {
@@ -141,7 +155,9 @@ namespace Chaosbound.Gameplay.Spawn.Validation
                 BuildEnemyMaterializer(),
                 BuildBossMaterializer(),
                 BuildMiniBossMaterializer(),
-                BuildExitPortalMaterializer());
+                BuildExitPortalMaterializer(),
+                BuildResourceMaterializer(),
+                BuildItemMaterializer());
         }
 
         private SpawnExecutionContextFactory
@@ -221,6 +237,12 @@ namespace Chaosbound.Gameplay.Spawn.Validation
             return new NearReferencePlacementStrategy();
         }
 
+        private AroundOriginPlacementStrategy
+            BuildAroundOriginPlacementStrategy()
+        {
+            return new AroundOriginPlacementStrategy();
+        }
+
         private IPlacementFootprintResolver
             BuildPlacementFootprintResolver()
         {
@@ -244,6 +266,7 @@ namespace Chaosbound.Gameplay.Spawn.Validation
             return new PlacementResolver(
                 BuildAroundPlayerPlacementStrategy(),
                 BuildNearReferencePlacementStrategy(),
+                BuildAroundOriginPlacementStrategy(),
                 BuildPlacementValidator());
         }
 

@@ -154,7 +154,8 @@ namespace Chaosbound.Gameplay.Spawn.Validation
                 job,
                 spawnConfig,
                 references,
-                expeditionRuntime);
+                expeditionRuntime,
+                null);
         }
     }
 }

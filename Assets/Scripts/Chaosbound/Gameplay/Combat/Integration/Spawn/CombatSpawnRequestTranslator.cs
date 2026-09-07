@@ -79,7 +79,8 @@ namespace Chaosbound.Gameplay.Combat.Integration.Spawn
             return spawnRequestFactory.Create(
                 entries,
                 runtimeSpawnConfig,
-                SpawnRequestOrigin.Combat);
+                SpawnRequestOrigin.Combat,
+                null);
         }
     }
 }

@@ -2,6 +2,7 @@ using Chaosbound.Content.Expeditions.Runtime.References;
 using Chaosbound.Content.Expeditions.Runtime.Spawn;
 using Chaosbound.Gameplay.ExpeditionRuntime.Runtime;
 using Chaosbound.Gameplay.Spawn.Domain;
+using Chaosbound.Gameplay.Spawn.Reference.Models;
 using Chaosbound.Gameplay.Spawn.Scheduling;
 using System;
 
@@ -17,7 +18,8 @@ namespace Chaosbound.Gameplay.Spawn.Factories
             SpawnJob job,
             RuntimeSpawnConfig spawnConfig,
             RuntimeReferencesConfig references,
-            ExpeditionRuntimeState expeditionRuntime)
+            ExpeditionRuntimeState expeditionRuntime,
+            SpawnSpatialOrigin? spatialOrigin)
         {
             if (job == null)
                 throw new ArgumentNullException(nameof(job));
@@ -36,7 +38,8 @@ namespace Chaosbound.Gameplay.Spawn.Factories
                 job,
                 spawnConfig,
                 references,
-                expeditionRuntime);
+                expeditionRuntime,
+                spatialOrigin);
         }
     }
 }

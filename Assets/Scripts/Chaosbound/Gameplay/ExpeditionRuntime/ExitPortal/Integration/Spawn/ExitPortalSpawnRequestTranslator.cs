@@ -79,7 +79,8 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.ExitPortal.Integration.Spawn
             return spawnRequestFactory.Create(
                 entries,
                 runtimeSpawnConfig,
-                SpawnRequestOrigin.ExitPortal);
+                SpawnRequestOrigin.ExitPortal,
+                null);
         }
     }
 }

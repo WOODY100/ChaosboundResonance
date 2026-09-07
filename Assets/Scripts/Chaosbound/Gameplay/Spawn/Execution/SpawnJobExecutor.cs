@@ -126,7 +126,8 @@ namespace Chaosbound.Gameplay.Spawn.Execution
                     referenceContextFactory.Create(
                         schedulingContext.SpawnConfig,
                         schedulingContext.References,
-                        schedulingContext.ExpeditionRuntime);
+                        schedulingContext.ExpeditionRuntime,
+                        schedulingContext.SpatialOrigin);
 
                 SpawnReferenceResult reference =
                     referenceResolver.Resolve(
@@ -137,10 +138,29 @@ namespace Chaosbound.Gameplay.Spawn.Execution
                     continue;
                 }
 
+                SpawnSpatialOrigin spatialOrigin;
+
+                if (reference.SpatialOrigin.HasValue)
+                {
+                    spatialOrigin =
+                        reference.SpatialOrigin.Value;
+                }
+                else
+                {
+                    if (reference.Reference == null)
+                    {
+                        continue;
+                    }
+
+                    spatialOrigin =
+                        new SpawnSpatialOrigin(
+                            reference.Reference.position);
+                }
+
                 PlacementContext placementContext =
                     placementContextFactory.Create(
                         placementIntent,
-                        reference.Reference);
+                        spatialOrigin);
 
                 PlacementResolution placement =
                     placementResolver.Resolve(
@@ -160,12 +180,6 @@ namespace Chaosbound.Gameplay.Spawn.Execution
                     taskExecutor.Execute(
                         resolvedTask,
                         runtimeState);
-
-                if (materializedObject != null)
-                {
-                    materializedObjects.Add(
-                        materializedObject);
-                }
 
                 if (materializedObject != null)
                 {

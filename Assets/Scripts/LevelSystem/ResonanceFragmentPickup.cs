@@ -1,19 +1,26 @@
 using UnityEngine;
 
-public class ResonanceFragmentPickup : PooledBehaviour
+public sealed class ResonanceFragmentPickup
+    : AutoPickupBehaviour, IResourcePickup
 {
     [Header("XP")]
-    [SerializeField] private int xpAmount = 5;
+    [SerializeField]
+    private int xpAmount = 5;
 
     [Header("Attraction")]
-    [SerializeField] private float defaultAttractionRadius = 2f;
-    [SerializeField] private float attractSpeed = 10f;
+    [SerializeField]
+    private float defaultAttractionRadius = 2f;
+
+    [SerializeField]
+    private float attractSpeed = 10f;
 
     [Header("Absorption")]
-    [SerializeField] private float absorbDistance = 0.3f;
-    [SerializeField] private float absorbDuration = 0.2f;
+    [SerializeField]
+    private float absorbDistance = 0.3f;
 
-    private Transform player;
+    [SerializeField]
+    private float absorbDuration = 0.2f;
+
     private PlayerModifierSystem modifierSystem;
     private PlayerExperienceSystem xpSystem;
 
@@ -27,7 +34,8 @@ public class ResonanceFragmentPickup : PooledBehaviour
     {
         base.Awake();
 
-        startScale = transform.localScale;
+        startScale =
+            transform.localScale;
 
         if (startScale == Vector3.zero)
             startScale = Vector3.one;
@@ -37,26 +45,28 @@ public class ResonanceFragmentPickup : PooledBehaviour
     {
         base.OnEnable();
 
-        ResolvePlayer();
+        ResolvePlayerComponents();
     }
 
     public void Initialize(int xp)
     {
-        xpAmount = Mathf.Max(0, xp);
+        xpAmount =
+            Mathf.Max(0, xp);
 
         ResetPooledState();
-        ResolvePlayer();
+
+        ResolvePlayerComponents();
     }
 
-    private void Update()
+    protected override void OnAutoPickupTriggered()
     {
-        if (player == null)
-        {
-            ResolvePlayer();
+        BeginAttraction();
+    }
 
-            if (player == null)
-                return;
-        }
+    protected override void OnAutoPickupUpdate()
+    {
+        if (Player == null)
+            return;
 
         if (isAbsorbing)
         {
@@ -64,28 +74,17 @@ public class ResonanceFragmentPickup : PooledBehaviour
             return;
         }
 
-        float attractionRadius = GetAttractionRadius();
-
-        float sqrDistance =
-            (transform.position - player.position).sqrMagnitude;
-
-        if (!isAttracted &&
-            sqrDistance <= attractionRadius * attractionRadius)
-        {
-            BeginAttraction();
-        }
-
         if (!isAttracted)
             return;
 
-        transform.position = Vector3.MoveTowards(
-            transform.position,
-            player.position,
-            attractSpeed * Time.deltaTime
-        );
+        transform.position =
+            Vector3.MoveTowards(
+                transform.position,
+                Player.position,
+                attractSpeed * Time.deltaTime);
 
-        sqrDistance =
-            (transform.position - player.position).sqrMagnitude;
+        float sqrDistance =
+            (transform.position - Player.position).sqrMagnitude;
 
         if (sqrDistance <= absorbDistance * absorbDistance)
         {
@@ -98,9 +97,9 @@ public class ResonanceFragmentPickup : PooledBehaviour
         if (isAbsorbing)
             return;
 
-        ResolvePlayer();
+        ResolvePlayerComponents();
 
-        if (player == null)
+        if (Player == null)
             return;
 
         BeginAttraction();
@@ -122,36 +121,40 @@ public class ResonanceFragmentPickup : PooledBehaviour
 
     private void UpdateAbsorption()
     {
-        if (player == null)
+        if (Player == null)
         {
-            ResolvePlayer();
+            ResolvePlayerComponents();
 
-            if (player == null)
+            if (Player == null)
                 return;
         }
 
-        absorbTimer += Time.deltaTime;
+        absorbTimer +=
+            Time.deltaTime;
 
         float duration =
-            Mathf.Max(0.01f, absorbDuration);
+            Mathf.Max(
+                0.01f,
+                absorbDuration);
 
         float t =
             Mathf.Clamp01(
                 absorbTimer / duration);
 
-        float curved = t * t;
+        float curved =
+            t * t;
 
-        transform.position = Vector3.Lerp(
-            transform.position,
-            player.position,
-            curved
-        );
+        transform.position =
+            Vector3.Lerp(
+                transform.position,
+                Player.position,
+                curved);
 
-        transform.localScale = Vector3.Lerp(
-            startScale,
-            Vector3.zero,
-            curved
-        );
+        transform.localScale =
+            Vector3.Lerp(
+                startScale,
+                Vector3.zero,
+                curved);
 
         if (absorbTimer >= duration)
         {
@@ -162,12 +165,20 @@ public class ResonanceFragmentPickup : PooledBehaviour
 
     private void GiveXP()
     {
-        if (xpSystem == null && player != null)
+        if (xpSystem == null &&
+            Player != null)
+        {
             xpSystem =
-                player.GetComponent<PlayerExperienceSystem>();
+                Player.GetComponent<PlayerExperienceSystem>();
+        }
 
         if (xpSystem != null)
             xpSystem.AddXP(xpAmount);
+    }
+
+    protected override float GetPickupRadius()
+    {
+        return GetAttractionRadius();
     }
 
     private float GetAttractionRadius()
@@ -183,40 +194,44 @@ public class ResonanceFragmentPickup : PooledBehaviour
         return defaultAttractionRadius;
     }
 
-    private void ResolvePlayer()
+    private void ResolvePlayerComponents()
     {
-        if (player != null)
+        ResolvePlayer();
+
+        if (Player == null)
             return;
 
-        if (EnemyManager.Instance == null)
-            return;
+        if (xpSystem == null)
+        {
+            xpSystem =
+                Player.GetComponent<PlayerExperienceSystem>();
+        }
 
-        player =
-            EnemyManager.Instance.Player;
-
-        if (player == null)
-            return;
-
-        xpSystem =
-            player.GetComponent<PlayerExperienceSystem>();
-
-        modifierSystem =
-            player.GetComponent<PlayerModifierSystem>();
+        if (modifierSystem == null)
+        {
+            modifierSystem =
+                Player.GetComponent<PlayerModifierSystem>();
+        }
     }
 
     protected override void ResetPooledState()
     {
+        base.ResetPooledState();
+
         isAttracted = false;
         isAbsorbing = false;
         absorbTimer = 0f;
 
-        transform.localScale = startScale;
+        transform.localScale =
+            startScale;
     }
 
     private void OnValidate()
     {
         xpAmount =
-            Mathf.Max(0, xpAmount);
+            Mathf.Max(
+                0,
+                xpAmount);
 
         defaultAttractionRadius =
             Mathf.Max(

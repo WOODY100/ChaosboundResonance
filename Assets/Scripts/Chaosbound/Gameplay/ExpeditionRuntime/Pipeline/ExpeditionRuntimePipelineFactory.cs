@@ -24,6 +24,8 @@ using Chaosbound.Gameplay.Timeline;
 using Chaosbound.Gameplay.Timeline.Stages;
 using Chaosbound.Gameplay.ExpeditionRuntime.Modifiers;
 using Chaosbound.Gameplay.ExpeditionRuntime.Modifiers.Stages;
+using Chaosbound.Gameplay.ExpeditionRuntime.Composition;
+using Chaosbound.Gameplay.Spawn.Content;
 using System;
 using System.Collections.Generic;
 
@@ -38,15 +40,20 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Pipeline
         /// Creates a new runtime pipeline.
         /// </summary>
         public ExpeditionRuntimePipeline Create(
-            SpawnRuntime spawnRuntime)
+            SpawnRuntime spawnRuntime, ExpeditionRuntimeCompositionContext compositionContext)
         {
             if (spawnRuntime == null)
                 throw new ArgumentNullException(
                     nameof(spawnRuntime));
 
+            if (compositionContext == null)
+                throw new ArgumentNullException(
+                    nameof(compositionContext));
+
             IReadOnlyList<IExpeditionRuntimeStage> stages =
                 BuildStages(
-                    spawnRuntime);
+                    spawnRuntime,
+                    compositionContext);
 
             return new ExpeditionRuntimePipeline(
                 stages);
@@ -54,8 +61,9 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Pipeline
 
         private IReadOnlyList<IExpeditionRuntimeStage>
             BuildStages(
-                SpawnRuntime spawnRuntime)
-                {
+                SpawnRuntime spawnRuntime,
+                ExpeditionRuntimeCompositionContext compositionContext)
+        {
                     return new List<IExpeditionRuntimeStage>
                     {
                         BuildTimeStage(),
@@ -65,7 +73,8 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Pipeline
                         BuildBossStage(spawnRuntime),
                         BuildCompletionStage(),
                         BuildExitPortalStage(spawnRuntime),
-                        BuildCombatStage(spawnRuntime)
+                        BuildCombatStage(spawnRuntime),
+                        BuildRewardStage(spawnRuntime, compositionContext)
                     };
         }
 
@@ -77,6 +86,35 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Pipeline
                 BuildCombatDirector(),
                 BuildCombatSpawnRequestTranslator(),
                 spawnRuntime);
+        }
+
+        private IExpeditionRuntimeStage
+            BuildRewardStage(
+                SpawnRuntime spawnRuntime,
+                ExpeditionRuntimeCompositionContext compositionContext)
+        {
+            if (spawnRuntime == null)
+                throw new ArgumentNullException(
+                    nameof(spawnRuntime));
+
+            if (compositionContext == null)
+                throw new ArgumentNullException(
+                    nameof(compositionContext));
+
+            MaterializableContentResolver contentResolver =
+                new MaterializableContentResolver(
+                    compositionContext.MaterializableContentDatabase);
+
+            RewardSpawnRequestBuilder spawnRequestBuilder =
+                new RewardSpawnRequestBuilder(
+                    contentResolver);
+
+            return new RewardStage(
+                new RewardDomainDirector(
+                    new LootGenerator(
+                        new TemporaryLootRandom()),
+                    spawnRequestBuilder,
+                    spawnRuntime));
         }
 
         private IExpeditionRuntimeStage

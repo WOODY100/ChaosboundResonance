@@ -1,29 +1,38 @@
-using System;
 using Chaosbound.Content.Expeditions.Runtime.Spawn;
+using Chaosbound.Gameplay.Spawn.Reference.Models;
+using System;
 
 namespace Chaosbound.Gameplay.Spawn.Contracts
 {
     /// <summary>
-    /// Represents the execution context associated with
-    /// a SpawnRequest.
+    /// Represents the immutable context associated
+    /// with a SpawnRequest.
     /// </summary>
     public sealed class SpawnRequestContext
     {
         /// <summary>
-        /// Gets the runtime spawn configuration.
+        /// Gets the runtime spawn configuration associated
+        /// with the request.
         /// </summary>
-        public RuntimeSpawnConfig RuntimeSpawnConfig { get; }
+        public RuntimeSpawnConfig SpawnConfig { get; }
 
         /// <summary>
-        /// Creates a new spawn request context.
+        /// Gets the optional spatial origin supplied
+        /// by the producer of the request.
         /// </summary>
+        public SpawnSpatialOrigin? SpatialOrigin { get; }
+
         public SpawnRequestContext(
-            RuntimeSpawnConfig runtimeSpawnConfig)
+            RuntimeSpawnConfig spawnConfig,
+            SpawnSpatialOrigin? spatialOrigin)
         {
-            RuntimeSpawnConfig =
-                runtimeSpawnConfig
+            SpawnConfig =
+                spawnConfig
                 ?? throw new ArgumentNullException(
-                    nameof(runtimeSpawnConfig));
+                    nameof(spawnConfig));
+
+            SpatialOrigin =
+                spatialOrigin;
         }
     }
 }

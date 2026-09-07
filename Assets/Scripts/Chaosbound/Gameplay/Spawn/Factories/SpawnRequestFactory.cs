@@ -1,5 +1,6 @@
 using Chaosbound.Content.Expeditions.Runtime.Spawn;
 using Chaosbound.Gameplay.Spawn.Contracts;
+using Chaosbound.Gameplay.Spawn.Reference.Models;
 using System;
 using System.Collections.Generic;
 
@@ -21,7 +22,7 @@ namespace Chaosbound.Gameplay.Spawn.Factories
         public SpawnRequestFactory()
             : this(
                 new SpawnRequestEntryFactory(
-                new MaterializableReferenceFactory()),
+                    new MaterializableReferenceFactory()),
                 new SpawnRequestContextFactory(),
                 new SpawnRequestMetadataFactory())
         {
@@ -31,18 +32,6 @@ namespace Chaosbound.Gameplay.Spawn.Factories
         /// Creates a SpawnRequestFactory with the specified
         /// specialized factories.
         /// </summary>
-        /// <param name="entryFactory">
-        /// Factory responsible for creating SpawnRequestEntry instances.
-        /// </param>
-        /// <param name="contextFactory">
-        /// Factory responsible for creating SpawnRequestContext instances.
-        /// </param>
-        /// <param name="metadataFactory">
-        /// Factory responsible for creating SpawnRequestMetadata instances.
-        /// </param>
-        /// <exception cref="ArgumentNullException">
-        /// Thrown when any dependency is null.
-        /// </exception>
         public SpawnRequestFactory(
             SpawnRequestEntryFactory entryFactory,
             SpawnRequestContextFactory contextFactory,
@@ -56,12 +45,13 @@ namespace Chaosbound.Gameplay.Spawn.Factories
 
             this.metadataFactory = metadataFactory
                 ?? throw new ArgumentNullException(nameof(metadataFactory));
-        }        
+        }
 
         public SpawnRequest Create(
             IEnumerable<SpawnRequestEntry> entries,
             RuntimeSpawnConfig runtimeSpawnConfig,
-            SpawnRequestOrigin origin)
+            SpawnRequestOrigin origin,
+            SpawnSpatialOrigin? spatialOrigin)
         {
             if (entries == null)
             {
@@ -78,7 +68,8 @@ namespace Chaosbound.Gameplay.Spawn.Factories
             return new SpawnRequest(
                 entries,
                 contextFactory.Create(
-                    runtimeSpawnConfig),
+                    runtimeSpawnConfig,
+                    spatialOrigin),
                 metadataFactory.Create(
                     origin));
         }

@@ -2,6 +2,7 @@ using Chaosbound.Content.Expeditions.Runtime.References;
 using Chaosbound.Content.Expeditions.Runtime.Spawn;
 using Chaosbound.Gameplay.ExpeditionRuntime.Runtime;
 using Chaosbound.Gameplay.Spawn.Domain;
+using Chaosbound.Gameplay.Spawn.Reference.Models;
 using System;
 
 namespace Chaosbound.Gameplay.Spawn.Scheduling
@@ -32,11 +33,17 @@ namespace Chaosbound.Gameplay.Spawn.Scheduling
         /// </summary>
         public ExpeditionRuntimeState ExpeditionRuntime { get; }
 
+        /// <summary>
+        /// Gets the optional spatial origin associated with the spawn request.
+        /// </summary>
+        public SpawnSpatialOrigin? SpatialOrigin { get; }
+
         public SpawnSchedulingContext(
             SpawnJob job,
             RuntimeSpawnConfig spawnConfig,
             RuntimeReferencesConfig references,
-            ExpeditionRuntimeState expeditionRuntime)
+            ExpeditionRuntimeState expeditionRuntime,
+            SpawnSpatialOrigin? spatialOrigin)
         {
             Job =
                 job
@@ -54,6 +61,9 @@ namespace Chaosbound.Gameplay.Spawn.Scheduling
                 expeditionRuntime
                 ?? throw new ArgumentNullException(
                     nameof(expeditionRuntime));
+
+            SpatialOrigin =
+                spatialOrigin;
         }
     }
 }

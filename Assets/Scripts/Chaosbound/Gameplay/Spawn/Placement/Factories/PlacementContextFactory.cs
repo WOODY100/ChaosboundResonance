@@ -1,6 +1,6 @@
 using System;
-using UnityEngine;
 using Chaosbound.Gameplay.Spawn.Placement.Models;
+using Chaosbound.Gameplay.Spawn.Reference.Models;
 
 namespace Chaosbound.Gameplay.Spawn.Placement.Factories
 {
@@ -14,17 +14,14 @@ namespace Chaosbound.Gameplay.Spawn.Placement.Factories
         /// </summary>
         public PlacementContext Create(
             PlacementIntent intent,
-            Transform reference)
+            SpawnSpatialOrigin spatialOrigin)
         {
             if (intent == null)
                 throw new ArgumentNullException(nameof(intent));
 
-            if (reference == null)
-                throw new ArgumentNullException(nameof(reference));
-
             return new PlacementContext(
                 intent,
-                reference);
+                spatialOrigin);
         }
     }
 }

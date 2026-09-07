@@ -53,6 +53,12 @@ namespace Chaosbound.Gameplay.Spawn.Reference.Resolvers
             if (context == null)
                 throw new ArgumentNullException(nameof(context));
 
+            if (context.SpatialOrigin.HasValue)
+            {
+                return SpawnReferenceResult.Success(
+                    context.SpatialOrigin.Value);
+            }
+
             SpawnPlacementPolicy policy =
                 context.SpawnConfig.Placement;
 

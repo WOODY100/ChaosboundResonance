@@ -1,6 +1,7 @@
 using Chaosbound.Content.Enemy.Bosses;
 using Chaosbound.Content.Enemy.MiniBosses;
 using Chaosbound.Content.Portal.Exit;
+using Chaosbound.Gameplay.Spawn.Contracts;
 using Chaosbound.Gameplay.Spawn.Integration;
 using System;
 using UnityEngine;
@@ -45,6 +46,13 @@ namespace Chaosbound.Gameplay.Spawn.Infrastructure
             {
                 return SpawnExitPortal(
                     exitPortal,
+                    request);
+            }
+
+            if (request.Reference is ISpawnPrefabReference prefabReference)
+            {
+                return SpawnPrefabReference(
+                    prefabReference,
                     request);
             }
 
@@ -114,6 +122,22 @@ namespace Chaosbound.Gameplay.Spawn.Infrastructure
 
             return GetFromPool(
                 exitPortal.SpawnPrefab,
+                request);
+        }
+
+        private GameObject SpawnPrefabReference(
+            ISpawnPrefabReference reference,
+            SpawnInstantiationRequest request)
+        {
+            if (reference.SpawnPrefab == null)
+            {
+                throw new InvalidOperationException(
+                    $"Materializable reference '{reference.GetType().Name}' " +
+                    "does not define a spawn prefab.");
+            }
+
+            return GetFromPool(
+                reference.SpawnPrefab,
                 request);
         }
 

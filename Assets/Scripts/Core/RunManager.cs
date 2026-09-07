@@ -6,6 +6,7 @@ using Chaosbound.Gameplay.ExpeditionRuntime.Bootstrap;
 using Chaosbound.Gameplay.ExpeditionRuntime.Director;
 using Chaosbound.Gameplay.ExpeditionRuntime.Exit;
 using Chaosbound.Gameplay.ExpeditionRuntime.Runtime;
+using Chaosbound.Gameplay.ExpeditionRuntime.Composition;
 using System;
 using UnityEngine;
 
@@ -63,6 +64,18 @@ public class RunManager : MonoBehaviour
             return;
         }
 
+        ExpeditionRuntimeCompositionContext compositionContext =
+            ExpeditionRuntimeCompositionContext.Current;
+
+        if (compositionContext == null)
+        {
+            Debug.LogError(
+                "ExpeditionRuntimeCompositionContext is not available.",
+                this);
+
+            return;
+        }
+
         if (context.GameFlow == null)
         {
             Debug.LogError(
@@ -73,7 +86,8 @@ public class RunManager : MonoBehaviour
 
         ExpeditionRuntimeBootstrap bootstrap =
             new ExpeditionRuntimeBootstrap(
-                sceneTransitionService);
+                sceneTransitionService,
+                compositionContext);
 
         expeditionDirector =
             bootstrap.Build();

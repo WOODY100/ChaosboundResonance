@@ -1,6 +1,7 @@
 using System;
 using Chaosbound.Content.Expeditions.Runtime.Spawn;
 using Chaosbound.Gameplay.Spawn.Contracts;
+using Chaosbound.Gameplay.Spawn.Reference.Models;
 
 namespace Chaosbound.Gameplay.Spawn.Factories
 {
@@ -10,10 +11,12 @@ namespace Chaosbound.Gameplay.Spawn.Factories
     public sealed class SpawnRequestContextFactory
     {
         /// <summary>
-        /// Creates a SpawnRequestContext from the runtime spawn configuration.
+        /// Creates a SpawnRequestContext from the runtime spawn configuration
+        /// and optional spatial origin.
         /// </summary>
         public SpawnRequestContext Create(
-            RuntimeSpawnConfig runtimeSpawnConfig)
+            RuntimeSpawnConfig runtimeSpawnConfig,
+            SpawnSpatialOrigin? spatialOrigin)
         {
             if (runtimeSpawnConfig == null)
             {
@@ -22,7 +25,8 @@ namespace Chaosbound.Gameplay.Spawn.Factories
             }
 
             return new SpawnRequestContext(
-                runtimeSpawnConfig);
+                runtimeSpawnConfig,
+                spatialOrigin);
         }
     }
 }

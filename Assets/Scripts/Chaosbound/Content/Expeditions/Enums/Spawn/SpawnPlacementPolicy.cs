@@ -8,14 +8,8 @@ namespace Chaosbound.Content.Expeditions.Enums.Spawn
     {
         AroundPlayer = 0,
 
-        SpawnPoints = 1,
+        AroundCompletionOrigin = 5,
 
-        ArenaBorder = 2,
-
-        RandomRegion = 3,
-
-        FixedPosition = 4,
-
-        AroundCompletionOrigin = 5
+        AroundOrigin = 6
     }
 }

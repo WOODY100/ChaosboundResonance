@@ -62,6 +62,10 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Runtime
             exitPortalRuntime =
                 new ExitPortalRuntimeState();
 
+        private readonly RewardRuntimeState
+            rewardRuntime =
+                new RewardRuntimeState();
+
         private readonly IRuntimeReferenceRegistry
             runtimeReferences =
                 new RuntimeReferenceRegistry();
@@ -141,6 +145,9 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Runtime
 
         public XPFragmentRuntimeState XPFragments =>
             xpFragments;
+
+        public RewardRuntimeState Reward =>
+            rewardRuntime;
 
         /// <summary>
         /// Gets the runtime reference registry

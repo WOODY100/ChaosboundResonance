@@ -79,7 +79,8 @@ namespace Chaosbound.Gameplay.MiniBosses.Integration.Spawn
             return spawnRequestFactory.Create(
                 entries,
                 runtimeSpawnConfig,
-                SpawnRequestOrigin.MiniBoss);
+                SpawnRequestOrigin.MiniBoss,
+                null);
         }
     }
 }

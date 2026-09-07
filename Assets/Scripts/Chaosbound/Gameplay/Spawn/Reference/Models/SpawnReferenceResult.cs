@@ -25,13 +25,17 @@ namespace Chaosbound.Gameplay.Spawn.Reference.Models
         /// </summary>
         public string FailureReason { get; }
 
+        public SpawnSpatialOrigin? SpatialOrigin { get; }
+
         private SpawnReferenceResult(
             bool isSuccess,
             Transform reference,
+            SpawnSpatialOrigin? spatialOrigin,
             string failureReason)
         {
             IsSuccess = isSuccess;
             Reference = reference;
+            SpatialOrigin = spatialOrigin;
             FailureReason = failureReason;
         }
 
@@ -47,6 +51,17 @@ namespace Chaosbound.Gameplay.Spawn.Reference.Models
             return new SpawnReferenceResult(
                 true,
                 reference,
+                null,
+                null);
+        }
+
+        public static SpawnReferenceResult Success(
+            SpawnSpatialOrigin spatialOrigin)
+        {
+            return new SpawnReferenceResult(
+                true,
+                null,
+                spatialOrigin,
                 null);
         }
 
@@ -63,6 +78,7 @@ namespace Chaosbound.Gameplay.Spawn.Reference.Models
 
             return new SpawnReferenceResult(
                 false,
+                null,
                 null,
                 reason);
         }

@@ -6,6 +6,7 @@ using Chaosbound.Gameplay.Spawn.Bootstrap;
 using Chaosbound.Gameplay.Spawn.Runtime;
 using Chaosbound.Core.GameFlow;
 using Chaosbound.Gameplay.ExpeditionRuntime.Exit;
+using Chaosbound.Gameplay.ExpeditionRuntime.Composition;
 using System;
 
 namespace Chaosbound.Gameplay.ExpeditionRuntime.Bootstrap
@@ -19,13 +20,22 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Bootstrap
         private readonly SceneTransitionService
             sceneTransitionService;
 
+        private readonly ExpeditionRuntimeCompositionContext
+            compositionContext;
+
         public ExpeditionRuntimeBootstrap(
-            SceneTransitionService sceneTransitionService)
+            SceneTransitionService sceneTransitionService,
+            ExpeditionRuntimeCompositionContext compositionContext)
         {
             this.sceneTransitionService =
                 sceneTransitionService
                 ?? throw new ArgumentNullException(
                     nameof(sceneTransitionService));
+
+            this.compositionContext =
+                compositionContext
+                ?? throw new ArgumentNullException(
+                    nameof(compositionContext));
         }
 
         /// <summary>
@@ -39,7 +49,8 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Bootstrap
 
             ExpeditionRuntimePipeline runtimePipeline =
                 BuildRuntimePipeline(
-                    spawnRuntime);
+                    spawnRuntime,
+                    compositionContext);
 
             ExpeditionCleanupPipeline cleanupPipeline =
                 BuildCleanupPipeline(
@@ -52,17 +63,23 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Bootstrap
 
         private ExpeditionRuntimePipeline
             BuildRuntimePipeline(
-                SpawnRuntime spawnRuntime)
+                SpawnRuntime spawnRuntime,
+                ExpeditionRuntimeCompositionContext compositionContext)
         {
             if (spawnRuntime == null)
                 throw new ArgumentNullException(
                     nameof(spawnRuntime));
 
+            if (compositionContext == null)
+                throw new ArgumentNullException(
+                    nameof(compositionContext));
+
             ExpeditionRuntimePipelineFactory factory =
                 new ExpeditionRuntimePipelineFactory();
 
             return factory.Create(
-                spawnRuntime);
+                spawnRuntime,
+                compositionContext);
         }
 
         private ExpeditionCleanupPipeline

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Chaosbound.Gameplay.Spawn.Contracts;
 
 namespace Chaosbound.Gameplay.Spawn.Models
 {
@@ -19,6 +20,11 @@ namespace Chaosbound.Gameplay.Spawn.Models
         public IReadOnlyList<SpawnExecutionPlanEntry> Entries => entries;
 
         /// <summary>
+        /// Gets the request context preserved for execution.
+        /// </summary>
+        public SpawnRequestContext Context { get; }
+
+        /// <summary>
         /// Gets whether the execution plan contains no work.
         /// </summary>
         public bool IsEmpty => entries.Count == 0;
@@ -33,16 +39,22 @@ namespace Chaosbound.Gameplay.Spawn.Models
         /// Creates a new execution plan.
         /// </summary>
         public SpawnExecutionPlan(
-            IEnumerable<SpawnExecutionPlanEntry> entries)
+            IEnumerable<SpawnExecutionPlanEntry> entries,
+            SpawnRequestContext context)
         {
             if (entries == null)
                 throw new ArgumentNullException(nameof(entries));
+
+            if (context == null)
+                throw new ArgumentNullException(nameof(context));
 
             List<SpawnExecutionPlanEntry> list =
                 entries.ToList();
 
             this.entries =
                 new ReadOnlyCollection<SpawnExecutionPlanEntry>(list);
+
+            Context = context;
         }
     }
 }

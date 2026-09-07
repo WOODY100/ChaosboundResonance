@@ -86,7 +86,8 @@ namespace Chaosbound.Gameplay.Spawn.Execution
                         job,
                         spawnConfig,
                         references,
-                        expeditionRuntime);
+                        expeditionRuntime,
+                        executionPlan.Context.SpatialOrigin);
 
                 IReadOnlyList<GameObject> jobObjects =
                     spawnJobExecutor.Execute(

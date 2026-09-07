@@ -187,12 +187,19 @@ namespace Chaosbound.Gameplay.Spawn.Bootstrap
             return new NearReferencePlacementStrategy();
         }
 
+        private AroundOriginPlacementStrategy
+            BuildAroundOriginPlacementStrategy()
+        {
+            return new AroundOriginPlacementStrategy();
+        }
+
         private PlacementResolver
             BuildPlacementResolver()
         {
             return new PlacementResolver(
                 BuildAroundPlayerPlacementStrategy(),
                 BuildNearReferencePlacementStrategy(),
+                BuildAroundOriginPlacementStrategy(),
                 BuildPlacementValidator());
         }
 
@@ -256,6 +263,20 @@ namespace Chaosbound.Gameplay.Spawn.Bootstrap
                 BuildInstantiationService());
         }
 
+        private ResourceMaterializer
+            BuildResourceMaterializer()
+        {
+            return new ResourceMaterializer(
+                BuildInstantiationService());
+        }
+
+        private ItemMaterializer
+            BuildItemMaterializer()
+        {
+            return new ItemMaterializer(
+                BuildInstantiationService());
+        }
+
         private SpawnMaterializerResolver
             BuildMaterializerResolver()
         {
@@ -263,7 +284,9 @@ namespace Chaosbound.Gameplay.Spawn.Bootstrap
                 BuildEnemyMaterializer(),
                 BuildBossMaterializer(),
                 BuildMiniBossMaterializer(),
-                BuildExitPortalMaterializer());
+                BuildExitPortalMaterializer(),
+                BuildResourceMaterializer(),
+                BuildItemMaterializer());
         }
 
         private SpawnExecutionContextFactory

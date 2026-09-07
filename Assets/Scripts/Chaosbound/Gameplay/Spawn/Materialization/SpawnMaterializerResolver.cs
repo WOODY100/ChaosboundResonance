@@ -2,6 +2,7 @@ using Chaosbound.Content.Enemy.Bosses;
 using Chaosbound.Content.Enemy.MiniBosses;
 using Chaosbound.Content.Portal.Exit;
 using Chaosbound.Gameplay.Spawn.Execution;
+using Chaosbound.Gameplay.Spawn.References;
 using System;
 using System.Collections.Generic;
 
@@ -21,7 +22,9 @@ namespace Chaosbound.Gameplay.Spawn.Materialization
             ISpawnMaterializer enemyMaterializer,
             ISpawnMaterializer bossMaterializer,
             ISpawnMaterializer miniBossMaterializer,
-            ISpawnMaterializer exitPortalMaterializer)
+            ISpawnMaterializer exitPortalMaterializer,
+            ISpawnMaterializer resourceMaterializer,
+            ISpawnMaterializer itemMaterializer)
         {
             if (enemyMaterializer == null)
                 throw new ArgumentNullException(
@@ -38,6 +41,14 @@ namespace Chaosbound.Gameplay.Spawn.Materialization
             if (exitPortalMaterializer == null)
                 throw new ArgumentNullException(
                     nameof(exitPortalMaterializer));
+
+            if (resourceMaterializer == null)
+                throw new ArgumentNullException(
+                    nameof(resourceMaterializer));
+
+            if (itemMaterializer == null)
+                throw new ArgumentNullException(
+                    nameof(itemMaterializer));
 
             materializers =
                 new Dictionary<Type, ISpawnMaterializer>
@@ -57,6 +68,14 @@ namespace Chaosbound.Gameplay.Spawn.Materialization
                     {
                         typeof(ExitPortalData),
                         exitPortalMaterializer
+                    },
+                    {
+                        typeof(ResourceMaterializableReference),
+                        resourceMaterializer
+                    },
+                    {
+                        typeof(ItemMaterializableReference),
+                        itemMaterializer
                     }
                 };
         }

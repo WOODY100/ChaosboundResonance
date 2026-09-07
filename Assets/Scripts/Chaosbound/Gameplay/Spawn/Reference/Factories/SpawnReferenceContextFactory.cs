@@ -14,7 +14,8 @@ namespace Chaosbound.Gameplay.Spawn.Reference.Factories
         public SpawnReferenceContext Create(
             RuntimeSpawnConfig spawnConfig,
             RuntimeReferencesConfig references,
-            ExpeditionRuntimeState expeditionRuntime)
+            ExpeditionRuntimeState expeditionRuntime,
+            SpawnSpatialOrigin? spatialOrigin)
         {
             if (spawnConfig == null)
                 throw new ArgumentNullException(
@@ -31,7 +32,8 @@ namespace Chaosbound.Gameplay.Spawn.Reference.Factories
             return new SpawnReferenceContext(
                 spawnConfig,
                 references,
-                expeditionRuntime);
+                expeditionRuntime,
+                spatialOrigin);
         }
     }
 }

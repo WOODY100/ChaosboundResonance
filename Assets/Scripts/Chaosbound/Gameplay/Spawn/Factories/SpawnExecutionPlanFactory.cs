@@ -68,7 +68,9 @@ namespace Chaosbound.Gameplay.Spawn.Factories
                     entryFactory.Create(requestEntry));
             }
 
-            return new SpawnExecutionPlan(entries);
+            return new SpawnExecutionPlan(
+                entries,
+                request.Context);
         }
     }
 }
