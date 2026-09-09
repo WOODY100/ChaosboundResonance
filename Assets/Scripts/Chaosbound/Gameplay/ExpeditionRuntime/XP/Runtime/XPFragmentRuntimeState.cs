@@ -24,6 +24,15 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.XP.Runtime
             activeFragments.Add(fragment);
         }
 
+        public void Unregister(
+            ResonanceFragmentPickup fragment)
+        {
+            if (fragment == null)
+                return;
+
+            activeFragments.Remove(fragment);
+        }
+
         /// <summary>
         /// Captures a snapshot of the XP fragments that are
         /// currently active in the expedition.

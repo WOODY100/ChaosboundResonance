@@ -45,7 +45,15 @@ public sealed class ResonanceFragmentPickup
     {
         base.OnEnable();
 
+        RegisterWithExpeditionRuntime();
         ResolvePlayerComponents();
+    }
+
+    protected override void OnDisable()
+    {
+        UnregisterFromExpeditionRuntime();
+
+        base.OnDisable();
     }
 
     public void Initialize(int xp)
@@ -55,7 +63,36 @@ public sealed class ResonanceFragmentPickup
 
         ResetPooledState();
 
+        RegisterWithExpeditionRuntime();
         ResolvePlayerComponents();
+    }
+
+    private void RegisterWithExpeditionRuntime()
+    {
+        if (RunManager.Instance == null)
+            return;
+
+        if (RunManager.Instance.ExpeditionRuntimeState == null)
+            return;
+
+        RunManager.Instance
+            .ExpeditionRuntimeState
+            .XPFragments
+            .Register(this);
+    }
+
+    private void UnregisterFromExpeditionRuntime()
+    {
+        if (RunManager.Instance == null)
+            return;
+
+        if (RunManager.Instance.ExpeditionRuntimeState == null)
+            return;
+
+        RunManager.Instance
+            .ExpeditionRuntimeState
+            .XPFragments
+            .Unregister(this);
     }
 
     protected override void OnAutoPickupTriggered()

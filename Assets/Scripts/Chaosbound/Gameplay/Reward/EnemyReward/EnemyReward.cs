@@ -214,11 +214,6 @@ public sealed class EnemyReward :
         fragment.Initialize(
             amount);
 
-        runtimeContext
-            .ExpeditionRuntime
-            .XPFragments
-            .Register(
-                fragment);
     }
 
     private void GrantLootBag(
