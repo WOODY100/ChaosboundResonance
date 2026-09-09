@@ -14,7 +14,6 @@ namespace Chaosbound.Content.Expeditions.Builders.Spawn
 
             return new SpawnDefinition(
                 authoring.Placement,
-                authoring.Activation,
                 authoring.SpawnConstraints);
         }
     }

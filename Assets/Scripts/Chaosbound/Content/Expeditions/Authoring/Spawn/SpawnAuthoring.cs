@@ -10,10 +10,6 @@ namespace Chaosbound.Content.Expeditions.Authoring.Spawn
     {
         [SerializeField]
         private SpawnPlacementPolicy m_Placement;
-
-        [SerializeField]
-        private SpawnActivationPolicy m_Activation;
-
         [SerializeField]
         private List<SpawnConstraintPolicy> m_Constraints = new();
 
@@ -21,12 +17,6 @@ namespace Chaosbound.Content.Expeditions.Authoring.Spawn
         {
             get { return m_Placement; }
         }
-
-        public SpawnActivationPolicy Activation
-        {
-            get { return m_Activation; }
-        }
-
         public IReadOnlyList<SpawnConstraintPolicy> SpawnConstraints
         {
             get { return m_Constraints; }

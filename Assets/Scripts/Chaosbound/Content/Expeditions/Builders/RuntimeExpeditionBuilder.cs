@@ -111,7 +111,6 @@ namespace Chaosbound.Content.Expeditions.Runtime.Builders
 
             return new RuntimeSpawnConfig(
                 definition.Placement,
-                definition.Activation,
                 definition.SpawnConstraints);
         }
 

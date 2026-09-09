@@ -128,7 +128,6 @@ namespace Chaosbound.Gameplay.Spawn.Validation
         {
             return new RuntimeSpawnConfig(
                 SpawnPlacementPolicy.AroundPlayer,
-                SpawnActivationPolicy.Immediate,
                 Array.Empty<SpawnConstraintPolicy>());
         }
 

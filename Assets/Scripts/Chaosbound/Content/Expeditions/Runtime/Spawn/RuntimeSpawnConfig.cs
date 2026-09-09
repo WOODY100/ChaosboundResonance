@@ -14,12 +14,6 @@ namespace Chaosbound.Content.Expeditions.Runtime.Spawn
         /// Gets the placement policy.
         /// </summary>
         public SpawnPlacementPolicy Placement { get; }
-
-        /// <summary>
-        /// Gets the activation policy.
-        /// </summary>
-        public SpawnActivationPolicy Activation { get; }
-
         /// <summary>
         /// Gets every spawn constraint configured for
         /// the current expedition.
@@ -28,14 +22,10 @@ namespace Chaosbound.Content.Expeditions.Runtime.Spawn
 
         public RuntimeSpawnConfig(
             SpawnPlacementPolicy placement,
-            SpawnActivationPolicy activation,
             IReadOnlyList<SpawnConstraintPolicy> spawnConstraints)
         {
             Placement =
                 placement;
-
-            Activation =
-                activation;
 
             SpawnConstraints =
                 new List<SpawnConstraintPolicy>(
@@ -49,7 +39,6 @@ namespace Chaosbound.Content.Expeditions.Runtime.Spawn
         {
             return new RuntimeSpawnConfig(
                 placement,
-                Activation,
                 SpawnConstraints);
         }
     }
