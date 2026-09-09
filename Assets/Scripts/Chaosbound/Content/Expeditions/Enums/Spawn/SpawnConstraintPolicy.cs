@@ -6,16 +6,6 @@ namespace Chaosbound.Content.Expeditions.Enums.Spawn
     /// </summary>
     public enum SpawnConstraintPolicy
     {
-        CombatOnly = 0,
-
-        MaximumAlive = 1,
-
-        RequireFreeSpace = 2,
-
-        RequireDifficulty = 3,
-
-        DoorClosed = 4,
-
         RequireNavMeshWalkable = 5
     }
 }
