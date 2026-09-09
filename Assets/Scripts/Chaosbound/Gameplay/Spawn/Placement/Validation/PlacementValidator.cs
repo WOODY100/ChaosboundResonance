@@ -117,7 +117,8 @@ namespace Chaosbound.Gameplay.Spawn.Placement.Validation
                 spawnConstraints,
                 SpawnConstraintPolicy.RequireNavMeshWalkable))
             {
-                if (!IsNavMeshWalkable(center))
+                if (!IsNavMeshWalkable(
+                    placement.Position))
                 {
                     return PlacementResolution.Failure(
                         FailureReason.NavMeshUnavailable);
