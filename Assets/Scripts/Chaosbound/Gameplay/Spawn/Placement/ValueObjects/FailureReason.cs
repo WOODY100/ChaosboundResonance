@@ -55,6 +55,13 @@ namespace Chaosbound.Gameplay.Spawn.Placement.ValueObjects
             new("spawn.obstacle_occupied");
 
         /// <summary>
+        /// The candidate location is not sufficiently close
+        /// to a valid NavMesh surface.
+        /// </summary>
+        public static FailureReason NavMeshUnavailable =>
+            new("spawn.nav_mesh_unavailable");
+
+        /// <summary>
         /// The candidate location is outside
         /// the valid world bounds.
         /// </summary>

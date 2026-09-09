@@ -74,10 +74,16 @@ namespace Chaosbound.Gameplay.Spawn.Placement.Resolvers
         /// Resolves a placement for the supplied context.
         /// </summary>
         public PlacementResolution Resolve(
-    PlacementContext context)
+            PlacementContext context,
+            IReadOnlyList<SpawnConstraintPolicy> spawnConstraints)
         {
             if (context == null)
-                throw new ArgumentNullException(nameof(context));
+                throw new ArgumentNullException(
+                    nameof(context));
+
+            if (spawnConstraints == null)
+                throw new ArgumentNullException(
+                    nameof(spawnConstraints));
 
             SpawnPlacementPolicy policy =
                 context.Intent.PlacementPolicy;
@@ -108,7 +114,8 @@ namespace Chaosbound.Gameplay.Spawn.Placement.Resolvers
                 PlacementResolution validation =
                     placementValidator.Validate(
                         context.Intent.Materializable.Reference,
-                        candidate.Placement);
+                        candidate.Placement,
+                        spawnConstraints);
 
                 if (validation.IsSuccess)
                 {

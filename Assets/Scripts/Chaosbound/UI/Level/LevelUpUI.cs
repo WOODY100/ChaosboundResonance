@@ -1,7 +1,8 @@
+using Chaosbound.Core.GameFlow;
+using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
-using System.Collections.Generic;
 
 public class LevelUpUI : MonoBehaviour
 {
@@ -135,6 +136,39 @@ public class LevelUpUI : MonoBehaviour
             LevelUpOptionUI instance = Instantiate(optionPrefab, optionsContainer);
             instance.gameObject.SetActive(false);
             spawnedOptions.Add(instance);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (levelUpManager != null)
+        {
+            levelUpManager.OnLevelUpOptionsGenerated -=
+                ShowOptions;
+
+            levelUpManager.OnReplaceRequested -=
+                HandleReplaceRequested;
+
+            levelUpManager.OnReplaceFinished -=
+                HandleReplaceFinished;
+
+            levelUpManager.OnReplaceCancelled -=
+                HandleReplaceCancelled;
+
+            levelUpManager.OnLevelUpFinished -=
+                HandleLevelUpFinished;
+        }
+
+        if (cancelButton != null)
+        {
+            Button button =
+                cancelButton.GetComponent<Button>();
+
+            if (button != null)
+            {
+                button.onClick.RemoveListener(
+                    OnCancelPressed);
+            }
         }
     }
 }

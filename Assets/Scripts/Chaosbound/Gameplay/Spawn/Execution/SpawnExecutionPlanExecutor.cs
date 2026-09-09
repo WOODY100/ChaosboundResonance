@@ -82,16 +82,15 @@ namespace Chaosbound.Gameplay.Spawn.Execution
             foreach (SpawnJob job in jobs)
             {
                 SpawnSchedulingContext schedulingContext =
-                    schedulingContextFactory.Create(
-                        job,
+                    schedulingContextFactory.Create(job);
+
+                IReadOnlyList<GameObject> jobObjects =
+                    spawnJobExecutor.Execute(
+                        schedulingContext,
                         spawnConfig,
                         references,
                         expeditionRuntime,
                         executionPlan.Context.SpatialOrigin);
-
-                IReadOnlyList<GameObject> jobObjects =
-                    spawnJobExecutor.Execute(
-                        schedulingContext);
 
                 foreach (GameObject obj in jobObjects)
                 {

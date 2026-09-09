@@ -38,7 +38,11 @@ namespace Chaosbound.Gameplay.Spawn.Validation
                 "Executing Spawn Runtime...");
 
             executor.Execute(
-                context.SchedulingContext);
+                context.SchedulingContext,
+                context.SpawnConfig,
+                context.References,
+                context.ExpeditionRuntime,
+                null);
 
             SpawnRuntimeDebugger.Step(
                 "========================================");

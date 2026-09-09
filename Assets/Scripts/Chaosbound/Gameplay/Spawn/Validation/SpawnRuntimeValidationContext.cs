@@ -1,6 +1,8 @@
 using Chaosbound.Content.Expeditions.Runtime.References;
 using Chaosbound.Content.Expeditions.Runtime.Spawn;
+using Chaosbound.Gameplay.ExpeditionRuntime.Runtime;
 using Chaosbound.Gameplay.Spawn.Scheduling;
+using System;
 
 namespace Chaosbound.Gameplay.Spawn.Validation
 {
@@ -16,14 +18,29 @@ namespace Chaosbound.Gameplay.Spawn.Validation
 
         public RuntimeReferencesConfig References { get; }
 
+        public ExpeditionRuntimeState ExpeditionRuntime { get; }
+
         public SpawnRuntimeValidationContext(
             SpawnSchedulingContext schedulingContext,
             RuntimeSpawnConfig spawnConfig,
-            RuntimeReferencesConfig references)
+            RuntimeReferencesConfig references,
+            ExpeditionRuntimeState expeditionRuntime)
         {
-            SchedulingContext = schedulingContext;
-            SpawnConfig = spawnConfig;
-            References = references;
+            SchedulingContext =
+                schedulingContext
+                ?? throw new ArgumentNullException(nameof(schedulingContext));
+
+            SpawnConfig =
+                spawnConfig
+                ?? throw new ArgumentNullException(nameof(spawnConfig));
+
+            References =
+                references
+                ?? throw new ArgumentNullException(nameof(references));
+
+            ExpeditionRuntime =
+                expeditionRuntime
+                ?? throw new ArgumentNullException(nameof(expeditionRuntime));
         }
     }
 }

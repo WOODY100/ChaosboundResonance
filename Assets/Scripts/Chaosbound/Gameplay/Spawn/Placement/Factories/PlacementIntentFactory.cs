@@ -18,10 +18,12 @@ namespace Chaosbound.Gameplay.Spawn.Placement.Factories
             RuntimeSpawnConfig spawnConfig)
         {
             if (scheduledTask == null)
-                throw new ArgumentNullException(nameof(scheduledTask));
+                throw new ArgumentNullException(
+                    nameof(scheduledTask));
 
             if (spawnConfig == null)
-                throw new ArgumentNullException(nameof(spawnConfig));
+                throw new ArgumentNullException(
+                    nameof(spawnConfig));
 
             return new PlacementIntent(
                 scheduledTask

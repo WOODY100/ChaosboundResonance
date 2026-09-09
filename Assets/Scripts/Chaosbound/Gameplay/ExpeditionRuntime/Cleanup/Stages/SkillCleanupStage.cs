@@ -13,7 +13,7 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Cleanup.Stages
         IExpeditionCleanupStage
     {
         public void Execute(
-    ExpeditionCleanupContext context)
+            ExpeditionCleanupContext context)
         {
             if (context == null)
                 throw new ArgumentNullException(

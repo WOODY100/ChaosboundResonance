@@ -4,18 +4,19 @@ using Chaosbound.Gameplay.Spawn.Factories;
 using Chaosbound.Gameplay.Spawn.Infrastructure;
 using Chaosbound.Gameplay.Spawn.Integration;
 using Chaosbound.Gameplay.Spawn.Materialization;
+using Chaosbound.Gameplay.Spawn.Placement.Contracts;
 using Chaosbound.Gameplay.Spawn.Placement.Factories;
 using Chaosbound.Gameplay.Spawn.Placement.Resolvers;
 using Chaosbound.Gameplay.Spawn.Placement.Strategies;
+using Chaosbound.Gameplay.Spawn.Placement.Validation;
 using Chaosbound.Gameplay.Spawn.Reference.Factories;
 using Chaosbound.Gameplay.Spawn.Reference.Providers;
 using Chaosbound.Gameplay.Spawn.Reference.Resolvers;
 using Chaosbound.Gameplay.Spawn.Runtime;
 using Chaosbound.Gameplay.Spawn.Scheduling;
 using Chaosbound.Gameplay.Spawn.Services;
-using Chaosbound.Gameplay.Spawn.Placement.Contracts;
-using Chaosbound.Gameplay.Spawn.Placement.Validation;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace Chaosbound.Gameplay.Spawn.Bootstrap
 {
@@ -329,7 +330,9 @@ namespace Chaosbound.Gameplay.Spawn.Bootstrap
 
             return new PlacementValidator(
                 BuildPlacementFootprintResolver(),
-                obstacleLayer);
+                obstacleLayer,
+                0.25f,
+                NavMesh.AllAreas);
         }
     }
 }

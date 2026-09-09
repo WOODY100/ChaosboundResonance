@@ -15,6 +15,7 @@ using Chaosbound.Gameplay.Spawn.Reference.Resolvers;
 using Chaosbound.Gameplay.Spawn.Scheduling;
 using System;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace Chaosbound.Gameplay.Spawn.Validation
 {
@@ -257,7 +258,9 @@ namespace Chaosbound.Gameplay.Spawn.Validation
 
             return new PlacementValidator(
                 BuildPlacementFootprintResolver(),
-                obstacleLayer);
+                obstacleLayer,
+                0.25f,
+                NavMesh.AllAreas);
         }
 
         private PlacementResolver

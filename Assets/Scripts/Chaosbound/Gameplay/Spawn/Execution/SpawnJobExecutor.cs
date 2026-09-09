@@ -1,3 +1,6 @@
+using Chaosbound.Content.Expeditions.Runtime.References;
+using Chaosbound.Content.Expeditions.Runtime.Spawn;
+using Chaosbound.Gameplay.ExpeditionRuntime.Runtime;
 using Chaosbound.Gameplay.Spawn.Factories;
 using Chaosbound.Gameplay.Spawn.Materialization;
 using Chaosbound.Gameplay.Spawn.Models;
@@ -98,10 +101,23 @@ namespace Chaosbound.Gameplay.Spawn.Execution
         /// Executes the supplied scheduling context.
         /// </summary>
         public IReadOnlyList<GameObject> Execute(
-            SpawnSchedulingContext schedulingContext)
+            SpawnSchedulingContext schedulingContext,
+            RuntimeSpawnConfig spawnConfig,
+            RuntimeReferencesConfig references,
+            ExpeditionRuntimeState expeditionRuntime,
+            SpawnSpatialOrigin? requestSpatialOrigin)
         {
             if (schedulingContext == null)
                 throw new ArgumentNullException(nameof(schedulingContext));
+
+            if (spawnConfig == null)
+                throw new ArgumentNullException(nameof(spawnConfig));
+
+            if (references == null)
+                throw new ArgumentNullException(nameof(references));
+
+            if (expeditionRuntime == null)
+                throw new ArgumentNullException(nameof(expeditionRuntime));
 
             List<GameObject> materializedObjects =
                 new List<GameObject>();
@@ -113,21 +129,21 @@ namespace Chaosbound.Gameplay.Spawn.Execution
             SpawnJobRuntimeState runtimeState =
                 runtimeStateFactory.Create(
                     schedulingContext.Job,
-                    schedulingContext.ExpeditionRuntime);
+                    expeditionRuntime);
 
             foreach (ScheduledSpawnTask task in tasks)
             {
                 PlacementIntent placementIntent =
                     placementIntentFactory.Create(
                         task,
-                        schedulingContext.SpawnConfig);
+                        spawnConfig);
 
                 SpawnReferenceContext referenceContext =
                     referenceContextFactory.Create(
-                        schedulingContext.SpawnConfig,
-                        schedulingContext.References,
-                        schedulingContext.ExpeditionRuntime,
-                        schedulingContext.SpatialOrigin);
+                        spawnConfig,
+                        references,
+                        expeditionRuntime,
+                        requestSpatialOrigin);
 
                 SpawnReferenceResult reference =
                     referenceResolver.Resolve(
@@ -164,7 +180,8 @@ namespace Chaosbound.Gameplay.Spawn.Execution
 
                 PlacementResolution placement =
                     placementResolver.Resolve(
-                        placementContext);
+                        placementContext,
+                        spawnConfig.SpawnConstraints);
 
                 if (!placement.IsSuccess)
                 {

@@ -14,6 +14,8 @@ namespace Chaosbound.Content.Expeditions.Enums.Spawn
 
         RequireDifficulty = 3,
 
-        DoorClosed = 4
+        DoorClosed = 4,
+
+        RequireNavMeshWalkable = 5
     }
 }

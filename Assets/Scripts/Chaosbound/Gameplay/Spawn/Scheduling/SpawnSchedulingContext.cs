@@ -1,8 +1,4 @@
-using Chaosbound.Content.Expeditions.Runtime.References;
-using Chaosbound.Content.Expeditions.Runtime.Spawn;
-using Chaosbound.Gameplay.ExpeditionRuntime.Runtime;
 using Chaosbound.Gameplay.Spawn.Domain;
-using Chaosbound.Gameplay.Spawn.Reference.Models;
 using System;
 
 namespace Chaosbound.Gameplay.Spawn.Scheduling
@@ -18,52 +14,11 @@ namespace Chaosbound.Gameplay.Spawn.Scheduling
         /// </summary>
         public SpawnJob Job { get; }
 
-        /// <summary>
-        /// Gets the runtime spawn configuration.
-        /// </summary>
-        public RuntimeSpawnConfig SpawnConfig { get; }
-
-        /// <summary>
-        /// Gets the runtime world references.
-        /// </summary>
-        public RuntimeReferencesConfig References { get; }
-
-        /// <summary>
-        /// Gets the current expedition runtime state.
-        /// </summary>
-        public ExpeditionRuntimeState ExpeditionRuntime { get; }
-
-        /// <summary>
-        /// Gets the optional spatial origin associated with the spawn request.
-        /// </summary>
-        public SpawnSpatialOrigin? SpatialOrigin { get; }
-
-        public SpawnSchedulingContext(
-            SpawnJob job,
-            RuntimeSpawnConfig spawnConfig,
-            RuntimeReferencesConfig references,
-            ExpeditionRuntimeState expeditionRuntime,
-            SpawnSpatialOrigin? spatialOrigin)
+        public SpawnSchedulingContext(SpawnJob job)
         {
             Job =
                 job
                 ?? throw new ArgumentNullException(nameof(job));
-
-            SpawnConfig =
-                spawnConfig
-                ?? throw new ArgumentNullException(nameof(spawnConfig));
-
-            References =
-                references
-                ?? throw new ArgumentNullException(nameof(references));
-
-            ExpeditionRuntime =
-                expeditionRuntime
-                ?? throw new ArgumentNullException(
-                    nameof(expeditionRuntime));
-
-            SpatialOrigin =
-                spatialOrigin;
         }
     }
 }

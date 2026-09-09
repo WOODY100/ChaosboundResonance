@@ -60,16 +60,13 @@ namespace Chaosbound.Gameplay.Spawn.Validation
                 BuildExpeditionRuntimeState();
 
             SpawnSchedulingContext schedulingContext =
-                BuildSchedulingContext(
-                    job,
-                    spawnConfig,
-                    references,
-                    expeditionRuntime);
+                BuildSchedulingContext(job);
 
             return new SpawnRuntimeValidationContext(
                 schedulingContext,
                 spawnConfig,
-                references);
+                references,
+                expeditionRuntime);
         }
 
         private EnemyVariantData BuildEnemy()
@@ -145,17 +142,9 @@ namespace Chaosbound.Gameplay.Spawn.Validation
         new SpawnSchedulingContextFactory();
 
         private SpawnSchedulingContext BuildSchedulingContext(
-            SpawnJob job,
-            RuntimeSpawnConfig spawnConfig,
-            RuntimeReferencesConfig references,
-            ExpeditionRuntimeState expeditionRuntime)
+            SpawnJob job)
         {
-            return schedulingContextFactory.Create(
-                job,
-                spawnConfig,
-                references,
-                expeditionRuntime,
-                null);
+            return schedulingContextFactory.Create(job);
         }
     }
 }

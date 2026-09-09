@@ -139,10 +139,6 @@ public sealed class LootBag : PooledBehaviour
             .AddPendingLoot(
                 pendingLoot);
 
-        Debug.Log(
-            $"Loot Bag '{name}' opened.",
-            this);
-
         ReturnToPool();
     }
 
