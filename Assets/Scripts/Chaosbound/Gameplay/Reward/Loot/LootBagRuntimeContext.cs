@@ -26,11 +26,20 @@ public sealed class LootBagRuntimeContext :
             ?? throw new ArgumentNullException(
                 nameof(expeditionRuntime));
 
+        ExpeditionRuntime.LootBags.Register(
+            GetComponent<LootBag>());
+
         IsInitialized = true;
     }
 
     private void OnDisable()
     {
+        if (ExpeditionRuntime != null)
+        {
+            ExpeditionRuntime.LootBags.Unregister(
+                GetComponent<LootBag>());
+        }
+
         ExpeditionRuntime = null;
         IsInitialized = false;
     }

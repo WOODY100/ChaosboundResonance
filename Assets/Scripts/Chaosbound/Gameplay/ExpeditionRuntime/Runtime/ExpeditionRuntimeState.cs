@@ -10,6 +10,7 @@ using Chaosbound.Gameplay.ExpeditionRuntime.References.Contracts;
 using Chaosbound.Gameplay.ExpeditionRuntime.References.Runtime;
 using Chaosbound.Gameplay.ExpeditionRuntime.Statistics;
 using Chaosbound.Gameplay.ExpeditionRuntime.XP.Runtime;
+using Chaosbound.Gameplay.ExpeditionRuntime.Loot.Runtime;
 using Chaosbound.Gameplay.MiniBosses;
 using Chaosbound.Gameplay.Timeline;
 using System;
@@ -73,6 +74,10 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Runtime
         private readonly XPFragmentRuntimeState
             xpFragments =
                 new XPFragmentRuntimeState();
+
+        private readonly LootBagRuntimeState
+            lootBags =
+                new LootBagRuntimeState();
 
         private readonly ExpeditionRuntimeStatistics
             statistics =
@@ -145,6 +150,9 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Runtime
 
         public XPFragmentRuntimeState XPFragments =>
             xpFragments;
+
+        public LootBagRuntimeState LootBags =>
+            lootBags;
 
         public RewardRuntimeState Reward =>
             rewardRuntime;

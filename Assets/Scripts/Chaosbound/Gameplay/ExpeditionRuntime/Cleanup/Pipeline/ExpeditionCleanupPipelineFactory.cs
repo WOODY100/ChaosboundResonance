@@ -40,6 +40,8 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Cleanup.Pipeline
                  
                 BuildXPFragmentCleanupStage(),
 
+                BuildLootBagCleanupStage(),
+
                 BuildSkillCleanupStage()
             };
         }
@@ -56,6 +58,12 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Cleanup.Pipeline
             BuildXPFragmentCleanupStage()
         {
             return new XPFragmentCleanupStage();
+        }
+
+        private IExpeditionCleanupStage
+            BuildLootBagCleanupStage()
+        {
+            return new LootBagCleanupStage();
         }
 
         private IExpeditionCleanupStage
