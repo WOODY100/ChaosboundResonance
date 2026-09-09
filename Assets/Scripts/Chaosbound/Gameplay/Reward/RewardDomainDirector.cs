@@ -1,3 +1,4 @@
+using Chaosbound.Content.Expeditions.Enums.Spawn;
 using Chaosbound.Content.Expeditions.Runtime.Spawn;
 using Chaosbound.Gameplay.ExpeditionRuntime.Context;
 using Chaosbound.Gameplay.Spawn.Contracts;
@@ -80,15 +81,17 @@ public sealed class RewardDomainDirector
                 out ResolvedLoot resolvedLoot))
         {
             SpawnRequest spawnRequest =
-                spawnRequestBuilder.Build(
-                    resolvedLoot,
-                    context.Config.Spawn);
+                spawnRequestBuilder.Build(resolvedLoot);
 
             if (!spawnRequest.IsEmpty)
             {
+                RuntimeSpawnConfig rewardSpawnConfig =
+                    context.Config.Spawn.WithPlacement(
+                        SpawnPlacementPolicy.AroundOrigin);
+
                 spawnRuntime.Execute(
                     spawnRequest,
-                    spawnRequest.Context.SpawnConfig,
+                    rewardSpawnConfig,
                     context.References.Runtime,
                     context.State);
             }

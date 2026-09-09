@@ -1,4 +1,3 @@
-using Chaosbound.Content.Expeditions.Runtime.Spawn;
 using Chaosbound.Gameplay.Spawn.Contracts;
 using Chaosbound.Gameplay.Spawn.Reference.Models;
 using System;
@@ -49,7 +48,6 @@ namespace Chaosbound.Gameplay.Spawn.Factories
 
         public SpawnRequest Create(
             IEnumerable<SpawnRequestEntry> entries,
-            RuntimeSpawnConfig runtimeSpawnConfig,
             SpawnRequestOrigin origin,
             SpawnSpatialOrigin? spatialOrigin)
         {
@@ -59,17 +57,9 @@ namespace Chaosbound.Gameplay.Spawn.Factories
                     nameof(entries));
             }
 
-            if (runtimeSpawnConfig == null)
-            {
-                throw new ArgumentNullException(
-                    nameof(runtimeSpawnConfig));
-            }
-
             return new SpawnRequest(
                 entries,
-                contextFactory.Create(
-                    runtimeSpawnConfig,
-                    spatialOrigin),
+                contextFactory.Create(spatialOrigin),
                 metadataFactory.Create(
                     origin));
         }

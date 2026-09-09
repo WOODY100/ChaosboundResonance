@@ -1,4 +1,3 @@
-using Chaosbound.Content.Expeditions.Runtime.Spawn;
 using Chaosbound.Gameplay.ExpeditionRuntime.ExitPortal.Models;
 using Chaosbound.Gameplay.Spawn.Contracts;
 using Chaosbound.Gameplay.Spawn.Factories;
@@ -41,22 +40,14 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.ExitPortal.Integration.Spawn
         /// into a SpawnRequest.
         /// </summary>
         public SpawnRequest Translate(
-            ExitPortalSpawnPlan plan,
-            RuntimeSpawnConfig runtimeSpawnConfig)
+            ExitPortalSpawnPlan plan)
         {
             if (plan == null)
             {
                 throw new ArgumentNullException(
                     nameof(plan));
             }
-
-            if (runtimeSpawnConfig == null)
-            {
-                throw new ArgumentNullException(
-                    nameof(runtimeSpawnConfig));
-            }
-
-            List<SpawnRequestEntry> entries =
+List<SpawnRequestEntry> entries =
                 new List<SpawnRequestEntry>(
                     plan.Entries.Count);
 
@@ -78,7 +69,6 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.ExitPortal.Integration.Spawn
 
             return spawnRequestFactory.Create(
                 entries,
-                runtimeSpawnConfig,
                 SpawnRequestOrigin.ExitPortal,
                 null);
         }

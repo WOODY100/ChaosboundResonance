@@ -1,5 +1,3 @@
-using Chaosbound.Content.Expeditions.Enums.Spawn;
-using Chaosbound.Content.Expeditions.Runtime.Spawn;
 using Chaosbound.Gameplay.Spawn.Content;
 using Chaosbound.Gameplay.Spawn.Contracts;
 using Chaosbound.Gameplay.Spawn.Factories;
@@ -51,19 +49,12 @@ public sealed class RewardSpawnRequestBuilder
     }
 
     public SpawnRequest Build(
-        ResolvedLoot resolvedLoot,
-        RuntimeSpawnConfig spawnConfig)
+        ResolvedLoot resolvedLoot)
     {
         if (resolvedLoot == null)
         {
             throw new ArgumentNullException(
                 nameof(resolvedLoot));
-        }
-
-        if (spawnConfig == null)
-        {
-            throw new ArgumentNullException(
-                nameof(spawnConfig));
         }
 
         List<SpawnRequestEntry> entries =
@@ -99,17 +90,12 @@ public sealed class RewardSpawnRequestBuilder
             }
         }
 
-        RuntimeSpawnConfig rewardSpawnConfig =
-            spawnConfig.WithPlacement(
-                SpawnPlacementPolicy.AroundOrigin);
-
         SpawnSpatialOrigin spatialOrigin =
             new SpawnSpatialOrigin(
                 resolvedLoot.Origin);
 
         return requestFactory.Create(
             entries,
-            rewardSpawnConfig,
             SpawnRequestOrigin.Loot,
             spatialOrigin);
     }

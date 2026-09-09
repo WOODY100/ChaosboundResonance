@@ -98,8 +98,7 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.ExitPortal
 
             SpawnRequest spawnRequest =
                 spawnRequestTranslator.Translate(
-                    spawnPlan,
-                    context.Config.Spawn);
+                    spawnPlan);
 
             RuntimeSpawnConfig portalSpawnConfig =
                 context.Config.Spawn.WithPlacement(

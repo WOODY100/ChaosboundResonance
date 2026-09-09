@@ -23,7 +23,7 @@ namespace Chaosbound.Gameplay.Spawn.Contracts
         /// The requested materialization entries.
         /// </param>
         /// <param name="context">
-        /// Global execution context.
+        /// Immutable request context.
         /// </param>
         /// <param name="metadata">
         /// Metadata describing the producer.
@@ -58,7 +58,7 @@ namespace Chaosbound.Gameplay.Spawn.Contracts
             => m_Entries;
 
         /// <summary>
-        /// Gets the execution context.
+        /// Gets the immutable request context.
         /// </summary>
         public SpawnRequestContext Context
         {

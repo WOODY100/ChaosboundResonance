@@ -121,8 +121,7 @@ namespace Chaosbound.Gameplay.MiniBosses
 
             SpawnRequest spawnRequest =
                 spawnRequestTranslator.Translate(
-                    spawnPlan,
-                    context.Config.Spawn);
+                    spawnPlan);
 
             spawnRuntime.Execute(
                 spawnRequest,

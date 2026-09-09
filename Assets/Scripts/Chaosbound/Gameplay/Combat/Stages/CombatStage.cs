@@ -138,8 +138,7 @@ namespace Chaosbound.Gameplay.Combat.Stages
 
             SpawnRequest spawnRequest =
                 spawnRequestTranslator.Translate(
-                    spawnPlan,
-                    context.Config.Spawn);
+                    spawnPlan);
 
             spawnRuntime.Execute(
                 spawnRequest,

@@ -1,4 +1,3 @@
-using Chaosbound.Content.Expeditions.Runtime.Spawn;
 using Chaosbound.Gameplay.MiniBosses.Models;
 using Chaosbound.Gameplay.Spawn.Contracts;
 using Chaosbound.Gameplay.Spawn.Factories;
@@ -41,22 +40,14 @@ namespace Chaosbound.Gameplay.MiniBosses.Integration.Spawn
         /// into a SpawnRequest.
         /// </summary>
         public SpawnRequest Translate(
-            MiniBossSpawnPlan plan,
-            RuntimeSpawnConfig runtimeSpawnConfig)
+            MiniBossSpawnPlan plan)
         {
             if (plan == null)
             {
                 throw new ArgumentNullException(
                     nameof(plan));
             }
-
-            if (runtimeSpawnConfig == null)
-            {
-                throw new ArgumentNullException(
-                    nameof(runtimeSpawnConfig));
-            }
-
-            List<SpawnRequestEntry> entries =
+List<SpawnRequestEntry> entries =
                 new List<SpawnRequestEntry>(
                     plan.Entries.Count);
 
@@ -78,7 +69,6 @@ namespace Chaosbound.Gameplay.MiniBosses.Integration.Spawn
 
             return spawnRequestFactory.Create(
                 entries,
-                runtimeSpawnConfig,
                 SpawnRequestOrigin.MiniBoss,
                 null);
         }
