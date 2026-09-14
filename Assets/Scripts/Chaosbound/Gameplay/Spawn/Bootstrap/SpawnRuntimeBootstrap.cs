@@ -194,6 +194,12 @@ namespace Chaosbound.Gameplay.Spawn.Bootstrap
             return new AroundOriginPlacementStrategy();
         }
 
+        private AtOriginPlacementStrategy
+            BuildAtOriginPlacementStrategy()
+        {
+            return new AtOriginPlacementStrategy();
+        }
+
         private PlacementResolver
             BuildPlacementResolver()
         {
@@ -201,6 +207,7 @@ namespace Chaosbound.Gameplay.Spawn.Bootstrap
                 BuildAroundPlayerPlacementStrategy(),
                 BuildNearReferencePlacementStrategy(),
                 BuildAroundOriginPlacementStrategy(),
+                BuildAtOriginPlacementStrategy(),
                 BuildPlacementValidator());
         }
 

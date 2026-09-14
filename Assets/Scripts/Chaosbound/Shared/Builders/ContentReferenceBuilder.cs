@@ -10,11 +10,11 @@ namespace Chaosbound.Shared.Builders
             ContentReferenceAuthoring authoring)
         {
             if (authoring == null)
-                throw new ArgumentNullException(nameof(authoring));
+                throw new ArgumentNullException(
+                    nameof(authoring));
 
             return new ContentReference(
-                new ContentId(authoring.Id),
-                authoring.Category);
+                new ContentId(authoring.Id));
         }
     }
 }

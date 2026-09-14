@@ -1,5 +1,7 @@
 using System;
 using UnityEngine;
+using Chaosbound.Content.Items;
+using Chaosbound.Content.Materials;
 
 namespace Chaosbound.Gameplay.ExpeditionRuntime.Composition
 {
@@ -27,12 +29,48 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Composition
             materializableContentDatabase;
 
         //==========================================================
+        // Items
+        //==========================================================
+
+        [Header("Items")]
+
+        [SerializeField]
+        private ItemDatabase
+            itemDatabase;
+
+        [SerializeField]
+        private ExpeditionRewardItemDatabase
+            expeditionRewardItemDatabase;
+
+        //==========================================================
+        // Materials
+        //==========================================================
+
+        [Header("Materials")]
+
+        [SerializeField]
+        private MaterialDatabase
+            materialDatabase;
+
+        //==========================================================
         // Public Properties
         //==========================================================
 
         public MaterializableContentDatabase
             MaterializableContentDatabase =>
                 materializableContentDatabase;
+
+        public ItemDatabase
+            ItemDatabase =>
+                itemDatabase;
+
+        public ExpeditionRewardItemDatabase
+            ExpeditionRewardItemDatabase =>
+                expeditionRewardItemDatabase;
+
+        public MaterialDatabase
+            MaterialDatabase =>
+                materialDatabase;
 
         //==========================================================
         // Unity
@@ -80,6 +118,33 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Composition
                 Debug.LogWarning(
                     $"{nameof(ExpeditionRuntimeCompositionContext)}: " +
                     $"'{nameof(materializableContentDatabase)}' " +
+                    "is not assigned.",
+                    this);
+            }
+
+            if (itemDatabase == null)
+            {
+                Debug.LogWarning(
+                    $"{nameof(ExpeditionRuntimeCompositionContext)}: " +
+                    $"'{nameof(itemDatabase)}' " +
+                    "is not assigned.",
+                    this);
+            }
+
+            if (expeditionRewardItemDatabase == null)
+            {
+                Debug.LogWarning(
+                    $"{nameof(ExpeditionRuntimeCompositionContext)}: " +
+                    $"'{nameof(expeditionRewardItemDatabase)}' " +
+                    "is not assigned.",
+                    this);
+            }
+
+            if (materialDatabase == null)
+            {
+                Debug.LogWarning(
+                    $"{nameof(ExpeditionRuntimeCompositionContext)}: " +
+                    $"'{nameof(materialDatabase)}' " +
                     "is not assigned.",
                     this);
             }

@@ -1,12 +1,16 @@
+using Chaosbound.Content.Items;
+using Chaosbound.Core.GameFlow;
 using Chaosbound.Core.Runtime.SceneManagement;
 using Chaosbound.Gameplay.ExpeditionRuntime.Cleanup.Pipeline;
+using Chaosbound.Gameplay.ExpeditionRuntime.Composition;
 using Chaosbound.Gameplay.ExpeditionRuntime.Director;
+using Chaosbound.Gameplay.ExpeditionRuntime.Exit;
 using Chaosbound.Gameplay.ExpeditionRuntime.Pipeline;
+using Chaosbound.Gameplay.ExpeditionRuntime.Settlement;
+using Chaosbound.Gameplay.Items.Runtime;
+using Chaosbound.Gameplay.Items.World.Integration;
 using Chaosbound.Gameplay.Spawn.Bootstrap;
 using Chaosbound.Gameplay.Spawn.Runtime;
-using Chaosbound.Core.GameFlow;
-using Chaosbound.Gameplay.ExpeditionRuntime.Exit;
-using Chaosbound.Gameplay.ExpeditionRuntime.Composition;
 using System;
 
 namespace Chaosbound.Gameplay.ExpeditionRuntime.Bootstrap
@@ -22,6 +26,9 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Bootstrap
 
         private readonly ExpeditionRuntimeCompositionContext
             compositionContext;
+
+        private SpawnRuntime
+            spawnRuntime;
 
         public ExpeditionRuntimeBootstrap(
             SceneTransitionService sceneTransitionService,
@@ -43,7 +50,7 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Bootstrap
         /// </summary>
         public ExpeditionDirector Build()
         {
-            SpawnRuntime spawnRuntime =
+            spawnRuntime =
                 new SpawnRuntimeBootstrap()
                     .Build();
 
@@ -59,6 +66,30 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Bootstrap
             return new ExpeditionDirector(
                 runtimePipeline,
                 cleanupPipeline);
+        }
+
+        public ItemWorldDropService BuildItemWorldDropService()
+        {
+            if (spawnRuntime == null)
+            {
+                throw new InvalidOperationException(
+                    "SpawnRuntime must be built before " +
+                    "building ItemWorldDropService.");
+            }
+
+            if (compositionContext.ItemDatabase == null)
+            {
+                throw new InvalidOperationException(
+                    "ItemDatabase is not available.");
+            }
+
+            ItemResolver itemResolver =
+                new ItemResolver(
+                    compositionContext.ItemDatabase);
+
+            return new ItemWorldDropService(
+                itemResolver,
+                spawnRuntime);
         }
 
         private ExpeditionRuntimePipeline
@@ -99,6 +130,7 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Bootstrap
 
         public ExpeditionExitService BuildExitService(
             ExpeditionDirector expeditionDirector,
+            ExpeditionSettlementService settlementService,
             GameFlow gameFlow)
         {
             if (expeditionDirector == null)
@@ -111,6 +143,7 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Bootstrap
 
             return new ExpeditionExitService(
                 expeditionDirector,
+                settlementService,
                 gameFlow,
                 sceneTransitionService);
         }

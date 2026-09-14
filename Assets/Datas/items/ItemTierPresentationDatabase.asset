@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d4e3567259b90748992c66f1b667ef3, type: 3}
+  m_Name: ItemTierPresentationDatabase
+  m_EditorClassIdentifier: Assembly-CSharp::Chaosbound.Content.Items.ItemTierPresentationDatabase
+  definitions:
+  - tier: 0
+    nameColor: {r: 1, g: 1, b: 1, a: 1}
+    presentationPrefab: {fileID: 1144480407206954417, guid: 0e78fc206c56df746b6e17a4ea0890ae, type: 3}
+  - tier: 1
+    nameColor: {r: 0, g: 0.30387545, b: 1, a: 1}
+    presentationPrefab: {fileID: 1144480407206954417, guid: 67b0eacb81661a0439df505ce2c27433, type: 3}
+  - tier: 2
+    nameColor: {r: 0.96933126, g: 1, b: 0, a: 1}
+    presentationPrefab: {fileID: 1144480407206954417, guid: 1068ac5594af743489748d677bda2da5, type: 3}
+  - tier: 3
+    nameColor: {r: 0.95129585, g: 0, b: 1, a: 1}
+    presentationPrefab: {fileID: 1144480407206954417, guid: 6af5316374d1a2e478201b442cdb2b02, type: 3}
+  - tier: 4
+    nameColor: {r: 1, g: 0.30844736, b: 0, a: 1}
+    presentationPrefab: {fileID: 1144480407206954417, guid: a654f15b97acaa847b945c4abf91d786, type: 3}

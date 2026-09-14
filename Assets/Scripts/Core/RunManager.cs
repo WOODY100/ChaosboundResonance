@@ -3,10 +3,13 @@ using Chaosbound.Core.Composition;
 using Chaosbound.Core.GameFlow;
 using Chaosbound.Core.Runtime.SceneManagement;
 using Chaosbound.Gameplay.ExpeditionRuntime.Bootstrap;
+using Chaosbound.Gameplay.ExpeditionRuntime.Composition;
 using Chaosbound.Gameplay.ExpeditionRuntime.Director;
 using Chaosbound.Gameplay.ExpeditionRuntime.Exit;
 using Chaosbound.Gameplay.ExpeditionRuntime.Runtime;
-using Chaosbound.Gameplay.ExpeditionRuntime.Composition;
+using Chaosbound.Gameplay.ExpeditionRuntime.Settlement;
+using Chaosbound.Gameplay.Items.Runtime;
+using Chaosbound.Gameplay.Items.World.Integration;
 using System;
 using UnityEngine;
 
@@ -35,22 +38,39 @@ public class RunManager : MonoBehaviour
     public ExpeditionExitService ExpeditionExitService =>
         expeditionExitService;
 
+    private ItemWorldDropService itemWorldDropService;
+
+    public ItemWorldDropService ItemWorldDropService =>
+        itemWorldDropService;
+
+    private ItemWorldDropConfirmationService
+        itemWorldDropConfirmationService;
+
+    public ItemWorldDropConfirmationService
+        ItemWorldDropConfirmationService =>
+            itemWorldDropConfirmationService;
+
+    private ExpeditionSettlementService
+        expeditionSettlementService;
+
+    public ExpeditionSettlementService
+        ExpeditionSettlementService =>
+            expeditionSettlementService;
+
     private void Awake()
     {
         Instance = this;
     }
 
-    private void Start()
+    public void InitializeExpeditionRuntime()
     {
         BootstrapContext context =
             BootstrapContext.Current;
 
         if (context == null)
         {
-            Debug.LogError(
+            throw new InvalidOperationException(
                 "BootstrapContext is not available.");
-
-            return;
         }
 
         SceneTransitionService sceneTransitionService =
@@ -58,30 +78,41 @@ public class RunManager : MonoBehaviour
 
         if (sceneTransitionService == null)
         {
-            Debug.LogError(
+            throw new InvalidOperationException(
                 "SceneTransitionService is not available.");
-
-            return;
         }
 
         ExpeditionRuntimeCompositionContext compositionContext =
             ExpeditionRuntimeCompositionContext.Current;
 
+        if (context.PersistentInventoryRuntime == null)
+        {
+            throw new InvalidOperationException(
+                "PersistentInventoryRuntime is not available.");
+        }
+
+        if (context.PersistentMetaRuntime == null)
+        {
+            throw new InvalidOperationException(
+                "PersistentMetaRuntime is not available.");
+        }
+
+        if (compositionContext.ExpeditionRewardItemDatabase == null)
+        {
+            throw new InvalidOperationException(
+                "ExpeditionRewardItemDatabase is not available.");
+        }
+
         if (compositionContext == null)
         {
-            Debug.LogError(
-                "ExpeditionRuntimeCompositionContext is not available.",
-                this);
-
-            return;
+            throw new InvalidOperationException(
+                "ExpeditionRuntimeCompositionContext is not available.");
         }
 
         if (context.GameFlow == null)
         {
-            Debug.LogError(
+            throw new InvalidOperationException(
                 "GameFlow is not available.");
-
-            return;
         }
 
         ExpeditionRuntimeBootstrap bootstrap =
@@ -92,9 +123,35 @@ public class RunManager : MonoBehaviour
         expeditionDirector =
             bootstrap.Build();
 
+        ExpeditionRewardItemResolver
+            expeditionRewardItemResolver =
+        new ExpeditionRewardItemResolver(
+            compositionContext.ExpeditionRewardItemDatabase);
+
+        ItemInstanceFactory
+            itemInstanceFactory =
+                new ItemInstanceFactory();
+
+        expeditionSettlementService =
+            new ExpeditionSettlementService(
+                context.PersistentInventoryRuntime.State.Items,
+                context.PersistentInventoryRuntime.State.Materials,
+                context.PersistentMetaRuntime.State,
+                expeditionRewardItemResolver,
+                itemInstanceFactory);
+
+        itemWorldDropService =
+            bootstrap.BuildItemWorldDropService();
+
+        itemWorldDropConfirmationService =
+            new ItemWorldDropConfirmationService(
+                context.GameFlow,
+                itemWorldDropService);
+
         expeditionExitService =
             bootstrap.BuildExitService(
                 expeditionDirector,
+                expeditionSettlementService,
                 context.GameFlow);
     }
 
@@ -178,6 +235,7 @@ public class RunManager : MonoBehaviour
         }
 
         expeditionExitService.Exit(
-            ExpeditionExitReason.Abandoned);
+            ExpeditionExitReason.Abandoned,
+            CurrentRunConfig);
     }
 }

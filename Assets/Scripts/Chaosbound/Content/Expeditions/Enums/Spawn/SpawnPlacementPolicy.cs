@@ -10,6 +10,8 @@ namespace Chaosbound.Content.Expeditions.Enums.Spawn
 
         AroundCompletionOrigin = 5,
 
-        AroundOrigin = 6
+        AroundOrigin = 6,
+
+        AtOrigin = 7
     }
 }

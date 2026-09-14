@@ -132,7 +132,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6451734003143246520}
   - component: {fileID: 4443927882677060900}
-  - component: {fileID: 4664988908820313080}
+  - component: {fileID: -8643457527266784325}
   - component: {fileID: 6140195855067889215}
   m_Layer: 0
   m_Name: Wood
@@ -180,7 +180,7 @@ CapsuleCollider:
   m_Height: 1
   m_Direction: 1
   m_Center: {x: 0, y: 0.2, z: 0}
---- !u!114 &4664988908820313080
+--- !u!114 &-8643457527266784325
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -189,9 +189,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 6038093249091470790}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 332e448ab680ab34181dea86077ea326, type: 3}
+  m_Script: {fileID: 11500000, guid: 1334b60c50e59854db673263a5b70d7f, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TestResourcePickup
+  m_EditorClassIdentifier: Assembly-CSharp::MaterialResourcePickup
+  contentId: wood
+  pickupRadius: 1
 --- !u!114 &6140195855067889215
 MonoBehaviour:
   m_ObjectHideFlags: 0

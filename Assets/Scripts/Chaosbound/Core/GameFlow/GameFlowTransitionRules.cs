@@ -95,6 +95,12 @@ namespace Chaosbound.Core.GameFlow
             // Inventory
             //======================================================
 
+            if (current == GameFlowContext.Playing &&
+                requested == GameFlowContext.Inventory)
+            {
+                return GameFlowTransitionDecision.Push;
+            }
+
             if (current == GameFlowContext.Pause &&
                 requested == GameFlowContext.Inventory)
             {

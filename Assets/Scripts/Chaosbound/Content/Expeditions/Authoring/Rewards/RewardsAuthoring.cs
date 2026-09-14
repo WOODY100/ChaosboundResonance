@@ -1,4 +1,3 @@
-using Chaosbound.Shared.Authoring;
 using System;
 using UnityEngine;
 
@@ -7,9 +6,13 @@ namespace Chaosbound.Content.Expeditions.Authoring.Rewards
     [Serializable]
     public sealed class RewardsAuthoring
     {
-        [SerializeField]
-        private ContentReferenceAuthoring[] m_Content;
+        [Header("Completion Reward")]
 
-        public ContentReferenceAuthoring[] Content => m_Content;
+        [SerializeField]
+        private CompletionRewardAuthoring m_completion =
+            new CompletionRewardAuthoring();
+
+        public CompletionRewardAuthoring Completion =>
+            m_completion;
     }
 }

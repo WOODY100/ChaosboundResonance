@@ -1,6 +1,9 @@
 using Chaosbound.Core.GameFlow;
 using GameFlowService = Chaosbound.Core.GameFlow.GameFlow;
 using Chaosbound.Core.Runtime.SceneManagement;
+using Chaosbound.Gameplay.Inventory.Persistent;
+using Chaosbound.Gameplay.MetaProgression.Persistent;
+using Chaosbound.Core.Settings;
 using System;
 using UnityEngine;
 
@@ -21,6 +24,11 @@ namespace Chaosbound.Core.Composition
         [SerializeField] private PoolManager poolManager;
         [SerializeField] private EnemyManager enemyManager;
         [SerializeField] private LevelUpManager levelUpManager;
+        [SerializeField] private PersistentInventoryRuntime persistentInventoryRuntime;
+        [SerializeField] private GameSettingsRuntime gameSettingsRuntime;
+        [SerializeField] private PersistentMetaRuntime persistentMetaRuntime;
+
+
 
         //==========================================================
         // Game Flow
@@ -49,8 +57,13 @@ namespace Chaosbound.Core.Composition
         public EnemyManager EnemyManager => enemyManager;
         public LevelUpManager LevelUpManager => levelUpManager;
         public SceneTransitionService SceneTransitionService => sceneTransitionService;
-
         public GameFlowService GameFlow => gameFlow;
+        public PersistentInventoryRuntime PersistentInventoryRuntime =>
+            persistentInventoryRuntime;
+        public GameSettingsRuntime GameSettingsRuntime =>
+            gameSettingsRuntime;
+        public PersistentMetaRuntime PersistentMetaRuntime =>
+            persistentMetaRuntime;
 
         //==========================================================
         // Unity
@@ -150,10 +163,13 @@ namespace Chaosbound.Core.Composition
                 levelUpManager,
                 nameof(levelUpManager));
 
-            // Game Flow
             ValidateReference(
                 gameFlowConfiguration,
                 nameof(gameFlowConfiguration));
+
+            ValidateReference(
+                persistentMetaRuntime,
+                nameof(persistentMetaRuntime));
         }
 
         private void ValidateReference(

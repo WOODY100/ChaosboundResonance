@@ -1,17 +1,24 @@
 using Chaosbound.Core.GameFlow;
 using Chaosbound.Core.Runtime.SceneManagement;
 using Chaosbound.Gameplay.ExpeditionRuntime.Director;
+using Chaosbound.Content.Expeditions.Runtime.Configs;
+using Chaosbound.Gameplay.ExpeditionRuntime.Settlement;
 using System;
+using UnityEngine;
 
 namespace Chaosbound.Gameplay.ExpeditionRuntime.Exit
 {
     /// <summary>
     /// Coordinates the terminal exit of an active Expedition.
     ///
-    /// This service aborts the Expedition runtime,
-    /// resets GameFlow and transitions to Sanctuary.
+    /// On successful completion, this service attempts to settle
+    /// the Expedition results before cleaning up the runtime.
     ///
-    /// It does not own Expedition runtime state,
+    /// If settlement fails, no partial settlement is performed.
+    /// The failure is logged and the Expedition is still safely
+    /// aborted before returning to Sanctuary.
+    ///
+    /// This service does not own Expedition runtime state,
     /// cleanup logic or GameFlow state.
     /// </summary>
     public sealed class ExpeditionExitService
@@ -20,8 +27,11 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Exit
         private readonly GameFlow gameFlow;
         private readonly SceneTransitionService sceneTransitionService;
 
+        private readonly ExpeditionSettlementService settlementService;
+
         public ExpeditionExitService(
             ExpeditionDirector expeditionDirector,
+            ExpeditionSettlementService settlementService,
             GameFlow gameFlow,
             SceneTransitionService sceneTransitionService)
         {
@@ -29,6 +39,11 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Exit
                 expeditionDirector
                 ?? throw new ArgumentNullException(
                     nameof(expeditionDirector));
+
+            this.settlementService =
+                settlementService
+                ?? throw new ArgumentNullException(
+                    nameof(settlementService));
 
             this.gameFlow =
                 gameFlow
@@ -42,8 +57,26 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Exit
         }
 
         public void Exit(
-            ExpeditionExitReason reason)
+            ExpeditionExitReason reason,
+            RuntimeExpeditionConfig expeditionConfig)
         {
+            if (reason == ExpeditionExitReason.Completed)
+            {
+                bool settlementSucceeded =
+                    settlementService.TrySettle(
+                        expeditionDirector.RuntimeState,
+                        expeditionConfig,
+                        out ExpeditionSettlementResult result);
+
+                if (!settlementSucceeded)
+                {
+                    UnityEngine.Debug.LogError(
+                        "[ExpeditionExitService] " +
+                        "Expedition completion settlement failed. " +
+                        "No persistent progress was committed.");
+                }
+            }
+
             AbortExpedition();
 
             gameFlow.ResetFlow();

@@ -13,6 +13,7 @@ using Chaosbound.Gameplay.ExpeditionRuntime.XP.Runtime;
 using Chaosbound.Gameplay.ExpeditionRuntime.Loot.Runtime;
 using Chaosbound.Gameplay.MiniBosses;
 using Chaosbound.Gameplay.Timeline;
+using Chaosbound.Gameplay.Inventory.Runtime;
 using System;
 
 namespace Chaosbound.Gameplay.ExpeditionRuntime.Runtime
@@ -83,6 +84,15 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Runtime
             statistics =
                 new ExpeditionRuntimeStatistics();
 
+        private readonly ExpeditionInventoryRuntime inventory =
+            new ExpeditionInventoryRuntime();
+
+        private readonly ExpeditionMaterialsState materials =
+            new ExpeditionMaterialsState();
+
+        public ExpeditionInventoryRuntime Inventory => 
+            inventory;
+
         public CombatRuntimeComposition RuntimeComposition =>
             runtimeComposition;
 
@@ -91,6 +101,8 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Runtime
 
         public ExpeditionRuntimeStatistics Statistics =>
             statistics;
+
+        public ExpeditionMaterialsState Materials => materials;
 
         /// <summary>
         /// Gets the runtime usage state of one-use

@@ -31,6 +31,7 @@ namespace Chaosbound.Gameplay.Spawn.Placement.Resolvers
             ISpawnPlacementStrategy aroundPlayerStrategy,
             ISpawnPlacementStrategy nearReferenceStrategy,
             ISpawnPlacementStrategy aroundOriginStrategy,
+            ISpawnPlacementStrategy atOriginStrategy,
             PlacementValidator placementValidator)
         {
             if (aroundPlayerStrategy == null)
@@ -44,6 +45,10 @@ namespace Chaosbound.Gameplay.Spawn.Placement.Resolvers
             if (aroundOriginStrategy == null)
                 throw new ArgumentNullException(
                     nameof(aroundOriginStrategy));
+
+            if (atOriginStrategy == null)
+                throw new ArgumentNullException(
+                    nameof(atOriginStrategy));
 
             this.placementValidator =
                 placementValidator
@@ -66,6 +71,10 @@ namespace Chaosbound.Gameplay.Spawn.Placement.Resolvers
                 {
                     SpawnPlacementPolicy.AroundOrigin,
                     aroundOriginStrategy
+                },
+                {
+                    SpawnPlacementPolicy.AtOrigin,
+                    atOriginStrategy
                 }
             };
         }

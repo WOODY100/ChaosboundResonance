@@ -343,7 +343,8 @@ namespace Chaosbound.Core.Composition
             }
 
             runManager.ExpeditionExitService.Exit(
-                currentExitReason);
+                currentExitReason,
+                runManager.CurrentRunConfig);
         }
 
         //==========================================================

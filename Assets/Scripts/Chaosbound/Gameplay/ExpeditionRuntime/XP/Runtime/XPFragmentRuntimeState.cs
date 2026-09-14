@@ -63,26 +63,22 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.XP.Runtime
 
         public void Cleanup()
         {
-            for (int i = activeFragments.Count - 1; i >= 0; i--)
+            List<ResonanceFragmentPickup> snapshot =
+                new List<ResonanceFragmentPickup>(
+                    activeFragments);
+
+            for (int i = 0; i < snapshot.Count; i++)
             {
                 ResonanceFragmentPickup fragment =
-                    activeFragments[i];
+                    snapshot[i];
 
                 if (fragment == null)
-                {
-                    activeFragments.RemoveAt(i);
                     continue;
-                }
 
                 if (!fragment.gameObject.activeInHierarchy)
-                {
-                    activeFragments.RemoveAt(i);
                     continue;
-                }
 
                 fragment.Cleanup();
-
-                activeFragments.RemoveAt(i);
             }
 
             activeFragments.Clear();

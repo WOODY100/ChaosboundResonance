@@ -244,6 +244,12 @@ namespace Chaosbound.Gameplay.Spawn.Validation
             return new AroundOriginPlacementStrategy();
         }
 
+        private AtOriginPlacementStrategy
+            BuildAtOriginPlacementStrategy()
+        {
+            return new AtOriginPlacementStrategy();
+        }
+
         private IPlacementFootprintResolver
             BuildPlacementFootprintResolver()
         {
@@ -270,6 +276,7 @@ namespace Chaosbound.Gameplay.Spawn.Validation
                 BuildAroundPlayerPlacementStrategy(),
                 BuildNearReferencePlacementStrategy(),
                 BuildAroundOriginPlacementStrategy(),
+                BuildAtOriginPlacementStrategy(),
                 BuildPlacementValidator());
         }
 

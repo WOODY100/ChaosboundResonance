@@ -174,9 +174,16 @@ namespace Chaosbound.Content.Expeditions.Runtime.Builders
             RewardsDefinition definition)
         {
             if (definition == null)
-                throw new ArgumentNullException(nameof(definition));
+                throw new ArgumentNullException(
+                    nameof(definition));
+
+            if (definition.Completion == null)
+                throw new InvalidOperationException(
+                    "RewardsDefinition does not contain a completion reward definition.");
+
             return new RuntimeRewardsConfig(
-                definition.Content);
+                definition.Completion.ItemContentId,
+                definition.Completion.MetaExperience);
         }
 
         private RuntimeMinimapConfig BuildMinimap(

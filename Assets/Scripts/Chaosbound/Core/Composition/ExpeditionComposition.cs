@@ -461,12 +461,10 @@ namespace Chaosbound.Core.Composition
                     "RunManager is missing.");
             }
 
+            runManager.InitializeExpeditionRuntime();
+
             runManager.StartRun(
                 runtimeConfig);
-
-            // V1
-            // Runtime initialization will be migrated here
-            // incrementally in future sprints.
         }
 
         private void InitializeGameplay()

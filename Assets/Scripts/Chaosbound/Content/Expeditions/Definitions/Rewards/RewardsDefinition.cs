@@ -1,16 +1,14 @@
-using Chaosbound.Shared.Identifiers;
-using System.Collections.Generic;
-
 namespace Chaosbound.Content.Expeditions.Definitions.Rewards
 {
     public sealed class RewardsDefinition
     {
         public RewardsDefinition(
-            IReadOnlyList<ContentReference> content)
+            CompletionRewardDefinition completion)
         {
-            Content = content;
+            Completion =
+                completion;
         }
 
-        public IReadOnlyList<ContentReference> Content { get; }
+        public CompletionRewardDefinition Completion { get; }
     }
 }

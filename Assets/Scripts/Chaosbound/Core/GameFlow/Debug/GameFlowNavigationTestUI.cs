@@ -304,7 +304,8 @@ public sealed class GameFlowNavigationTestUI : MonoBehaviour
         }
 
         exitService.Exit(
-            ExpeditionExitReason.Abandoned);
+            ExpeditionExitReason.Abandoned,
+            runManager.CurrentRunConfig);
     }
 
     private void CancelConfirmation()

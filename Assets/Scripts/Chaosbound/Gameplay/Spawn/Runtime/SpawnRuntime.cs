@@ -55,7 +55,7 @@ namespace Chaosbound.Gameplay.Spawn.Runtime
         /// <summary>
         /// Executes a declarative SpawnRequest.
         /// </summary>
-        public void Execute(
+        public IReadOnlyList<GameObject> Execute(
             SpawnRequest request,
             RuntimeSpawnConfig spawnConfig,
             RuntimeReferencesConfig references,
@@ -86,6 +86,8 @@ namespace Chaosbound.Gameplay.Spawn.Runtime
 
             materializedObjects.AddRange(
                 spawnedObjects);
+
+            return spawnedObjects;
         }
 
         public void Cleanup()

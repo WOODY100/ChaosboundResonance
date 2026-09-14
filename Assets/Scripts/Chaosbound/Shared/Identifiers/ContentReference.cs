@@ -1,4 +1,3 @@
-using Chaosbound.Shared.Enums;
 using System;
 
 namespace Chaosbound.Shared.Identifiers
@@ -6,15 +5,13 @@ namespace Chaosbound.Shared.Identifiers
     /// <summary>
     /// Represents an immutable reference to authored expedition content.
     /// </summary>
-    public sealed class ContentReference : IEquatable<ContentReference>
+    public sealed class ContentReference :
+        IEquatable<ContentReference>
     {
         public ContentId Id { get; }
 
-        public ContentCategory Category { get; }
-
         public ContentReference(
-            ContentId id,
-            ContentCategory category)
+            ContentId id)
         {
             if (id.IsEmpty)
                 throw new ArgumentException(
@@ -22,10 +19,10 @@ namespace Chaosbound.Shared.Identifiers
                     nameof(id));
 
             Id = id;
-            Category = category;
         }
 
-        public bool Equals(ContentReference other)
+        public bool Equals(
+            ContentReference other)
         {
             if (ReferenceEquals(null, other))
                 return false;
@@ -33,11 +30,11 @@ namespace Chaosbound.Shared.Identifiers
             if (ReferenceEquals(this, other))
                 return true;
 
-            return Id == other.Id &&
-                   Category == other.Category;
+            return Id == other.Id;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(
+            object obj)
         {
             return obj is ContentReference other &&
                    Equals(other);
@@ -45,12 +42,12 @@ namespace Chaosbound.Shared.Identifiers
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(Id, Category);
+            return Id.GetHashCode();
         }
 
         public override string ToString()
         {
-            return $"{Category}:{Id}";
+            return Id.ToString();
         }
 
         public static bool operator ==(

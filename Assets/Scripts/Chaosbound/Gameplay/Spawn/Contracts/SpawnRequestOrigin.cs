@@ -22,6 +22,8 @@ namespace Chaosbound.Gameplay.Spawn.Contracts
 
         ExitPortal,
 
+        ItemWorldDrop,
+
         Debug,
 
         Editor,
