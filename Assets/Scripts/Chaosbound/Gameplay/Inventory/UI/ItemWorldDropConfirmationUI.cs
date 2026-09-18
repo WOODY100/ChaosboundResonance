@@ -3,7 +3,6 @@ using Chaosbound.Content.Expeditions.Runtime.References;
 using Chaosbound.Content.Items;
 using Chaosbound.Core.Composition;
 using Chaosbound.Core.GameFlow;
-using Chaosbound.Gameplay.ExpeditionRuntime.Composition;
 using Chaosbound.Gameplay.ExpeditionRuntime.Runtime;
 using Chaosbound.Gameplay.Inventory.Runtime;
 using Chaosbound.Gameplay.Items.Runtime;
@@ -57,9 +56,9 @@ namespace Chaosbound.Gameplay.Inventory.UI
                         .ItemWorldDropConfirmationService;
             }
 
-            ExpeditionRuntimeCompositionContext
+            GameContentContext
                 compositionContext =
-                    ExpeditionRuntimeCompositionContext.Current;
+                    GameContentContext.Current;
 
             if (compositionContext != null)
             {

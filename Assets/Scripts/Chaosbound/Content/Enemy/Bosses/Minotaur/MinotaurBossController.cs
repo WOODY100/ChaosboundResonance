@@ -331,7 +331,6 @@ public class MinotaurBossController : BossControllerBase
             DamageData dmg = new DamageData
             {
                 amount = jumpDamage,
-                type = DamageType.Physical,
                 source = gameObject
             };
 
@@ -391,7 +390,6 @@ public class MinotaurBossController : BossControllerBase
                     DamageData dmg = new DamageData
                     {
                         amount = damage,
-                        type = DamageType.Physical,
                         source = gameObject
                     };
 
@@ -443,7 +441,6 @@ public class MinotaurBossController : BossControllerBase
                 DamageData dmg = new DamageData
                 {
                     amount = chargeDamage,
-                    type = DamageType.Physical,
                     source = gameObject
                 };
 

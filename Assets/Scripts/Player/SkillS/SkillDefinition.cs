@@ -31,7 +31,6 @@ public class SkillDefinition : ScriptableObject
 
     [Tooltip("Executor responsible for the skill logic.")]
     public GameObject ExecutorPrefab;    // El executor lógico
-    public DamageType DamageType;
 
     // =========================
     // BASE STATS

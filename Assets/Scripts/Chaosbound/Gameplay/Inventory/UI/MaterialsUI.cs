@@ -1,5 +1,5 @@
 using Chaosbound.Content.Materials;
-using Chaosbound.Gameplay.ExpeditionRuntime.Composition;
+using Chaosbound.Core.Composition;
 using Chaosbound.Gameplay.ExpeditionRuntime.Runtime;
 using Chaosbound.Gameplay.Inventory.Runtime;
 using System;
@@ -56,8 +56,8 @@ namespace Chaosbound.Gameplay.Inventory.UI
 
             if (materialResolver == null)
             {
-                ExpeditionRuntimeCompositionContext context =
-                    ExpeditionRuntimeCompositionContext.Current;
+                GameContentContext context =
+                    GameContentContext.Current;
 
                 if (context == null)
                     return;

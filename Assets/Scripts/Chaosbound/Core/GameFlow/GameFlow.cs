@@ -17,6 +17,9 @@ namespace Chaosbound.Core.GameFlow
         private bool levelUpPending;
         private bool isInitialized;
 
+        private GameFlowEnvironment currentEnvironment =
+            GameFlowEnvironment.Sanctuary;
+
         public GameFlowContext CurrentContext
         {
             get
@@ -34,6 +37,9 @@ namespace Chaosbound.Core.GameFlow
 
         public bool IsLevelUpPending =>
             levelUpPending;
+
+        public GameFlowEnvironment CurrentEnvironment =>
+            currentEnvironment;
 
         public event Action<GameFlowContext, GameFlowContext>
             OnContextChanged;
@@ -61,6 +67,24 @@ namespace Chaosbound.Core.GameFlow
             policyResolver =
                 new GameFlowPolicyResolver(
                     configuration);
+        }
+
+        //==========================================================
+        // Environment
+        //==========================================================
+
+        public void SetEnvironment(
+            GameFlowEnvironment environment)
+        {
+            if (currentEnvironment == environment)
+                return;
+
+            currentEnvironment = environment;
+
+            if (!isInitialized)
+                return;
+
+            ApplyCurrentPolicy();
         }
 
         //==========================================================
@@ -309,6 +333,7 @@ namespace Chaosbound.Core.GameFlow
         {
             GameFlowPolicy policy =
                 policyResolver.Resolve(
+                    currentEnvironment,
                     CurrentContext);
 
             simulationController.Apply(
@@ -389,6 +414,7 @@ namespace Chaosbound.Core.GameFlow
 
             GameFlowPolicy policy =
                 policyResolver.Resolve(
+                    currentEnvironment,
                     CurrentContext);
 
             gameplayInputTarget?.SetGameplayInputEnabled(
@@ -410,6 +436,7 @@ namespace Chaosbound.Core.GameFlow
                 }
 
                 return policyResolver.Resolve(
+                    currentEnvironment,
                     CurrentContext).Simulation;
             }
         }
@@ -425,6 +452,7 @@ namespace Chaosbound.Core.GameFlow
                 }
 
                 return policyResolver.Resolve(
+                    currentEnvironment,
                     CurrentContext).Gameplay;
             }
         }

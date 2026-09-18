@@ -152,20 +152,33 @@ public class ArcBoltProjectile : PooledBehaviour, IProjectile
 
         float damage = skill.Stats.FinalDamage;
 
-        if (skill.Stats.CriticalChance > 0f &&
-            Random.value < skill.Stats.CriticalChance)
-        {
-            float critMultiplier =
-                skill.Stats.CriticalMultiplier > 0f
-                    ? skill.Stats.CriticalMultiplier
-                    : 2f;
+        float playerCritChance = 0f;
+        float playerCritDamage = 1f;
 
-            damage *= critMultiplier;
+        if (modifierSystem != null)
+        {
+            playerCritChance =
+                modifierSystem.GetStat(StatType.CritChance);
+
+            playerCritDamage =
+                modifierSystem.GetStat(StatType.CritDamage);
+        }
+
+        CriticalResult criticalResult =
+            CriticalResolver.Resolve(
+                skill.Definition.CanCrit,
+                playerCritChance,
+                skill.Stats.CriticalChance,
+                playerCritDamage,
+                skill.Stats.CriticalDamageBonus);
+
+        if (criticalResult.IsCritical)
+        {
+            damage *= criticalResult.DamageMultiplier;
         }
 
         target.TakeDamage(new DamageData(
             damage,
-            skill.Definition.DamageType
-        ));
+            criticalResult.IsCritical));
     }
 }

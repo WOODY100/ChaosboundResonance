@@ -157,7 +157,6 @@ public class PersistentZone : PooledBehaviour
 
             target.TakeDamage(new DamageData(
                 totalDamage,
-                skill.Definition.DamageType,
                 false
             ));
         }

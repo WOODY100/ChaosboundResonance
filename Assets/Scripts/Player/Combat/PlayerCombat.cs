@@ -24,7 +24,6 @@ public sealed class PlayerCombat : MonoBehaviour
     [SerializeField] private Transform attackSpawnPoint;
 
     private Animator animator;
-    private PlayerStats playerStats;
     private PlayerModifierSystem modifierSystem;
     private PlayerController controller;
 
@@ -35,9 +34,6 @@ public sealed class PlayerCombat : MonoBehaviour
     {
         animator =
             GetComponentInChildren<Animator>();
-
-        playerStats =
-            GetComponent<PlayerStats>();
 
         modifierSystem =
             GetComponent<PlayerModifierSystem>();
@@ -398,8 +394,7 @@ public sealed class PlayerCombat : MonoBehaviour
         if (target == null)
             return;
 
-        if (modifierSystem == null ||
-            playerStats == null)
+        if (modifierSystem == null)
         {
             return;
         }
@@ -412,8 +407,7 @@ public sealed class PlayerCombat : MonoBehaviour
 
         DamageData damage =
             new DamageData(
-                damageAmount,
-                playerStats.CurrentDamageType);
+                damageAmount);
 
         target.TakeDamage(damage);
     }
@@ -444,17 +438,6 @@ public sealed class PlayerCombat : MonoBehaviour
             return;
 
         slash.transform.SetParent(transform);
-
-        SlashVFX vfx =
-            slash.GetComponent<SlashVFX>();
-
-        if (vfx != null &&
-            playerStats != null)
-        {
-            vfx.SetColor(
-                DamageVisuals.GetColor(
-                    playerStats.CurrentDamageType));
-        }
     }
 
     // =========================================================
@@ -489,13 +472,6 @@ public sealed class PlayerCombat : MonoBehaviour
         {
             Debug.LogError(
                 $"{name}: PlayerCombat requires an Animator.",
-                this);
-        }
-
-        if (playerStats == null)
-        {
-            Debug.LogError(
-                $"{name}: PlayerCombat requires PlayerStats.",
                 this);
         }
 
@@ -582,40 +558,5 @@ public sealed class PlayerCombat : MonoBehaviour
         Gizmos.DrawRay(
             transform.position,
             rightDirection * attackRange);
-    }
-
-    // =========================================================
-    // DAMAGE VISUALS
-    // =========================================================
-
-    public static class DamageVisuals
-    {
-        public static Color GetColor(
-            DamageType type)
-        {
-            switch (type)
-            {
-                case DamageType.Fire:
-                    return new Color(
-                        1f,
-                        0.3f,
-                        0f);
-
-                case DamageType.Poison:
-                    return new Color(
-                        0.2f,
-                        1f,
-                        0.2f);
-
-                case DamageType.Chaos:
-                    return new Color(
-                        0.6f,
-                        0f,
-                        1f);
-
-                default:
-                    return Color.white;
-            }
-        }
     }
 }

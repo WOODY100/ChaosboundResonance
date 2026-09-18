@@ -1,8 +1,7 @@
-using Chaosbound.Content.Items;
 using Chaosbound.Core.GameFlow;
 using Chaosbound.Core.Runtime.SceneManagement;
+using Chaosbound.Core.Composition;
 using Chaosbound.Gameplay.ExpeditionRuntime.Cleanup.Pipeline;
-using Chaosbound.Gameplay.ExpeditionRuntime.Composition;
 using Chaosbound.Gameplay.ExpeditionRuntime.Director;
 using Chaosbound.Gameplay.ExpeditionRuntime.Exit;
 using Chaosbound.Gameplay.ExpeditionRuntime.Pipeline;
@@ -24,7 +23,7 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Bootstrap
         private readonly SceneTransitionService
             sceneTransitionService;
 
-        private readonly ExpeditionRuntimeCompositionContext
+        private readonly GameContentContext
             compositionContext;
 
         private SpawnRuntime
@@ -32,7 +31,7 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Bootstrap
 
         public ExpeditionRuntimeBootstrap(
             SceneTransitionService sceneTransitionService,
-            ExpeditionRuntimeCompositionContext compositionContext)
+            GameContentContext compositionContext)
         {
             this.sceneTransitionService =
                 sceneTransitionService
@@ -95,7 +94,7 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Bootstrap
         private ExpeditionRuntimePipeline
             BuildRuntimePipeline(
                 SpawnRuntime spawnRuntime,
-                ExpeditionRuntimeCompositionContext compositionContext)
+                GameContentContext compositionContext)
         {
             if (spawnRuntime == null)
                 throw new ArgumentNullException(
@@ -129,13 +128,22 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Bootstrap
         }
 
         public ExpeditionExitService BuildExitService(
-            ExpeditionDirector expeditionDirector,
-            ExpeditionSettlementService settlementService,
-            GameFlow gameFlow)
+    ExpeditionDirector expeditionDirector,
+    ExpeditionSettlementService settlementService,
+    ExpeditionSecurePreservationService securePreservationService,
+    GameFlow gameFlow)
         {
             if (expeditionDirector == null)
                 throw new ArgumentNullException(
                     nameof(expeditionDirector));
+
+            if (settlementService == null)
+                throw new ArgumentNullException(
+                    nameof(settlementService));
+
+            if (securePreservationService == null)
+                throw new ArgumentNullException(
+                    nameof(securePreservationService));
 
             if (gameFlow == null)
                 throw new ArgumentNullException(
@@ -144,6 +152,7 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Bootstrap
             return new ExpeditionExitService(
                 expeditionDirector,
                 settlementService,
+                securePreservationService,
                 gameFlow,
                 sceneTransitionService);
         }

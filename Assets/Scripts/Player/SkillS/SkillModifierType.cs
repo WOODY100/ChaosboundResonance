@@ -4,7 +4,7 @@ public enum SkillModifierType
     FlatDamage,
     PercentDamage,
     CriticalChance,
-    CriticalMultiplier,
+    CriticalDamageBonus,
 
     // Tempo
     CooldownPercent,

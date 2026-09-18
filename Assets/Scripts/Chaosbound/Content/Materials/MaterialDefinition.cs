@@ -13,6 +13,7 @@ namespace Chaosbound.Content.Materials
         [Header("Presentation")]
         [SerializeField] private string displayName;
         [SerializeField] private Sprite icon;
+        [SerializeField] private string description;
 
         [Header("World")]
         [SerializeField] private GameObject worldPrefab;
@@ -20,6 +21,7 @@ namespace Chaosbound.Content.Materials
         public string ContentId => contentId;
         public string DisplayName => displayName;
         public Sprite Icon => icon;
+        public string Description => description;
         public GameObject WorldPrefab => worldPrefab;
     }
 }

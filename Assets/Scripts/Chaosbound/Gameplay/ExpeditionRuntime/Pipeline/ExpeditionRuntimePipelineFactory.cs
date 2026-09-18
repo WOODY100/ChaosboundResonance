@@ -24,7 +24,7 @@ using Chaosbound.Gameplay.Timeline;
 using Chaosbound.Gameplay.Timeline.Stages;
 using Chaosbound.Gameplay.ExpeditionRuntime.Modifiers;
 using Chaosbound.Gameplay.ExpeditionRuntime.Modifiers.Stages;
-using Chaosbound.Gameplay.ExpeditionRuntime.Composition;
+using Chaosbound.Core.Composition;
 using Chaosbound.Gameplay.Spawn.Content;
 using System;
 using System.Collections.Generic;
@@ -40,7 +40,7 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Pipeline
         /// Creates a new runtime pipeline.
         /// </summary>
         public ExpeditionRuntimePipeline Create(
-            SpawnRuntime spawnRuntime, ExpeditionRuntimeCompositionContext compositionContext)
+            SpawnRuntime spawnRuntime, GameContentContext compositionContext)
         {
             if (spawnRuntime == null)
                 throw new ArgumentNullException(
@@ -62,7 +62,7 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Pipeline
         private IReadOnlyList<IExpeditionRuntimeStage>
             BuildStages(
                 SpawnRuntime spawnRuntime,
-                ExpeditionRuntimeCompositionContext compositionContext)
+                GameContentContext compositionContext)
         {
                     return new List<IExpeditionRuntimeStage>
                     {
@@ -91,7 +91,7 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Pipeline
         private IExpeditionRuntimeStage
             BuildRewardStage(
                 SpawnRuntime spawnRuntime,
-                ExpeditionRuntimeCompositionContext compositionContext)
+                GameContentContext compositionContext)
         {
             if (spawnRuntime == null)
                 throw new ArgumentNullException(

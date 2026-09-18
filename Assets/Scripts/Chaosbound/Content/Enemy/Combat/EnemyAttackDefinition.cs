@@ -4,9 +4,6 @@ using UnityEngine;
 [Serializable]
 public sealed class EnemyAttackDefinition
 {
-    [SerializeField]
-    private DamageType m_DamageType = DamageType.Physical;
-
     [Header("Hit Area")]
 
     [SerializeField]
@@ -32,9 +29,6 @@ public sealed class EnemyAttackDefinition
 
     [SerializeField]
     private EnemyAbilityDefinition m_Ability;
-
-    public DamageType DamageType =>
-        m_DamageType;
 
     public float Range =>
         m_Range;

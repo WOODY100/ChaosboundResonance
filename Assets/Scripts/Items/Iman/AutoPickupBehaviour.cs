@@ -5,6 +5,8 @@ public abstract class AutoPickupBehaviour : PooledBehaviour
     private Transform player;
     private bool pickupTriggered;
 
+    private PlayerModifierSystem modifierSystem;
+
     protected Transform Player => player;
     protected bool IsPickupTriggered => pickupTriggered;
 
@@ -74,6 +76,23 @@ public abstract class AutoPickupBehaviour : PooledBehaviour
             return;
 
         player = EnemyManager.Instance.Player;
+
+        if (player == null)
+            return;
+
+        modifierSystem =
+            player.GetComponent<PlayerModifierSystem>();
+    }
+
+    protected float GetPlayerPickupRadius()
+    {
+        if (modifierSystem == null)
+            return 0f;
+
+        return Mathf.Max(
+            0f,
+            modifierSystem.GetStat(
+                StatType.PickupRadius));
     }
 
     protected override void ResetPooledState()

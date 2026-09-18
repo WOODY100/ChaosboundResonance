@@ -23,6 +23,12 @@ namespace Chaosbound.Content.Items
 
         [Header("Classification")]
         [SerializeField]
+        private ItemCategory itemCategory = ItemCategory.Equipment;
+
+        [SerializeField]
+        private EquipmentType equipmentType = EquipmentType.None;
+
+        [SerializeField]
         private ItemTier baseTier = ItemTier.Common;
 
         [Header("World Representation")]
@@ -46,6 +52,12 @@ namespace Chaosbound.Content.Items
 
         public GameObject WorldPrefab =>
             worldPrefab;
+
+        public ItemCategory Category =>
+            itemCategory;
+
+        public EquipmentType EquipmentType =>
+            equipmentType;
 
         private void OnValidate()
         {

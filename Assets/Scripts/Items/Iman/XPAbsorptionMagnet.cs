@@ -7,13 +7,9 @@ public sealed class XPAbsorptionMagnet : AutoPickupBehaviour
     public const string ContentId =
         "xp_absorption_magnet";
 
-    [Header("Magnet")]
-    [SerializeField]
-    private float pickupRadius = 1f;
-
     protected override float GetPickupRadius()
     {
-        return pickupRadius;
+        return GetPlayerPickupRadius();
     }
 
     protected override void OnAutoPickupTriggered()
@@ -48,10 +44,5 @@ public sealed class XPAbsorptionMagnet : AutoPickupBehaviour
         }
 
         ReturnToPool();
-    }
-
-    private void OnValidate()
-    {
-        pickupRadius = Mathf.Max(0f, pickupRadius);
     }
 }

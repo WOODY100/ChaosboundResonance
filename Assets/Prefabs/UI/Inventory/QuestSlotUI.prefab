@@ -297,7 +297,6 @@ GameObject:
   m_Component:
   - component: {fileID: 5539678463305947596}
   - component: {fileID: 3689748051739744791}
-  - component: {fileID: 7477866633138195212}
   m_Layer: 5
   m_Name: QuestSlotUI
   m_TagString: Untagged
@@ -336,20 +335,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7628160869954246724}
   m_CullTransparentMesh: 1
---- !u!114 &7477866633138195212
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7628160869954246724}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 42c630e57d278f64c9165a40f8aedd29, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Chaosbound.Gameplay.Inventory.UI.MaterialSlotUI
-  itemIcon: {fileID: 6096660599230620825}
-  amountText: {fileID: 6615279977107203923}
 --- !u!1 &8209699615378467269
 GameObject:
   m_ObjectHideFlags: 0

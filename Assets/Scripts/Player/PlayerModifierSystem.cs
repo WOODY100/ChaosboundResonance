@@ -24,10 +24,19 @@ public class PlayerModifierSystem : MonoBehaviour
     {
         CreateStat(StatType.Damage, 10f);
         CreateStat(StatType.AttackSpeed, 1f);
+
+        CreateStat(StatType.CritChance, 0f);
+        CreateStat(StatType.CritDamage, 2f);
+
         CreateStat(StatType.MovementSpeed, 4f);
         CreateStat(StatType.MaxHP, 100f);
         CreateStat(StatType.HPRegen, 0f);
-        CreateStat(StatType.ExpAttractionRadius, 1.1f);
+        CreateStat(StatType.DamageReduction, 0f);
+        CreateStat(StatType.Shield, 50f);
+
+        CreateStat(StatType.PickupRadius, 1.1f);
+        CreateStat(StatType.Luck, 0f);
+        CreateStat(StatType.XPGain, 0f);
     }
 
     private void CreateStat(StatType type, float baseValue)
@@ -42,10 +51,23 @@ public class PlayerModifierSystem : MonoBehaviour
     // ADD / REMOVE SOURCES
     // =========================
 
-    public void AddSource(ModifierLayer layer, ModifierSource source)
+    public void AddSource(
+        ModifierLayer layer,
+        ModifierSource source)
     {
+        if (source == null)
+            throw new ArgumentNullException(
+                nameof(source));
+
+        if (string.IsNullOrWhiteSpace(source.SourceID))
+            throw new ArgumentException(
+                "ModifierSource requires a valid SourceID.",
+                nameof(source));
+
         var target = GetLayer(layer);
+
         target[source.SourceID] = source;
+
         RecalculateAll();
     }
 

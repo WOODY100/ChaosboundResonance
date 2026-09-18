@@ -18,6 +18,9 @@ namespace Chaosbound.Gameplay.Inventory.UI
 
         private InventoryUIDropTarget activeFeedbackTarget;
 
+        [Header("Persistent Stash")]
+        [SerializeField] private InventoryUITrashDropTarget trashDropTarget;
+
         private enum DropFeedbackType
         {
             Invalid,
@@ -64,8 +67,34 @@ namespace Chaosbound.Gameplay.Inventory.UI
                 return;
             }
 
+            SetTrashDragVisual(
+                sourceSlotUI,
+                true);
+
+            if (IsPointerOverTrash(eventData))
+            {
+                if (trashDropTarget != null)
+                {
+                    trashDropTarget.ShowValidFeedback();
+                }
+
+                ClearDropFeedback();
+                return;
+            }
+
+            if (trashDropTarget != null)
+            {
+                trashDropTarget.ClearFeedback();
+            }
+
             InventoryUIDropTarget target =
                 ResolveDropTarget(eventData);
+
+            if (target == null)
+            {
+                ClearDropFeedback();
+                return;
+            }
 
             if (target == null)
             {
@@ -91,6 +120,22 @@ namespace Chaosbound.Gameplay.Inventory.UI
                 feedbackType);
         }
 
+        private void SetTrashDragVisual(
+            InventorySlotUI sourceSlotUI,
+            bool active)
+        {
+            if (trashDropTarget == null)
+                return;
+
+            if (!IsPersistentStashSlot(sourceSlotUI))
+            {
+                trashDropTarget.SetDragVisual(false);
+                return;
+            }
+
+            trashDropTarget.SetDragVisual(active);
+        }
+
         private DropFeedbackType GetDropFeedbackType(
             InventorySlotUI sourceSlotUI,
             InventoryUIDropTarget target)
@@ -100,6 +145,77 @@ namespace Chaosbound.Gameplay.Inventory.UI
             {
                 return DropFeedbackType.Invalid;
             }
+
+            // =========================================================
+            // PERSISTENT STASH
+            // =========================================================
+
+            if (target.TargetType ==
+                    InventoryUIDropTargetType.Main &&
+                IsPersistentStashSlot(sourceSlotUI))
+            {
+                BootstrapContext bootstrapContext =
+                    BootstrapContext.Current;
+
+                if (bootstrapContext == null)
+                    return DropFeedbackType.Invalid;
+
+                PersistentInventoryRuntime
+                    persistentInventoryRuntime =
+                        bootstrapContext.PersistentInventoryRuntime;
+
+                if (persistentInventoryRuntime == null ||
+                    persistentInventoryRuntime.State == null)
+                {
+                    return DropFeedbackType.Invalid;
+                }
+
+                PersistentItemInventoryState inventory =
+                    persistentInventoryRuntime
+                        .State
+                        .Items;
+
+                if (inventory == null)
+                    return DropFeedbackType.Invalid;
+
+                int sourceIndex =
+                    sourceSlotUI.SlotIndex;
+
+                int destinationIndex =
+                    target.SlotIndex;
+
+                if (sourceIndex < 0 ||
+                    sourceIndex >= inventory.Count)
+                {
+                    return DropFeedbackType.Invalid;
+                }
+
+                if (sourceIndex == destinationIndex)
+                    return DropFeedbackType.Invalid;
+
+                // A visual empty slot means
+                // "move to the end".
+                if (destinationIndex >= inventory.Count)
+                    return DropFeedbackType.Valid;
+
+                ItemInstance destinationItem;
+
+                bool occupied =
+                    inventory.TryGetAt(
+                        destinationIndex,
+                        out destinationItem);
+
+                if (!occupied)
+                    return DropFeedbackType.Invalid;
+
+                return DropFeedbackType.Swap;
+            }
+
+
+
+            // =========================================================
+            // EXPEDITION / SECURE
+            // =========================================================
 
             if (target.TargetType ==
                 InventoryUIDropTargetType.Main)
@@ -388,288 +504,14 @@ namespace Chaosbound.Gameplay.Inventory.UI
             }
         }
 
-        // =========================================================
-        // VALIDATION
-        // =========================================================
-
-        private bool IsValidDropTarget(
-            InventorySlotUI sourceSlotUI,
-            InventoryUIDropTarget target)
+        private bool IsPersistentStashSlot(
+            InventorySlotUI slotUI)
         {
-            if (sourceSlotUI == null ||
-                target == null)
-            {
-                return false;
-            }
-
-            BootstrapContext bootstrapContext =
-                BootstrapContext.Current;
-
-            if (bootstrapContext == null)
+            if (slotUI == null)
                 return false;
 
-            RunManager runManager =
-                bootstrapContext.RunManager;
-
-            if (runManager == null)
-                return false;
-
-            ExpeditionRuntimeState state =
-                runManager.ExpeditionRuntimeState;
-
-            if (state == null)
-                return false;
-
-            int sourceIndex =
-                sourceSlotUI.SlotIndex;
-
-            int destinationIndex =
-                target.SlotIndex;
-
-            if (sourceIndex < 0 ||
-                destinationIndex < 0)
-            {
-                return false;
-            }
-
-            if (target.TargetType ==
-                InventoryUIDropTargetType.Main)
-            {
-                ExpeditionInventoryRuntime inventory =
-                    state.Inventory;
-
-                if (inventory == null)
-                    return false;
-
-                // Main -> Main
-                return IsValidMainTarget(
-                    inventory,
-                    sourceIndex,
-                    destinationIndex);
-            }
-
-            if (target.TargetType ==
-                InventoryUIDropTargetType.Secure)
-            {
-                PersistentInventoryRuntime
-                    persistentInventoryRuntime =
-                        bootstrapContext
-                            .PersistentInventoryRuntime;
-
-                if (persistentInventoryRuntime == null)
-                    return false;
-
-                if (persistentInventoryRuntime.State == null)
-                    return false;
-
-                SecureInventoryState secureInventory =
-                    persistentInventoryRuntime
-                        .State
-                        .SecureInventory;
-
-                if (secureInventory == null)
-                    return false;
-
-                // Main -> Secure
-                return IsValidSecureTarget(
-                    secureInventory,
-                    destinationIndex);
-            }
-
-            return false;
-        }
-
-        private bool IsValidDropTarget(
-            SecureInventorySlotUI sourceSlotUI,
-            InventoryUIDropTarget target)
-        {
-            if (sourceSlotUI == null ||
-                target == null)
-            {
-                return false;
-            }
-
-            BootstrapContext bootstrapContext =
-                BootstrapContext.Current;
-
-            if (bootstrapContext == null)
-                return false;
-
-            RunManager runManager =
-                bootstrapContext.RunManager;
-
-            if (runManager == null)
-                return false;
-
-            ExpeditionRuntimeState state =
-                runManager.ExpeditionRuntimeState;
-
-            if (state == null)
-                return false;
-
-            int sourceIndex =
-                sourceSlotUI.SlotIndex;
-
-            int destinationIndex =
-                target.SlotIndex;
-
-            if (sourceIndex < 0 ||
-                destinationIndex < 0)
-            {
-                return false;
-            }
-
-            PersistentInventoryRuntime
-                persistentInventoryRuntime =
-                    bootstrapContext
-                        .PersistentInventoryRuntime;
-
-            if (persistentInventoryRuntime == null)
-                return false;
-
-            if (persistentInventoryRuntime.State == null)
-                return false;
-
-            SecureInventoryState secureInventory =
-                persistentInventoryRuntime
-                    .State
-                    .SecureInventory;
-
-            if (secureInventory == null)
-                return false;
-
-            if (target.TargetType ==
-                InventoryUIDropTargetType.Main)
-            {
-                ExpeditionInventoryRuntime inventory =
-                    state.Inventory;
-
-                if (inventory == null)
-                    return false;
-
-                // Secure -> Main
-                return IsValidMainTarget(
-                    inventory,
-                    -1,
-                    destinationIndex);
-            }
-
-            if (target.TargetType ==
-                InventoryUIDropTargetType.Secure)
-            {
-                // Secure -> Secure
-                return IsValidSecureToSecureTarget(
-                    secureInventory,
-                    sourceIndex,
-                    destinationIndex);
-            }
-
-            return false;
-        }
-
-        private bool IsValidMainTarget(
-            ExpeditionInventoryRuntime inventory,
-            int sourceIndex,
-            int destinationIndex)
-        {
-            if (inventory == null)
-                return false;
-
-            if (destinationIndex < 0 ||
-                destinationIndex >= inventory.Capacity)
-            {
-                return false;
-            }
-
-            if (sourceIndex >= 0 &&
-                sourceIndex == destinationIndex)
-            {
-                return false;
-            }
-
-            ItemInstance destinationItem;
-
-            bool destinationOccupied =
-                inventory.TryGetAt(
-                    destinationIndex,
-                    out destinationItem);
-
-            // Empty destination:
-            // normal move is valid.
-            if (!destinationOccupied)
-            {
-                return true;
-            }
-
-            // Occupied destination:
-            // valid only when this is a Main -> Main drag.
-            if (sourceIndex >= 0)
-            {
-                return true;
-            }
-
-            // Secure -> Main cannot swap across containers.
-            return false;
-        }
-
-        private bool IsValidSecureTarget(
-            SecureInventoryState secureInventory,
-            int destinationIndex)
-        {
-            if (secureInventory == null)
-                return false;
-
-            if (!secureInventory.IsUnlocked(
-                    destinationIndex))
-            {
-                return false;
-            }
-
-            ItemInstance destinationItem;
-
-            if (secureInventory.TryGetAt(
-                    destinationIndex,
-                    out destinationItem))
-            {
-                // Destination occupied.
-                return false;
-            }
-
-            return true;
-        }
-
-        private bool IsValidSecureToSecureTarget(
-            SecureInventoryState secureInventory,
-            int sourceIndex,
-            int destinationIndex)
-        {
-            if (secureInventory == null)
-                return false;
-
-            if (sourceIndex == destinationIndex)
-                return false;
-
-            if (!secureInventory.IsUnlocked(sourceIndex))
-                return false;
-
-            if (!secureInventory.IsUnlocked(destinationIndex))
-                return false;
-
-            ItemInstance sourceItem;
-
-            if (!secureInventory.TryGetAt(
-                    sourceIndex,
-                    out sourceItem))
-            {
-                return false;
-            }
-
-            if (sourceItem == null)
-                return false;
-
-            // Empty or occupied destination are both valid
-            // for Secure -> Secure.
-            return true;
+            return slotUI.GetComponentInParent<
+                PersonalStashInventoryUI>() != null;
         }
 
         // =========================================================
@@ -677,16 +519,28 @@ namespace Chaosbound.Gameplay.Inventory.UI
         // =========================================================
 
         public void HandleDrop(
-            InventorySlotUI sourceSlotUI,
-            PointerEventData eventData)
+    InventorySlotUI sourceSlotUI,
+    PointerEventData eventData)
         {
             ClearDropFeedback();
+
+            SetTrashDragVisual(
+                sourceSlotUI,
+                false);
 
             if (sourceSlotUI == null)
                 return;
 
             if (sourceSlotUI.CurrentItem == null)
                 return;
+
+            if (IsPointerOverTrash(eventData))
+            {
+                HandleTrashDrop(
+                    sourceSlotUI);
+
+                return;
+            }
 
             InventoryUIDropTarget target =
                 ResolveDropTarget(eventData);
@@ -746,6 +600,69 @@ namespace Chaosbound.Gameplay.Inventory.UI
                     target);
 
                 return;
+            }
+        }
+
+        private bool IsPointerOverTrash(
+            PointerEventData eventData)
+        {
+            if (eventData == null ||
+                trashDropTarget == null)
+            {
+                return false;
+            }
+
+            GameObject hitObject =
+                eventData.pointerCurrentRaycast.gameObject;
+
+            if (hitObject == null)
+                return false;
+
+            return hitObject.GetComponentInParent<
+                InventoryUITrashDropTarget>() ==
+                trashDropTarget;
+        }
+
+        // =========================================================
+        // PERSISTENT TRASH
+        // =========================================================
+
+        private void HandleTrashDrop(
+            InventorySlotUI sourceSlotUI)
+        {
+            if (sourceSlotUI == null)
+                return;
+
+            if (!IsPersistentStashSlot(sourceSlotUI))
+                return;
+
+            ItemInstance item =
+                sourceSlotUI.CurrentItem;
+
+            if (item == null)
+                return;
+
+            BootstrapContext bootstrapContext =
+                BootstrapContext.Current;
+
+            if (bootstrapContext == null)
+                return;
+
+            PersistentItemTrashConfirmationService
+                confirmationService =
+                    bootstrapContext
+                        .PersistentItemTrashConfirmationService;
+
+            if (confirmationService == null)
+                return;
+
+            bool requested =
+                confirmationService.Request(item);
+
+            if (requested)
+            {
+                UnityEngine.Debug.Log(
+                    $"Inventory trash confirmation requested: {item.InstanceId}");
             }
         }
 
@@ -953,11 +870,24 @@ namespace Chaosbound.Gameplay.Inventory.UI
             if (bootstrapContext == null)
                 return;
 
+            if (target.TargetType ==
+                    InventoryUIDropTargetType.Main &&
+                IsPersistentStashSlot(sourceSlotUI))
+            {
+                HandlePersistentStashReorder(
+                    sourceSlotUI,
+                    target);
+
+                return;
+            }
+
             RunManager runManager =
                 bootstrapContext.RunManager;
 
             if (runManager == null)
                 return;
+
+            // Existing Expedition logic...
 
             ExpeditionRuntimeState state =
                 runManager.ExpeditionRuntimeState;
@@ -1033,6 +963,87 @@ namespace Chaosbound.Gameplay.Inventory.UI
             {
                 UnityEngine.Debug.Log(
                     $"Inventory drag: Main {sourceIndex} -> Secure {destinationIndex}");
+            }
+        }
+
+        private void HandlePersistentStashReorder(
+            InventorySlotUI sourceSlotUI,
+            InventoryUIDropTarget target)
+        {
+            if (sourceSlotUI == null ||
+                target == null)
+            {
+                return;
+            }
+
+            BootstrapContext bootstrapContext =
+                BootstrapContext.Current;
+
+            if (bootstrapContext == null)
+                return;
+
+            PersistentInventoryRuntime
+                persistentInventoryRuntime =
+                    bootstrapContext.PersistentInventoryRuntime;
+
+            if (persistentInventoryRuntime == null ||
+                persistentInventoryRuntime.State == null)
+            {
+                return;
+            }
+
+            PersistentItemInventoryState inventory =
+                persistentInventoryRuntime
+                    .State
+                    .Items;
+
+            if (inventory == null)
+                return;
+
+            int sourceIndex =
+                sourceSlotUI.SlotIndex;
+
+            if (sourceIndex < 0 ||
+                sourceIndex >= inventory.Count)
+            {
+                return;
+            }
+
+            int destinationIndex =
+                target.SlotIndex;
+
+            if (sourceIndex == destinationIndex)
+                return;
+
+            // Any visual empty slot beyond the actual
+            // inventory becomes "move to end".
+            if (destinationIndex >= inventory.Count)
+            {
+                destinationIndex =
+                    inventory.Count - 1;
+            }
+
+            if (destinationIndex < 0)
+                return;
+
+            bool reordered =
+                inventory.TryReorder(
+                    sourceIndex,
+                    destinationIndex);
+
+            if (!reordered)
+                return;
+
+            UnityEngine.Debug.Log(
+                $"Inventory drag: Persistent {sourceIndex} -> {destinationIndex}");
+
+            PersonalStashInventoryUI stashUI =
+                sourceSlotUI.GetComponentInParent<
+                    PersonalStashInventoryUI>();
+
+            if (stashUI != null)
+            {
+                stashUI.RefreshInventory();
             }
         }
 

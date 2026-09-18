@@ -1,5 +1,5 @@
 using Chaosbound.Content.Materials;
-using Chaosbound.Gameplay.ExpeditionRuntime.Composition;
+using Chaosbound.Core.Composition;
 using Chaosbound.Gameplay.ExpeditionRuntime.Runtime;
 using UnityEngine;
 
@@ -10,10 +10,6 @@ public sealed class MaterialResourcePickup :
     [Header("Material")]
     [SerializeField]
     private string contentId;
-
-    [Header("Pickup")]
-    [SerializeField]
-    private float pickupRadius = 1f;
 
     private int amount;
     private bool isInitialized;
@@ -28,7 +24,7 @@ public sealed class MaterialResourcePickup :
 
     protected override float GetPickupRadius()
     {
-        return pickupRadius;
+        return GetPlayerPickupRadius();
     }
 
     protected override void OnAutoPickupTriggered()
@@ -91,8 +87,8 @@ public sealed class MaterialResourcePickup :
     {
         materialDefinition = null;
 
-        ExpeditionRuntimeCompositionContext context =
-            ExpeditionRuntimeCompositionContext.Current;
+        GameContentContext context =
+            GameContentContext.Current;
 
         if (context == null)
             return false;
@@ -110,13 +106,5 @@ public sealed class MaterialResourcePickup :
         return materialResolver.TryResolve(
             contentId,
             out materialDefinition);
-    }
-
-    private void OnValidate()
-    {
-        pickupRadius =
-            Mathf.Max(
-                0f,
-                pickupRadius);
     }
 }

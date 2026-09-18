@@ -11,7 +11,6 @@ public sealed class EnemyProjectile : PooledBehaviour
 
     private float speed;
     private float damage;
-    private DamageType damageType;
 
     private float lifetimeRemaining;
 
@@ -39,7 +38,6 @@ public sealed class EnemyProjectile : PooledBehaviour
 
         speed = 0f;
         damage = 0f;
-        damageType = default;
 
         lifetimeRemaining = 0f;
 
@@ -58,8 +56,7 @@ public sealed class EnemyProjectile : PooledBehaviour
         Vector3 projectileDirection,
         float projectileSpeed,
         float lifetime,
-        float projectileDamage,
-        DamageType projectileDamageType)
+        float projectileDamage)
     {
         ResetPooledState();
 
@@ -116,7 +113,6 @@ public sealed class EnemyProjectile : PooledBehaviour
         lifetimeRemaining = lifetime;
 
         damage = projectileDamage;
-        damageType = projectileDamageType;
 
         transform.forward = direction;
 
@@ -180,8 +176,7 @@ public sealed class EnemyProjectile : PooledBehaviour
 
         DamageData damageData =
             new DamageData(
-                damage,
-                damageType);
+                damage);
 
         damageData.source =
             owner != null

@@ -22,7 +22,7 @@ public class SkillStats
     public float FinalDamageMultiplier = 1f;
 
     public float CriticalChance;
-    public float CriticalMultiplier = 1f;
+    public float CriticalDamageBonus;
 
     // =========================
     // COOLDOWN

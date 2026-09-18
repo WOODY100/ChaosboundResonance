@@ -7,6 +7,8 @@ public class PlayerExperienceSystem : MonoBehaviour
     [SerializeField] private float baseXP = 10f;
     [SerializeField] private float growthFactor = 0.35f;
 
+    private PlayerModifierSystem modifierSystem;
+
     public int CurrentLevel { get; private set; } = 1;
     public float CurrentXP { get; private set; }
     public float RequiredXP { get; private set; }
@@ -19,6 +21,9 @@ public class PlayerExperienceSystem : MonoBehaviour
 
     void Awake()
     {
+        modifierSystem =
+            GetComponent<PlayerModifierSystem>();
+
         RecalculateRequiredXP();
         OnXPChanged?.Invoke(CurrentXP, RequiredXP);
     }
@@ -32,7 +37,24 @@ public class PlayerExperienceSystem : MonoBehaviour
         if (amount <= 0f)
             return;
 
-        CurrentXP += amount;
+        float finalAmount = amount;
+
+        if (modifierSystem != null)
+        {
+            float xpGain =
+                modifierSystem.GetStat(
+                    StatType.XPGain);
+
+            float multiplier =
+                Mathf.Max(
+                    0f,
+                    1f + xpGain);
+
+            finalAmount =
+                amount * multiplier;
+        }
+
+        CurrentXP += finalAmount;
 
         CheckLevelUp();
     }

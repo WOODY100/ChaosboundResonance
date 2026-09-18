@@ -13,6 +13,12 @@ namespace Chaosbound.Gameplay.Inventory.Persistent
         private readonly PersistentMaterialsState materials =
             new PersistentMaterialsState();
 
+        private readonly PersistentItemSeenState itemSeenState =
+            new PersistentItemSeenState();
+
+        private readonly PersistentMaterialSeenState materialSeenState =
+            new PersistentMaterialSeenState();
+
         public PersistentItemInventoryState Items =>
             items;
 
@@ -21,5 +27,11 @@ namespace Chaosbound.Gameplay.Inventory.Persistent
 
         public PersistentMaterialsState Materials =>
             materials;
+
+        public PersistentItemSeenState ItemSeenState =>
+            itemSeenState;
+
+        public PersistentMaterialSeenState MaterialSeenState =>
+            materialSeenState;
     }
 }

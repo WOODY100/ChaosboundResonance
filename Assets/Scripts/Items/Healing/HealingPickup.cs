@@ -9,13 +9,9 @@ public sealed class HealingPickup : AutoPickupBehaviour
     [SerializeField]
     private float healAmount = 25f;
 
-    [Header("Pickup")]
-    [SerializeField]
-    private float pickupRadius = 1f;
-
     protected override float GetPickupRadius()
     {
-        return pickupRadius;
+        return GetPlayerPickupRadius();
     }
 
     protected override void OnAutoPickupTriggered()
@@ -48,18 +44,5 @@ public sealed class HealingPickup : AutoPickupBehaviour
         {
             ReturnToPool();
         }
-    }
-
-    private void OnValidate()
-    {
-        healAmount =
-            Mathf.Max(
-                0f,
-                healAmount);
-
-        pickupRadius =
-            Mathf.Max(
-                0f,
-                pickupRadius);
     }
 }

@@ -4,7 +4,6 @@ using Chaosbound.Gameplay.ExpeditionRuntime.Director;
 using Chaosbound.Content.Expeditions.Runtime.Configs;
 using Chaosbound.Gameplay.ExpeditionRuntime.Settlement;
 using System;
-using UnityEngine;
 
 namespace Chaosbound.Gameplay.ExpeditionRuntime.Exit
 {
@@ -29,9 +28,13 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Exit
 
         private readonly ExpeditionSettlementService settlementService;
 
+        private readonly ExpeditionSecurePreservationService
+            securePreservationService;
+
         public ExpeditionExitService(
             ExpeditionDirector expeditionDirector,
             ExpeditionSettlementService settlementService,
+            ExpeditionSecurePreservationService securePreservationService,
             GameFlow gameFlow,
             SceneTransitionService sceneTransitionService)
         {
@@ -44,6 +47,11 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Exit
                 settlementService
                 ?? throw new ArgumentNullException(
                     nameof(settlementService));
+
+            this.securePreservationService =
+                securePreservationService
+                ?? throw new ArgumentNullException(
+                    nameof(securePreservationService));
 
             this.gameFlow =
                 gameFlow
@@ -76,10 +84,25 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Exit
                         "No persistent progress was committed.");
                 }
             }
+            else
+            {
+                bool preservationSucceeded =
+                    securePreservationService.TryPreserve();
+
+                if (!preservationSucceeded)
+                {
+                    UnityEngine.Debug.LogError(
+                        "[ExpeditionExitService] " +
+                        "Secure Inventory preservation failed.");
+                }
+            }
 
             AbortExpedition();
 
             gameFlow.ResetFlow();
+
+            gameFlow.SetEnvironment(
+                GameFlowEnvironment.Sanctuary);
 
             sceneTransitionService.LoadScene(
                 GameScene.Sanctuary);

@@ -7,10 +7,6 @@ public sealed class ResonanceFragmentPickup
     [SerializeField]
     private int xpAmount = 5;
 
-    [Header("Attraction")]
-    [SerializeField]
-    private float defaultAttractionRadius = 2f;
-
     [SerializeField]
     private float attractSpeed = 10f;
 
@@ -20,8 +16,6 @@ public sealed class ResonanceFragmentPickup
 
     [SerializeField]
     private float absorbDuration = 0.2f;
-
-    private PlayerModifierSystem modifierSystem;
     private PlayerExperienceSystem xpSystem;
 
     private bool isAttracted;
@@ -215,20 +209,7 @@ public sealed class ResonanceFragmentPickup
 
     protected override float GetPickupRadius()
     {
-        return GetAttractionRadius();
-    }
-
-    private float GetAttractionRadius()
-    {
-        if (modifierSystem != null)
-        {
-            return Mathf.Max(
-                0f,
-                modifierSystem.GetStat(
-                    StatType.ExpAttractionRadius));
-        }
-
-        return defaultAttractionRadius;
+        return GetPlayerPickupRadius();
     }
 
     private void ResolvePlayerComponents()
@@ -242,12 +223,6 @@ public sealed class ResonanceFragmentPickup
         {
             xpSystem =
                 Player.GetComponent<PlayerExperienceSystem>();
-        }
-
-        if (modifierSystem == null)
-        {
-            modifierSystem =
-                Player.GetComponent<PlayerModifierSystem>();
         }
     }
 
@@ -269,11 +244,6 @@ public sealed class ResonanceFragmentPickup
             Mathf.Max(
                 0,
                 xpAmount);
-
-        defaultAttractionRadius =
-            Mathf.Max(
-                0f,
-                defaultAttractionRadius);
 
         attractSpeed =
             Mathf.Max(

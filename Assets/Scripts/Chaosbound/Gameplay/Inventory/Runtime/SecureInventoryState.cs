@@ -132,8 +132,8 @@ namespace Chaosbound.Gameplay.Inventory.Runtime
         }
 
         public bool TrySwap(
-    int sourceIndex,
-    int destinationIndex)
+            int sourceIndex,
+            int destinationIndex)
         {
             if (sourceIndex < 0 ||
                 sourceIndex >= slots.Length)

@@ -1,12 +1,17 @@
 using Chaosbound.Content.Items;
+using Chaosbound.Core.Composition;
+using Chaosbound.Gameplay.Inventory.Persistent;
 using Chaosbound.Gameplay.Items.Runtime;
+using Chaosbound.Gameplay.Items.UI.Tooltip;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Chaosbound.Gameplay.Inventory.UI
 {
-    public sealed class SecureInventorySlotUI : MonoBehaviour
+    public sealed class SecureInventorySlotUI :
+        MonoBehaviour,
+        IItemTooltipSource
     {
         [Header("References")]
         [SerializeField] private Image itemIcon;
@@ -35,6 +40,33 @@ namespace Chaosbound.Gameplay.Inventory.UI
             slotIndex = index;
         }
 
+        public void MarkAsSeen()
+        {
+            if (currentItem == null)
+                return;
+
+            BootstrapContext bootstrapContext =
+                BootstrapContext.Current;
+
+            if (bootstrapContext == null)
+                return;
+
+            PersistentInventoryRuntime inventoryRuntime =
+                bootstrapContext.PersistentInventoryRuntime;
+
+            if (inventoryRuntime == null)
+                return;
+
+            PersistentInventoryState state =
+                inventoryRuntime.State;
+
+            if (state == null)
+                return;
+
+            state.ItemSeenState.MarkSeen(
+                currentItem.InstanceId);
+        }
+
         public Sprite GetCurrentItemIcon()
         {
             if (itemIcon == null)
@@ -54,6 +86,26 @@ namespace Chaosbound.Gameplay.Inventory.UI
 
             Clear();
             SetLocked(true);
+        }
+
+        public TooltipContent GetTooltipContent()
+        {
+            if (currentItem == null)
+                return null;
+
+            if (resolver == null)
+                return null;
+
+            if (!resolver.TryResolve(
+                    currentItem.BaseDataId,
+                    out ItemBaseData itemData))
+            {
+                return null;
+            }
+
+            return TooltipContentFactory.CreateItemContent(
+                currentItem,
+                itemData);
         }
 
         public void SetLocked(bool locked)

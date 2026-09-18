@@ -4,6 +4,7 @@ using Chaosbound.Core.Runtime.SceneManagement;
 using Chaosbound.Gameplay.Inventory.Persistent;
 using Chaosbound.Gameplay.MetaProgression.Persistent;
 using Chaosbound.Core.Settings;
+using Chaosbound.Gameplay.Items.UI.Tooltip;
 using System;
 using UnityEngine;
 
@@ -25,6 +26,11 @@ namespace Chaosbound.Core.Composition
         [SerializeField] private EnemyManager enemyManager;
         [SerializeField] private LevelUpManager levelUpManager;
         [SerializeField] private PersistentInventoryRuntime persistentInventoryRuntime;
+        
+        private PersistentItemTrashConfirmationService
+            persistentItemTrashConfirmationService;
+
+        [SerializeField] private ItemTooltipService itemTooltipService;
         [SerializeField] private GameSettingsRuntime gameSettingsRuntime;
         [SerializeField] private PersistentMetaRuntime persistentMetaRuntime;
 
@@ -60,6 +66,11 @@ namespace Chaosbound.Core.Composition
         public GameFlowService GameFlow => gameFlow;
         public PersistentInventoryRuntime PersistentInventoryRuntime =>
             persistentInventoryRuntime;
+        public PersistentItemTrashConfirmationService
+            PersistentItemTrashConfirmationService =>
+            persistentItemTrashConfirmationService;
+        public ItemTooltipService ItemTooltipService =>
+            itemTooltipService;
         public GameSettingsRuntime GameSettingsRuntime =>
             gameSettingsRuntime;
         public PersistentMetaRuntime PersistentMetaRuntime =>
@@ -78,6 +89,8 @@ namespace Chaosbound.Core.Composition
 
             CreateGameFlow();
             InitializeGameFlow();
+
+            CreatePersistentItemTrashConfirmationService();
         }
 
         private void OnDestroy()
@@ -134,6 +147,28 @@ namespace Chaosbound.Core.Composition
             gameFlow.Initialize();
         }
 
+        private void CreatePersistentItemTrashConfirmationService()
+        {
+            if (persistentInventoryRuntime == null)
+            {
+                throw new InvalidOperationException(
+                    $"{nameof(BootstrapContext)} requires a " +
+                    $"{nameof(PersistentInventoryRuntime)}.");
+            }
+
+            if (gameFlow == null)
+            {
+                throw new InvalidOperationException(
+                    $"{nameof(BootstrapContext)} GameFlow " +
+                    "has not been created.");
+            }
+
+            persistentItemTrashConfirmationService =
+                new PersistentItemTrashConfirmationService(
+                    persistentInventoryRuntime,
+                    gameFlow);
+        }
+
 #if UNITY_EDITOR
 
         //==========================================================
@@ -170,6 +205,10 @@ namespace Chaosbound.Core.Composition
             ValidateReference(
                 persistentMetaRuntime,
                 nameof(persistentMetaRuntime));
+
+            ValidateReference(
+                itemTooltipService,
+                nameof(itemTooltipService));
         }
 
         private void ValidateReference(

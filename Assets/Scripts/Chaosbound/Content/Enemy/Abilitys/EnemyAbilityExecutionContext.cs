@@ -7,7 +7,6 @@ public struct EnemyAbilityExecutionContext
     public Vector3 Direction;
 
     public float Damage;
-    public DamageType DamageType;
     public float AttackRange;
 
     public EnemyAbilityExecutionContext(
@@ -15,14 +14,12 @@ public struct EnemyAbilityExecutionContext
         Vector3 origin,
         Vector3 direction,
         float damage,
-        DamageType damageType,
         float attackRange)
     {
         Owner = owner;
         Origin = origin;
         Direction = direction;
         Damage = damage;
-        DamageType = damageType;
         AttackRange = attackRange;
     }
 }

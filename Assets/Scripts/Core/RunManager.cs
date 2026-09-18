@@ -3,7 +3,7 @@ using Chaosbound.Core.Composition;
 using Chaosbound.Core.GameFlow;
 using Chaosbound.Core.Runtime.SceneManagement;
 using Chaosbound.Gameplay.ExpeditionRuntime.Bootstrap;
-using Chaosbound.Gameplay.ExpeditionRuntime.Composition;
+using Chaosbound.Core.Composition;
 using Chaosbound.Gameplay.ExpeditionRuntime.Director;
 using Chaosbound.Gameplay.ExpeditionRuntime.Exit;
 using Chaosbound.Gameplay.ExpeditionRuntime.Runtime;
@@ -57,6 +57,13 @@ public class RunManager : MonoBehaviour
         ExpeditionSettlementService =>
             expeditionSettlementService;
 
+    private ExpeditionSecurePreservationService
+        expeditionSecurePreservationService;
+
+    public ExpeditionSecurePreservationService
+        ExpeditionSecurePreservationService =>
+            expeditionSecurePreservationService;
+
     private void Awake()
     {
         Instance = this;
@@ -82,8 +89,8 @@ public class RunManager : MonoBehaviour
                 "SceneTransitionService is not available.");
         }
 
-        ExpeditionRuntimeCompositionContext compositionContext =
-            ExpeditionRuntimeCompositionContext.Current;
+        GameContentContext compositionContext =
+            GameContentContext.Current;
 
         if (context.PersistentInventoryRuntime == null)
         {
@@ -106,7 +113,7 @@ public class RunManager : MonoBehaviour
         if (compositionContext == null)
         {
             throw new InvalidOperationException(
-                "ExpeditionRuntimeCompositionContext is not available.");
+                "GameContentContext is not available.");
         }
 
         if (context.GameFlow == null)
@@ -137,8 +144,14 @@ public class RunManager : MonoBehaviour
                 context.PersistentInventoryRuntime.State.Items,
                 context.PersistentInventoryRuntime.State.Materials,
                 context.PersistentMetaRuntime.State,
+                context.PersistentInventoryRuntime.State.SecureInventory,
                 expeditionRewardItemResolver,
                 itemInstanceFactory);
+
+        expeditionSecurePreservationService =
+            new ExpeditionSecurePreservationService(
+                context.PersistentInventoryRuntime.State.Items,
+                context.PersistentInventoryRuntime.State.SecureInventory);
 
         itemWorldDropService =
             bootstrap.BuildItemWorldDropService();
@@ -152,6 +165,7 @@ public class RunManager : MonoBehaviour
             bootstrap.BuildExitService(
                 expeditionDirector,
                 expeditionSettlementService,
+                expeditionSecurePreservationService,
                 context.GameFlow);
     }
 

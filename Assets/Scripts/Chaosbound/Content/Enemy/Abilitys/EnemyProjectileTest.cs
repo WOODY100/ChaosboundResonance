@@ -12,7 +12,6 @@ public class EnemyProjectileTest : MonoBehaviour
     [SerializeField] private float speed = 8f;
     [SerializeField] private float lifetime = 2f;
     [SerializeField] private float damage = 10f;
-    [SerializeField] private DamageType damageType;
 
     private void Update()
     {
@@ -89,8 +88,7 @@ public class EnemyProjectileTest : MonoBehaviour
             fireDirection,
             speed,
             lifetime,
-            damage,
-            damageType);
+            damage);
 
         Debug.Log(
             $"EnemyProjectileTest fired '{projectilePrefab.name}' " +

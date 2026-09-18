@@ -499,8 +499,7 @@ public sealed class EnemyCombat :
 
         DamageData damageData =
             new DamageData(
-                runtimeStats.Damage,
-                attackDefinition.DamageType);
+                runtimeStats.Damage);
 
         damageData.source = gameObject;
 
@@ -516,7 +515,6 @@ public sealed class EnemyCombat :
                 GetAbilityOrigin(),
                 attackFacing,
                 runtimeStats.Damage,
-                attackDefinition.DamageType,
                 attackDefinition.Range);
 
         abilityExecutionSystem.Execute(

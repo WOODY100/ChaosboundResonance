@@ -65,6 +65,40 @@ namespace Chaosbound.Gameplay.Inventory.Persistent
             return item != null;
         }
 
+        public bool TryReorder(
+            int sourceIndex,
+            int destinationIndex)
+        {
+            if (sourceIndex < 0 ||
+                sourceIndex >= items.Count)
+            {
+                return false;
+            }
+
+            if (destinationIndex < 0 ||
+                destinationIndex >= items.Count)
+            {
+                return false;
+            }
+
+            if (sourceIndex == destinationIndex)
+                return false;
+
+            ItemInstance item =
+                items[sourceIndex];
+
+            if (item == null)
+                return false;
+
+            items.RemoveAt(sourceIndex);
+
+            items.Insert(
+                destinationIndex,
+                item);
+
+            return true;
+        }
+
         public IReadOnlyList<ItemInstance> GetItems()
         {
             return items;

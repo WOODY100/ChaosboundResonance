@@ -90,6 +90,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Chaosbound.Gameplay.Inventory.UI.InventoryUIDropFeedback
   highlightImage: {fileID: 1141559165402341249}
   validColor: {r: 0, g: 1, b: 0, a: 1}
+  swapColor: {r: 1, g: 0.5, b: 0, a: 1}
   invalidColor: {r: 1, g: 0, b: 0, a: 1}
   highlightAlpha: 0.35
 --- !u!1 &821960536017766713
@@ -181,6 +182,7 @@ GameObject:
   - component: {fileID: 7145376840662738985}
   - component: {fileID: 1897739942078940314}
   - component: {fileID: 7411120657763730108}
+  - component: {fileID: 7097981050045957499}
   m_Layer: 5
   m_Name: SecureInventorySlotUI
   m_TagString: Untagged
@@ -263,6 +265,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Chaosbound.Gameplay.Inventory.UI.InventoryUIDropFeedback
   highlightImage: {fileID: 1141559165402341249}
   validColor: {r: 0, g: 1, b: 0, a: 1}
+  swapColor: {r: 1, g: 0.5, b: 0, a: 1}
   invalidColor: {r: 1, g: 0, b: 0, a: 1}
   highlightAlpha: 0.35
 --- !u!114 &7411120657763730108
@@ -279,6 +282,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Chaosbound.Gameplay.Inventory.UI.InventoryUIDropTarget
   targetType: 1
   feedback: {fileID: 1897739942078940314}
+--- !u!114 &7097981050045957499
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1411867816582178034}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44bb3e4093151dd4fae8f5c07bb82603, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Chaosbound.Gameplay.Items.UI.Tooltip.ItemTooltipHoverHandler
+  slotUI: {fileID: 0}
 --- !u!1 &2002418181274620481
 GameObject:
   m_ObjectHideFlags: 0

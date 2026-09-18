@@ -6,6 +6,8 @@ public class PlayerDamageReceiver : MonoBehaviour, IDamageable
     [Header("Damage Settings")]
     [SerializeField] private float globalDamageCooldown = 0.5f;
 
+    private PlayerModifierSystem modifierSystem;
+
     public bool IsInvulnerable { get; set; }
 
     public bool IsDead =>
@@ -22,9 +24,13 @@ public class PlayerDamageReceiver : MonoBehaviour, IDamageable
     private void Awake()
     {
         health = GetComponent<PlayerHealth>();
+        modifierSystem = GetComponent<PlayerModifierSystem>();
 
         if (health == null)
             Debug.LogError($"{name} requires PlayerHealth.");
+
+        if (modifierSystem == null)
+            Debug.LogError($"{name} requires PlayerModifierSystem.");
     }
 
     public void ReceiveDamage(DamageData damageData)
@@ -55,7 +61,18 @@ public class PlayerDamageReceiver : MonoBehaviour, IDamageable
 
     private float CalculateFinalDamage(DamageData damageData)
     {
-        return damageData.amount;
+        if (modifierSystem == null)
+            return damageData.amount;
+
+        float damageReduction =
+            modifierSystem.GetStat(
+                StatType.DamageReduction);
+
+        damageReduction =
+            Mathf.Clamp01(damageReduction);
+
+        return damageData.amount *
+               (1f - damageReduction);
     }
 
     private bool CanReceiveDamage()

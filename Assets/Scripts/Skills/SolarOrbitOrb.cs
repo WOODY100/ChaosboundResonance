@@ -32,7 +32,6 @@ public class SolarOrbitOrb : PooledBehaviour, IOrbital
     private Vector3 smoothedCenter;
 
     private float damage;
-    private DamageType damageType;
 
     protected override void Awake()
     {
@@ -76,7 +75,6 @@ public class SolarOrbitOrb : PooledBehaviour, IOrbital
         radius = Mathf.Max(0.1f, skill.Stats.FinalRange);
         duration = Mathf.Max(0.01f, skill.Stats.FinalDuration);
         damage = Mathf.Max(0f, skill.Stats.FinalDamage);
-        damageType = skill.Definition.DamageType;
 
         chaosAxis = Random.onUnitSphere;
         chaosSpeed = chaosBaseSpeed + Random.Range(-chaosVariation, chaosVariation);
@@ -181,9 +179,7 @@ public class SolarOrbitOrb : PooledBehaviour, IOrbital
             return;
 
         damageable.TakeDamage(new DamageData(
-            damage,
-            damageType
-        ));
+            damage));
     }
 
     private void FinishOrbit()

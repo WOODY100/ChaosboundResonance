@@ -7,11 +7,6 @@ public class PlayerStats : MonoBehaviour
     private PlayerModifierSystem modifierSystem;
 
     /// <summary>
-    /// Current damage type used by the player.
-    /// </summary>
-    public DamageType CurrentDamageType { get; private set; } = DamageType.Physical;
-
-    /// <summary>
     /// Raised whenever any player stat is recalculated.
     /// </summary>
     public event Action OnStatsRecalculated;
@@ -31,13 +26,5 @@ public class PlayerStats : MonoBehaviour
     private void HandleStatChanged(StatType statType, float value)
     {
         OnStatsRecalculated?.Invoke();
-    }
-
-    public void SetDamageType(DamageType type)
-    {
-        if (CurrentDamageType == type)
-            return;
-
-        CurrentDamageType = type;
     }
 }

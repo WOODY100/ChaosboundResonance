@@ -77,10 +77,7 @@ public sealed class EnemyHealth :
         if (IsDead)
             return;
 
-        float finalDamage =
-            DamageProcessor.CalculateDamage(
-                this,
-                damageData);
+        float finalDamage = damageData.amount;
 
         if (finalDamage <= 0f)
             return;

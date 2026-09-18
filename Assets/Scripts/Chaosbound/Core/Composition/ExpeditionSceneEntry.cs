@@ -48,6 +48,9 @@ namespace Chaosbound.Core.Composition
             bootstrapContext =
                 BootstrapContext.Current;
 
+            bootstrapContext.GameFlow.SetEnvironment(
+                GameFlowEnvironment.Expedition);
+
             RunSession runSession =
                 bootstrapContext.RunSession;
 

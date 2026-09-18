@@ -260,7 +260,7 @@ public class RuntimeSkill
         stats.FinalDamageMultiplier = 1f;
 
         stats.CriticalChance = 0f;
-        stats.CriticalMultiplier = 1f;
+        stats.CriticalDamageBonus = 0f;
 
         stats.PercentTickRate = 0f;
 
@@ -324,8 +324,8 @@ public class RuntimeSkill
                 stats.CriticalChance += value;
                 break;
 
-            case SkillModifierType.CriticalMultiplier:
-                stats.CriticalMultiplier += value;
+            case SkillModifierType.CriticalDamageBonus:
+                stats.CriticalDamageBonus += value;
                 break;
 
             case SkillModifierType.CooldownPercent:

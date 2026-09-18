@@ -134,8 +134,7 @@ public sealed class EnemyProjectileAbilityExecutor
             direction,
             definition.ProjectileSpeed,
             lifetime,
-            context.Damage,
-            context.DamageType);
+            context.Damage);
     }
 
     public void ResetExecutor()

@@ -12,7 +12,6 @@ public class StormfallStrike : PooledBehaviour, IAreaStrike
 
     private RuntimeSkill skill;
     private float damage;
-    private DamageType damageType;
 
     private Coroutine activeRoutine;
     private ParticleSystem[] particleSystems;
@@ -31,8 +30,6 @@ public class StormfallStrike : PooledBehaviour, IAreaStrike
 
     protected override void ResetPooledState()
     {
-        damageType = DamageType.Physical;
-
         if (lightningImpact != null)
             lightningImpact.SetActive(true);
 
@@ -76,7 +73,6 @@ public class StormfallStrike : PooledBehaviour, IAreaStrike
         skill = runtimeSkill;
 
         damage = Mathf.Max(0f, skill.Stats.FinalDamage);
-        damageType = skill.Definition.DamageType;
 
         activeRoutine = StartCoroutine(StrikeRoutine());
     }
@@ -128,9 +124,7 @@ public class StormfallStrike : PooledBehaviour, IAreaStrike
                 continue;
 
             damageable.TakeDamage(new DamageData(
-                damage,
-                damageType
-            ));
+                damage));
         }
     }
 

@@ -13,6 +13,7 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Settlement
     public sealed class ExpeditionSettlementService
     {
         private readonly PersistentItemInventoryState persistentItems;
+        private readonly SecureInventoryState secureInventory;
         private readonly PersistentMaterialsState persistentMaterials;
         private readonly PersistentMetaState persistentMeta;
 
@@ -28,6 +29,7 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Settlement
             PersistentItemInventoryState persistentItems,
             PersistentMaterialsState persistentMaterials,
             PersistentMetaState persistentMeta,
+            SecureInventoryState secureInventory,
             ExpeditionRewardItemResolver expeditionRewardItemResolver,
             ItemInstanceFactory itemInstanceFactory)
         {
@@ -42,6 +44,10 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Settlement
             this.persistentMeta =
                 persistentMeta ??
                 throw new ArgumentNullException(nameof(persistentMeta));
+
+            this.secureInventory =
+                secureInventory ??
+                throw new ArgumentNullException(nameof(secureInventory));
 
             this.expeditionRewardItemResolver =
                 expeditionRewardItemResolver ??
@@ -120,6 +126,11 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Settlement
                 return false;
             }
 
+            if (!TryPrepareSecureItems(plan))
+            {
+                return false;
+            }
+
             if (!TryPrepareMaterials(
                     expeditionState,
                     plan))
@@ -132,6 +143,30 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Settlement
                     plan))
             {
                 return false;
+            }
+
+            return true;
+        }
+
+        private bool TryPrepareSecureItems(
+            SettlementPlan plan)
+        {
+            IReadOnlyList<InventorySlot> slots =
+                secureInventory.GetSlots();
+
+            for (int i = 0; i < slots.Count; i++)
+            {
+                InventorySlot slot = slots[i];
+
+                if (slot == null || !slot.IsOccupied)
+                    continue;
+
+                ItemInstance item = slot.Item;
+
+                if (item == null)
+                    return false;
+
+                plan.SecureItems.Add(item);
             }
 
             return true;
@@ -252,7 +287,9 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Settlement
         private void Commit(
             SettlementPlan plan)
         {
-            for (int i = 0; i < plan.ExpeditionItems.Count; i++)
+            for (int i = 0;
+                 i < plan.ExpeditionItems.Count;
+                 i++)
             {
                 ItemInstance item =
                     plan.ExpeditionItems[i];
@@ -262,6 +299,21 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Settlement
                     throw new InvalidOperationException(
                         "Settlement commit failed while " +
                         "adding an expedition item.");
+                }
+            }
+
+            for (int i = 0;
+                 i < plan.SecureItems.Count;
+                 i++)
+            {
+                ItemInstance item =
+                    plan.SecureItems[i];
+
+                if (!persistentItems.TryAdd(item))
+                {
+                    throw new InvalidOperationException(
+                        "Settlement commit failed while " +
+                        "adding a secure item.");
                 }
             }
 
@@ -295,6 +347,67 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Settlement
                 persistentMeta.AddExperience(
                     plan.MetaExperience);
             }
+
+            RemoveSettledSecureItems(plan);
+        }
+
+        private void RemoveSettledSecureItems(
+            SettlementPlan plan)
+        {
+            for (int i = 0;
+                 i < plan.SecureItems.Count;
+                 i++)
+            {
+                ItemInstance expectedItem =
+                    plan.SecureItems[i];
+
+                bool removed = false;
+
+                IReadOnlyList<InventorySlot> slots =
+                    secureInventory.GetSlots();
+
+                for (int slotIndex = 0;
+                     slotIndex < slots.Count;
+                     slotIndex++)
+                {
+                    InventorySlot slot = slots[slotIndex];
+
+                    if (slot == null ||
+                        !slot.IsOccupied)
+                    {
+                        continue;
+                    }
+
+                    if (slot.Item != expectedItem)
+                        continue;
+
+                    if (!secureInventory.TryRemoveAt(
+                            slotIndex,
+                            out ItemInstance removedItem))
+                    {
+                        throw new InvalidOperationException(
+                            "Settlement commit failed while " +
+                            "removing a settled secure item.");
+                    }
+
+                    if (removedItem != expectedItem)
+                    {
+                        throw new InvalidOperationException(
+                            "Settlement commit removed an unexpected " +
+                            "secure item.");
+                    }
+
+                    removed = true;
+                    break;
+                }
+
+                if (!removed)
+                {
+                    throw new InvalidOperationException(
+                        "Settlement commit could not locate a " +
+                        "secure item that was prepared for settlement.");
+                }
+            }
         }
 
         private ExpeditionSettlementResult
@@ -312,6 +425,10 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Settlement
         {
             public readonly List<ItemInstance>
                 ExpeditionItems =
+                    new List<ItemInstance>();
+
+            public readonly List<ItemInstance>
+                SecureItems =
                     new List<ItemInstance>();
 
             public readonly Dictionary<string, int>
