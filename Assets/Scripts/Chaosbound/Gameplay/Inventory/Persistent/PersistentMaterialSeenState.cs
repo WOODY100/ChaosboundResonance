@@ -34,6 +34,11 @@ namespace Chaosbound.Gameplay.Inventory.Persistent
                 materialId);
         }
 
+        public IReadOnlyCollection<string> GetSeenIds()
+        {
+            return seenMaterialIds;
+        }
+
         public void Clear()
         {
             seenMaterialIds.Clear();

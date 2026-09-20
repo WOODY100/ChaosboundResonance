@@ -120,8 +120,8 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Settlement
             plan = new SettlementPlan();
 
             if (!TryPrepareExpeditionItems(
-                    expeditionState,
-                    plan))
+                expeditionState,
+                plan))
             {
                 return false;
             }
@@ -132,8 +132,8 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Settlement
             }
 
             if (!TryPrepareMaterials(
-                    expeditionState,
-                    plan))
+                expeditionState,
+                plan))
             {
                 return false;
             }
@@ -242,7 +242,9 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Settlement
             SettlementPlan plan)
         {
             if (expeditionConfig.Rewards == null)
+            {
                 return false;
+            }
 
             string itemContentId =
                 expeditionConfig.Rewards.ItemContentId;
@@ -252,8 +254,8 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Settlement
                 ItemBaseData itemData;
 
                 if (!expeditionRewardItemResolver.TryResolve(
-                        itemContentId,
-                        out itemData))
+                    itemContentId,
+                    out itemData))
                 {
                     return false;
                 }

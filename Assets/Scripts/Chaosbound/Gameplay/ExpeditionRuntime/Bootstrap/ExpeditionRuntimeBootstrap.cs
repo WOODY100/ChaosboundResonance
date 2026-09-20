@@ -10,6 +10,7 @@ using Chaosbound.Gameplay.Items.Runtime;
 using Chaosbound.Gameplay.Items.World.Integration;
 using Chaosbound.Gameplay.Spawn.Bootstrap;
 using Chaosbound.Gameplay.Spawn.Runtime;
+using Chaosbound.Gameplay.Save;
 using System;
 
 namespace Chaosbound.Gameplay.ExpeditionRuntime.Bootstrap
@@ -128,10 +129,11 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Bootstrap
         }
 
         public ExpeditionExitService BuildExitService(
-    ExpeditionDirector expeditionDirector,
-    ExpeditionSettlementService settlementService,
-    ExpeditionSecurePreservationService securePreservationService,
-    GameFlow gameFlow)
+            ExpeditionDirector expeditionDirector,
+            ExpeditionSettlementService settlementService,
+            ExpeditionSecurePreservationService securePreservationService,
+            GameFlow gameFlow,
+            IPersistentStateSaver persistentStateSaver)
         {
             if (expeditionDirector == null)
                 throw new ArgumentNullException(
@@ -149,12 +151,17 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Bootstrap
                 throw new ArgumentNullException(
                     nameof(gameFlow));
 
+            if (persistentStateSaver == null)
+                throw new ArgumentNullException(
+                    nameof(persistentStateSaver));
+
             return new ExpeditionExitService(
                 expeditionDirector,
                 settlementService,
                 securePreservationService,
                 gameFlow,
-                sceneTransitionService);
+                sceneTransitionService,
+                persistentStateSaver);
         }
     }
 }

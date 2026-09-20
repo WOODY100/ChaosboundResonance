@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
+using Chaosbound.Core.Composition;
 
 public class MainMenuController : MonoBehaviour
 {
@@ -23,7 +24,32 @@ public class MainMenuController : MonoBehaviour
 
     public void ContinueGame()
     {
-        Debug.Log("Continue game pending.");
+        BootstrapContext bootstrapContext =
+            BootstrapContext.Current;
+
+        if (bootstrapContext == null)
+        {
+            Debug.LogError(
+                "[MainMenuController] " +
+                "BootstrapContext is not available.");
+
+            return;
+        }
+
+        bool loaded =
+            bootstrapContext.LoadPersistentState();
+
+        if (!loaded)
+        {
+            Debug.LogWarning(
+                "[MainMenuController] " +
+                "No valid save game was found. " +
+                "Continue cancelled.");
+
+            return;
+        }
+
+        SceneManager.LoadScene(gameplaySceneName);
     }
 
     public void OpenOptions()

@@ -3,6 +3,7 @@ using Chaosbound.Core.Runtime.SceneManagement;
 using Chaosbound.Gameplay.ExpeditionRuntime.Director;
 using Chaosbound.Content.Expeditions.Runtime.Configs;
 using Chaosbound.Gameplay.ExpeditionRuntime.Settlement;
+using Chaosbound.Gameplay.Save;
 using System;
 
 namespace Chaosbound.Gameplay.ExpeditionRuntime.Exit
@@ -31,12 +32,15 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Exit
         private readonly ExpeditionSecurePreservationService
             securePreservationService;
 
+        private readonly IPersistentStateSaver persistentStateSaver;
+
         public ExpeditionExitService(
             ExpeditionDirector expeditionDirector,
             ExpeditionSettlementService settlementService,
             ExpeditionSecurePreservationService securePreservationService,
             GameFlow gameFlow,
-            SceneTransitionService sceneTransitionService)
+            SceneTransitionService sceneTransitionService,
+            IPersistentStateSaver persistentStateSaver)
         {
             this.expeditionDirector =
                 expeditionDirector
@@ -62,6 +66,11 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Exit
                 sceneTransitionService
                 ?? throw new ArgumentNullException(
                     nameof(sceneTransitionService));
+
+            this.persistentStateSaver =
+                persistentStateSaver
+                ?? throw new ArgumentNullException(
+                    nameof(persistentStateSaver));
         }
 
         public void Exit(
@@ -83,6 +92,10 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Exit
                         "Expedition completion settlement failed. " +
                         "No persistent progress was committed.");
                 }
+                else
+                {
+                    persistentStateSaver.SavePersistentState();
+                }
             }
             else
             {
@@ -94,6 +107,10 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Exit
                     UnityEngine.Debug.LogError(
                         "[ExpeditionExitService] " +
                         "Secure Inventory preservation failed.");
+                }
+                else
+                {
+                    persistentStateSaver.SavePersistentState();
                 }
             }
 

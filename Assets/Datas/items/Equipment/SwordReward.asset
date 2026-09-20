@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f8bb483133bde444817e54ca5480a67, type: 3}
+  m_Name: SwordReward
+  m_EditorClassIdentifier: Assembly-CSharp::Chaosbound.Content.Items.ItemBaseData
+  contentId: reward_sword_basic
+  displayName: Espada de reward
+  description: "Una espada b\xE1sica"
+  icon: {fileID: 3162807744017042959, guid: f22ebbf995570184b9ba03d3167f8e21, type: 3}
+  itemCategory: 0
+  equipmentType: 1
+  baseTier: 4
+  baseStats:
+  - statType: 0
+    modifierType: 2
+    value: 1.25
+  - statType: 1
+    modifierType: 0
+    value: 5
+  - statType: 3
+    modifierType: 1
+    value: 0.05
+  - statType: 7
+    modifierType: 0
+    value: 5
+  - statType: 6
+    modifierType: 0
+    value: 3
+  worldPrefab: {fileID: 2725393642883445072, guid: dfa031875e67ed149ac6820b2b4cfe6d, type: 3}

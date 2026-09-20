@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Chaosbound.Content.Items
@@ -31,6 +32,11 @@ namespace Chaosbound.Content.Items
         [SerializeField]
         private ItemTier baseTier = ItemTier.Common;
 
+        [Header("Equipment Stats")]
+        [SerializeField]
+        private List<EquipmentBaseStat> baseStats =
+            new List<EquipmentBaseStat>();
+
         [Header("World Representation")]
         [SerializeField]
         private GameObject worldPrefab;
@@ -59,6 +65,9 @@ namespace Chaosbound.Content.Items
         public EquipmentType EquipmentType =>
             equipmentType;
 
+        public IReadOnlyList<EquipmentBaseStat> BaseStats =>
+            baseStats;
+
         private void OnValidate()
         {
             contentId =
@@ -70,6 +79,53 @@ namespace Chaosbound.Content.Items
                 displayName != null
                     ? displayName.Trim()
                     : string.Empty;
+
+            baseStats ??=
+                new List<EquipmentBaseStat>();
+
+            ValidateBaseStats();
+            ValidateClassification();
+        }
+
+        private void ValidateBaseStats()
+        {
+            HashSet<StatType> registeredStats =
+                new HashSet<StatType>();
+
+            for (int i = 0; i < baseStats.Count; i++)
+            {
+                EquipmentBaseStat stat =
+                    baseStats[i];
+
+                if (!registeredStats.Add(stat.StatType))
+                {
+                    Debug.LogError(
+                        $"{name}: Duplicate base Equipment Stat " +
+                        $"for StatType '{stat.StatType}'.",
+                        this);
+                }
+            }
+        }
+
+        private void ValidateClassification()
+        {
+            if (itemCategory == ItemCategory.Equipment &&
+                equipmentType == EquipmentType.None)
+            {
+                Debug.LogWarning(
+                    $"{name}: Item is classified as Equipment " +
+                    "but EquipmentType is None.",
+                    this);
+            }
+
+            if (itemCategory != ItemCategory.Equipment &&
+                baseStats.Count > 0)
+            {
+                Debug.LogWarning(
+                    $"{name}: Non-Equipment item contains " +
+                    "Equipment Base Stats.",
+                    this);
+            }
         }
     }
 }

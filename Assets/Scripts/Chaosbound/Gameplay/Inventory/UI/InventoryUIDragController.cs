@@ -1,7 +1,10 @@
 using Chaosbound.Content.Expeditions.Runtime.Configs;
 using Chaosbound.Content.Expeditions.Runtime.References;
+using Chaosbound.Content.Items;
 using Chaosbound.Core.Composition;
 using Chaosbound.Core.Settings;
+using Chaosbound.Gameplay.Equipment;
+using Chaosbound.Gameplay.Equipment.UI;
 using Chaosbound.Gameplay.ExpeditionRuntime.Runtime;
 using Chaosbound.Gameplay.Inventory.Persistent;
 using Chaosbound.Gameplay.Inventory.Runtime;
@@ -17,6 +20,8 @@ namespace Chaosbound.Gameplay.Inventory.UI
         public static InventoryUIDragController Instance { get; private set; }
 
         private InventoryUIDropTarget activeFeedbackTarget;
+
+        private EquipmentUIDropTarget activeEquipmentFeedbackTarget;
 
         [Header("Persistent Stash")]
         [SerializeField] private InventoryUITrashDropTarget trashDropTarget;
@@ -92,9 +97,28 @@ namespace Chaosbound.Gameplay.Inventory.UI
 
             if (target == null)
             {
+                EquipmentUIDropTarget equipmentTarget =
+                    ResolveEquipmentDropTarget(eventData);
+
+                if (equipmentTarget != null)
+                {
+                    ClearDropFeedback();
+
+                    activeEquipmentFeedbackTarget =
+                        equipmentTarget;
+
+                    UpdateEquipmentDropFeedback(
+                        sourceSlotUI,
+                        equipmentTarget);
+
+                    return;
+                }
+
                 ClearDropFeedback();
                 return;
             }
+
+            activeEquipmentFeedbackTarget = null;
 
             if (target == null)
             {
@@ -118,6 +142,44 @@ namespace Chaosbound.Gameplay.Inventory.UI
             ApplyDropFeedback(
                 target,
                 feedbackType);
+        }
+
+        public void UpdateDropFeedback(
+    EquipmentSlotUI sourceSlotUI,
+    PointerEventData eventData)
+        {
+            if (sourceSlotUI == null)
+            {
+                ClearDropFeedback();
+                return;
+            }
+
+            if (sourceSlotUI.CurrentItem == null)
+            {
+                ClearDropFeedback();
+                return;
+            }
+
+            InventoryUIDropTarget target =
+                ResolveDropTarget(eventData);
+
+            if (target == null)
+            {
+                ClearDropFeedback();
+                return;
+            }
+
+            if (activeFeedbackTarget != target)
+            {
+                ClearDropFeedback();
+
+                activeFeedbackTarget =
+                    target;
+            }
+
+            UpdateInventoryDropFeedback(
+                sourceSlotUI,
+                target);
         }
 
         private void SetTrashDragVisual(
@@ -495,12 +557,18 @@ namespace Chaosbound.Gameplay.Inventory.UI
                 feedbackType);
         }
 
-        public void ClearDropFeedback()
+        private void ClearDropFeedback()
         {
             if (activeFeedbackTarget != null)
             {
                 activeFeedbackTarget.ClearFeedback();
                 activeFeedbackTarget = null;
+            }
+
+            if (activeEquipmentFeedbackTarget != null)
+            {
+                activeEquipmentFeedbackTarget.ClearFeedback();
+                activeEquipmentFeedbackTarget = null;
             }
         }
 
@@ -515,12 +583,256 @@ namespace Chaosbound.Gameplay.Inventory.UI
         }
 
         // =========================================================
+        // EQUIPMENT DROP FEEDBACK
+        // =========================================================
+
+        private void UpdateEquipmentDropFeedback(
+            InventorySlotUI sourceSlotUI,
+            EquipmentUIDropTarget equipmentTarget)
+        {
+            if (sourceSlotUI == null ||
+                equipmentTarget == null)
+            {
+                return;
+            }
+
+            ItemInstance item =
+                sourceSlotUI.CurrentItem;
+
+            if (item == null)
+            {
+                equipmentTarget.ClearFeedback();
+                return;
+            }
+
+            GameContentContext contentContext =
+                GameContentContext.Current;
+
+            if (contentContext == null)
+            {
+                equipmentTarget.ShowInvalidFeedback();
+                return;
+            }
+
+            ItemContentResolver contentResolver =
+                contentContext.ItemContentResolver;
+
+            if (contentResolver == null)
+            {
+                equipmentTarget.ShowInvalidFeedback();
+                return;
+            }
+
+            if (!contentResolver.TryResolve(
+                    item.BaseDataId,
+                    out ItemBaseData itemData))
+            {
+                equipmentTarget.ShowInvalidFeedback();
+                return;
+            }
+
+            if (itemData == null ||
+                itemData.Category != ItemCategory.Equipment)
+            {
+                equipmentTarget.ShowInvalidFeedback();
+                return;
+            }
+
+            if (itemData.EquipmentType == EquipmentType.None ||
+                itemData.EquipmentType !=
+                equipmentTarget.EquipmentType)
+            {
+                equipmentTarget.ShowInvalidFeedback();
+                return;
+            }
+
+            BootstrapContext bootstrapContext =
+                BootstrapContext.Current;
+
+            if (bootstrapContext == null)
+            {
+                equipmentTarget.ShowInvalidFeedback();
+                return;
+            }
+
+            EquipmentLoadoutRuntime loadout =
+                bootstrapContext.EquipmentLoadoutRuntime;
+
+            if (loadout == null)
+            {
+                equipmentTarget.ShowInvalidFeedback();
+                return;
+            }
+
+            if (loadout.IsEquipped(item))
+            {
+                equipmentTarget.ShowInvalidFeedback();
+                return;
+            }
+
+            EquipmentSlotUI equipmentSlotUI =
+                equipmentTarget.GetComponent<EquipmentSlotUI>();
+
+            if (equipmentSlotUI == null)
+            {
+                equipmentTarget.ShowInvalidFeedback();
+                return;
+            }
+
+            if (equipmentSlotUI.IsOccupied)
+            {
+                equipmentTarget.ShowSwapFeedback();
+                return;
+            }
+
+            equipmentTarget.ShowValidFeedback();
+        }
+
+        private void UpdateInventoryDropFeedback(
+    EquipmentSlotUI sourceSlotUI,
+    InventoryUIDropTarget target)
+        {
+            if (sourceSlotUI == null ||
+                target == null)
+            {
+                return;
+            }
+
+            if (target.TargetType !=
+                InventoryUIDropTargetType.Main)
+            {
+                target.ShowInvalidFeedback();
+                return;
+            }
+
+            if (!IsPersistentStashSlotTarget(target))
+            {
+                target.ShowInvalidFeedback();
+                return;
+            }
+
+            int targetIndex =
+                target.SlotIndex;
+
+            BootstrapContext bootstrapContext =
+                BootstrapContext.Current;
+
+            if (bootstrapContext == null)
+            {
+                target.ShowInvalidFeedback();
+                return;
+            }
+
+            PersistentInventoryRuntime
+                persistentInventoryRuntime =
+                    bootstrapContext.PersistentInventoryRuntime;
+
+            if (persistentInventoryRuntime == null ||
+                persistentInventoryRuntime.State == null)
+            {
+                target.ShowInvalidFeedback();
+                return;
+            }
+
+            PersistentItemInventoryState inventory =
+                persistentInventoryRuntime
+                    .State
+                    .Items;
+
+            if (inventory == null)
+            {
+                target.ShowInvalidFeedback();
+                return;
+            }
+
+            /*
+             * Un slot visual vacío sigue siendo un destino válido.
+             * El objeto equipado se agregará al final del inventario.
+             */
+            if (targetIndex >= inventory.Count)
+            {
+                target.ShowValidFeedback();
+                return;
+            }
+
+            if (!inventory.TryGetAt(
+                    targetIndex,
+                    out ItemInstance targetItem))
+            {
+                target.ShowValidFeedback();
+                return;
+            }
+
+            if (targetItem == null)
+            {
+                target.ShowValidFeedback();
+                return;
+            }
+
+            GameContentContext contentContext =
+                GameContentContext.Current;
+
+            if (contentContext == null)
+            {
+                target.ShowValidFeedback();
+                return;
+            }
+
+            ItemContentResolver contentResolver =
+                contentContext.ItemContentResolver;
+
+            if (contentResolver == null)
+            {
+                target.ShowValidFeedback();
+                return;
+            }
+
+            if (!contentResolver.TryResolve(
+                    targetItem.BaseDataId,
+                    out ItemBaseData targetBaseData))
+            {
+                target.ShowValidFeedback();
+                return;
+            }
+
+            /*
+             * Si es un equipo compatible con el EquipmentType
+             * que estamos arrastrando, el drop será un SWAP.
+             *
+             * Si no es compatible, el drop sigue siendo válido:
+             * simplemente desequipará el objeto y lo agregará
+             * al final del inventario sin tocar este objeto.
+             */
+            if (targetBaseData != null &&
+                targetBaseData.Category ==
+                    ItemCategory.Equipment &&
+                targetBaseData.EquipmentType ==
+                    sourceSlotUI.EquipmentType)
+            {
+                target.ShowSwapFeedback();
+                return;
+            }
+
+            target.ShowValidFeedback();
+        }
+
+        private bool IsPersistentStashSlotTarget(
+            InventoryUIDropTarget target)
+        {
+            if (target == null)
+                return false;
+
+            return target.GetComponentInParent<
+                PersonalStashInventoryUI>() != null;
+        }
+
+        // =========================================================
         // DROP RESOLUTION
         // =========================================================
 
         public void HandleDrop(
-    InventorySlotUI sourceSlotUI,
-    PointerEventData eventData)
+            InventorySlotUI sourceSlotUI,
+            PointerEventData eventData)
         {
             ClearDropFeedback();
 
@@ -545,6 +857,21 @@ namespace Chaosbound.Gameplay.Inventory.UI
             InventoryUIDropTarget target =
                 ResolveDropTarget(eventData);
 
+            if (target == null)
+            {
+                EquipmentUIDropTarget equipmentTarget =
+                    ResolveEquipmentDropTarget(eventData);
+
+                if (equipmentTarget != null)
+                {
+                    HandleEquipmentDrop(
+                        sourceSlotUI,
+                        equipmentTarget);
+
+                    return;
+                }
+            }
+
             if (target != null)
             {
                 HandleInventoryDrop(
@@ -555,6 +882,63 @@ namespace Chaosbound.Gameplay.Inventory.UI
             }
 
             HandleWorldDrop(sourceSlotUI);
+        }
+
+        public void HandleDrop(
+    EquipmentSlotUI sourceSlotUI,
+    PointerEventData eventData)
+        {
+            ClearDropFeedback();
+
+            if (sourceSlotUI == null)
+                return;
+
+            if (sourceSlotUI.CurrentItem == null)
+                return;
+
+            InventoryUIDropTarget target =
+                ResolveDropTarget(eventData);
+
+            int? targetSlotIndex = null;
+
+            if (target != null &&
+                target.TargetType ==
+                    InventoryUIDropTargetType.Main &&
+                IsPersistentStashSlotTarget(target))
+            {
+                targetSlotIndex =
+                    target.SlotIndex;
+            }
+            else
+            {
+                /*
+                 * No se soltó sobre un slot concreto.
+                 *
+                 * El comportamiento acordado es:
+                 * desequipar y agregar al final del inventario.
+                 *
+                 * No necesitamos encontrar un slot vacío.
+                 */
+                targetSlotIndex = null;
+            }
+
+            BootstrapContext bootstrapContext =
+                BootstrapContext.Current;
+
+            if (bootstrapContext == null)
+                return;
+
+            EquipmentInventoryService equipmentService =
+                bootstrapContext.EquipmentInventoryService;
+
+            if (equipmentService == null)
+                return;
+
+            equipmentService.TryUnequipToInventory(
+                sourceSlotUI.EquipmentType,
+                targetSlotIndex,
+                out ItemInstance removedItem,
+                out ItemInstance replacedItem);
         }
 
         public void HandleDrop(
@@ -837,6 +1221,43 @@ namespace Chaosbound.Gameplay.Inventory.UI
         }
 
         // =========================================================
+        // MAIN -> EQUIPMENT
+        // =========================================================
+
+        private void HandleEquipmentDrop(
+            InventorySlotUI sourceSlotUI,
+            EquipmentUIDropTarget equipmentTarget)
+        {
+            if (sourceSlotUI == null ||
+                equipmentTarget == null)
+            {
+                return;
+            }
+
+            ItemInstance item =
+                sourceSlotUI.CurrentItem;
+
+            if (item == null)
+                return;
+
+            BootstrapContext bootstrapContext =
+                BootstrapContext.Current;
+
+            if (bootstrapContext == null)
+                return;
+
+            EquipmentInventoryService equipmentService =
+                bootstrapContext.EquipmentInventoryService;
+
+            if (equipmentService == null)
+                return;
+
+            equipmentService.TryEquip(
+                item,
+                out ItemInstance replacedItem);
+        }
+
+        // =========================================================
         // TARGET RESOLUTION
         // =========================================================
 
@@ -854,6 +1275,22 @@ namespace Chaosbound.Gameplay.Inventory.UI
 
             return hitObject.GetComponentInParent<
                 InventoryUIDropTarget>();
+        }
+
+        private EquipmentUIDropTarget ResolveEquipmentDropTarget(
+            PointerEventData eventData)
+        {
+            if (eventData == null)
+                return null;
+
+            GameObject hitObject =
+                eventData.pointerCurrentRaycast.gameObject;
+
+            if (hitObject == null)
+                return null;
+
+            return hitObject.GetComponentInParent<
+                EquipmentUIDropTarget>();
         }
 
         // =========================================================

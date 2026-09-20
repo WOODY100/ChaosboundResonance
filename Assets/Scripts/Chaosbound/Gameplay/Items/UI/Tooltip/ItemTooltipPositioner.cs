@@ -41,6 +41,15 @@ namespace Chaosbound.Gameplay.Items.UI.Tooltip
         public void PositionAtScreenPoint(
             Vector2 screenPoint)
         {
+            PositionAtScreenPoint(
+                screenPoint,
+                Vector2.zero);
+        }
+
+        public void PositionAtScreenPoint(
+            Vector2 screenPoint,
+            Vector2 additionalOffset)
+        {
             if (rectTransform == null)
                 return;
 
@@ -55,7 +64,8 @@ namespace Chaosbound.Gameplay.Items.UI.Tooltip
 
             Vector2 targetPosition =
                 screenPoint +
-                cursorOffset;
+                cursorOffset +
+                additionalOffset;
 
             RectTransform canvasRect =
                 canvas.transform as RectTransform;

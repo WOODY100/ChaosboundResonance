@@ -17,9 +17,6 @@ namespace Chaosbound.Gameplay.Inventory.UI
         [SerializeField] private Image itemIcon;
         [SerializeField] private GameObject lockedIcon;
 
-        [Header("Content")]
-        [SerializeField] private ItemDatabase itemDatabase;
-
         private ItemResolver resolver;
         private ItemInstance currentItem;
 
@@ -38,6 +35,34 @@ namespace Chaosbound.Gameplay.Inventory.UI
             }
 
             slotIndex = index;
+        }
+
+        private bool TryGetResolver(
+            out ItemResolver itemResolver)
+        {
+            itemResolver = resolver;
+
+            if (itemResolver != null)
+                return true;
+
+            GameContentContext contentContext =
+                GameContentContext.Current;
+
+            if (contentContext == null)
+                return false;
+
+            ItemContentResolver contentResolver =
+                contentContext.ItemContentResolver;
+
+            if (contentResolver == null)
+                return false;
+
+            resolver =
+                new ItemResolver(contentResolver);
+
+            itemResolver = resolver;
+
+            return true;
         }
 
         public void MarkAsSeen()
@@ -79,11 +104,6 @@ namespace Chaosbound.Gameplay.Inventory.UI
 
         private void Awake()
         {
-            if (itemDatabase != null)
-            {
-                resolver = new ItemResolver(itemDatabase);
-            }
-
             Clear();
             SetLocked(true);
         }
@@ -93,10 +113,13 @@ namespace Chaosbound.Gameplay.Inventory.UI
             if (currentItem == null)
                 return null;
 
-            if (resolver == null)
+            if (!TryGetResolver(
+                    out ItemResolver itemResolver))
+            {
                 return null;
+            }
 
-            if (!resolver.TryResolve(
+            if (!itemResolver.TryResolve(
                     currentItem.BaseDataId,
                     out ItemBaseData itemData))
             {
@@ -129,12 +152,13 @@ namespace Chaosbound.Gameplay.Inventory.UI
                 return;
             }
 
-            if (resolver == null)
+            if (!TryGetResolver(
+                    out ItemResolver itemResolver))
             {
                 return;
             }
 
-            if (!resolver.TryResolve(
+            if (!itemResolver.TryResolve(
                     item.BaseDataId,
                     out ItemBaseData itemData))
             {

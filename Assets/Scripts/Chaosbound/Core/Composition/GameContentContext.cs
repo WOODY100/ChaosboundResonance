@@ -1,7 +1,8 @@
-using System;
-using UnityEngine;
 using Chaosbound.Content.Items;
 using Chaosbound.Content.Materials;
+using Chaosbound.Gameplay.Items.Runtime;
+using System;
+using UnityEngine;
 
 namespace Chaosbound.Core.Composition
 {
@@ -52,6 +53,8 @@ namespace Chaosbound.Core.Composition
         private MaterialDatabase
             materialDatabase;
 
+        private ItemContentResolver itemContentResolver;
+
         //==========================================================
         // Public Properties
         //==========================================================
@@ -72,6 +75,10 @@ namespace Chaosbound.Core.Composition
             MaterialDatabase =>
                 materialDatabase;
 
+        public ItemContentResolver
+            ItemContentResolver =>
+                itemContentResolver;
+
         //==========================================================
         // Unity
         //==========================================================
@@ -79,6 +86,11 @@ namespace Chaosbound.Core.Composition
         private void Awake()
         {
             RegisterCurrentContext();
+
+            itemContentResolver =
+                new ItemContentResolver(
+                    itemDatabase,
+                    expeditionRewardItemDatabase);
         }
 
         private void OnDestroy()

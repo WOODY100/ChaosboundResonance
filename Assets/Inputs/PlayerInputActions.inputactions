@@ -304,6 +304,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "CompareItem",
+                    "type": "Button",
+                    "id": "4c2bf46f-bfda-42ba-a7c3-57b4a92d98d0",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -733,6 +742,17 @@
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
                     "action": "Inventory",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "52ea7f3a-fe0d-4ddc-8654-e91fe18a385b",
+                    "path": "<Keyboard>/c",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "CompareItem",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

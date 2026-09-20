@@ -39,7 +39,7 @@ namespace Chaosbound.Gameplay.Items.UI.Tooltip
                 material.Description);
         }
 
-        private static string GetEquipmentTypeText(
+        public static string GetEquipmentTypeText(
             EquipmentType equipmentType)
         {
             switch (equipmentType)

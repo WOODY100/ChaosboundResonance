@@ -1,16 +1,21 @@
 using Chaosbound.Core.GameFlow;
-using GameFlowService = Chaosbound.Core.GameFlow.GameFlow;
 using Chaosbound.Core.Runtime.SceneManagement;
-using Chaosbound.Gameplay.Inventory.Persistent;
-using Chaosbound.Gameplay.MetaProgression.Persistent;
 using Chaosbound.Core.Settings;
+using Chaosbound.Gameplay.Equipment;
+using Chaosbound.Gameplay.Inventory.Persistent;
+using Chaosbound.Gameplay.Items.Runtime;
 using Chaosbound.Gameplay.Items.UI.Tooltip;
+using Chaosbound.Gameplay.MetaProgression.Persistent;
+using Chaosbound.Gameplay.Save;
 using System;
 using UnityEngine;
+using GameFlowService = Chaosbound.Core.GameFlow.GameFlow;
 
 namespace Chaosbound.Core.Composition
 {
-    public sealed class BootstrapContext : MonoBehaviour
+    public sealed class BootstrapContext :
+        MonoBehaviour,
+        IPersistentStateSaver
     {
         public static BootstrapContext Current { get; private set; }
 
@@ -34,7 +39,12 @@ namespace Chaosbound.Core.Composition
         [SerializeField] private GameSettingsRuntime gameSettingsRuntime;
         [SerializeField] private PersistentMetaRuntime persistentMetaRuntime;
 
+        private EquipmentLoadoutRuntime equipmentLoadoutRuntime;
+        private SaveGameService saveGameService;
+        private EquipmentInventoryService equipmentInventoryService;
 
+        [SerializeField]
+        private string saveFileName = "chaosbound_save.json";
 
         //==========================================================
         // Game Flow
@@ -75,6 +85,12 @@ namespace Chaosbound.Core.Composition
             gameSettingsRuntime;
         public PersistentMetaRuntime PersistentMetaRuntime =>
             persistentMetaRuntime;
+        public EquipmentLoadoutRuntime EquipmentLoadoutRuntime =>
+            equipmentLoadoutRuntime;
+        public EquipmentInventoryService EquipmentInventoryService =>
+            equipmentInventoryService;
+        public SaveGameService SaveGameService =>
+            saveGameService;
 
         //==========================================================
         // Unity
@@ -84,6 +100,18 @@ namespace Chaosbound.Core.Composition
         {
             RegisterCurrentContext();
 
+            equipmentLoadoutRuntime =
+                new EquipmentLoadoutRuntime();
+
+            ISaveStorage saveStorage =
+                new FileSaveStorage(
+                    saveFileName);
+
+            saveGameService =
+                new SaveGameService(
+                    saveStorage,
+                    1);
+
             sceneTransitionService =
                 new SceneTransitionService();
 
@@ -91,6 +119,11 @@ namespace Chaosbound.Core.Composition
             InitializeGameFlow();
 
             CreatePersistentItemTrashConfirmationService();
+        }
+
+        private void Start()
+        {
+            CreateEquipmentInventoryService();
         }
 
         private void OnDestroy()
@@ -169,6 +202,120 @@ namespace Chaosbound.Core.Composition
                     gameFlow);
         }
 
+        public void SavePersistentState()
+        {
+            if (saveGameService == null)
+                throw new InvalidOperationException(
+                    "SaveGameService is not initialized.");
+
+            if (persistentInventoryRuntime == null)
+                throw new InvalidOperationException(
+                    "PersistentInventoryRuntime is not initialized.");
+
+            if (equipmentLoadoutRuntime == null)
+                throw new InvalidOperationException(
+                    "EquipmentLoadoutRuntime is not initialized.");
+
+            if (persistentMetaRuntime == null)
+                throw new InvalidOperationException(
+                    "PersistentMetaRuntime is not initialized.");
+
+            saveGameService.Save(
+                persistentInventoryRuntime.State,
+                equipmentLoadoutRuntime,
+                persistentMetaRuntime.State);
+        }
+
+        public bool LoadPersistentState()
+        {
+            if (saveGameService == null)
+            {
+                throw new InvalidOperationException(
+                    $"{nameof(BootstrapContext)} SaveGameService " +
+                    "has not been created.");
+            }
+
+            if (persistentInventoryRuntime == null ||
+                persistentInventoryRuntime.State == null)
+            {
+                throw new InvalidOperationException(
+                    $"{nameof(BootstrapContext)} PersistentInventoryRuntime " +
+                    "is not ready.");
+            }
+
+            if (persistentMetaRuntime == null ||
+                persistentMetaRuntime.State == null)
+            {
+                throw new InvalidOperationException(
+                    $"{nameof(BootstrapContext)} PersistentMetaRuntime " +
+                    "is not ready.");
+            }
+
+            if (equipmentLoadoutRuntime == null)
+            {
+                throw new InvalidOperationException(
+                    $"{nameof(BootstrapContext)} EquipmentLoadoutRuntime " +
+                    "is not ready.");
+            }
+
+            if (!saveGameService.TryLoad(
+                    out SaveGameLoadPlan loadPlan))
+            {
+                return false;
+            }
+
+            saveGameService.ApplyLoadPlan(
+                loadPlan,
+                persistentInventoryRuntime.State,
+                equipmentLoadoutRuntime,
+                persistentMetaRuntime.State);
+
+            return true;
+        }
+
+        private void CreateEquipmentInventoryService()
+        {
+            if (persistentInventoryRuntime == null)
+            {
+                throw new InvalidOperationException(
+                    $"{nameof(BootstrapContext)} requires a " +
+                    $"{nameof(PersistentInventoryRuntime)}.");
+            }
+
+            if (equipmentLoadoutRuntime == null)
+            {
+                throw new InvalidOperationException(
+                    $"{nameof(BootstrapContext)} requires a " +
+                    $"{nameof(EquipmentLoadoutRuntime)}.");
+            }
+
+            GameContentContext contentContext =
+                GameContentContext.Current;
+
+            if (contentContext == null)
+            {
+                throw new InvalidOperationException(
+                    $"{nameof(BootstrapContext)} requires a " +
+                    $"{nameof(GameContentContext)}.");
+            }
+
+            ItemContentResolver contentResolver =
+                contentContext.ItemContentResolver;
+
+            if (contentResolver == null)
+            {
+                throw new InvalidOperationException(
+                    $"{nameof(BootstrapContext)} requires a valid " +
+                    $"{nameof(ItemContentResolver)}.");
+            }
+
+            equipmentInventoryService =
+                new EquipmentInventoryService(
+                    persistentInventoryRuntime,
+                    contentResolver,
+                    equipmentLoadoutRuntime);
+        }
+
 #if UNITY_EDITOR
 
         //==========================================================
@@ -219,6 +366,15 @@ namespace Chaosbound.Core.Composition
             {
                 Debug.LogWarning(
                     $"{nameof(BootstrapContext)}: '{fieldName}' is not assigned.",
+                    this);
+            }
+
+            if (string.IsNullOrWhiteSpace(saveFileName))
+            {
+                Debug.LogWarning(
+                    $"{nameof(BootstrapContext)}: " +
+                    "'saveFileName' is empty. " +
+                    "Defaulting to 'chaosbound_save.json'.",
                     this);
             }
         }

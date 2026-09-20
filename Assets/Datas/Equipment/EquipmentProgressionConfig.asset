@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29f604bb6cc57fb408f19dd0056b2cfc, type: 3}
+  m_Name: EquipmentProgressionConfig
+  m_EditorClassIdentifier: Assembly-CSharp::Chaosbound.Gameplay.Equipment.EquipmentProgressionConfig
+  upgradesPerTier: 5
+  optionsPerTier: 3
+  tierConfigurations:
+  - tier: 1
+    rerollCost: 100
+  - tier: 2
+    rerollCost: 250
+  - tier: 3
+    rerollCost: 500
+  - tier: 4
+    rerollCost: 1000

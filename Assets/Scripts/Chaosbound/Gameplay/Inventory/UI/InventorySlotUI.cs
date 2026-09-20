@@ -1,5 +1,6 @@
 using Chaosbound.Content.Items;
 using Chaosbound.Core.Composition;
+using Chaosbound.Gameplay.Equipment;
 using Chaosbound.Gameplay.Inventory.Persistent;
 using Chaosbound.Gameplay.Items.Runtime;
 using Chaosbound.Gameplay.Items.UI.Tooltip;
@@ -19,8 +20,8 @@ namespace Chaosbound.Gameplay.Inventory.UI
         [Header("New Indicator")]
         [SerializeField] private GameObject newIndicator;
 
-        [Header("Content")]
-        [SerializeField] private ItemDatabase itemDatabase;
+        [Header("Equipped Indicator")]
+        [SerializeField] private GameObject equippedIndicator;
 
         private ItemResolver resolver;
         private ItemInstance currentItem;
@@ -43,12 +44,128 @@ namespace Chaosbound.Gameplay.Inventory.UI
 
         private void Awake()
         {
-            if (itemDatabase != null)
+            Clear();
+        }
+
+        private void OnEnable()
+        {
+            SubscribeToEquipmentChanges();
+            RefreshEquippedIndicator();
+        }
+
+        private void OnDisable()
+        {
+            UnsubscribeFromEquipmentChanges();
+        }
+
+        private void SubscribeToEquipmentChanges()
+        {
+            BootstrapContext bootstrapContext =
+                BootstrapContext.Current;
+
+            if (bootstrapContext == null)
+                return;
+
+            EquipmentLoadoutRuntime loadout =
+                bootstrapContext.EquipmentLoadoutRuntime;
+
+            if (loadout == null)
+                return;
+
+            loadout.EquipmentChanged -=
+                HandleEquipmentChanged;
+
+            loadout.EquipmentChanged +=
+                HandleEquipmentChanged;
+        }
+
+        private void UnsubscribeFromEquipmentChanges()
+        {
+            BootstrapContext bootstrapContext =
+                BootstrapContext.Current;
+
+            if (bootstrapContext == null)
+                return;
+
+            EquipmentLoadoutRuntime loadout =
+                bootstrapContext.EquipmentLoadoutRuntime;
+
+            if (loadout == null)
+                return;
+
+            loadout.EquipmentChanged -=
+                HandleEquipmentChanged;
+        }
+
+        private void HandleEquipmentChanged()
+        {
+            RefreshEquippedIndicator();
+        }
+
+        private void RefreshEquippedIndicator()
+        {
+            if (equippedIndicator == null)
+                return;
+
+            if (currentItem == null)
             {
-                resolver = new ItemResolver(itemDatabase);
+                equippedIndicator.SetActive(false);
+                return;
             }
 
-            Clear();
+            BootstrapContext bootstrapContext =
+                BootstrapContext.Current;
+
+            if (bootstrapContext == null)
+            {
+                equippedIndicator.SetActive(false);
+                return;
+            }
+
+            EquipmentLoadoutRuntime loadout =
+                bootstrapContext.EquipmentLoadoutRuntime;
+
+            if (loadout == null)
+            {
+                equippedIndicator.SetActive(false);
+                return;
+            }
+
+            bool isEquipped =
+                loadout.IsEquipped(
+                    currentItem);
+
+            equippedIndicator.SetActive(
+                isEquipped);
+        }
+
+        private bool TryGetResolver(
+            out ItemResolver itemResolver)
+        {
+            itemResolver = resolver;
+
+            if (itemResolver != null)
+                return true;
+
+            GameContentContext contentContext =
+                GameContentContext.Current;
+
+            if (contentContext == null)
+                return false;
+
+            ItemContentResolver contentResolver =
+                contentContext.ItemContentResolver;
+
+            if (contentResolver == null)
+                return false;
+
+            resolver =
+                new ItemResolver(
+                    contentResolver);
+
+            itemResolver = resolver;
+
+            return true;
         }
 
         public void MarkAsSeen()
@@ -85,10 +202,13 @@ namespace Chaosbound.Gameplay.Inventory.UI
             if (currentItem == null)
                 return null;
 
-            if (resolver == null)
+            if (!TryGetResolver(
+                    out ItemResolver itemResolver))
+            {
                 return null;
+            }
 
-            if (!resolver.TryResolve(
+            if (!itemResolver.TryResolve(
                     currentItem.BaseDataId,
                     out ItemBaseData itemData))
             {
@@ -100,7 +220,8 @@ namespace Chaosbound.Gameplay.Inventory.UI
                 itemData);
         }
 
-        public void SetItem(ItemInstance item)
+        public void SetItem(
+            ItemInstance item)
         {
             if (item == null)
             {
@@ -108,12 +229,13 @@ namespace Chaosbound.Gameplay.Inventory.UI
                 return;
             }
 
-            if (resolver == null)
+            if (!TryGetResolver(
+                    out ItemResolver itemResolver))
             {
                 return;
             }
 
-            if (!resolver.TryResolve(
+            if (!itemResolver.TryResolve(
                     item.BaseDataId,
                     out ItemBaseData itemData))
             {
@@ -125,9 +247,14 @@ namespace Chaosbound.Gameplay.Inventory.UI
 
             if (itemIcon != null)
             {
-                itemIcon.sprite = itemData.Icon;
-                itemIcon.enabled = itemData.Icon != null;
+                itemIcon.sprite =
+                    itemData.Icon;
+
+                itemIcon.enabled =
+                    itemData.Icon != null;
             }
+
+            RefreshEquippedIndicator();
         }
 
         public Sprite GetCurrentItemIcon()
@@ -138,12 +265,14 @@ namespace Chaosbound.Gameplay.Inventory.UI
             return itemIcon.sprite;
         }
 
-        public void SetNewIndicator(bool isNew)
+        public void SetNewIndicator(
+            bool isNew)
         {
             if (newIndicator == null)
                 return;
 
-            newIndicator.SetActive(isNew);
+            newIndicator.SetActive(
+                isNew);
         }
 
         public void Clear()
@@ -157,6 +286,11 @@ namespace Chaosbound.Gameplay.Inventory.UI
             }
 
             SetNewIndicator(false);
+
+            if (equippedIndicator != null)
+            {
+                equippedIndicator.SetActive(false);
+            }
         }
     }
 }

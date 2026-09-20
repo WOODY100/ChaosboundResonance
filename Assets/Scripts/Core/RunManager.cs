@@ -3,7 +3,6 @@ using Chaosbound.Core.Composition;
 using Chaosbound.Core.GameFlow;
 using Chaosbound.Core.Runtime.SceneManagement;
 using Chaosbound.Gameplay.ExpeditionRuntime.Bootstrap;
-using Chaosbound.Core.Composition;
 using Chaosbound.Gameplay.ExpeditionRuntime.Director;
 using Chaosbound.Gameplay.ExpeditionRuntime.Exit;
 using Chaosbound.Gameplay.ExpeditionRuntime.Runtime;
@@ -166,7 +165,8 @@ public class RunManager : MonoBehaviour
                 expeditionDirector,
                 expeditionSettlementService,
                 expeditionSecurePreservationService,
-                context.GameFlow);
+                context.GameFlow,
+                context);
     }
 
     private void Update()
