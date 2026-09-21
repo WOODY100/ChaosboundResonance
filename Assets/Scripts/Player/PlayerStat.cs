@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Player.Enums;
 
 public class PlayerStat
 {
@@ -10,13 +11,15 @@ public class PlayerStat
         BaseValue = value;
     }
 
-    public void Recalculate(List<StatModifier> modifiers)
+    public void Recalculate(
+        List<StatModifier> modifiers,
+        PercentBehavior percentBehavior)
     {
         float flat = 0f;
         float percent = 0f;
         float finalMultiplier = 1f;
 
-        foreach (var mod in modifiers)
+        foreach (StatModifier mod in modifiers)
         {
             switch (mod.ModifierType)
             {
@@ -34,6 +37,21 @@ public class PlayerStat
             }
         }
 
-        CurrentValue = (BaseValue + flat) * (1f + percent) * finalMultiplier;
+        float value =
+            BaseValue + flat;
+
+        if (percentBehavior ==
+            PercentBehavior.Additive)
+        {
+            value += percent;
+        }
+        else
+        {
+            value *= 1f + percent;
+        }
+
+        value *= finalMultiplier;
+
+        CurrentValue = value;
     }
 }

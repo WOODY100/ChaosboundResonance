@@ -8,21 +8,26 @@ namespace Chaosbound.Gameplay.Equipment
     {
         public const string SourceId = "Equipment";
 
-        private readonly ItemDatabase itemDatabase;
+        private readonly ItemContentResolver itemContentResolver;
         private readonly EquipmentStatResolver statResolver;
 
         public EquipmentModifierSourceBuilder(
-            ItemDatabase itemDatabase,
+            ItemContentResolver itemContentResolver,
             EquipmentStatResolver statResolver)
         {
-            if (itemDatabase == null)
-                throw new ArgumentNullException(nameof(itemDatabase));
+            if (itemContentResolver == null)
+                throw new ArgumentNullException(
+                    nameof(itemContentResolver));
 
             if (statResolver == null)
-                throw new ArgumentNullException(nameof(statResolver));
+                throw new ArgumentNullException(
+                    nameof(statResolver));
 
-            this.itemDatabase = itemDatabase;
-            this.statResolver = statResolver;
+            this.itemContentResolver =
+                itemContentResolver;
+
+            this.statResolver =
+                statResolver;
         }
 
         public bool TryBuild(
@@ -42,9 +47,9 @@ namespace Chaosbound.Gameplay.Equipment
                 if (itemInstance == null)
                     continue;
 
-                if (!itemDatabase.TryGet(
-                        itemInstance.BaseDataId,
-                        out ItemBaseData baseData))
+                if (!itemContentResolver.TryResolve(
+                    itemInstance.BaseDataId,
+                    out ItemBaseData baseData))
                 {
                     source = null;
                     return false;
@@ -64,20 +69,24 @@ namespace Chaosbound.Gameplay.Equipment
             ItemBaseData baseData,
             ItemInstance itemInstance)
         {
-            for (int i = 0;
-                 i < baseData.BaseStats.Count;
-                 i++)
+            for (int i = 0; i < baseData.BaseStats.Count; i++)
             {
                 EquipmentBaseStat baseStat =
                     baseData.BaseStats[i];
 
-                source.Modifiers.Add(
-                    new StatModifier
-                    {
-                        StatType = baseStat.StatType,
-                        ModifierType = baseStat.ModifierType,
-                        Value = baseStat.Value
-                    });
+                UnityEngine.Debug.Log(
+                    $"[Equipment Modifier Debug] " +
+                    $"Item={baseData.ContentId} | " +
+                    $"Stat={baseStat.StatType} | " +
+                    $"Modifier={baseStat.ModifierType} | " +
+                    $"Value={baseStat.Value}");
+
+                source.Modifiers.Add(new StatModifier
+                {
+                    StatType = baseStat.StatType,
+                    ModifierType = baseStat.ModifierType,
+                    Value = baseStat.Value
+                });
             }
 
             for (int i = 0;

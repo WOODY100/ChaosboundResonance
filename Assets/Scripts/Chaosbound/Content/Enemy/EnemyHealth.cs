@@ -93,7 +93,7 @@ public sealed class EnemyHealth :
         FloatingDamageManager.Instance?.ShowDamage(
             transform.position,
             finalDamage,
-            false);
+            damageData.isCrit);
 
         if (CurrentHealth <= 0f)
         {

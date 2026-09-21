@@ -389,15 +389,13 @@ public sealed class PlayerCombat : MonoBehaviour
     }
 
     private void ApplyDamage(
-        IDamageable target)
+    IDamageable target)
     {
         if (target == null)
             return;
 
         if (modifierSystem == null)
-        {
             return;
-        }
 
         float damageAmount =
             Mathf.Max(
@@ -405,9 +403,30 @@ public sealed class PlayerCombat : MonoBehaviour
                 modifierSystem.GetStat(
                     StatType.Damage));
 
+        float critChance =
+            Mathf.Clamp01(
+                modifierSystem.GetStat(
+                    StatType.CritChance));
+
+        float critDamage =
+            Mathf.Max(
+                0f,
+                modifierSystem.GetStat(
+                    StatType.CritDamage));
+
+        bool isCritical =
+            critChance >= 1f ||
+            Random.value < critChance;
+
+        if (isCritical)
+        {
+            damageAmount *= critDamage;
+        }
+
         DamageData damage =
             new DamageData(
-                damageAmount);
+                damageAmount,
+                isCritical);
 
         target.TakeDamage(damage);
     }

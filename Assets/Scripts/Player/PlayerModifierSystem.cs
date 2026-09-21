@@ -1,3 +1,4 @@
+using Player.Enums;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -111,7 +112,21 @@ public class PlayerModifierSystem : MonoBehaviour
             CollectModifiers(metaSources, statType, modifierBuffer);
             CollectModifiers(runSources, statType, modifierBuffer);
 
-            stats[statType].Recalculate(modifierBuffer);
+            PercentBehavior percentBehavior =
+                StatTypeRules.GetPercentBehavior(statType);
+
+            stats[statType].Recalculate(
+                modifierBuffer,
+                percentBehavior);
+
+            if (statType == StatType.CritChance)
+            {
+                Debug.Log(
+                    "[PlayerModifierSystem Debug] " +
+                    $"CritChance | " +
+                    $"Modifiers={modifierBuffer.Count} | " +
+                    $"CurrentValue={stats[statType].CurrentValue}");
+            }
 
             OnStatChanged?.Invoke(statType, stats[statType].CurrentValue);
         }

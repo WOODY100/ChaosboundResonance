@@ -57,7 +57,8 @@ namespace Chaosbound.Gameplay.Items.UI.Tooltip
 
             for (int i = 0; i < entries.Count; i++)
             {
-                EquipmentComparisonDisplayEntry entry = entries[i];
+                EquipmentComparisonDisplayEntry entry =
+                    entries[i];
 
                 bool hasValue =
                     showCandidateValues
@@ -92,7 +93,8 @@ namespace Chaosbound.Gameplay.Items.UI.Tooltip
                         entry,
                         showCandidateValues);
 
-                EquipmentTooltipStatRow row = CreateRow();
+                EquipmentTooltipStatRow row =
+                    CreateRow();
 
                 if (row == null)
                     continue;
@@ -154,8 +156,8 @@ namespace Chaosbound.Gameplay.Items.UI.Tooltip
         }
 
         private static string BuildDifferenceText(
-    EquipmentComparisonDisplayEntry entry,
-    bool showCandidateValues)
+            EquipmentComparisonDisplayEntry entry,
+            bool showCandidateValues)
         {
             if (!entry.HasDifference)
                 return string.Empty;
@@ -172,26 +174,14 @@ namespace Chaosbound.Gameplay.Items.UI.Tooltip
                 return "0";
             }
 
-            string sign =
-                difference > 0f
-                    ? "+"
-                    : string.Empty;
-
             ModifierType modifierType =
                 showCandidateValues
                     ? entry.CandidateModifierType
                     : entry.EquippedModifierType;
 
-            if (modifierType == ModifierType.FinalMultiplier)
-            {
-                return sign +
-                       difference.ToString("0.##");
-            }
-
-            return sign +
-                   FormatValue(
-                       modifierType,
-                       difference);
+            return FormatDifferenceValue(
+                modifierType,
+                difference);
         }
 
         private static EquipmentComparisonDisplayState
@@ -227,40 +217,40 @@ namespace Chaosbound.Gameplay.Items.UI.Tooltip
             switch (statType)
             {
                 case StatType.Damage:
-                    return "Damage";
+                    return "DAMAGE";
 
                 case StatType.AttackSpeed:
-                    return "Attack Speed";
+                    return "ATTACK SPEED";
 
                 case StatType.MovementSpeed:
-                    return "Movement Speed";
+                    return "MOVEMENT SPEED";
 
                 case StatType.CritChance:
-                    return "Crit Chance";
+                    return "CRIT CHANCE";
 
                 case StatType.CritDamage:
-                    return "Crit Damage";
+                    return "CRIT DAMAGE";
 
                 case StatType.MaxHP:
-                    return "Max HP";
+                    return "MAX HP";
 
                 case StatType.HPRegen:
-                    return "HP Regen";
+                    return "HP REGEN";
 
                 case StatType.DamageReduction:
-                    return "Damage Reduction";
+                    return "DAMAGE REDUCTION";
 
                 case StatType.Shield:
-                    return "Shield";
+                    return "SHIELD";
 
                 case StatType.PickupRadius:
-                    return "Pickup Radius";
+                    return "PICKUP RADIUS";
 
                 case StatType.Luck:
-                    return "Luck";
+                    return "LUCK";
 
                 case StatType.XPGain:
-                    return "XP Gain";
+                    return "XP GAIN";
 
                 default:
                     return statType.ToString();
@@ -274,17 +264,90 @@ namespace Chaosbound.Gameplay.Items.UI.Tooltip
             switch (modifierType)
             {
                 case ModifierType.Flat:
-                    return value.ToString("0.##");
+                    return FormatSignedNumber(value);
 
                 case ModifierType.Percent:
-                    return (value * 100f).ToString("0.##") + "%";
+                    return FormatSignedPercent(value);
 
                 case ModifierType.FinalMultiplier:
-                    return "x" + value.ToString("0.##");
+                    return FormatSignedMultiplier(value);
 
                 default:
                     return value.ToString("0.##");
             }
+        }
+
+        private static string FormatDifferenceValue(
+            ModifierType modifierType,
+            float difference)
+        {
+            switch (modifierType)
+            {
+                case ModifierType.Flat:
+                    return FormatSignedNumber(difference);
+
+                case ModifierType.Percent:
+                    return FormatSignedPercent(difference);
+
+                case ModifierType.FinalMultiplier:
+                    return FormatSignedMultiplierDifference(difference);
+
+                default:
+                    return FormatSignedNumber(difference);
+            }
+        }
+
+        private static string FormatSignedNumber(
+            float value)
+        {
+            if (Mathf.Approximately(value, 0f))
+                return "0";
+
+            return value > 0f
+                ? "+" + value.ToString("0.##")
+                : value.ToString("0.##");
+        }
+
+        private static string FormatSignedPercent(
+            float value)
+        {
+            if (Mathf.Approximately(value, 0f))
+                return "0%";
+
+            float percentage =
+                value * 100f;
+
+            return percentage > 0f
+                ? "+" + percentage.ToString("0.##") + "%"
+                : percentage.ToString("0.##") + "%";
+        }
+
+        private static string FormatSignedMultiplier(
+            float value)
+        {
+            if (Mathf.Approximately(value, 1f))
+                return "0%";
+
+            float percentage =
+                (value - 1f) * 100f;
+
+            return percentage > 0f
+                ? "+" + percentage.ToString("0.##") + "%"
+                : percentage.ToString("0.##") + "%";
+        }
+
+        private static string FormatSignedMultiplierDifference(
+            float difference)
+        {
+            if (Mathf.Approximately(difference, 0f))
+                return "0%";
+
+            float percentage =
+                difference * 100f;
+
+            return percentage > 0f
+                ? "+" + percentage.ToString("0.##") + "%"
+                : percentage.ToString("0.##") + "%";
         }
     }
 }

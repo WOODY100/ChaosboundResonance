@@ -8,8 +8,8 @@ public class PlayerStatsDebugTest : MonoBehaviour
 {
     private PlayerExperienceSystem experience;
 
-    [SerializeField]
-    private WorldItemTestSpawner worldItemTestSpawner;
+    //[SerializeField]
+    //private WorldItemTestSpawner worldItemTestSpawner;
 
     private void Awake()
     {
@@ -29,10 +29,10 @@ public class PlayerStatsDebugTest : MonoBehaviour
         }
 
         // K = Spawn test item
-        if (Keyboard.current.kKey.wasPressedThisFrame)
+        /*if (Keyboard.current.kKey.wasPressedThisFrame)
         {
             worldItemTestSpawner?.SpawnAnotherItem();
-        }
+        }*/
 
         // J = Abandon Expedition
         if (Keyboard.current.jKey.wasPressedThisFrame)

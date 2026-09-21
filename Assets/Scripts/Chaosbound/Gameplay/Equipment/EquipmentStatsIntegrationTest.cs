@@ -11,6 +11,7 @@ namespace Chaosbound.Gameplay.Equipment
 
         [Header("Equipment")]
         [SerializeField] private ItemDatabase itemDatabase;
+        [SerializeField] private ExpeditionRewardItemDatabase expeditionRewardItemDatabase;
         [SerializeField] private EquipmentStatDatabase statDatabase;
         [SerializeField] private EquipmentProgressionConfig progressionConfig;
         [SerializeField] private ItemBaseData equipmentBaseData;
@@ -33,11 +34,11 @@ namespace Chaosbound.Gameplay.Equipment
                 return;
             }
 
-            if (statDatabase == null)
+            if (expeditionRewardItemDatabase == null)
             {
                 Debug.LogError(
                     "[Equipment Integration Test] Missing " +
-                    "EquipmentStatDatabase.");
+                    "ExpeditionRewardItemDatabase.");
                 return;
             }
 
@@ -67,21 +68,11 @@ namespace Chaosbound.Gameplay.Equipment
                 return;
             }
 
-            if (!itemDatabase.TryGet(
-                    equipmentBaseData.ContentId,
-                    out ItemBaseData resolvedBaseData))
+            if (statDatabase == null)
             {
                 Debug.LogError(
-                    $"[Equipment Integration Test] Could not resolve " +
-                    $"'{equipmentBaseData.ContentId}' from ItemDatabase.");
-                return;
-            }
-
-            if (resolvedBaseData != equipmentBaseData)
-            {
-                Debug.LogError(
-                    "[Equipment Integration Test] ItemDatabase resolved " +
-                    "a different ItemBaseData.");
+                    "[Equipment Integration Test] Missing " +
+                    "EquipmentStatDatabase.");
                 return;
             }
 
@@ -93,6 +84,37 @@ namespace Chaosbound.Gameplay.Equipment
                 return;
             }
 
+            // ---------------------------------------------------------
+            // Central Item Content Resolver
+            // ---------------------------------------------------------
+
+            ItemContentResolver itemContentResolver =
+                new ItemContentResolver(
+                    itemDatabase,
+                    expeditionRewardItemDatabase);
+
+            if (!itemContentResolver.TryResolve(
+                    equipmentBaseData.ContentId,
+                    out ItemBaseData resolvedBaseData))
+            {
+                Debug.LogError(
+                    "[Equipment Integration Test] ItemContentResolver " +
+                    "could not resolve the Equipment ItemBaseData.");
+                return;
+            }
+
+            if (resolvedBaseData != equipmentBaseData)
+            {
+                Debug.LogError(
+                    "[Equipment Integration Test] ItemContentResolver " +
+                    "resolved a different ItemBaseData.");
+                return;
+            }
+
+            // ---------------------------------------------------------
+            // Runtime composition
+            // ---------------------------------------------------------
+
             EquipmentLoadoutRuntime loadout =
                 new EquipmentLoadoutRuntime();
 
@@ -102,7 +124,7 @@ namespace Chaosbound.Gameplay.Equipment
 
             EquipmentModifierSourceBuilder sourceBuilder =
                 new EquipmentModifierSourceBuilder(
-                    itemDatabase,
+                    itemContentResolver,
                     statResolver);
 
             EquipmentTierOptionGenerator optionGenerator =
@@ -137,16 +159,24 @@ namespace Chaosbound.Gameplay.Equipment
         }
 
         private static void RunEquipmentChangedTest(
-    PlayerModifierSystem playerModifierSystem,
-    EquipmentLoadoutRuntime loadout,
-    EquipmentProgressionRuntime progressionRuntime,
-    ItemBaseData equipmentBaseData)
+            PlayerModifierSystem playerModifierSystem,
+            EquipmentLoadoutRuntime loadout,
+            EquipmentProgressionRuntime progressionRuntime,
+            ItemBaseData equipmentBaseData)
         {
+            // ---------------------------------------------------------
+            // Create test equipment instance
+            // ---------------------------------------------------------
+
             ItemInstance equippedItem =
                 new ItemInstance(
                     "equipment-equipped-test-instance",
                     equipmentBaseData.ContentId,
                     ItemTier.Common);
+
+            // ---------------------------------------------------------
+            // Baseline
+            // ---------------------------------------------------------
 
             float damageBefore =
                 playerModifierSystem.GetStat(
@@ -155,6 +185,10 @@ namespace Chaosbound.Gameplay.Equipment
             Debug.Log(
                 $"[Equipment Integration Test] Damage before Equipment = " +
                 $"{damageBefore}");
+
+            // ---------------------------------------------------------
+            // Equip
+            // ---------------------------------------------------------
 
             if (!loadout.TryEquip(
                     equippedItem,
@@ -174,32 +208,47 @@ namespace Chaosbound.Gameplay.Equipment
                 $"[Equipment Integration Test] Damage after automatic " +
                 $"Equip refresh = {damageAfterEquip}");
 
+            // ---------------------------------------------------------
+            // Calculate expected damage
+            // ---------------------------------------------------------
+
             float expectedDamage =
                 damageBefore;
 
-            for (int i = 0;
-                 i < equipmentBaseData.BaseStats.Count;
-                 i++)
+            if (equipmentBaseData.BaseStats != null)
             {
-                EquipmentBaseStat baseStat =
-                    equipmentBaseData.BaseStats[i];
-
-                if (baseStat.StatType != StatType.Damage)
-                    continue;
-
-                if (baseStat.ModifierType != ModifierType.Flat)
+                for (int i = 0;
+                     i < equipmentBaseData.BaseStats.Count;
+                     i++)
                 {
-                    Debug.LogError(
-                        "[Equipment Integration Test] Damage BaseStat " +
-                        "must be Flat for this test.");
-                    return;
+                    EquipmentBaseStat baseStat =
+                        equipmentBaseData.BaseStats[i];
+
+                    if (baseStat.StatType !=
+                        StatType.Damage)
+                    {
+                        continue;
+                    }
+
+                    if (baseStat.ModifierType !=
+                        ModifierType.Flat)
+                    {
+                        Debug.LogError(
+                            "[Equipment Integration Test] Damage BaseStat " +
+                            "must be Flat for this test.");
+                        return;
+                    }
+
+                    expectedDamage +=
+                        baseStat.Value;
+
+                    break;
                 }
-
-                expectedDamage +=
-                    baseStat.Value;
-
-                break;
             }
+
+            // ---------------------------------------------------------
+            // Validate Equip refresh
+            // ---------------------------------------------------------
 
             if (!Mathf.Approximately(
                     damageAfterEquip,
@@ -215,6 +264,10 @@ namespace Chaosbound.Gameplay.Equipment
             Debug.Log(
                 "[Equipment Integration Test] Automatic Equip refresh verified.");
 
+            // ---------------------------------------------------------
+            // Upgrade equipped item
+            // ---------------------------------------------------------
+
             if (!progressionRuntime.TryUpgrade(equippedItem))
             {
                 Debug.LogError(
@@ -225,6 +278,10 @@ namespace Chaosbound.Gameplay.Equipment
             Debug.Log(
                 "[Equipment Integration Test] Equipped item Upgrade completed. " +
                 "ProgressionChanged should have triggered automatic Refresh.");
+
+            // ---------------------------------------------------------
+            // Validate item remains equipped
+            // ---------------------------------------------------------
 
             if (!loadout.IsEquipped(equippedItem))
             {
@@ -238,6 +295,10 @@ namespace Chaosbound.Gameplay.Equipment
                 "[Equipment Integration Test] Equipped item correctly remains " +
                 "recognized by Loadout after Upgrade.");
 
+            // ---------------------------------------------------------
+            // Unequip
+            // ---------------------------------------------------------
+
             if (!loadout.TryUnequip(
                     equipmentBaseData.EquipmentType,
                     out ItemInstance removedItem))
@@ -247,6 +308,10 @@ namespace Chaosbound.Gameplay.Equipment
                 return;
             }
 
+            // ---------------------------------------------------------
+            // Validate removed instance
+            // ---------------------------------------------------------
+
             if (removedItem != equippedItem)
             {
                 Debug.LogError(
@@ -254,6 +319,10 @@ namespace Chaosbound.Gameplay.Equipment
                     "the equipped test instance.");
                 return;
             }
+
+            // ---------------------------------------------------------
+            // Validate baseline restored
+            // ---------------------------------------------------------
 
             float damageAfterUnequip =
                 playerModifierSystem.GetStat(
@@ -274,11 +343,19 @@ namespace Chaosbound.Gameplay.Equipment
             Debug.Log(
                 "[Equipment Integration Test] Automatic Unequip refresh verified.");
 
+            // ---------------------------------------------------------
+            // Create non-equipped inventory item
+            // ---------------------------------------------------------
+
             ItemInstance inventoryItem =
                 new ItemInstance(
                     "equipment-inventory-test-instance",
                     equipmentBaseData.ContentId,
                     ItemTier.Common);
+
+            // ---------------------------------------------------------
+            // Upgrade non-equipped item
+            // ---------------------------------------------------------
 
             if (!progressionRuntime.TryUpgrade(inventoryItem))
             {
@@ -286,6 +363,10 @@ namespace Chaosbound.Gameplay.Equipment
                     "[Equipment Integration Test] Inventory item Upgrade failed.");
                 return;
             }
+
+            // ---------------------------------------------------------
+            // Validate it is not considered equipped
+            // ---------------------------------------------------------
 
             if (loadout.IsEquipped(inventoryItem))
             {
@@ -298,6 +379,10 @@ namespace Chaosbound.Gameplay.Equipment
             Debug.Log(
                 "[Equipment Integration Test] Non-equipped item correctly " +
                 "remains outside the Equipment Loadout after Upgrade.");
+
+            // ---------------------------------------------------------
+            // Validate non-equipped item does not affect player stats
+            // ---------------------------------------------------------
 
             float damageAfterInventoryUpgrade =
                 playerModifierSystem.GetStat(
