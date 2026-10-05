@@ -23,8 +23,6 @@ namespace Chaosbound.Gameplay.Items.UI.Tooltip
         {
             positioner =
                 GetComponent<ItemTooltipPositioner>();
-
-            Hide();
         }
 
         public void Show(TooltipContent content)
@@ -47,9 +45,9 @@ namespace Chaosbound.Gameplay.Items.UI.Tooltip
                 itemName.text =
                     content.DisplayName;
 
-                itemName.gameObject.SetActive(
-                    !string.IsNullOrEmpty(
-                        content.DisplayName));
+                 itemName.gameObject.SetActive(
+                     !string.IsNullOrEmpty(
+                         content.DisplayName));
             }
 
             if (category != null)
@@ -57,9 +55,9 @@ namespace Chaosbound.Gameplay.Items.UI.Tooltip
                 category.text =
                     content.CategoryText;
 
-                category.gameObject.SetActive(
-                    !string.IsNullOrEmpty(
-                        content.CategoryText));
+                 category.gameObject.SetActive(
+                     !string.IsNullOrEmpty(
+                         content.CategoryText));
             }
 
             if (secondaryText != null)
@@ -67,9 +65,9 @@ namespace Chaosbound.Gameplay.Items.UI.Tooltip
                 secondaryText.text =
                     content.SecondaryText;
 
-                secondaryText.gameObject.SetActive(
-                    !string.IsNullOrEmpty(
-                        content.SecondaryText));
+                 secondaryText.gameObject.SetActive(
+                     !string.IsNullOrEmpty(
+                         content.SecondaryText));
             }
 
             if (quantityText != null)
@@ -77,9 +75,9 @@ namespace Chaosbound.Gameplay.Items.UI.Tooltip
                 quantityText.text =
                     content.QuantityText;
 
-                quantityText.gameObject.SetActive(
-                    !string.IsNullOrEmpty(
-                        content.QuantityText));
+                 quantityText.gameObject.SetActive(
+                     !string.IsNullOrEmpty(
+                         content.QuantityText));
             }
 
             if (description != null)
@@ -87,13 +85,13 @@ namespace Chaosbound.Gameplay.Items.UI.Tooltip
                 description.text =
                     content.Description;
 
-                description.gameObject.SetActive(
-                    !string.IsNullOrEmpty(
-                        content.Description));
+                 description.gameObject.SetActive(
+                     !string.IsNullOrEmpty(
+                         content.Description));
             }
 
-            isVisible = true;
             gameObject.SetActive(true);
+            isVisible = true;
         }
 
         public void PositionAtScreenPoint(

@@ -1,0 +1,70 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 518e5f4984938344494f7f6aa98ea429, type: 3}
+  m_Name: AEGIS_12
+  m_EditorClassIdentifier: Assembly-CSharp::SkillTreeNodeDefinition
+  NodeId: AEGIS_12
+  DisplayName: Bulwark
+  Description: 
+  Icon: {fileID: 0}
+  Branch: 2
+  NodeType: 3
+  Cost: 5
+  Requirement:
+    rid: 7186743448036704543
+  Effects:
+  - rid: 7186743448036704546
+  - rid: 7186743448036704547
+  - rid: 7186743448036704548
+  - rid: 7186743448036704549
+  ChoiceOptions: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 7186743448036704543
+      type: {class: AllRequirement, ns: , asm: Assembly-CSharp}
+      data:
+        Requirements:
+        - rid: 7186743448036704544
+        - rid: 7186743448036704545
+    - rid: 7186743448036704544
+      type: {class: NodePurchasedRequirement, ns: , asm: Assembly-CSharp}
+      data:
+        NodeId: AEGIS_06
+    - rid: 7186743448036704545
+      type: {class: NodePurchasedRequirement, ns: , asm: Assembly-CSharp}
+      data:
+        NodeId: AEGIS_11
+    - rid: 7186743448036704546
+      type: {class: PlayerStatEffect, ns: , asm: Assembly-CSharp}
+      data:
+        StatType: 5
+        ModifierType: 0
+        Value: 0
+    - rid: 7186743448036704547
+      type: {class: PlayerStatEffect, ns: , asm: Assembly-CSharp}
+      data:
+        StatType: 6
+        ModifierType: 0
+        Value: 0
+    - rid: 7186743448036704548
+      type: {class: PlayerStatEffect, ns: , asm: Assembly-CSharp}
+      data:
+        StatType: 8
+        ModifierType: 0
+        Value: 0
+    - rid: 7186743448036704549
+      type: {class: PlayerStatEffect, ns: , asm: Assembly-CSharp}
+      data:
+        StatType: 7
+        ModifierType: 0
+        Value: 0

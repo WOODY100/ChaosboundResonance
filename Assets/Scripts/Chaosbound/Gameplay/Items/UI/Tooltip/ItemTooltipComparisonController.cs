@@ -128,10 +128,6 @@ namespace Chaosbound.Gameplay.Items.UI.Tooltip
 
             if (!tooltipService.IsVisible)
             {
-                Debug.Log(
-                    "[ItemTooltipComparisonController] " +
-                    "Comparison ignored — tooltip is not visible.");
-
                 return false;
             }
 

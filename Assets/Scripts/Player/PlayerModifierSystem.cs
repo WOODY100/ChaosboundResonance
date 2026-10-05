@@ -119,15 +119,6 @@ public class PlayerModifierSystem : MonoBehaviour
                 modifierBuffer,
                 percentBehavior);
 
-            if (statType == StatType.CritChance)
-            {
-                Debug.Log(
-                    "[PlayerModifierSystem Debug] " +
-                    $"CritChance | " +
-                    $"Modifiers={modifierBuffer.Count} | " +
-                    $"CurrentValue={stats[statType].CurrentValue}");
-            }
-
             OnStatChanged?.Invoke(statType, stats[statType].CurrentValue);
         }
     }

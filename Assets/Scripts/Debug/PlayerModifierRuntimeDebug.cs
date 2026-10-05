@@ -129,11 +129,6 @@ public sealed class PlayerModifierRuntimeDebug : MonoBehaviour
         baselineXPGain =
             playerModifierSystem.GetStat(
                 StatType.XPGain);
-
-        Debug.Log(
-            "[Player Modifier Runtime Debug] " +
-            "Baseline captured.",
-            this);
     }
 
     [ContextMenu("Log Current Stats")]

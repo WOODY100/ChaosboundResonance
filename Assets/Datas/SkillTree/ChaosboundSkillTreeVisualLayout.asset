@@ -1,0 +1,161 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b88862a195d2c9c43807191702e5267f, type: 3}
+  m_Name: ChaosboundSkillTreeVisualLayout
+  m_EditorClassIdentifier: Assembly-CSharp::SkillTreeVisualLayout
+  nodePositions:
+  - NodeId: ROOT
+    Position: {x: 0, y: 0}
+  - NodeId: RUIN_01
+    Position: {x: 400, y: 0}
+  - NodeId: RUIN_02
+    Position: {x: 400, y: 200}
+  - NodeId: RUIN_03
+    Position: {x: 1000, y: 200}
+  - NodeId: RUIN_04
+    Position: {x: 700, y: 0}
+  - NodeId: RUIN_05
+    Position: {x: 1000, y: 0}
+  - NodeId: RUIN_06
+    Position: {x: 1300, y: 200}
+  - NodeId: RUIN_07
+    Position: {x: 400, y: -200}
+  - NodeId: RUIN_08
+    Position: {x: 1000, y: -200}
+  - NodeId: RUIN_09
+    Position: {x: 600, y: -400}
+  - NodeId: RUIN_10
+    Position: {x: 1000, y: -400}
+  - NodeId: RUIN_11
+    Position: {x: 1300, y: -300}
+  - NodeId: RUIN_12
+    Position: {x: 1300, y: 0}
+  - NodeId: RUIN_13
+    Position: {x: 1600, y: -200}
+  - NodeId: RUIN_14
+    Position: {x: 1600, y: 200}
+  - NodeId: RUIN_15
+    Position: {x: 1900, y: -200}
+  - NodeId: RUIN_16
+    Position: {x: 1900, y: 200}
+  - NodeId: RUIN_17
+    Position: {x: 2100, y: 0}
+  - NodeId: RUIN_18
+    Position: {x: 2400, y: 0}
+  - NodeId: AEGIS_01
+    Position: {x: 0, y: 300}
+  - NodeId: AEGIS_02
+    Position: {x: -200, y: 500}
+  - NodeId: AEGIS_03
+    Position: {x: -200, y: 700}
+  - NodeId: AEGIS_04
+    Position: {x: 0, y: 500}
+  - NodeId: AEGIS_05
+    Position: {x: 0, y: 700}
+  - NodeId: AEGIS_06
+    Position: {x: 0, y: 900}
+  - NodeId: AEGIS_07
+    Position: {x: 200, y: 500}
+  - NodeId: AEGIS_08
+    Position: {x: 200, y: 700}
+  - NodeId: AEGIS_09
+    Position: {x: 400, y: 700}
+  - NodeId: AEGIS_10
+    Position: {x: 400, y: 900}
+  - NodeId: AEGIS_11
+    Position: {x: 200, y: 900}
+  - NodeId: AEGIS_12
+    Position: {x: 100, y: 1100}
+  - NodeId: AEGIS_13
+    Position: {x: 0, y: 1300}
+  - NodeId: AEGIS_14
+    Position: {x: 200, y: 1300}
+  - NodeId: AEGIS_15
+    Position: {x: 0, y: 1500}
+  - NodeId: AEGIS_16
+    Position: {x: 200, y: 1500}
+  - NodeId: AEGIS_17
+    Position: {x: 100, y: 1700}
+  - NodeId: AEGIS_18
+    Position: {x: 100, y: 1900}
+  - NodeId: WANDERER_01
+    Position: {x: -400, y: -0}
+  - NodeId: WANDERER_02
+    Position: {x: -700, y: 300}
+  - NodeId: WANDERER_03
+    Position: {x: -900, y: 300}
+  - NodeId: WANDERER_04
+    Position: {x: -1100, y: 300}
+  - NodeId: WANDERER_05
+    Position: {x: -1300, y: 300}
+  - NodeId: WANDERER_06
+    Position: {x: -1500, y: 300}
+  - NodeId: WANDERER_07
+    Position: {x: -700, y: -0}
+  - NodeId: WANDERER_08
+    Position: {x: -900, y: -0}
+  - NodeId: WANDERER_09
+    Position: {x: -700, y: -200}
+  - NodeId: WANDERER_10
+    Position: {x: -900, y: -200}
+  - NodeId: WANDERER_11
+    Position: {x: -1100, y: -200}
+  - NodeId: WANDERER_12
+    Position: {x: -1100, y: -0}
+  - NodeId: WANDERER_13
+    Position: {x: -1300, y: 100}
+  - NodeId: WANDERER_14
+    Position: {x: -1700, y: 300}
+  - NodeId: WANDERER_15
+    Position: {x: -1300, y: -100}
+  - NodeId: WANDERER_16
+    Position: {x: -1500, y: 0}
+  - NodeId: WANDERER_17
+    Position: {x: -1700, y: 0}
+  - NodeId: WANDERER_18
+    Position: {x: -1900, y: 0}
+  - NodeId: RESONANCE_01
+    Position: {x: 0, y: -300}
+  - NodeId: RESONANCE_02
+    Position: {x: -250, y: -500}
+  - NodeId: RESONANCE_03
+    Position: {x: -250, y: -700}
+  - NodeId: RESONANCE_04
+    Position: {x: -250, y: -900}
+  - NodeId: RESONANCE_05
+    Position: {x: -250, y: -1100}
+  - NodeId: RESONANCE_06
+    Position: {x: -250, y: -1300}
+  - NodeId: RESONANCE_07
+    Position: {x: 250, y: -500}
+  - NodeId: RESONANCE_08
+    Position: {x: 250, y: -700}
+  - NodeId: RESONANCE_09
+    Position: {x: 250, y: -900}
+  - NodeId: RESONANCE_10
+    Position: {x: 250, y: -1100}
+  - NodeId: RESONANCE_11
+    Position: {x: 250, y: -1300}
+  - NodeId: RESONANCE_12
+    Position: {x: 0, y: -1550}
+  - NodeId: RESONANCE_13
+    Position: {x: 0, y: -1750}
+  - NodeId: RESONANCE_14
+    Position: {x: 0, y: -1950}
+  - NodeId: RESONANCE_15
+    Position: {x: 0, y: -2150}
+  - NodeId: RESONANCE_16
+    Position: {x: 0, y: -2350}
+  - NodeId: RESONANCE_17
+    Position: {x: 0, y: -2550}
+  - NodeId: RESONANCE_18
+    Position: {x: 0, y: -2750}

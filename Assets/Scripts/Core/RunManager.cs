@@ -142,7 +142,7 @@ public class RunManager : MonoBehaviour
             new ExpeditionSettlementService(
                 context.PersistentInventoryRuntime.State.Items,
                 context.PersistentInventoryRuntime.State.Materials,
-                context.PersistentMetaRuntime.State,
+                context.PersistentMetaRuntime,
                 context.PersistentInventoryRuntime.State.SecureInventory,
                 expeditionRewardItemResolver,
                 itemInstanceFactory);

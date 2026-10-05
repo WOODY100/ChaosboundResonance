@@ -15,7 +15,7 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Settlement
         private readonly PersistentItemInventoryState persistentItems;
         private readonly SecureInventoryState secureInventory;
         private readonly PersistentMaterialsState persistentMaterials;
-        private readonly PersistentMetaState persistentMeta;
+        private readonly PersistentMetaRuntime persistentMetaRuntime;
 
         private readonly ExpeditionRewardItemResolver
             expeditionRewardItemResolver;
@@ -28,7 +28,7 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Settlement
         public ExpeditionSettlementService(
             PersistentItemInventoryState persistentItems,
             PersistentMaterialsState persistentMaterials,
-            PersistentMetaState persistentMeta,
+            PersistentMetaRuntime persistentMetaRuntime,
             SecureInventoryState secureInventory,
             ExpeditionRewardItemResolver expeditionRewardItemResolver,
             ItemInstanceFactory itemInstanceFactory)
@@ -41,9 +41,10 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Settlement
                 persistentMaterials ??
                 throw new ArgumentNullException(nameof(persistentMaterials));
 
-            this.persistentMeta =
-                persistentMeta ??
-                throw new ArgumentNullException(nameof(persistentMeta));
+            this.persistentMetaRuntime =
+                persistentMetaRuntime ??
+                throw new ArgumentNullException(
+                    nameof(persistentMetaRuntime));
 
             this.secureInventory =
                 secureInventory ??
@@ -274,8 +275,8 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Settlement
             if (metaExperience < 0)
                 return false;
 
-            if (!persistentMeta.CanAddExperience(
-                    metaExperience))
+            if (!persistentMetaRuntime.State.CanAddExperience(
+                metaExperience))
             {
                 return false;
             }
@@ -346,7 +347,7 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Settlement
 
             if (plan.MetaExperience > 0)
             {
-                persistentMeta.AddExperience(
+                persistentMetaRuntime.AddMetaExperience(
                     plan.MetaExperience);
             }
 

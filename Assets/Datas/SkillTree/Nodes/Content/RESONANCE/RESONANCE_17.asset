@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 518e5f4984938344494f7f6aa98ea429, type: 3}
+  m_Name: RESONANCE_17
+  m_EditorClassIdentifier: Assembly-CSharp::SkillTreeNodeDefinition
+  NodeId: RESONANCE_17
+  DisplayName: Power / Chaos Grip
+  Description: 
+  Icon: {fileID: 0}
+  Branch: 4
+  NodeType: 5
+  Cost: 6
+  Requirement:
+    rid: 7186743466107338905
+  Effects: []
+  ChoiceOptions:
+  - OptionId: POWER
+    DisplayName: Power
+    Description: 
+    Icon: {fileID: 0}
+    Effects:
+    - rid: 7186743466107338906
+    - rid: 7186743466107338907
+  - OptionId: CHAOS_GRIP
+    DisplayName: Chaos Grip
+    Description: 
+    Icon: {fileID: 0}
+    Effects:
+    - rid: 7186743466107338908
+  references:
+    version: 2
+    RefIds:
+    - rid: 7186743466107338905
+      type: {class: NodePurchasedRequirement, ns: , asm: Assembly-CSharp}
+      data:
+        NodeId: RESONANCE_16
+    - rid: 7186743466107338906
+      type: {class: GlobalSkillModifierEffect, ns: , asm: Assembly-CSharp}
+      data:
+        ModifierType: 9
+        Value: 0
+    - rid: 7186743466107338907
+      type: {class: GlobalSkillModifierEffect, ns: , asm: Assembly-CSharp}
+      data:
+        ModifierType: 4
+        Value: 0
+    - rid: 7186743466107338908
+      type: {class: RuleEffect, ns: , asm: Assembly-CSharp}
+      data:
+        RuleId: reservado

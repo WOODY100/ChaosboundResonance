@@ -33,8 +33,8 @@ namespace Chaosbound.Gameplay.Equipment
 
         private void Awake()
         {
-            positioner = GetComponent<ItemTooltipPositioner>();
-            Hide();
+            positioner =
+                GetComponent<ItemTooltipPositioner>();
         }
 
         public void Show(EquipmentComparisonTooltipData data)
@@ -59,8 +59,8 @@ namespace Chaosbound.Gameplay.Equipment
                     false);
             }
 
-            isVisible = true;
             gameObject.SetActive(true);
+            isVisible = true;
         }
 
         private IReadOnlyList<EquipmentComparisonDisplayEntry> BuildDisplayEntries(

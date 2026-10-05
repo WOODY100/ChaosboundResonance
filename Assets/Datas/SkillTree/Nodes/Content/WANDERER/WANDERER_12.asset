@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 518e5f4984938344494f7f6aa98ea429, type: 3}
+  m_Name: WANDERER_12
+  m_EditorClassIdentifier: Assembly-CSharp::SkillTreeNodeDefinition
+  NodeId: WANDERER_12
+  DisplayName: Wanderer Focus
+  Description: 
+  Icon: {fileID: 0}
+  Branch: 3
+  NodeType: 3
+  Cost: 5
+  Requirement:
+    rid: 7186743448036704576
+  Effects:
+  - rid: 7186743448036704579
+  - rid: 7186743448036704580
+  ChoiceOptions: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 7186743448036704576
+      type: {class: AllRequirement, ns: , asm: Assembly-CSharp}
+      data:
+        Requirements:
+        - rid: 7186743448036704577
+        - rid: 7186743448036704578
+    - rid: 7186743448036704577
+      type: {class: NodePurchasedRequirement, ns: , asm: Assembly-CSharp}
+      data:
+        NodeId: WANDERER_08
+    - rid: 7186743448036704578
+      type: {class: NodePurchasedRequirement, ns: , asm: Assembly-CSharp}
+      data:
+        NodeId: WANDERER_11
+    - rid: 7186743448036704579
+      type: {class: PlayerStatEffect, ns: , asm: Assembly-CSharp}
+      data:
+        StatType: 9
+        ModifierType: 0
+        Value: 0
+    - rid: 7186743448036704580
+      type: {class: PlayerStatEffect, ns: , asm: Assembly-CSharp}
+      data:
+        StatType: 10
+        ModifierType: 0
+        Value: 0

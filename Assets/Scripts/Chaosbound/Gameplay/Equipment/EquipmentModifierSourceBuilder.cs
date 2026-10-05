@@ -74,13 +74,6 @@ namespace Chaosbound.Gameplay.Equipment
                 EquipmentBaseStat baseStat =
                     baseData.BaseStats[i];
 
-                UnityEngine.Debug.Log(
-                    $"[Equipment Modifier Debug] " +
-                    $"Item={baseData.ContentId} | " +
-                    $"Stat={baseStat.StatType} | " +
-                    $"Modifier={baseStat.ModifierType} | " +
-                    $"Value={baseStat.Value}");
-
                 source.Modifiers.Add(new StatModifier
                 {
                     StatType = baseStat.StatType,
