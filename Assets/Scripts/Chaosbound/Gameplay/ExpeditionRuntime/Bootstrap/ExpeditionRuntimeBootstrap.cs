@@ -27,12 +27,16 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Bootstrap
         private readonly GameContentContext
             compositionContext;
 
+        private readonly ExpeditionProgressRuntime
+            expeditionProgressRuntime;
+
         private SpawnRuntime
             spawnRuntime;
 
         public ExpeditionRuntimeBootstrap(
             SceneTransitionService sceneTransitionService,
-            GameContentContext compositionContext)
+            GameContentContext compositionContext,
+            ExpeditionProgressRuntime expeditionProgressRuntime)
         {
             this.sceneTransitionService =
                 sceneTransitionService
@@ -43,6 +47,11 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Bootstrap
                 compositionContext
                 ?? throw new ArgumentNullException(
                     nameof(compositionContext));
+
+            this.expeditionProgressRuntime =
+                expeditionProgressRuntime
+                ?? throw new ArgumentNullException(
+                    nameof(expeditionProgressRuntime));
         }
 
         /// <summary>
@@ -161,7 +170,8 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Bootstrap
                 securePreservationService,
                 gameFlow,
                 sceneTransitionService,
-                persistentStateSaver);
+                persistentStateSaver,
+                expeditionProgressRuntime);
         }
     }
 }

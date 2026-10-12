@@ -10,6 +10,7 @@ using Chaosbound.Content.Expeditions.Runtime.Scene;
 using Chaosbound.Content.Expeditions.Runtime.Spawn;
 using Chaosbound.Content.Expeditions.Runtime.Timeline;
 using Chaosbound.Content.Expeditions.Runtime.World;
+using Chaosbound.Content.Expeditions.Definitions.Identity;
 using System;
 
 namespace Chaosbound.Content.Expeditions.Runtime.Configs
@@ -46,6 +47,8 @@ namespace Chaosbound.Content.Expeditions.Runtime.Configs
 
         public RuntimeMinimapConfig Minimap { get; }
 
+        public IdentityDefinition Identity { get; }
+
         public RuntimeExpeditionConfig(
             RuntimeSceneConfig scene,
             RuntimeWorldConfig world,
@@ -59,7 +62,8 @@ namespace Chaosbound.Content.Expeditions.Runtime.Configs
             RuntimeBossesConfig bosses,
             RuntimeRewardsConfig rewards,
             RuntimeCompletionConfig completion,
-            RuntimeMinimapConfig minimap)
+            RuntimeMinimapConfig minimap,
+            IdentityDefinition identity)
         {
             Scene = scene ?? throw new ArgumentNullException(nameof(scene));
             World = world ?? throw new ArgumentNullException(nameof(world));
@@ -74,6 +78,7 @@ namespace Chaosbound.Content.Expeditions.Runtime.Configs
             Rewards = rewards ?? throw new ArgumentNullException(nameof(rewards));
             Completion = completion ?? throw new ArgumentNullException(nameof(completion));
             Minimap = minimap ?? throw new ArgumentNullException(nameof(minimap));
+            Identity = identity ?? throw new ArgumentNullException(nameof(identity));
         }
     }
 }

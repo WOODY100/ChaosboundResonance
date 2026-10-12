@@ -33,21 +33,26 @@ namespace Chaosbound.Gameplay.Save
         public void Save(
             PersistentInventoryState inventoryState,
             EquipmentLoadoutRuntime equipmentLoadout,
-            PersistentMetaState metaState)
+            PersistentMetaState metaState,
+            ExpeditionProgressRuntime expeditionProgress)
         {
+            if (expeditionProgress == null)
+                throw new ArgumentNullException(
+                    nameof(expeditionProgress));
+
             SaveGameData saveData =
                 SaveGameMapper.ToSaveData(
                     saveVersion,
                     inventoryState,
                     equipmentLoadout,
-                    metaState);
+                    metaState,
+                    expeditionProgress);
 
             string json =
                 SaveGameJsonSerializer.Serialize(
                     saveData);
 
-            storage.Save(
-                json);
+            storage.Save(json);
         }
 
         public bool TryPrepareLoad(
@@ -70,6 +75,15 @@ namespace Chaosbound.Gameplay.Save
 
             if (saveData.MetaProgression == null)
                 return false;
+
+            if (saveData.ExpeditionProgress == null)
+                return false;
+
+            if (!ExpeditionProgressDataValidator.IsValid(
+                    saveData.ExpeditionProgress))
+            {
+                return false;
+            }
 
             GameContentContext context =
                 GameContentContext.Current;
@@ -104,16 +118,18 @@ namespace Chaosbound.Gameplay.Save
                 new SaveGameLoadPlan(
                     inventoryLoadPlan,
                     equipmentLoadPlan,
-                    saveData.MetaProgression.Experience);
+                    saveData.MetaProgression.Experience,
+                    saveData.ExpeditionProgress);
 
             return true;
         }
 
-        public void ApplyLoadPlan(
+        public bool ApplyLoadPlan(
             SaveGameLoadPlan loadPlan,
             PersistentInventoryState inventoryState,
             EquipmentLoadoutRuntime equipmentLoadout,
-            PersistentMetaState metaState)
+            PersistentMetaState metaState,
+            ExpeditionProgressRuntime expeditionProgress)
         {
             if (loadPlan == null)
                 throw new ArgumentNullException(nameof(loadPlan));
@@ -127,6 +143,17 @@ namespace Chaosbound.Gameplay.Save
             if (metaState == null)
                 throw new ArgumentNullException(nameof(metaState));
 
+            if (expeditionProgress == null)
+                throw new ArgumentNullException(nameof(expeditionProgress));
+
+            // Validate the expedition progress before applying
+            // the other persistent state.
+            if (!ExpeditionProgressDataValidator.IsValid(
+                    loadPlan.ExpeditionProgress))
+            {
+                return false;
+            }
+
             SaveInventoryMapper.ApplyLoadPlan(
                 loadPlan.Inventory,
                 inventoryState);
@@ -138,10 +165,13 @@ namespace Chaosbound.Gameplay.Save
             SaveMetaProgressionMapper.ApplyLoadPlan(
                 loadPlan.MetaExperience,
                 metaState);
+
+            return expeditionProgress.ApplySaveData(
+                loadPlan.ExpeditionProgress);
         }
 
         public bool TryLoad(
-    out SaveGameLoadPlan loadPlan)
+            out SaveGameLoadPlan loadPlan)
         {
             loadPlan = null;
 

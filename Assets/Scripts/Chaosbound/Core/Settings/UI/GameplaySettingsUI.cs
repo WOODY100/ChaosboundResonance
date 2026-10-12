@@ -66,61 +66,81 @@ namespace Chaosbound.Core.Settings.UI
 
         public void Apply()
         {
-            if (settingsRuntime == null ||
-                settingsRuntime.Settings == null)
+            if (!EnsureSettingsRuntime())
             {
+                Debug.LogError(
+                    "[GameplaySettingsUI] Could not initialize GameSettingsRuntime.",
+                    this);
                 return;
             }
 
-            GameSettings settings =
-                settingsRuntime.Settings;
+            SaveFeedbackController feedbackController =
+                ResolveSaveFeedbackController();
 
-            if (confirmWorldItemDropToggle != null)
+            if (feedbackController == null)
             {
-                settings.ConfirmWorldItemDrop =
-                    confirmWorldItemDropToggle.isOn;
+                Debug.LogError(
+                    "[GameplaySettingsUI] SaveFeedbackController was not found.",
+                    this);
+                return;
             }
 
-            if (showDamageNumbersToggle != null)
-            {
-                settings.ShowDamageNumbers =
-                    showDamageNumbersToggle.isOn;
-            }
+            GameSettings current = settingsRuntime.Settings;
 
-            if (showEnemyHealthBarsToggle != null)
+            GameSettings newSettings = new GameSettings
             {
-                settings.ShowEnemyHealthBars =
-                    showEnemyHealthBarsToggle.isOn;
-            }
+                ConfirmWorldItemDrop =
+                    confirmWorldItemDropToggle != null
+                        ? confirmWorldItemDropToggle.isOn
+                        : current.ConfirmWorldItemDrop,
 
-            if (vibrationToggle != null)
-            {
-                settings.Vibration =
-                    vibrationToggle.isOn;
-            }
+                ShowDamageNumbers =
+                    showDamageNumbersToggle != null
+                        ? showDamageNumbersToggle.isOn
+                        : current.ShowDamageNumbers,
+
+                ShowEnemyHealthBars =
+                    showEnemyHealthBarsToggle != null
+                        ? showEnemyHealthBarsToggle.isOn
+                        : current.ShowEnemyHealthBars,
+
+                Vibration =
+                    vibrationToggle != null
+                        ? vibrationToggle.isOn
+                        : current.Vibration
+            };
+
+            feedbackController.RunSaveOperation(
+                () => settingsRuntime.ApplySettings(newSettings));
         }
 
         public void RestoreDefaults()
         {
-            if (confirmWorldItemDropToggle != null)
+            if (!EnsureSettingsRuntime())
             {
-                confirmWorldItemDropToggle.isOn = true;
+                Debug.LogError(
+                    "[GameplaySettingsUI] Could not initialize GameSettingsRuntime.",
+                    this);
+                return;
             }
 
-            if (showDamageNumbersToggle != null)
+            SaveFeedbackController feedbackController =
+                ResolveSaveFeedbackController();
+
+            if (feedbackController == null)
             {
-                showDamageNumbersToggle.isOn = true;
+                Debug.LogError(
+                    "[GameplaySettingsUI] SaveFeedbackController was not found.",
+                    this);
+                return;
             }
 
-            if (showEnemyHealthBarsToggle != null)
-            {
-                showEnemyHealthBarsToggle.isOn = true;
-            }
-
-            if (vibrationToggle != null)
-            {
-                vibrationToggle.isOn = true;
-            }
+            feedbackController.RunSaveOperation(
+                () =>
+                {
+                    settingsRuntime.RestoreDefaults();
+                    RefreshFromSettings();
+                });
         }
 
         private void SetToggleWithoutNotify(
@@ -133,6 +153,30 @@ namespace Chaosbound.Core.Settings.UI
             }
 
             toggle.SetIsOnWithoutNotify(value);
+        }
+
+        private SaveFeedbackController ResolveSaveFeedbackController()
+        {
+            BootstrapContext context = BootstrapContext.Current;
+
+            if (context == null)
+                return null;
+
+            return context.GetComponentInChildren<SaveFeedbackController>(true);
+        }
+
+        private bool EnsureSettingsRuntime()
+        {
+            if (settingsRuntime != null &&
+                settingsRuntime.IsInitialized)
+            {
+                return true;
+            }
+
+            ResolveSettingsRuntime();
+
+            return settingsRuntime != null &&
+                   settingsRuntime.IsInitialized;
         }
     }
 }

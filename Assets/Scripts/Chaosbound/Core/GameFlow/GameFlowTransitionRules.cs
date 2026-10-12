@@ -139,6 +139,19 @@ namespace Chaosbound.Core.GameFlow
                 return GameFlowTransitionDecision.Push;
             }
 
+
+            //======================================================
+            // Expedition Selection
+            //======================================================
+
+            if (requested == GameFlowContext.ExpeditionSelection)
+            {
+                if (current == GameFlowContext.Playing)
+                    return GameFlowTransitionDecision.Push;
+
+                return GameFlowTransitionDecision.Reject;
+            }
+
             //======================================================
             // Default
             //======================================================

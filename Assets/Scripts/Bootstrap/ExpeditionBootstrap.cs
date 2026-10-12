@@ -25,28 +25,41 @@ namespace Chaosbound.Runtime.Bootstrap
     {
         [Header("Expedition")]
 
-        [SerializeField]
-        private ExpeditionAsset expeditionAsset;
-
         private readonly ExpeditionBuilder expeditionBuilder =
             new ExpeditionBuilder();
 
-        public void StartExpedition()
+        public void StartExpedition(ExpeditionAsset selectedExpedition)
         {
-            if (expeditionAsset == null)
+            if (selectedExpedition == null)
             {
-                Debug.LogError("Missing ExpeditionAsset.");
+                Debug.LogError(
+                    "[ExpeditionBootstrap] No expedition was selected.",
+                    this);
+
                 return;
             }
 
-            ExpeditionDefinition expeditionDefinition =
-                expeditionBuilder.Build(expeditionAsset);
+            ExpeditionDefinition expeditionDefinition;
+
+            try
+            {
+                expeditionDefinition = expeditionBuilder.Build(selectedExpedition);
+            }
+            catch (Exception exception)
+            {
+                Debug.LogError(
+                    $"[ExpeditionBootstrap] Failed to build expedition '{selectedExpedition.name}'.",
+                    selectedExpedition);
+
+                Debug.LogException(exception, selectedExpedition);
+                return;
+            }
 
             BootstrapContext context = BootstrapContext.Current;
 
             if (context == null)
             {
-                Debug.LogError("BootstrapContext is not available.");
+                Debug.LogError("BootstrapContext is not available.", this);
                 return;
             }
 
@@ -54,7 +67,7 @@ namespace Chaosbound.Runtime.Bootstrap
 
             if (runSession == null)
             {
-                Debug.LogError("Missing RunSession.");
+                Debug.LogError("Missing RunSession.", this);
                 return;
             }
 
@@ -63,20 +76,17 @@ namespace Chaosbound.Runtime.Bootstrap
 
             if (sceneTransitionService == null)
             {
-                Debug.LogError("Missing SceneTransitionService.");
+                Debug.LogError("Missing SceneTransitionService.", this);
                 return;
             }
 
             RuntimeExpeditionBuilder runtimeBuilder =
                 CreateRuntimeBuilder(expeditionDefinition);
 
-            ExpeditionRequest request =
-                new ExpeditionRequest(
-                    expeditionDefinition,
-                    // TODO:
-                    // Replace with the player's selected difficulty.
-                    DifficultyTier.Normal,
-                    Environment.TickCount);
+            ExpeditionRequest request = new ExpeditionRequest(
+                expeditionDefinition,
+                DifficultyTier.Normal,
+                Environment.TickCount);
 
             RuntimeExpeditionConfig runtime =
                 runtimeBuilder.BuildRunConfig(request);

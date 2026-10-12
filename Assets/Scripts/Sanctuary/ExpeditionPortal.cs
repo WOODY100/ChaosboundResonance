@@ -1,13 +1,32 @@
-using Chaosbound.Runtime.Bootstrap;
+
+using Chaosbound.Gameplay.Expeditions.UI;
 using UnityEngine;
 
 public sealed class ExpeditionPortal : MonoBehaviour, IInteractable
 {
+    [Header("Expedition Selection")]
     [SerializeField]
-    private ExpeditionBootstrap expeditionBootstrap;
+    private ExpeditionSelectionWindowController selectionWindowController;
 
     public void Interact(PlayerInteractor interactor)
     {
-        expeditionBootstrap.StartExpedition();
+        if (selectionWindowController == null)
+        {
+            Debug.LogError(
+                "[ExpeditionPortal] Missing " +
+                "ExpeditionSelectionWindowController reference.",
+                this);
+
+            return;
+        }
+
+        bool opened = selectionWindowController.Open();
+
+        if (!opened)
+        {
+            Debug.LogWarning(
+                "[ExpeditionPortal] Could not open expedition selection.",
+                this);
+        }
     }
 }

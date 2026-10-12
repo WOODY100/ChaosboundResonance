@@ -11,7 +11,8 @@ namespace Chaosbound.Gameplay.Save
             int saveVersion,
             PersistentInventoryState inventoryState,
             EquipmentLoadoutRuntime equipmentLoadout,
-            PersistentMetaState metaState)
+            PersistentMetaState metaState,
+            ExpeditionProgressRuntime expeditionProgress)
         {
             if (saveVersion < 0)
                 throw new ArgumentOutOfRangeException(
@@ -29,6 +30,10 @@ namespace Chaosbound.Gameplay.Save
                 throw new ArgumentNullException(
                     nameof(metaState));
 
+            if (expeditionProgress == null)
+                throw new ArgumentNullException(
+                    nameof(expeditionProgress));
+
             return new SaveGameData
             {
                 SaveVersion = saveVersion,
@@ -43,7 +48,10 @@ namespace Chaosbound.Gameplay.Save
 
                 MetaProgression =
                     SaveMetaProgressionMapper.ToSaveData(
-                        metaState)
+                        metaState),
+
+                ExpeditionProgress =
+                    expeditionProgress.ToSaveData()
             };
         }
     }

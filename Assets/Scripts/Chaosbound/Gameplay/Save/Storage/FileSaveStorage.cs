@@ -4,13 +4,12 @@ using UnityEngine;
 
 namespace Chaosbound.Gameplay.Save
 {
-    public sealed class FileSaveStorage
-        : ISaveStorage
+    public sealed class FileSaveStorage : ISaveStorage
     {
         private readonly string filePath;
+        private readonly string temporaryFilePath;
 
-        public FileSaveStorage(
-            string fileName)
+        public FileSaveStorage(string fileName)
         {
             if (string.IsNullOrWhiteSpace(fileName))
             {
@@ -21,34 +20,49 @@ namespace Chaosbound.Gameplay.Save
 
             fileName = fileName.Trim();
 
-            if (Path.GetFileName(fileName) !=
-                fileName)
+            if (Path.GetFileName(fileName) != fileName)
             {
                 throw new ArgumentException(
                     "Save file name must not contain a directory path.",
                     nameof(fileName));
             }
 
+            string directory =
+                Application.persistentDataPath;
+
             filePath =
-                Path.Combine(
-                    Application.persistentDataPath,
-                    fileName);
+                Path.Combine(directory, fileName);
+
+            temporaryFilePath =
+                filePath + ".tmp";
         }
 
-        public void Save(
-            string data)
+        public void Save(string data)
         {
             if (data == null)
             {
-                throw new ArgumentNullException(
-                    nameof(data));
+                throw new ArgumentNullException(nameof(data));
             }
 
             try
             {
                 File.WriteAllText(
-                    filePath,
+                    temporaryFilePath,
                     data);
+
+                if (File.Exists(filePath))
+                {
+                    File.Replace(
+                        temporaryFilePath,
+                        filePath,
+                        null);
+                }
+                else
+                {
+                    File.Move(
+                        temporaryFilePath,
+                        filePath);
+                }
             }
             catch (Exception exception)
             {
@@ -58,8 +72,7 @@ namespace Chaosbound.Gameplay.Save
             }
         }
 
-        public bool TryLoad(
-            out string data)
+        public bool TryLoad(out string data)
         {
             data = null;
 
@@ -68,10 +81,7 @@ namespace Chaosbound.Gameplay.Save
 
             try
             {
-                data =
-                    File.ReadAllText(
-                        filePath);
-
+                data = File.ReadAllText(filePath);
                 return true;
             }
             catch (Exception exception)
@@ -84,8 +94,7 @@ namespace Chaosbound.Gameplay.Save
 
         public bool Exists()
         {
-            return File.Exists(
-                filePath);
+            return File.Exists(filePath);
         }
 
         public void Delete()

@@ -1,4 +1,6 @@
+
 using System;
+using UnityEngine;
 
 namespace Chaosbound.Content.Expeditions.Definitions.Presentation
 {
@@ -13,12 +15,12 @@ namespace Chaosbound.Content.Expeditions.Definitions.Presentation
 
         public string Description { get; }
 
-        public string IconId { get; }
+        public Sprite Image { get; }
 
         public PresentationDefinition(
             string displayName,
             string description,
-            string iconId)
+            Sprite image)
         {
             if (string.IsNullOrWhiteSpace(displayName))
                 throw new ArgumentException(
@@ -27,7 +29,7 @@ namespace Chaosbound.Content.Expeditions.Definitions.Presentation
 
             DisplayName = displayName;
             Description = description ?? string.Empty;
-            IconId = iconId ?? string.Empty;
+            Image = image;
         }
     }
 }

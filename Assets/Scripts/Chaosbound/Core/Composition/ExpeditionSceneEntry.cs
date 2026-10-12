@@ -3,6 +3,7 @@ using Chaosbound.Core.GameFlow;
 using Chaosbound.Gameplay.ExpeditionRuntime.Director;
 using Chaosbound.Gameplay.ExpeditionRuntime.Exit;
 using Chaosbound.Gameplay.ExpeditionRuntime.Result;
+using System.Collections;
 using System;
 using UnityEngine;
 
@@ -13,6 +14,12 @@ namespace Chaosbound.Core.Composition
         [Header("Scene Context")]
         [SerializeField]
         private ExpeditionSceneContext sceneContext;
+
+        [SerializeField, Min(0f)]
+        private float resultDisplayTime = 2f;
+
+        private Coroutine exitCoroutine;
+        private bool isExiting;
 
         private ExpeditionComposition composition;
 
@@ -45,24 +52,20 @@ namespace Chaosbound.Core.Composition
         {
             Validate();
 
-            bootstrapContext =
-                BootstrapContext.Current;
+            bootstrapContext = BootstrapContext.Current;
 
             bootstrapContext.GameFlow.SetEnvironment(
                 GameFlowEnvironment.Expedition);
 
-            RunSession runSession =
-                bootstrapContext.RunSession;
+            // Establish Playing as the root context for the expedition.
+            bootstrapContext.GameFlow.Initialize();
 
-            RuntimeExpeditionConfig runtimeConfig =
-                runSession.CurrentRun;
+            RunSession runSession = bootstrapContext.RunSession;
+            RuntimeExpeditionConfig runtimeConfig = runSession.CurrentRun;
 
-            composition =
-                CreateComposition(
-                    bootstrapContext,
-                    runtimeConfig);
-
+            composition = CreateComposition(bootstrapContext, runtimeConfig);
             composition.Initialize();
+
 
             resultBuilder =
                 new ExpeditionResultBuilder();
@@ -315,39 +318,82 @@ namespace Chaosbound.Core.Composition
 
         private void HandleReturnToSanctuaryRequested()
         {
+            if (isExiting)
+                return;
+
             if (bootstrapContext == null)
             {
                 Debug.LogError(
                     "BootstrapContext is not available.",
                     this);
-
                 return;
             }
 
-            RunManager runManager =
-                bootstrapContext.RunManager;
-
-            if (runManager == null)
+            if (bootstrapContext.SaveFeedbackController == null)
             {
                 Debug.LogError(
-                    "RunManager is not available.",
+                    "SaveFeedbackController is not available.",
                     this);
-
                 return;
             }
 
-            if (runManager.ExpeditionExitService == null)
+            RunManager runManager = bootstrapContext.RunManager;
+
+            if (runManager == null ||
+                runManager.ExpeditionExitService == null)
             {
                 Debug.LogError(
                     "ExpeditionExitService is not available.",
                     this);
-
                 return;
             }
 
-            runManager.ExpeditionExitService.Exit(
-                currentExitReason,
-                runManager.CurrentRunConfig);
+            isExiting = true;
+
+            exitCoroutine = StartCoroutine(
+                CompleteExpeditionRoutine(runManager));
+        }
+
+        private IEnumerator CompleteExpeditionRoutine(
+            RunManager runManager)
+        {
+            SaveFeedbackController feedback =
+                bootstrapContext.SaveFeedbackController;
+
+            if (feedback == null)
+            {
+                Debug.LogError(
+                    "SaveFeedbackController is not available.",
+                    this);
+
+                isExiting = false;
+                exitCoroutine = null;
+                yield break;
+            }
+
+            feedback.ShowSaving();
+
+            yield return null;
+
+            bool success =
+                runManager.ExpeditionExitService.PrepareExit(
+                    currentExitReason,
+                    runManager.CurrentRunConfig);
+
+            feedback.ShowResult(success);
+
+            if (!success)
+            {
+                isExiting = false;
+                exitCoroutine = null;
+                yield break;
+            }
+
+            yield return new WaitForSecondsRealtime(
+                resultDisplayTime);
+
+            runManager.ExpeditionExitService.CompleteExit(
+                ExpeditionExitDestination.Sanctuary);
         }
 
         //==========================================================

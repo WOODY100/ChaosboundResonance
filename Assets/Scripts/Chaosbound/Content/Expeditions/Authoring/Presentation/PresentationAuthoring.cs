@@ -14,12 +14,12 @@ namespace Chaosbound.Content.Expeditions.Authoring.Presentation
         private string m_description;
 
         [SerializeField]
-        private string m_iconId;
+        private Sprite m_image;
 
         public string DisplayName => m_displayName;
 
         public string Description => m_description;
 
-        public string IconId => m_iconId;
+        public Sprite Image => m_image;
     }
 }

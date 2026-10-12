@@ -1,7 +1,8 @@
+
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class OptionsMenuController : MonoBehaviour
+public sealed class OptionsMenuController : MonoBehaviour
 {
     [Header("Panels")]
     [SerializeField] private GameObject mainMenuPanel;
@@ -18,8 +19,16 @@ public class OptionsMenuController : MonoBehaviour
     [SerializeField] private GameObject firstOptionsButton;
     [SerializeField] private GameObject optionsMenuButton;
 
+    private bool isOpen;
+
+    public bool IsOpen => isOpen;
+
     public void OpenOptions()
     {
+        if (optionsPanel == null || isOpen)
+            return;
+
+        isOpen = true;
         optionsPanel.SetActive(true);
 
         if (mainMenuCanvasGroup != null)
@@ -31,12 +40,20 @@ public class OptionsMenuController : MonoBehaviour
 
         ShowVideoTab();
 
-        if (firstOptionsButton != null)
-            EventSystem.current.SetSelectedGameObject(firstOptionsButton);
+        if (firstOptionsButton != null &&
+            EventSystem.current != null)
+        {
+            EventSystem.current.SetSelectedGameObject(
+                firstOptionsButton);
+        }
     }
 
     public void CloseOptions()
     {
+        if (optionsPanel == null || !isOpen)
+            return;
+
+        isOpen = false;
         optionsPanel.SetActive(false);
 
         if (mainMenuCanvasGroup != null)
@@ -46,8 +63,12 @@ public class OptionsMenuController : MonoBehaviour
             mainMenuCanvasGroup.blocksRaycasts = true;
         }
 
-        if (optionsMenuButton != null)
-            EventSystem.current.SetSelectedGameObject(optionsMenuButton);
+        if (optionsMenuButton != null &&
+            EventSystem.current != null)
+        {
+            EventSystem.current.SetSelectedGameObject(
+                optionsMenuButton);
+        }
     }
 
     public void ShowVideoTab()
@@ -72,9 +93,19 @@ public class OptionsMenuController : MonoBehaviour
 
     private void SetTab(GameObject activeTab)
     {
-        videoContent.SetActive(activeTab == videoContent);
-        audioContent.SetActive(activeTab == audioContent);
-        gameplayContent.SetActive(activeTab == gameplayContent);
-        controlsContent.SetActive(activeTab == controlsContent);
+        if (activeTab == null)
+            return;
+
+        if (videoContent != null)
+            videoContent.SetActive(activeTab == videoContent);
+
+        if (audioContent != null)
+            audioContent.SetActive(activeTab == audioContent);
+
+        if (gameplayContent != null)
+            gameplayContent.SetActive(activeTab == gameplayContent);
+
+        if (controlsContent != null)
+            controlsContent.SetActive(activeTab == controlsContent);
     }
 }

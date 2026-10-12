@@ -75,7 +75,8 @@ namespace Chaosbound.Content.Expeditions.Runtime.Builders
                     bosses,
                     rewards,
                     completion,
-                    minimap);
+                    minimap,
+                    request.Definition.Identity);
 
             return runtimeConfig;
         }

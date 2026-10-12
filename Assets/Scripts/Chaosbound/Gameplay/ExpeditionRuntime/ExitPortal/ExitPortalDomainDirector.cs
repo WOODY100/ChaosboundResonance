@@ -149,9 +149,6 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.ExitPortal
 
             state.ClearInteractionRequest();
 
-            Debug.Log(
-                "[ExitPortalDomain] Exit request accepted.");
-
             return true;
         }
     }

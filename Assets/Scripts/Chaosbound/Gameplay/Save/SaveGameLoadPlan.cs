@@ -1,6 +1,4 @@
 using System;
-using Chaosbound.Gameplay.Inventory.Persistent;
-using Chaosbound.Gameplay.MetaProgression.Persistent;
 
 namespace Chaosbound.Gameplay.Save
 {
@@ -12,10 +10,13 @@ namespace Chaosbound.Gameplay.Save
 
         public int MetaExperience { get; }
 
+        public ExpeditionProgressData ExpeditionProgress { get; }
+
         public SaveGameLoadPlan(
             SaveInventoryLoadPlan inventory,
             SaveEquipmentLoadPlan equipment,
-            int metaExperience)
+            int metaExperience,
+            ExpeditionProgressData expeditionProgress)
         {
             Inventory =
                 inventory ??
@@ -35,6 +36,11 @@ namespace Chaosbound.Gameplay.Save
 
             MetaExperience =
                 metaExperience;
+
+            ExpeditionProgress =
+                expeditionProgress ??
+                throw new ArgumentNullException(
+                    nameof(expeditionProgress));
         }
     }
 }

@@ -19,6 +19,13 @@ public class PlayerStatsDebugTest : MonoBehaviour
     [SerializeField]
     private int debugMetaExperience = 500;
 
+    [Header("Expedition Selection Debug")]
+
+    [SerializeField]
+    private Chaosbound.Gameplay.Expeditions.UI
+    .ExpeditionSelectionWindowController
+    expeditionSelectionWindowController;
+
     private PersistentMetaRuntime persistentMetaRuntime;
 
     private void Awake()
@@ -77,6 +84,12 @@ public class PlayerStatsDebugTest : MonoBehaviour
         if (Keyboard.current.uKey.wasPressedThisFrame)
         {
             OpenSkillTree();
+        }
+
+        // F = Open Expedition Selection
+        if (Keyboard.current.fKey.wasPressedThisFrame)
+        {
+            OpenExpeditionSelection();
         }
     }
 
@@ -355,5 +368,28 @@ public class PlayerStatsDebugTest : MonoBehaviour
         Debug.Log(
             "[PlayerStatsDebugTest] " +
             "Skill Tree opened and built.");
+    }
+
+    private void OpenExpeditionSelection()
+    {
+        if (expeditionSelectionWindowController == null)
+        {
+            Debug.LogError(
+                "[PlayerStatsDebugTest] " +
+                "ExpeditionSelectionWindowController " +
+                "is not assigned.",
+                this);
+
+            return;
+        }
+
+        bool opened =
+            expeditionSelectionWindowController.Open();
+
+        Debug.Log(
+            "[PlayerStatsDebugTest] " +
+            "Expedition Selection Open() result: " +
+            opened,
+            this);
     }
 }

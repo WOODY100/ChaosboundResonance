@@ -1,3 +1,4 @@
+
 using System;
 
 using Chaosbound.Content.Expeditions.Authoring.Presentation;
@@ -19,7 +20,7 @@ namespace Chaosbound.Content.Expeditions.Builders.Presentation
             return new PresentationDefinition(
                 authoring.DisplayName,
                 authoring.Description,
-                authoring.IconId);
+                authoring.Image);
         }
     }
 }

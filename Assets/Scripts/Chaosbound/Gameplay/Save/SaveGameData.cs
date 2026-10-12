@@ -12,5 +12,7 @@ namespace Chaosbound.Gameplay.Save
         public SaveEquipmentData Equipment;
 
         public SaveMetaProgressionData MetaProgression;
+
+        public ExpeditionProgressData ExpeditionProgress;
     }
 }

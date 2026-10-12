@@ -31,7 +31,8 @@ namespace Chaosbound.Core.Composition
         [SerializeField] private EnemyManager enemyManager;
         [SerializeField] private LevelUpManager levelUpManager;
         [SerializeField] private PersistentInventoryRuntime persistentInventoryRuntime;
-        
+        [SerializeField] private SaveFeedbackController saveFeedbackController;
+
         private PersistentItemTrashConfirmationService
             persistentItemTrashConfirmationService;
 
@@ -40,8 +41,13 @@ namespace Chaosbound.Core.Composition
         [SerializeField] private PersistentMetaRuntime persistentMetaRuntime;
 
         private EquipmentLoadoutRuntime equipmentLoadoutRuntime;
+        private ExpeditionProgressRuntime expeditionProgressRuntime;
         private SaveGameService saveGameService;
         private EquipmentInventoryService equipmentInventoryService;
+        private GameSettingsPersistenceService gameSettingsPersistenceService;
+
+        [SerializeField]
+        private string settingsFileName = "chaosbound_settings.json";
 
         [SerializeField]
         private string saveFileName = "chaosbound_save.json";
@@ -89,8 +95,15 @@ namespace Chaosbound.Core.Composition
             equipmentLoadoutRuntime;
         public EquipmentInventoryService EquipmentInventoryService =>
             equipmentInventoryService;
+
+        public ExpeditionProgressRuntime ExpeditionProgressRuntime =>
+            expeditionProgressRuntime;
+
         public SaveGameService SaveGameService =>
             saveGameService;
+
+        public SaveFeedbackController SaveFeedbackController =>
+            saveFeedbackController;
 
         //==========================================================
         // Unity
@@ -103,6 +116,9 @@ namespace Chaosbound.Core.Composition
             equipmentLoadoutRuntime =
                 new EquipmentLoadoutRuntime();
 
+            expeditionProgressRuntime =
+                new ExpeditionProgressRuntime();
+
             ISaveStorage saveStorage =
                 new FileSaveStorage(
                     saveFileName);
@@ -111,6 +127,24 @@ namespace Chaosbound.Core.Composition
                 new SaveGameService(
                     saveStorage,
                     1);
+
+            ISaveStorage settingsStorage =
+                new FileSaveStorage(
+                    settingsFileName);
+
+            gameSettingsPersistenceService =
+                new GameSettingsPersistenceService(
+                    settingsStorage);
+
+            if (gameSettingsRuntime == null)
+            {
+                throw new InvalidOperationException(
+                    $"{nameof(BootstrapContext)} requires a " +
+                    $"{nameof(GameSettingsRuntime)}.");
+            }
+
+            gameSettingsRuntime.Initialize(
+                gameSettingsPersistenceService);
 
             sceneTransitionService =
                 new SceneTransitionService();
@@ -202,7 +236,7 @@ namespace Chaosbound.Core.Composition
                     gameFlow);
         }
 
-        public void SavePersistentState()
+        public bool SavePersistentState()
         {
             if (saveGameService == null)
                 throw new InvalidOperationException(
@@ -220,10 +254,28 @@ namespace Chaosbound.Core.Composition
                 throw new InvalidOperationException(
                     "PersistentMetaRuntime is not initialized.");
 
-            saveGameService.Save(
-                persistentInventoryRuntime.State,
-                equipmentLoadoutRuntime,
-                persistentMetaRuntime.State);
+            if (expeditionProgressRuntime == null)
+                throw new InvalidOperationException(
+                    "ExpeditionProgressRuntime is not initialized.");
+
+            try
+            {
+                saveGameService.Save(
+                    persistentInventoryRuntime.State,
+                    equipmentLoadoutRuntime,
+                    persistentMetaRuntime.State,
+                    expeditionProgressRuntime);
+
+                return true;
+            }
+            catch (Exception exception)
+            {
+                Debug.LogError(
+                    "[BootstrapContext] Failed to save persistent state. " +
+                    exception);
+
+                return false;
+            }
         }
 
         public bool LoadPersistentState()
@@ -258,17 +310,34 @@ namespace Chaosbound.Core.Composition
                     "is not ready.");
             }
 
+            if (expeditionProgressRuntime == null)
+            {
+                throw new InvalidOperationException(
+                    $"{nameof(BootstrapContext)} ExpeditionProgressRuntime " +
+                    "is not ready.");
+            }
+
             if (!saveGameService.TryLoad(
                     out SaveGameLoadPlan loadPlan))
             {
                 return false;
             }
 
-            saveGameService.ApplyLoadPlan(
+
+            bool applied = saveGameService.ApplyLoadPlan(
                 loadPlan,
                 persistentInventoryRuntime.State,
                 equipmentLoadoutRuntime,
-                persistentMetaRuntime.State);
+                persistentMetaRuntime.State,
+                expeditionProgressRuntime);
+
+            if (!applied)
+            {
+                Debug.LogError(
+                    "[BootstrapContext] Failed to apply the save game load plan.");
+
+                return false;
+            }
 
             return true;
         }
@@ -316,6 +385,7 @@ namespace Chaosbound.Core.Composition
                     equipmentLoadoutRuntime);
         }
 
+
 #if UNITY_EDITOR
 
         //==========================================================
@@ -325,37 +395,33 @@ namespace Chaosbound.Core.Composition
         private void OnValidate()
         {
             // Persistent Managers
-            ValidateReference(
-                runSession,
-                nameof(runSession));
+            ValidateReference(runSession, nameof(runSession));
+            ValidateReference(runManager, nameof(runManager));
+            ValidateReference(poolManager, nameof(poolManager));
+            ValidateReference(enemyManager, nameof(enemyManager));
+            ValidateReference(levelUpManager, nameof(levelUpManager));
+            ValidateReference(gameFlowConfiguration, nameof(gameFlowConfiguration));
+            ValidateReference(persistentMetaRuntime, nameof(persistentMetaRuntime));
+            ValidateReference(itemTooltipService, nameof(itemTooltipService));
+            ValidateReference(gameSettingsRuntime, nameof(gameSettingsRuntime));
 
-            ValidateReference(
-                runManager,
-                nameof(runManager));
+            if (string.IsNullOrWhiteSpace(saveFileName))
+            {
+                Debug.LogWarning(
+                    $"{nameof(BootstrapContext)}: " +
+                    "'saveFileName' is empty. " +
+                    "Defaulting to 'chaosbound_save.json'.",
+                    this);
+            }
 
-            ValidateReference(
-                poolManager,
-                nameof(poolManager));
-
-            ValidateReference(
-                enemyManager,
-                nameof(enemyManager));
-
-            ValidateReference(
-                levelUpManager,
-                nameof(levelUpManager));
-
-            ValidateReference(
-                gameFlowConfiguration,
-                nameof(gameFlowConfiguration));
-
-            ValidateReference(
-                persistentMetaRuntime,
-                nameof(persistentMetaRuntime));
-
-            ValidateReference(
-                itemTooltipService,
-                nameof(itemTooltipService));
+            if (string.IsNullOrWhiteSpace(settingsFileName))
+            {
+                Debug.LogWarning(
+                    $"{nameof(BootstrapContext)}: " +
+                    "'settingsFileName' is empty. " +
+                    "Defaulting to 'chaosbound_settings.json'.",
+                    this);
+            }
         }
 
         private void ValidateReference(
@@ -368,17 +434,7 @@ namespace Chaosbound.Core.Composition
                     $"{nameof(BootstrapContext)}: '{fieldName}' is not assigned.",
                     this);
             }
-
-            if (string.IsNullOrWhiteSpace(saveFileName))
-            {
-                Debug.LogWarning(
-                    $"{nameof(BootstrapContext)}: " +
-                    "'saveFileName' is empty. " +
-                    "Defaulting to 'chaosbound_save.json'.",
-                    this);
-            }
         }
-
 #endif
     }
 }

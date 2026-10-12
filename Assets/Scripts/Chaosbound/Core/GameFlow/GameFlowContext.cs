@@ -11,6 +11,7 @@ namespace Chaosbound.Core.GameFlow
         Stats,
         Dialogue,
         GameOver,
-        Result
+        Result,
+        ExpeditionSelection
     }
 }

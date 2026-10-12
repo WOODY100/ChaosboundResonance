@@ -103,6 +103,12 @@ public class RunManager : MonoBehaviour
                 "PersistentMetaRuntime is not available.");
         }
 
+        if (context.ExpeditionProgressRuntime == null)
+        {
+            throw new InvalidOperationException(
+                "ExpeditionProgressRuntime is not available.");
+        }
+
         if (compositionContext.ExpeditionRewardItemDatabase == null)
         {
             throw new InvalidOperationException(
@@ -124,7 +130,8 @@ public class RunManager : MonoBehaviour
         ExpeditionRuntimeBootstrap bootstrap =
             new ExpeditionRuntimeBootstrap(
                 sceneTransitionService,
-                compositionContext);
+                compositionContext,
+                context.ExpeditionProgressRuntime);
 
         expeditionDirector =
             bootstrap.Build();
@@ -197,6 +204,9 @@ public class RunManager : MonoBehaviour
 
         expeditionDirector.StartExpedition(
             config);
+        
+        if (expeditionExitService != null)
+            expeditionExitService.ResetForNewExpedition();
     }
 
     public void BindPlayer(PlayerHealth health)
@@ -251,5 +261,20 @@ public class RunManager : MonoBehaviour
         expeditionExitService.Exit(
             ExpeditionExitReason.Abandoned,
             CurrentRunConfig);
+    }
+
+    public void ExitExpeditionToMainMenu()
+    {
+        if (expeditionExitService == null)
+        {
+            Debug.LogError(
+                "[RunManager] ExpeditionExitService is unavailable.");
+            return;
+        }
+
+        expeditionExitService.Exit(
+            ExpeditionExitReason.Abandoned,
+            CurrentRunConfig,
+            ExpeditionExitDestination.MainMenu);
     }
 }

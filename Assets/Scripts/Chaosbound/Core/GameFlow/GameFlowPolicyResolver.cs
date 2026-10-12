@@ -108,6 +108,13 @@ namespace Chaosbound.Core.GameFlow
                         gameplayInput: false,
                         uiInput: true);
 
+                case GameFlowContext.ExpeditionSelection:
+                    return new GameFlowPolicy(
+                        simulation: true,
+                        gameplay: true,
+                        gameplayInput: false,
+                        uiInput: true);
+
                 default:
                     return GetNeutralPolicy();
             }
