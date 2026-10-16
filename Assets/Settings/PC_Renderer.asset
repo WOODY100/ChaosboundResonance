@@ -1,5 +1,20 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-7814549473812457767
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9cc70a8037c1b70499f4123cdac0f2fa, type: 3}
+  m_Name: FullscreenCustomLightingFeature
+  m_EditorClassIdentifier: Assembly-CSharp::Mirza.AERO.FullscreenCustomLightingFeature
+  m_Active: 1
+  renderPassEvent: 500
+  material: {fileID: 2100000, guid: 47acb85051ce44b41956a12cab4b5224, type: 2}
 --- !u!114 &-3623508552343397787
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -48,7 +63,9 @@ MonoBehaviour:
   m_RendererFeatures:
   - {fileID: 7833122117494664109}
   - {fileID: -3623508552343397787}
-  m_RendererFeatureMap: ad6b866f10d7b46c655afb782bb6b6cd
+  - {fileID: -7814549473812457767}
+  - {fileID: 611586901448956920}
+  m_RendererFeatureMap: ad6b866f10d7b46c655afb782bb6b6cdd956b125a8248d93f89b25ea0bcb7c08
   m_UseNativeRenderPass: 1
   xrSystemData: {fileID: 0}
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
@@ -77,6 +94,100 @@ MonoBehaviour:
   m_DepthTextureFormat: 0
   m_AccurateGbufferNormals: 0
   m_IntermediateTextureMode: 0
+--- !u!114 &611586901448956920
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b00045f12942b46c698459096c89274e, type: 3}
+  m_Name: FullScreenPassRendererFeature
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.FullScreenPassRendererFeature
+  m_Active: 1
+  injectionPoint: 550
+  fetchColorBuffer: 1
+  requirements: 0
+  passMaterial: {fileID: 2100000, guid: 47acb85051ce44b41956a12cab4b5224, type: 2}
+  passIndex: 0
+  bindDepthStencilAttachment: 0
+  m_Version: 1
+--- !u!114 &1419689293223392372
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9d225a4cad17704386835b918c7b8ec, type: 3}
+  m_Name: NewBlitVolumeFogSRP
+  m_EditorClassIdentifier: Assembly-CSharp::UnityEngine.Rendering.Universal.BlitVolumeFogSRP
+  m_Active: 1
+  settings:
+    extraCameraID: 0
+    isForDualCameras: 0
+    isForReflections: 0
+    blendVolumeLighting: 0
+    _FogColor: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
+    noiseTexture: {fileID: 0}
+    _startDistance: 30
+    _fogHeight: 0.75
+    _fogDensity: 1
+    _cameraRoll: 0
+    _cameraDiff: {x: 0, y: 0, z: 0, w: 0}
+    _cameraTiltSign: 1
+    heightDensity: 1
+    noiseDensity: 1
+    noiseScale: 1
+    noiseThickness: 1
+    noiseSpeed: {x: 1, y: 1, z: 1}
+    occlusionDrop: 1
+    occlusionExp: 1
+    noise3D: 1
+    startDistance: 1
+    luminance: 1
+    lumFac: 1
+    ScatterFac: 1
+    TurbFac: 1
+    HorizFac: 1
+    turbidity: 1
+    reileigh: 1
+    mieCoefficient: 1
+    mieDirectionalG: 1
+    bias: 1
+    contrast: 1
+    TintColor: {r: 1, g: 1, b: 1, a: 1}
+    TintColorK: {x: 0, y: 0, z: 0}
+    TintColorL: {x: 0, y: 0, z: 0}
+    Sun: {x: 0, y: 0, z: 0, w: 0}
+    FogSky: 1
+    ClearSkyFac: 1
+    PointL: {x: 0, y: 0, z: 0, w: 0}
+    PointLParams: {x: 0, y: 0, z: 0, w: 0}
+    _useRadialDistance: 0
+    _fadeToSkybox: 1
+    inheritFromController: 1
+    enableFog: 1
+    Event: 400
+    blitMaterial: {fileID: 2100000, guid: 5ef885dbbc62e02498e96881f11c0b04, type: 2}
+    blitMaterialPassIndex: -1
+    destination: 0
+    textureId: _BlitPassTexture
+    blend: 0.5
+    resolution: 1
+    screenBlendMode: 0
+    sunTransform: {x: 0, y: 0, z: 0}
+    radialBlurIterations: 2
+    sunColor: {r: 1, g: 1, b: 1, a: 1}
+    sunThreshold: {r: 0.87, g: 0.74, b: 0.65, a: 1}
+    sunShaftBlurRadius: 2.5
+    sunShaftIntensity: 1.15
+    maxRadius: 0.75
+    useDepthTexture: 1
 --- !u!114 &7833122117494664109
 MonoBehaviour:
   m_ObjectHideFlags: 0

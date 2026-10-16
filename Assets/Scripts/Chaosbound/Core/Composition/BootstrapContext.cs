@@ -7,6 +7,7 @@ using Chaosbound.Gameplay.Items.Runtime;
 using Chaosbound.Gameplay.Items.UI.Tooltip;
 using Chaosbound.Gameplay.MetaProgression.Persistent;
 using Chaosbound.Gameplay.Save;
+using Chaosbound.UI.Loading;
 using System;
 using UnityEngine;
 using GameFlowService = Chaosbound.Core.GameFlow.GameFlow;
@@ -39,6 +40,11 @@ namespace Chaosbound.Core.Composition
         [SerializeField] private ItemTooltipService itemTooltipService;
         [SerializeField] private GameSettingsRuntime gameSettingsRuntime;
         [SerializeField] private PersistentMetaRuntime persistentMetaRuntime;
+
+        [SerializeField]
+        private SceneTransitionHost sceneTransitionHost;
+        [SerializeField]
+        private LoadingScreenController loadingScreenController;
 
         private EquipmentLoadoutRuntime equipmentLoadoutRuntime;
         private ExpeditionProgressRuntime expeditionProgressRuntime;
@@ -105,6 +111,12 @@ namespace Chaosbound.Core.Composition
         public SaveFeedbackController SaveFeedbackController =>
             saveFeedbackController;
 
+        public SceneTransitionHost SceneTransitionHost =>
+            sceneTransitionHost;
+
+        public LoadingScreenController LoadingScreenController =>
+            loadingScreenController;
+
         //==========================================================
         // Unity
         //==========================================================
@@ -146,8 +158,22 @@ namespace Chaosbound.Core.Composition
             gameSettingsRuntime.Initialize(
                 gameSettingsPersistenceService);
 
+            if (sceneTransitionHost == null)
+            {
+                throw new InvalidOperationException(
+                    "SceneTransitionHost is not assigned.");
+            }
+
+            if (loadingScreenController == null)
+            {
+                throw new InvalidOperationException(
+                    "LoadingScreenController is not assigned.");
+            }
+
             sceneTransitionService =
-                new SceneTransitionService();
+                new SceneTransitionService(
+                    sceneTransitionHost,
+                    loadingScreenController);
 
             CreateGameFlow();
             InitializeGameFlow();

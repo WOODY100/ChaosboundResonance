@@ -136,6 +136,13 @@ namespace Chaosbound.Core.GameFlow
                         gameplayInput: true,
                         uiInput: true);
 
+                case GameFlowContext.Intro:
+                    return new GameFlowPolicy(
+                        simulation: false,
+                        gameplay: false,
+                        gameplayInput: false,
+                        uiInput: false);
+
                 case GameFlowContext.Pause:
                     return new GameFlowPolicy(
                         simulation: false,

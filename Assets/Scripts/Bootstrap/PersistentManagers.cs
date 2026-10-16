@@ -6,7 +6,7 @@ public class PersistentManagers : MonoBehaviour
     private static PersistentManagers instance;
 
     [Header("Initial Scene")]
-    [SerializeField] private string firstSceneToLoad = "Arena";
+    [SerializeField] private string firstSceneToLoad = "MainMenu";
 
     void Awake()
     {

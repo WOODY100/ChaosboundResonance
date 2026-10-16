@@ -93,7 +93,9 @@ namespace Chaosbound.Runtime.Bootstrap
 
             runSession.SetRun(runtime);
 
-            sceneTransitionService.LoadScene(GameScene.Expedition);
+            sceneTransitionService.LoadScene(
+                GameScene.Expedition,
+                waitForSceneReady: true);
         }
 
         /// <summary>

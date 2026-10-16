@@ -6,6 +6,7 @@ using Chaosbound.Gameplay.ExpeditionRuntime.Result;
 using System.Collections;
 using System;
 using UnityEngine;
+using TMPro;
 
 namespace Chaosbound.Core.Composition
 {
@@ -17,6 +18,16 @@ namespace Chaosbound.Core.Composition
 
         [SerializeField, Min(0f)]
         private float resultDisplayTime = 2f;
+
+        [Header("Expedition Intro")]
+
+        [SerializeField]
+        private GameObject expeditionStartedMessage;
+
+        [SerializeField, Min(0f)]
+        private float expeditionStartedDisplayTime = 1.5f;
+
+        private Coroutine introCoroutine;
 
         private Coroutine exitCoroutine;
         private bool isExiting;
@@ -41,12 +52,19 @@ namespace Chaosbound.Core.Composition
 
         private void OnDestroy()
         {
+            if (introCoroutine != null)
+            {
+                StopCoroutine(introCoroutine);
+                introCoroutine = null;
+            }
+
             UnsubscribeFromGameFlow();
             UnsubscribeFromResultPanel();
             UnsubscribeFromExpeditionExit();
 
             composition?.Cleanup();
         }
+
 
         private void Initialize()
         {
@@ -57,22 +75,39 @@ namespace Chaosbound.Core.Composition
             bootstrapContext.GameFlow.SetEnvironment(
                 GameFlowEnvironment.Expedition);
 
-            // Establish Playing as the root context for the expedition.
+            // Establish Playing as the root context.
             bootstrapContext.GameFlow.Initialize();
+
+            // Keep simulation and expedition time paused during preparation.
+            bootstrapContext.GameFlow.Replace(
+                GameFlowContext.Intro);
 
             RunSession runSession = bootstrapContext.RunSession;
             RuntimeExpeditionConfig runtimeConfig = runSession.CurrentRun;
 
-            composition = CreateComposition(bootstrapContext, runtimeConfig);
+            composition = CreateComposition(
+                bootstrapContext,
+                runtimeConfig);
+
+            // StartRun remains inside composition initialization because
+            // the minimap requires ExpeditionRuntimeState.
             composition.Initialize();
 
-
-            resultBuilder =
-                new ExpeditionResultBuilder();
+            resultBuilder = new ExpeditionResultBuilder();
 
             SubscribeToGameFlow();
             SubscribeToResultPanel();
             SubscribeToExpeditionExit();
+
+            if (expeditionStartedMessage != null)
+                expeditionStartedMessage.SetActive(false);
+
+            // Notify the persistent transition service that the scene
+            // has completed its required initialization.
+            bootstrapContext.SceneTransitionService.MarkSceneReady();
+
+            introCoroutine = StartCoroutine(
+                ShowExpeditionIntroRoutine());
         }
 
         private ExpeditionComposition CreateComposition(
@@ -431,6 +466,39 @@ namespace Chaosbound.Core.Composition
                 throw new InvalidOperationException(
                     "There is no active RunSession.");
             }
+        }
+
+        private IEnumerator ShowExpeditionIntroRoutine()
+        {
+            var transitionService =
+                bootstrapContext.SceneTransitionService;
+
+            // Wait until the transition service has hidden the loading screen.
+            while (transitionService != null &&
+                   transitionService.IsTransitioning)
+            {
+                yield return null;
+            }
+
+            if (expeditionStartedMessage != null)
+                expeditionStartedMessage.SetActive(true);
+
+            // Use real time because GameFlow is still paused.
+            yield return new WaitForSecondsRealtime(
+                expeditionStartedDisplayTime);
+
+            if (expeditionStartedMessage != null)
+                expeditionStartedMessage.SetActive(false);
+
+            // Resume simulation and expedition time only after the message.
+            if (bootstrapContext != null &&
+                bootstrapContext.GameFlow != null)
+            {
+                bootstrapContext.GameFlow.Replace(
+                    GameFlowContext.Playing);
+            }
+
+            introCoroutine = null;
         }
     }
 }

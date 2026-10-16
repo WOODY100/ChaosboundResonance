@@ -1,25 +1,51 @@
+
 using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.SceneManagement;
 using Chaosbound.Core.Composition;
+using Chaosbound.Core.Runtime.SceneManagement;
 
 public class MainMenuController : MonoBehaviour
 {
     [SerializeField] private GameObject firstSelectedButton;
-    [SerializeField] private string gameplaySceneName = "Gameplay";
 
     private IEnumerator Start()
     {
         yield return null;
 
-        if (firstSelectedButton != null)
-            EventSystem.current.SetSelectedGameObject(firstSelectedButton);
+        if (firstSelectedButton != null &&
+            EventSystem.current != null)
+        {
+            EventSystem.current.SetSelectedGameObject(
+                firstSelectedButton);
+        }
     }
 
     public void StartGame()
     {
-        SceneManager.LoadScene(gameplaySceneName);
+        BootstrapContext bootstrapContext =
+            BootstrapContext.Current;
+
+        if (bootstrapContext == null)
+        {
+            Debug.LogError(
+                "[MainMenuController] " +
+                "BootstrapContext is not available.");
+
+            return;
+        }
+
+        if (bootstrapContext.SceneTransitionService == null)
+        {
+            Debug.LogError(
+                "[MainMenuController] " +
+                "SceneTransitionService is not available.");
+
+            return;
+        }
+
+        bootstrapContext.SceneTransitionService.LoadScene(
+            GameScene.Sanctuary);
     }
 
     public void ContinueGame()
@@ -32,6 +58,15 @@ public class MainMenuController : MonoBehaviour
             Debug.LogError(
                 "[MainMenuController] " +
                 "BootstrapContext is not available.");
+
+            return;
+        }
+
+        if (bootstrapContext.SceneTransitionService == null)
+        {
+            Debug.LogError(
+                "[MainMenuController] " +
+                "SceneTransitionService is not available.");
 
             return;
         }
@@ -49,7 +84,8 @@ public class MainMenuController : MonoBehaviour
             return;
         }
 
-        SceneManager.LoadScene(gameplaySceneName);
+        bootstrapContext.SceneTransitionService.LoadScene(
+            GameScene.Sanctuary);
     }
 
     public void OpenOptions()
