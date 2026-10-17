@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Chaosbound.Gameplay.ExpeditionRuntime.Result
@@ -14,33 +15,33 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Result
 
         public RuntimeSkill[] Skills { get; }
 
+        public int MetaExperienceReward { get; }
+
+        public string[] RewardItemContentIds { get; }
 
         public ExpeditionResultData(
             ExpeditionResultStatus status,
             float elapsedTime,
             int playerLevel,
             int enemiesDefeated,
-            RuntimeSkill[] skills)
+            RuntimeSkill[] skills,
+            int metaExperienceReward,
+            string[] rewardItemContentIds)
         {
             Status = status;
 
-            ElapsedTime =
-                Mathf.Max(
-                    0f,
-                    elapsedTime);
+            ElapsedTime = Mathf.Max(0f, elapsedTime);
 
-            PlayerLevel =
-                Mathf.Max(
-                    0,
-                    playerLevel);
+            PlayerLevel = Mathf.Max(0, playerLevel);
 
-            EnemiesDefeated =
-                Mathf.Max(
-                    0,
-                    enemiesDefeated);
+            EnemiesDefeated = Mathf.Max(0, enemiesDefeated);
 
-            Skills =
-                skills;
+            Skills = skills ?? Array.Empty<RuntimeSkill>();
+
+            MetaExperienceReward = Mathf.Max(0, metaExperienceReward);
+
+            RewardItemContentIds =
+                rewardItemContentIds ?? Array.Empty<string>();
         }
     }
 }

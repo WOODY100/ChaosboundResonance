@@ -344,7 +344,6 @@ GameObject:
   - component: {fileID: 771884942767135368}
   - component: {fileID: 1741485849719233274}
   - component: {fileID: 8477681512051428749}
-  - component: {fileID: 8026856061622865019}
   m_Layer: 5
   m_Name: PersistentItemTrashConfirmationPanel
   m_TagString: Untagged
@@ -417,24 +416,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &8026856061622865019
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1463721225044110621}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7c59a62744b076948b874581ca19cd87, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Chaosbound.Gameplay.Inventory.UI.PersistentItemTrashConfirmationUI
-  panelRoot: {fileID: 1463721225044110621}
-  itemIcon: {fileID: 651454808033560659}
-  itemName: {fileID: 4775406855105054434}
-  description: {fileID: 3316391901275530830}
-  cancelButton: {fileID: 4595064649673110313}
-  deleteButton: {fileID: 7896295735259205898}
 --- !u!1 &3227911951942465599
 GameObject:
   m_ObjectHideFlags: 0
@@ -606,8 +587,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -7.5000305, y: 0}
+  m_SizeDelta: {x: 105.00004, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4307011458253264274
 CanvasRenderer:
@@ -637,8 +618,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 141b13d569ff53744b227b100ea774cf, type: 3}
-  m_Type: 1
+  m_Sprite: {fileID: 21300000, guid: 37700bfc11ce1fd4a9c4db90532eae2b, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -849,7 +830,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -7443756053782179069, guid: 3e84a73337d77a346a0869f062f315b3, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 89070bd95c20c5f4fb47b0e6809a8e60, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

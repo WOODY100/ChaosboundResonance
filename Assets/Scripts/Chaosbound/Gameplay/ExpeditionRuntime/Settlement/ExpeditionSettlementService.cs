@@ -107,7 +107,7 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Settlement
                     true,
                     plan.ExpeditionItemCount,
                     plan.MaterialAmounts,
-                    plan.CompletionRewardItem,
+                    plan.CompletionRewardItems,
                     plan.MetaExperience);
 
             return true;
@@ -243,30 +243,40 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Settlement
             SettlementPlan plan)
         {
             if (expeditionConfig.Rewards == null)
-            {
                 return false;
-            }
 
-            string itemContentId =
-                expeditionConfig.Rewards.ItemContentId;
+            IReadOnlyList<string> itemContentIds =
+                expeditionConfig.Rewards.ItemContentIds;
 
-            if (!string.IsNullOrWhiteSpace(itemContentId))
+            if (itemContentIds != null)
             {
-                ItemBaseData itemData;
-
-                if (!expeditionRewardItemResolver.TryResolve(
-                    itemContentId,
-                    out itemData))
+                for (int i = 0; i < itemContentIds.Count; i++)
                 {
-                    return false;
+                    string itemContentId = itemContentIds[i];
+
+                    if (string.IsNullOrWhiteSpace(itemContentId))
+                        continue;
+
+                    ItemBaseData itemData;
+
+                    if (!expeditionRewardItemResolver.TryResolve(
+                            itemContentId,
+                            out itemData))
+                    {
+                        return false;
+                    }
+
+                    if (itemData == null)
+                        return false;
+
+                    ItemInstance item =
+                        itemInstanceFactory.Create(itemData);
+
+                    if (item == null)
+                        return false;
+
+                    plan.CompletionRewardItems.Add(item);
                 }
-
-                if (itemData == null)
-                    return false;
-
-                plan.CompletionRewardItem =
-                    itemInstanceFactory.Create(
-                        itemData);
             }
 
             int metaExperience =
@@ -276,13 +286,12 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Settlement
                 return false;
 
             if (!persistentMetaRuntime.State.CanAddExperience(
-                metaExperience))
+                    metaExperience))
             {
                 return false;
             }
 
-            plan.MetaExperience =
-                metaExperience;
+            plan.MetaExperience = metaExperience;
 
             return true;
         }
@@ -334,14 +343,15 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Settlement
                 }
             }
 
-            if (plan.CompletionRewardItem != null)
+            for (int i = 0; i < plan.CompletionRewardItems.Count; i++)
             {
-                if (!persistentItems.TryAdd(
-                        plan.CompletionRewardItem))
+                ItemInstance item = plan.CompletionRewardItems[i];
+
+                if (!persistentItems.TryAdd(item))
                 {
                     throw new InvalidOperationException(
                         "Settlement commit failed while " +
-                        "adding the completion reward item.");
+                        "adding a completion reward item.");
                 }
             }
 
@@ -441,7 +451,8 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Settlement
 
             public int ExpeditionItemCount;
 
-            public ItemInstance CompletionRewardItem;
+            public readonly List<ItemInstance> CompletionRewardItems =
+                new List<ItemInstance>();
 
             public int MetaExperience;
         }

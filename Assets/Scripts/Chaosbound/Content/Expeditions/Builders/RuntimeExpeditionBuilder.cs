@@ -183,7 +183,7 @@ namespace Chaosbound.Content.Expeditions.Runtime.Builders
                     "RewardsDefinition does not contain a completion reward definition.");
 
             return new RuntimeRewardsConfig(
-                definition.Completion.ItemContentId,
+                definition.Completion.ItemContentIds,
                 definition.Completion.MetaExperience);
         }
 

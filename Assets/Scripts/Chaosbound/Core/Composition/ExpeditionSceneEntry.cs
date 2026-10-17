@@ -276,7 +276,8 @@ namespace Chaosbound.Core.Composition
                     ExpeditionResultStatus.Completed,
                     runManager.ExpeditionRuntimeState,
                     sceneContext.PlayerExperienceSystem,
-                    sceneContext.PlayerSkillLoadout);
+                    sceneContext.PlayerSkillLoadout,
+                    runManager.CurrentRunConfig);
 
             currentExitReason =
                 ExpeditionExitReason.Completed;
@@ -342,7 +343,8 @@ namespace Chaosbound.Core.Composition
                     ExpeditionResultStatus.Failed,
                     runManager.ExpeditionRuntimeState,
                     sceneContext.PlayerExperienceSystem,
-                    sceneContext.PlayerSkillLoadout);
+                    sceneContext.PlayerSkillLoadout,
+                    runManager.CurrentRunConfig);
 
             currentExitReason =
                 ExpeditionExitReason.Death;

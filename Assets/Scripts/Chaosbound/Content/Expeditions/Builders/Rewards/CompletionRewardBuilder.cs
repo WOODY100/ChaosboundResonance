@@ -10,11 +10,10 @@ namespace Chaosbound.Content.Expeditions.Builders.Rewards
             CompletionRewardAuthoring authoring)
         {
             if (authoring == null)
-                throw new ArgumentNullException(
-                    nameof(authoring));
+                throw new ArgumentNullException(nameof(authoring));
 
             return new CompletionRewardDefinition(
-                authoring.ItemContentId,
+                authoring.ItemContentIds,
                 authoring.MetaExperience);
         }
     }

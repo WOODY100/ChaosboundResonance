@@ -1,38 +1,52 @@
 using System;
+using System.Collections.Generic;
 
 namespace Chaosbound.Content.Expeditions.Definitions.Rewards
 {
     public sealed class CompletionRewardDefinition
     {
         public CompletionRewardDefinition(
-            string itemContentId,
+            IReadOnlyList<string> itemContentIds,
             int metaExperience)
         {
             if (metaExperience < 0)
+            {
                 throw new ArgumentOutOfRangeException(
                     nameof(metaExperience),
                     metaExperience,
                     "Meta experience cannot be negative.");
+            }
 
-            ItemContentId =
-                itemContentId ?? string.Empty;
+            List<string> validIds = new List<string>();
 
-            MetaExperience =
-                metaExperience;
+            if (itemContentIds != null)
+            {
+                for (int i = 0; i < itemContentIds.Count; i++)
+                {
+                    string contentId = itemContentIds[i];
+
+                    if (string.IsNullOrWhiteSpace(contentId))
+                        continue;
+
+                    validIds.Add(contentId.Trim());
+                }
+            }
+
+            ItemContentIds = validIds.AsReadOnly();
+            MetaExperience = metaExperience;
         }
 
-        public string ItemContentId { get; }
+        public IReadOnlyList<string> ItemContentIds { get; }
 
         public int MetaExperience { get; }
 
         public bool HasItemReward =>
-            !string.IsNullOrEmpty(ItemContentId);
+            ItemContentIds.Count > 0;
 
         public bool HasMetaExperience =>
             MetaExperience > 0;
 
         public bool HasAnyReward =>
-            HasItemReward ||
-            HasMetaExperience;
+            HasItemReward || HasMetaExperience;
     }
 }

@@ -1,30 +1,44 @@
+
+using System.Collections.Generic;
+
 namespace Chaosbound.Content.Expeditions.Runtime.Rewards
 {
     public sealed class RuntimeRewardsConfig
     {
         public RuntimeRewardsConfig(
-            string itemContentId,
+            IReadOnlyList<string> itemContentIds,
             int metaExperience)
         {
-            ItemContentId =
-                itemContentId ?? string.Empty;
+            List<string> validIds = new List<string>();
 
-            MetaExperience =
-                metaExperience;
+            if (itemContentIds != null)
+            {
+                for (int i = 0; i < itemContentIds.Count; i++)
+                {
+                    string contentId = itemContentIds[i];
+
+                    if (string.IsNullOrWhiteSpace(contentId))
+                        continue;
+
+                    validIds.Add(contentId.Trim());
+                }
+            }
+
+            ItemContentIds = validIds.AsReadOnly();
+            MetaExperience = metaExperience < 0 ? 0 : metaExperience;
         }
 
-        public string ItemContentId { get; }
+        public IReadOnlyList<string> ItemContentIds { get; }
 
         public int MetaExperience { get; }
 
         public bool HasItemReward =>
-            !string.IsNullOrEmpty(ItemContentId);
+            ItemContentIds.Count > 0;
 
         public bool HasMetaExperience =>
             MetaExperience > 0;
 
         public bool HasAnyReward =>
-            HasItemReward ||
-            HasMetaExperience;
+            HasItemReward || HasMetaExperience;
     }
 }

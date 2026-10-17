@@ -1,5 +1,7 @@
+using Chaosbound.Content.Items;
 using Chaosbound.Gameplay.ExpeditionRuntime.Result;
 using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,49 +16,43 @@ namespace Chaosbound.UI.ExpeditionResult
 
         [Header("Header")]
 
-        [SerializeField]
-        private TMP_Text statusText;
-
-        [SerializeField]
-        private TMP_Text subtitleText;
-
+        [SerializeField] private TMP_Text statusText;
+        [SerializeField] private TMP_Text subtitleText;
 
         [Header("Summary")]
 
-        [SerializeField]
-        private TMP_Text survivalTimeValue;
-
-        [SerializeField]
-        private TMP_Text playerLevelValue;
-
+        [SerializeField] private TMP_Text survivalTimeValue;
+        [SerializeField] private TMP_Text playerLevelValue;
 
         [Header("Build")]
 
-        [SerializeField]
-        private Image[] skillIcons;
-
-        [SerializeField]
-        private TMP_Text[] skillLevels;
-
+        [SerializeField] private Image[] skillIcons;
+        [SerializeField] private TMP_Text[] skillLevels;
 
         [Header("Combat")]
 
-        [SerializeField]
-        private TMP_Text enemiesDefeatedValue;
+        [SerializeField] private TMP_Text enemiesDefeatedValue;
 
+        [Header("Rewards")]
+
+        [SerializeField] private TMP_Text metaExperienceValue;
+
+        [SerializeField] private Transform rewardItemsContainer;
+
+        [SerializeField] private Image rewardItemIconPrefab;
+
+        [SerializeField]
+        private ExpeditionRewardItemDatabase rewardItemDatabase;
 
         [Header("Actions")]
 
-        [SerializeField]
-        private Button returnToSanctuaryButton;
-
+        [SerializeField] private Button returnToSanctuaryButton;
 
         //==========================================================
         // Events
         //==========================================================
 
         public event Action ReturnToSanctuaryRequested;
-
 
         //==========================================================
         // Unity
@@ -80,7 +76,6 @@ namespace Chaosbound.UI.ExpeditionResult
             }
         }
 
-
         //==========================================================
         // Presentation
         //==========================================================
@@ -96,6 +91,9 @@ namespace Chaosbound.UI.ExpeditionResult
             SetEnemiesDefeated(data.EnemiesDefeated);
             SetSkillIcons(data.Skills);
 
+            SetMetaExperience(data.MetaExperienceReward);
+            SetRewardItems(data.RewardItemContentIds);
+
             gameObject.SetActive(true);
         }
 
@@ -103,7 +101,6 @@ namespace Chaosbound.UI.ExpeditionResult
         {
             gameObject.SetActive(false);
         }
-
 
         //==========================================================
         // Status
@@ -136,7 +133,6 @@ namespace Chaosbound.UI.ExpeditionResult
             }
         }
 
-
         //==========================================================
         // Summary
         //==========================================================
@@ -149,12 +145,10 @@ namespace Chaosbound.UI.ExpeditionResult
             elapsedTime = Mathf.Max(0f, elapsedTime);
 
             int totalSeconds = Mathf.FloorToInt(elapsedTime);
-
             int minutes = totalSeconds / 60;
             int seconds = totalSeconds % 60;
 
-            survivalTimeValue.text =
-                $"{minutes:00}:{seconds:00}";
+            survivalTimeValue.text = $"{minutes:00}:{seconds:00}";
         }
 
         private void SetPlayerLevel(int level)
@@ -162,17 +156,14 @@ namespace Chaosbound.UI.ExpeditionResult
             if (playerLevelValue == null)
                 return;
 
-            playerLevelValue.text =
-                Mathf.Max(0, level).ToString();
+            playerLevelValue.text = Mathf.Max(0, level).ToString();
         }
-
 
         //==========================================================
         // Build
         //==========================================================
 
-        private void SetSkillIcons(
-    RuntimeSkill[] skills)
+        private void SetSkillIcons(RuntimeSkill[] skills)
         {
             if (skillIcons == null)
                 return;
@@ -180,30 +171,20 @@ namespace Chaosbound.UI.ExpeditionResult
             for (int i = 0; i < skillIcons.Length; i++)
             {
                 RuntimeSkill skill =
-                    skills != null &&
-                    i < skills.Length
+                    skills != null && i < skills.Length
                         ? skills[i]
                         : null;
-
-                //========================================
-                // Skill Icon
-                //========================================
 
                 if (skillIcons[i] != null)
                 {
                     Sprite skillIcon =
-                        skill != null &&
-                        skill.Definition != null
+                        skill != null && skill.Definition != null
                             ? skill.Definition.Icon
                             : null;
 
                     skillIcons[i].sprite = skillIcon;
                     skillIcons[i].enabled = skillIcon != null;
                 }
-
-                //========================================
-                // Skill Level
-                //========================================
 
                 if (skillLevels != null &&
                     i < skillLevels.Length &&
@@ -212,8 +193,7 @@ namespace Chaosbound.UI.ExpeditionResult
                     if (skill != null)
                     {
                         skillLevels[i].gameObject.SetActive(true);
-                        skillLevels[i].text =
-                            $"Lv. {skill.Level}";
+                        skillLevels[i].text = $"Lv. {skill.Level}";
                     }
                     else
                     {
@@ -222,7 +202,6 @@ namespace Chaosbound.UI.ExpeditionResult
                 }
             }
         }
-
 
         //==========================================================
         // Combat
@@ -237,6 +216,93 @@ namespace Chaosbound.UI.ExpeditionResult
                 Mathf.Max(0, enemiesDefeated).ToString();
         }
 
+        //==========================================================
+        // Rewards
+        //==========================================================
+
+        private void SetMetaExperience(int amount)
+        {
+            if (metaExperienceValue == null)
+                return;
+
+            metaExperienceValue.text = Mathf.Max(0, amount).ToString();
+        }
+
+        private void SetRewardItems(IReadOnlyList<string> contentIds)
+        {
+            if (rewardItemsContainer == null)
+                return;
+
+            // Remove icons from the previous result, if any.
+            for (int i = rewardItemsContainer.childCount - 1; i >= 0; i--)
+            {
+                Transform child = rewardItemsContainer.GetChild(i);
+
+                if (child == null)
+                    continue;
+
+                if (rewardItemIconPrefab != null &&
+                    child == rewardItemIconPrefab.transform)
+                {
+                    continue;
+                }
+
+                child.gameObject.SetActive(false);
+                Destroy(child.gameObject);
+            }
+
+            if (contentIds == null || contentIds.Count == 0)
+                return;
+
+            if (rewardItemIconPrefab == null)
+            {
+                Debug.LogWarning(
+                    $"{nameof(ExpeditionResultPanel)}: Reward Item Icon Prefab is not assigned.",
+                    this);
+                return;
+            }
+
+            if (rewardItemDatabase == null)
+            {
+                Debug.LogWarning(
+                    $"{nameof(ExpeditionResultPanel)}: Reward Item Database is not assigned.",
+                    this);
+                return;
+            }
+
+            for (int i = 0; i < contentIds.Count; i++)
+            {
+                string contentId = contentIds[i];
+
+                if (!rewardItemDatabase.TryGet(
+                    contentId,
+                    out ItemBaseData item))
+                {
+                    Debug.LogWarning(
+                        $"Could not resolve expedition reward item '{contentId}'.",
+                        this);
+                    continue;
+                }
+
+                if (item == null || item.Icon == null)
+                {
+                    Debug.LogWarning(
+                        $"Expedition reward item '{contentId}' has no icon.",
+                        this);
+                    continue;
+                }
+
+                Image icon = Instantiate(
+                    rewardItemIconPrefab,
+                    rewardItemsContainer);
+
+                icon.gameObject.SetActive(true);
+                icon.sprite = item.Icon;
+                icon.enabled = true;
+                icon.preserveAspect = true;
+                icon.name = $"Reward_{item.ContentId}";
+            }
+        }
 
         //==========================================================
         // Actions
