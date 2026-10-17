@@ -127,11 +127,27 @@ public class RunManager : MonoBehaviour
                 "GameFlow is not available.");
         }
 
+        ExpeditionSceneContext sceneContext =
+            ExpeditionSceneContext.Current;
+
+        if (sceneContext == null)
+        {
+            throw new InvalidOperationException(
+                "ExpeditionSceneContext is not available.");
+        }
+
+        if (sceneContext.LootBurstPresentation == null)
+        {
+            throw new InvalidOperationException(
+                "LootBurstPresentation is not assigned in ExpeditionSceneContext.");
+        }
+
         ExpeditionRuntimeBootstrap bootstrap =
             new ExpeditionRuntimeBootstrap(
                 sceneTransitionService,
                 compositionContext,
-                context.ExpeditionProgressRuntime);
+                context.ExpeditionProgressRuntime,
+                sceneContext.LootBurstPresentation);
 
         expeditionDirector =
             bootstrap.Build();

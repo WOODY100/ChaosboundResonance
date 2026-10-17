@@ -47,6 +47,12 @@ namespace Chaosbound.Core.Composition
         [SerializeField]
         private ExpeditionNavigation navigation;
 
+        [SerializeField]
+        private LootBurstPresentation lootBurstPresentation;
+
+        public LootBurstPresentation LootBurstPresentation =>
+            lootBurstPresentation;
+
         //==========================================================
         // UI
         //==========================================================

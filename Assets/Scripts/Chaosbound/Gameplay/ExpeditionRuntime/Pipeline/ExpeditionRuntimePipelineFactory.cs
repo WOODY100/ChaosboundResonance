@@ -40,8 +40,14 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Pipeline
         /// Creates a new runtime pipeline.
         /// </summary>
         public ExpeditionRuntimePipeline Create(
-            SpawnRuntime spawnRuntime, GameContentContext compositionContext)
+            SpawnRuntime spawnRuntime,
+            GameContentContext compositionContext,
+            LootBurstPresentation lootBurstPresentation)
         {
+            if (lootBurstPresentation == null)
+                throw new ArgumentNullException(
+                    nameof(lootBurstPresentation));
+
             if (spawnRuntime == null)
                 throw new ArgumentNullException(
                     nameof(spawnRuntime));
@@ -53,16 +59,17 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Pipeline
             IReadOnlyList<IExpeditionRuntimeStage> stages =
                 BuildStages(
                     spawnRuntime,
-                    compositionContext);
+                    compositionContext,
+                    lootBurstPresentation);
 
             return new ExpeditionRuntimePipeline(
                 stages);
         }
 
-        private IReadOnlyList<IExpeditionRuntimeStage>
-            BuildStages(
-                SpawnRuntime spawnRuntime,
-                GameContentContext compositionContext)
+        private IReadOnlyList<IExpeditionRuntimeStage> BuildStages(
+            SpawnRuntime spawnRuntime,
+            GameContentContext compositionContext,
+            LootBurstPresentation lootBurstPresentation)
         {
                     return new List<IExpeditionRuntimeStage>
                     {
@@ -74,7 +81,10 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Pipeline
                         BuildCompletionStage(),
                         BuildExitPortalStage(spawnRuntime),
                         BuildCombatStage(spawnRuntime),
-                        BuildRewardStage(spawnRuntime, compositionContext)
+                        BuildRewardStage(
+                            spawnRuntime,
+                            compositionContext,
+                            lootBurstPresentation)
                     };
         }
 
@@ -91,7 +101,8 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Pipeline
         private IExpeditionRuntimeStage
             BuildRewardStage(
                 SpawnRuntime spawnRuntime,
-                GameContentContext compositionContext)
+                GameContentContext compositionContext,
+                LootBurstPresentation lootBurstPresentation)
         {
             if (spawnRuntime == null)
                 throw new ArgumentNullException(
@@ -114,7 +125,8 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Pipeline
                     new LootGenerator(
                         new TemporaryLootRandom()),
                     spawnRequestBuilder,
-                    spawnRuntime));
+                    spawnRuntime,
+                    lootBurstPresentation));
         }
 
         private IExpeditionRuntimeStage

@@ -30,13 +30,16 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Bootstrap
         private readonly ExpeditionProgressRuntime
             expeditionProgressRuntime;
 
+        private readonly LootBurstPresentation lootBurstPresentation;
+
         private SpawnRuntime
             spawnRuntime;
 
         public ExpeditionRuntimeBootstrap(
             SceneTransitionService sceneTransitionService,
             GameContentContext compositionContext,
-            ExpeditionProgressRuntime expeditionProgressRuntime)
+            ExpeditionProgressRuntime expeditionProgressRuntime,
+            LootBurstPresentation lootBurstPresentation)
         {
             this.sceneTransitionService =
                 sceneTransitionService
@@ -52,6 +55,11 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Bootstrap
                 expeditionProgressRuntime
                 ?? throw new ArgumentNullException(
                     nameof(expeditionProgressRuntime));
+
+            this.lootBurstPresentation =
+                lootBurstPresentation
+                ?? throw new ArgumentNullException(
+                    nameof(lootBurstPresentation));
         }
 
         /// <summary>
@@ -119,7 +127,8 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Bootstrap
 
             return factory.Create(
                 spawnRuntime,
-                compositionContext);
+                compositionContext,
+                lootBurstPresentation);
         }
 
         private ExpeditionCleanupPipeline

@@ -4,6 +4,8 @@ using Chaosbound.Gameplay.ExpeditionRuntime.Context;
 using Chaosbound.Gameplay.Spawn.Contracts;
 using Chaosbound.Gameplay.Spawn.Runtime;
 using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 public sealed class RewardDomainDirector
 {
@@ -16,10 +18,14 @@ public sealed class RewardDomainDirector
     private readonly SpawnRuntime
         spawnRuntime;
 
+    private readonly LootBurstPresentation
+        lootBurstPresentation;
+
     public RewardDomainDirector(
         LootGenerator lootGenerator,
         RewardSpawnRequestBuilder spawnRequestBuilder,
-        SpawnRuntime spawnRuntime)
+        SpawnRuntime spawnRuntime,
+        LootBurstPresentation lootBurstPresentation)
     {
         this.lootGenerator =
             lootGenerator
@@ -35,6 +41,11 @@ public sealed class RewardDomainDirector
             spawnRuntime
             ?? throw new ArgumentNullException(
                 nameof(spawnRuntime));
+
+        this.lootBurstPresentation =
+            lootBurstPresentation
+            ?? throw new ArgumentNullException(
+                nameof(lootBurstPresentation));
     }
 
     public void Execute(
@@ -89,11 +100,29 @@ public sealed class RewardDomainDirector
                     context.Config.Spawn.WithPlacement(
                         SpawnPlacementPolicy.AroundOrigin);
 
-                spawnRuntime.Execute(
-                    spawnRequest,
-                    rewardSpawnConfig,
-                    context.References.Runtime,
-                    context.State);
+                IReadOnlyList<GameObject> spawnedObjects =
+                    spawnRuntime.Execute(
+                        spawnRequest,
+                        rewardSpawnConfig,
+                        context.References.Runtime,
+                        context.State);
+
+                List<GameObject> lootObjects = new List<GameObject>();
+
+                foreach (GameObject spawnedObject in spawnedObjects)
+                {
+                    if (spawnedObject == null)
+                        continue;
+
+                    lootObjects.Add(spawnedObject);
+                }
+
+                if (lootObjects.Count > 0)
+                {
+                    lootBurstPresentation.Play(
+                        lootObjects.ToArray(),
+                        resolvedLoot.Origin);
+                }
             }
 
             reward.ConsumeResolvedLoot();

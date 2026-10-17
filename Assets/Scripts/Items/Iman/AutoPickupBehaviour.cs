@@ -4,6 +4,7 @@ public abstract class AutoPickupBehaviour : PooledBehaviour
 {
     private Transform player;
     private bool pickupTriggered;
+    private bool pickupBlocked;
 
     private PlayerModifierSystem modifierSystem;
 
@@ -19,6 +20,7 @@ public abstract class AutoPickupBehaviour : PooledBehaviour
     {
         base.OnEnable();
 
+        pickupBlocked = false;
         pickupTriggered = false;
         ResolvePlayer();
     }
@@ -33,6 +35,9 @@ public abstract class AutoPickupBehaviour : PooledBehaviour
 
     private void Update()
     {
+        if (pickupBlocked)
+            return;
+
         if (player == null)
         {
             ResolvePlayer();
@@ -101,5 +106,16 @@ public abstract class AutoPickupBehaviour : PooledBehaviour
 
         player = null;
         pickupTriggered = false;
+        pickupBlocked = false;
+    }
+
+    public void SetPickupBlocked(bool blocked)
+    {
+        pickupBlocked = blocked;
+
+        if (blocked)
+        {
+            pickupTriggered = false;
+        }
     }
 }
