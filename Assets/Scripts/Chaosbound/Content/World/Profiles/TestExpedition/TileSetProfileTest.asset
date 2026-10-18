@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: TileSetProfileTest
   m_EditorClassIdentifier: Assembly-CSharp::Chaosbound.Content.World.Themes.TileSets.TileSetProfile
   centerSpawnTile:
-    prefab: {fileID: 2727965222850802433, guid: dbfddda28dd059b4b9889ed6c873d4ad, type: 3}
+    prefab: {fileID: 6710106798364161545, guid: 4758124c488e5de48bd4ca36367e78d1, type: 3}
     weight: 1
     sizeX: 1
     sizeZ: 1
@@ -38,6 +38,14 @@ MonoBehaviour:
     randomYRotation: 1
     minimapMask:
       blockedCells: 00000000000000000000000000000000
+  - prefab: {fileID: 8864181292481440853, guid: 6a5c219a293bf4447bca4e32016b9fdb, type: 3}
+    weight: 1
+    sizeX: 1
+    sizeZ: 1
+    allowRotate90: 0
+    randomYRotation: 1
+    minimapMask:
+      blockedCells: 00000000000101000001010000000000
   edgeTiles:
   - prefab: {fileID: 1039108247317628220, guid: 18fafd7ca9707754a9eee5a1f51ab595, type: 3}
     weight: 1
