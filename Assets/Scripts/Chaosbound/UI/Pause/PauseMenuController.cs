@@ -312,7 +312,7 @@ public sealed class PauseMenuController : MonoBehaviour
             return;
         }
 
-        optionsController.OpenOptions();
+        optionsController.OpenOptionsFromPause();
     }
 
     private void ConfirmAbandonExpedition()

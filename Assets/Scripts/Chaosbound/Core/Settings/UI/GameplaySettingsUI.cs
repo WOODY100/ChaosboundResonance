@@ -17,7 +17,6 @@ namespace Chaosbound.Core.Settings.UI
 
         private void OnEnable()
         {
-            ResolveSettingsRuntime();
             RefreshFromSettings();
         }
 
@@ -38,14 +37,15 @@ namespace Chaosbound.Core.Settings.UI
 
         public void RefreshFromSettings()
         {
-            if (settingsRuntime == null ||
-                settingsRuntime.Settings == null)
+            if (!EnsureSettingsRuntime())
             {
+                Debug.LogWarning(
+                    "[GameplaySettingsUI] Settings runtime is not available yet.",
+                    this);
                 return;
             }
 
-            GameSettings settings =
-                settingsRuntime.Settings;
+            GameSettings settings = settingsRuntime.Settings;
 
             SetToggleWithoutNotify(
                 confirmWorldItemDropToggle,

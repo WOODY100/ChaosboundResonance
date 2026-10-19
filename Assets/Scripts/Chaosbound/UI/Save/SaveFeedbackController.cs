@@ -142,6 +142,11 @@ public sealed class SaveFeedbackController : MonoBehaviour
             return;
         }
 
+        Debug.Log(
+            "[SaveFeedbackController] RunSaveOperation called.\n" +
+            Environment.StackTrace,
+            this);
+
         StopFeedbackCoroutine();
 
         ShowSaving();

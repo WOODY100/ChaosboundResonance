@@ -1,4 +1,3 @@
-
 using System;
 
 namespace Chaosbound.Core.Settings

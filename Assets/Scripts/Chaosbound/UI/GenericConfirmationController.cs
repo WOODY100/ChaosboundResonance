@@ -85,6 +85,16 @@ public sealed class GenericConfirmationController : MonoBehaviour
             gameObject.SetActive(true);
     }
 
+    public void SetMessage(string message)
+    {
+        if (!isOpen || messageText == null)
+        {
+            return;
+        }
+
+        messageText.text = message;
+    }
+
     public void Confirm()
     {
         if (!isOpen)

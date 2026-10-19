@@ -39,6 +39,7 @@ namespace Chaosbound.Core.Composition
 
         [SerializeField] private ItemTooltipService itemTooltipService;
         [SerializeField] private GameSettingsRuntime gameSettingsRuntime;
+        [SerializeField] private VideoSettingsRuntime videoSettingsRuntime;
         [SerializeField] private PersistentMetaRuntime persistentMetaRuntime;
 
         [SerializeField]
@@ -51,9 +52,13 @@ namespace Chaosbound.Core.Composition
         private SaveGameService saveGameService;
         private EquipmentInventoryService equipmentInventoryService;
         private GameSettingsPersistenceService gameSettingsPersistenceService;
+        private VideoSettingsPersistenceService videoSettingsPersistenceService;
 
         [SerializeField]
         private string settingsFileName = "chaosbound_settings.json";
+
+        [SerializeField]
+        private string videoSettingsFileName = "chaosbound_video_settings.json";
 
         [SerializeField]
         private string saveFileName = "chaosbound_save.json";
@@ -95,6 +100,8 @@ namespace Chaosbound.Core.Composition
             itemTooltipService;
         public GameSettingsRuntime GameSettingsRuntime =>
             gameSettingsRuntime;
+        public VideoSettingsRuntime VideoSettingsRuntime =>
+            videoSettingsRuntime;
         public PersistentMetaRuntime PersistentMetaRuntime =>
             persistentMetaRuntime;
         public EquipmentLoadoutRuntime EquipmentLoadoutRuntime =>
@@ -154,6 +161,24 @@ namespace Chaosbound.Core.Composition
                     $"{nameof(BootstrapContext)} requires a " +
                     $"{nameof(GameSettingsRuntime)}.");
             }
+
+            if (videoSettingsRuntime == null)
+            {
+                throw new InvalidOperationException(
+                    $"{nameof(BootstrapContext)} requires a " +
+                    $"{nameof(VideoSettingsRuntime)}.");
+            }
+
+            ISaveStorage videoSettingsStorage =
+                new FileSaveStorage(
+                    videoSettingsFileName);
+
+            videoSettingsPersistenceService =
+                new VideoSettingsPersistenceService(
+                    videoSettingsStorage);
+
+            videoSettingsRuntime.Initialize(
+                videoSettingsPersistenceService);
 
             gameSettingsRuntime.Initialize(
                 gameSettingsPersistenceService);

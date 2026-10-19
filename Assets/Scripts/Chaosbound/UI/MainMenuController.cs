@@ -1,4 +1,4 @@
-
+using Chaosbound.Core.Settings.UI;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -90,7 +90,31 @@ public class MainMenuController : MonoBehaviour
 
     public void OpenOptions()
     {
-        Debug.Log("Options menu pending.");
+        BootstrapContext bootstrapContext =
+            BootstrapContext.Current;
+
+        if (bootstrapContext == null)
+        {
+            Debug.LogError(
+                "[MainMenuController] BootstrapContext is not available.",
+                this);
+            return;
+        }
+
+        OptionsMenuController optionsController =
+            bootstrapContext.GetComponentInChildren
+                <OptionsMenuController>(true);
+
+        if (optionsController == null)
+        {
+            Debug.LogError(
+                "[MainMenuController] OptionsMenuController " +
+                "was not found in Bootstrap.",
+                this);
+            return;
+        }
+
+        optionsController.OpenOptionsFromMainMenu();
     }
 
     public void ExitGame()
