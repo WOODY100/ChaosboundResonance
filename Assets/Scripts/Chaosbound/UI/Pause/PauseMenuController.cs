@@ -281,12 +281,6 @@ public sealed class PauseMenuController : MonoBehaviour
 
         bool success = context.SavePersistentState();
 
-        Debug.Log(
-            success
-                ? "[PauseMenuController] Persistent save succeeded."
-                : "[PauseMenuController] Persistent save failed.",
-            this);
-
         saveFeedbackController.ShowResult(success);
 
         saveFeedbackCoroutine = null;

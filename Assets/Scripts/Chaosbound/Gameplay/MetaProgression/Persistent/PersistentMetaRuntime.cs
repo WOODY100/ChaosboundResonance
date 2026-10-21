@@ -63,6 +63,19 @@ namespace Chaosbound.Gameplay.MetaProgression.Persistent
             return state.TrySpendSkillPoints(amount);
         }
 
+        public void ResetProgression()
+        {
+            if (state == null)
+            {
+                throw new InvalidOperationException(
+                    "PersistentMetaState is not initialized.");
+            }
+
+            state.Clear();
+
+            MetaProgressionChanged?.Invoke();
+        }
+
         private void ProcessLevelUps()
         {
             while (

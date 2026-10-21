@@ -196,5 +196,20 @@ namespace Chaosbound.Gameplay.Save
                 saveData,
                 out loadPlan);
         }
+
+        public bool HasSaveFile()
+        {
+            return storage.Exists();
+        }
+
+        public bool HasValidSave()
+        {
+            return TryLoad(out _);
+        }
+
+        public void DeleteSave()
+        {
+            storage.Delete();
+        }
     }
 }

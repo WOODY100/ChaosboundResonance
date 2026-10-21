@@ -50,6 +50,7 @@ namespace Chaosbound.Core.Composition
         private EquipmentLoadoutRuntime equipmentLoadoutRuntime;
         private ExpeditionProgressRuntime expeditionProgressRuntime;
         private SaveGameService saveGameService;
+        private SaveSlotService saveSlotService;
         private EquipmentInventoryService equipmentInventoryService;
         private GameSettingsPersistenceService gameSettingsPersistenceService;
         private VideoSettingsPersistenceService videoSettingsPersistenceService;
@@ -79,6 +80,8 @@ namespace Chaosbound.Core.Composition
         //==========================================================
 
         private SceneTransitionService sceneTransitionService;
+
+        private int activeSaveSlotIndex = -1;
 
         //==========================================================
         // Public Properties
@@ -115,6 +118,12 @@ namespace Chaosbound.Core.Composition
         public SaveGameService SaveGameService =>
             saveGameService;
 
+        public SaveSlotService SaveSlotService =>
+            saveSlotService;
+
+        public int ActiveSaveSlotIndex =>
+            activeSaveSlotIndex;
+
         public SaveFeedbackController SaveFeedbackController =>
             saveFeedbackController;
 
@@ -146,6 +155,9 @@ namespace Chaosbound.Core.Composition
                 new SaveGameService(
                     saveStorage,
                     1);
+
+            saveSlotService =
+                new SaveSlotService();
 
             ISaveStorage settingsStorage =
                 new FileSaveStorage(
@@ -289,9 +301,17 @@ namespace Chaosbound.Core.Composition
 
         public bool SavePersistentState()
         {
-            if (saveGameService == null)
+            if (saveSlotService == null)
                 throw new InvalidOperationException(
-                    "SaveGameService is not initialized.");
+                    "SaveSlotService is not initialized.");
+
+            if (!saveSlotService.IsValidSlot(activeSaveSlotIndex))
+            {
+                Debug.LogError(
+                    "[BootstrapContext] Cannot save because no valid save slot is active.");
+
+                return false;
+            }
 
             if (persistentInventoryRuntime == null)
                 throw new InvalidOperationException(
@@ -311,7 +331,7 @@ namespace Chaosbound.Core.Composition
 
             try
             {
-                saveGameService.Save(
+                saveSlotService.GetService(activeSaveSlotIndex).Save(
                     persistentInventoryRuntime.State,
                     equipmentLoadoutRuntime,
                     persistentMetaRuntime.State,
@@ -331,11 +351,33 @@ namespace Chaosbound.Core.Composition
 
         public bool LoadPersistentState()
         {
-            if (saveGameService == null)
+            if (!saveSlotService.IsValidSlot(activeSaveSlotIndex))
+            {
+                Debug.LogWarning(
+                    "[BootstrapContext] Cannot load because no valid save slot is active.");
+
+                return false;
+            }
+
+            return LoadPersistentState(activeSaveSlotIndex);
+        }
+
+        public bool LoadPersistentState(int slotIndex)
+        {
+            if (saveSlotService == null)
+                throw new InvalidOperationException(
+                    "SaveSlotService is not initialized.");
+
+            if (!saveSlotService.IsValidSlot(slotIndex))
+                return false;
+
+            SaveGameService slotSaveService =
+                saveSlotService.GetService(slotIndex);
+
+            if (slotSaveService == null)
             {
                 throw new InvalidOperationException(
-                    $"{nameof(BootstrapContext)} SaveGameService " +
-                    "has not been created.");
+                    "SaveGameService for the selected slot has not been created.");
             }
 
             if (persistentInventoryRuntime == null ||
@@ -368,14 +410,14 @@ namespace Chaosbound.Core.Composition
                     "is not ready.");
             }
 
-            if (!saveGameService.TryLoad(
-                    out SaveGameLoadPlan loadPlan))
+            if (!slotSaveService.TryLoad(
+                out SaveGameLoadPlan loadPlan))
             {
                 return false;
             }
 
 
-            bool applied = saveGameService.ApplyLoadPlan(
+            bool applied = slotSaveService.ApplyLoadPlan(
                 loadPlan,
                 persistentInventoryRuntime.State,
                 equipmentLoadoutRuntime,
@@ -390,7 +432,161 @@ namespace Chaosbound.Core.Composition
                 return false;
             }
 
+            activeSaveSlotIndex = slotIndex;
             return true;
+        }
+
+        public bool ResetPersistentState()
+        {
+            if (persistentInventoryRuntime == null ||
+                persistentInventoryRuntime.State == null)
+            {
+                Debug.LogError(
+                    "[BootstrapContext] PersistentInventoryRuntime is not ready.");
+                return false;
+            }
+
+            if (persistentMetaRuntime == null ||
+                persistentMetaRuntime.State == null)
+            {
+                Debug.LogError(
+                    "[BootstrapContext] PersistentMetaRuntime is not ready.");
+                return false;
+            }
+
+            if (equipmentLoadoutRuntime == null)
+            {
+                Debug.LogError(
+                    "[BootstrapContext] EquipmentLoadoutRuntime is not ready.");
+                return false;
+            }
+
+            if (expeditionProgressRuntime == null)
+            {
+                Debug.LogError(
+                    "[BootstrapContext] ExpeditionProgressRuntime is not ready.");
+                return false;
+            }
+
+            persistentInventoryRuntime.State.Clear();
+
+            equipmentLoadoutRuntime.Clear();
+
+            persistentMetaRuntime.ResetProgression();
+
+            expeditionProgressRuntime.Clear();
+
+            return true;
+        }
+
+        public bool TryStartNewGame(int slotIndex)
+        {
+            if (saveSlotService == null)
+            {
+                Debug.LogError(
+                    "[BootstrapContext] SaveSlotService is not initialized.");
+                return false;
+            }
+
+            if (!saveSlotService.IsValidSlot(slotIndex))
+            {
+                Debug.LogWarning(
+                    $"[BootstrapContext] Invalid save slot index: {slotIndex}.");
+                return false;
+            }
+
+            if (saveSlotService.GetSlotStatus(slotIndex) !=
+                SaveSlotStatus.Empty)
+            {
+                Debug.LogWarning(
+                    "[BootstrapContext] Cannot start a new game " +
+                    "because the selected slot is not empty.");
+                return false;
+            }
+
+            if (!ResetPersistentState())
+                return false;
+
+            activeSaveSlotIndex = slotIndex;
+
+            // Create the initial save immediately.
+            if (!SavePersistentState())
+            {
+                Debug.LogError(
+                    "[BootstrapContext] Failed to create the initial save " +
+                    $"for slot {slotIndex + 1}.");
+
+                activeSaveSlotIndex = -1;
+                return false;
+            }
+
+            return true;
+        }
+
+        public bool TryLoadGameFromSlot(int slotIndex)
+        {
+            if (saveSlotService == null)
+            {
+                Debug.LogError(
+                    "[BootstrapContext] SaveSlotService is not initialized.");
+                return false;
+            }
+
+            if (!saveSlotService.IsValidSlot(slotIndex))
+            {
+                Debug.LogWarning(
+                    $"[BootstrapContext] Invalid save slot index: {slotIndex}.");
+                return false;
+            }
+
+            if (saveSlotService.GetSlotStatus(slotIndex) !=
+                SaveSlotStatus.Available)
+            {
+                Debug.LogWarning(
+                    "[BootstrapContext] Cannot load the selected slot " +
+                    "because it does not contain a valid save.");
+                return false;
+            }
+
+            return LoadPersistentState(slotIndex);
+        }
+
+        public bool TryDeleteSaveSlot(int slotIndex)
+        {
+            if (saveSlotService == null)
+            {
+                Debug.LogError(
+                    "[BootstrapContext] SaveSlotService is not initialized.");
+                return false;
+            }
+
+            if (!saveSlotService.IsValidSlot(slotIndex))
+            {
+                Debug.LogWarning(
+                    $"[BootstrapContext] Invalid save slot index: {slotIndex}.");
+                return false;
+            }
+
+            if (!saveSlotService.HasSaveFile(slotIndex))
+            {
+                Debug.LogWarning(
+                    "[BootstrapContext] Cannot delete because the slot " +
+                    "does not contain a save file.");
+                return false;
+            }
+
+            try
+            {
+                saveSlotService.DeleteSave(slotIndex);
+                return true;
+            }
+            catch (Exception exception)
+            {
+                Debug.LogError(
+                    "[BootstrapContext] Failed to delete save slot. " +
+                    exception);
+                return false;
+            }
         }
 
         private void CreateEquipmentInventoryService()
@@ -436,6 +632,39 @@ namespace Chaosbound.Core.Composition
                     equipmentLoadoutRuntime);
         }
 
+        public bool TrySelectSaveSlot(int slotIndex)
+        {
+            if (saveSlotService == null)
+            {
+                Debug.LogError(
+                    "[BootstrapContext] SaveSlotService is not initialized.");
+
+                return false;
+            }
+
+            if (!saveSlotService.IsValidSlot(slotIndex))
+            {
+                Debug.LogWarning(
+                    $"[BootstrapContext] Invalid save slot index: {slotIndex}.");
+
+                return false;
+            }
+
+            activeSaveSlotIndex = slotIndex;
+
+            return true;
+        }
+
+        public SaveSlotInfo[] GetAllSaveSlotInfo()
+        {
+            if (saveSlotService == null)
+            {
+                throw new InvalidOperationException(
+                    "SaveSlotService is not initialized.");
+            }
+
+            return saveSlotService.GetAllSlotInfo();
+        }
 
 #if UNITY_EDITOR
 

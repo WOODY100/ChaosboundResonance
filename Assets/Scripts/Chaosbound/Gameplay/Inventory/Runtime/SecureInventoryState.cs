@@ -237,5 +237,16 @@ namespace Chaosbound.Gameplay.Inventory.Runtime
         {
             return slots;
         }
+
+        public void Clear()
+        {
+            for (int i = 0; i < slots.Length; i++)
+            {
+                slots[i].Clear();
+            }
+
+            unlockedSlotCount =
+                InventoryConstants.InitialUnlockedSecureSlots;
+        }
     }
 }

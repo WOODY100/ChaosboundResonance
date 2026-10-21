@@ -67,5 +67,10 @@ namespace Chaosbound.Gameplay.Save
 
             return true;
         }
+
+        public void Clear()
+        {
+            completedExpeditionIds.Clear();
+        }
     }
 }

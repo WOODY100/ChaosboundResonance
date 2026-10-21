@@ -1,13 +1,17 @@
-using Chaosbound.Core.Settings.UI;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using Chaosbound.Gameplay.Save;
+using Chaosbound.Core.Settings.UI;
 using Chaosbound.Core.Composition;
 using Chaosbound.Core.Runtime.SceneManagement;
 
 public class MainMenuController : MonoBehaviour
 {
     [SerializeField] private GameObject firstSelectedButton;
+
+    [SerializeField]
+    private SaveSlotPanelController saveSlotPanelController;
 
     private IEnumerator Start()
     {
@@ -21,72 +25,31 @@ public class MainMenuController : MonoBehaviour
         }
     }
 
+
     public void StartGame()
     {
-        BootstrapContext bootstrapContext =
-            BootstrapContext.Current;
-
-        if (bootstrapContext == null)
-        {
-            Debug.LogError(
-                "[MainMenuController] " +
-                "BootstrapContext is not available.");
-
-            return;
-        }
-
-        if (bootstrapContext.SceneTransitionService == null)
-        {
-            Debug.LogError(
-                "[MainMenuController] " +
-                "SceneTransitionService is not available.");
-
-            return;
-        }
-
-        bootstrapContext.SceneTransitionService.LoadScene(
-            GameScene.Sanctuary);
+        OpenSaveSlotPanel(true);
     }
 
     public void ContinueGame()
     {
-        BootstrapContext bootstrapContext =
-            BootstrapContext.Current;
-
-        if (bootstrapContext == null)
-        {
-            Debug.LogError(
-                "[MainMenuController] " +
-                "BootstrapContext is not available.");
-
-            return;
-        }
-
-        if (bootstrapContext.SceneTransitionService == null)
-        {
-            Debug.LogError(
-                "[MainMenuController] " +
-                "SceneTransitionService is not available.");
-
-            return;
-        }
-
-        bool loaded =
-            bootstrapContext.LoadPersistentState();
-
-        if (!loaded)
-        {
-            Debug.LogWarning(
-                "[MainMenuController] " +
-                "No valid save game was found. " +
-                "Continue cancelled.");
-
-            return;
-        }
-
-        bootstrapContext.SceneTransitionService.LoadScene(
-            GameScene.Sanctuary);
+        OpenSaveSlotPanel(false);
     }
+
+    private void OpenSaveSlotPanel(bool startNewGame)
+    {
+        if (saveSlotPanelController == null)
+        {
+            Debug.LogError(
+                "[MainMenuController] SaveSlotPanelController " +
+                "is not assigned.",
+                this);
+            return;
+        }
+
+        saveSlotPanelController.OpenPanel(startNewGame);
+    }
+
 
     public void OpenOptions()
     {

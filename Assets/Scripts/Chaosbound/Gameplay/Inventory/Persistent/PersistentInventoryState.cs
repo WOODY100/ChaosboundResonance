@@ -33,5 +33,14 @@ namespace Chaosbound.Gameplay.Inventory.Persistent
 
         public PersistentMaterialSeenState MaterialSeenState =>
             materialSeenState;
+
+        public void Clear()
+        {
+            items.Clear();
+            secureInventory.Clear();
+            materials.Clear();
+            itemSeenState.Clear();
+            materialSeenState.Clear();
+        }
     }
 }
