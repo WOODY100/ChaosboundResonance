@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 1130963059686493811}
   - component: {fileID: 7638912616203687755}
   - component: {fileID: 4595064649673110313}
+  - component: {fileID: 34550893608269287}
   m_Layer: 5
   m_Name: CancelButton
   m_TagString: Untagged
@@ -121,6 +122,20 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &34550893608269287
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 56006606706220144}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56a3160d5df90124d83575abc6841d27, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIButtonAudio
+  playHoverSound: 1
+  playConfirmSound: 1
 --- !u!1 &1316392932769879610
 GameObject:
   m_ObjectHideFlags: 0
@@ -269,14 +284,13 @@ GameObject:
   - component: {fileID: 771884942767135368}
   - component: {fileID: 1741485849719233274}
   - component: {fileID: 8477681512051428749}
-  - component: {fileID: 5369637991888773713}
   m_Layer: 5
   m_Name: GenericConfirmationPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &771884942767135368
 RectTransform:
   m_ObjectHideFlags: 0
@@ -340,25 +354,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &5369637991888773713
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1463721225044110621}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0f22ebd623cb7364ba283732e1e07cb1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GenericConfirmationController
-  panelRoot: {fileID: 1463721225044110621}
-  titleText: {fileID: 4236484131874215500}
-  messageText: {fileID: 3316391901275530830}
-  cancelButtonText: {fileID: 2778283634245657414}
-  confirmButtonText: {fileID: 3594577137908498800}
-  cancelButton: {fileID: 4595064649673110313}
-  confirmButton: {fileID: 7896295735259205898}
 --- !u!1 &3227911951942465599
 GameObject:
   m_ObjectHideFlags: 0
@@ -603,10 +598,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 771884942767135368}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 1920, y: 1080}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7503261914527891982
 CanvasRenderer:
@@ -629,14 +624,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 0
+  m_Color: {r: 0, g: 0, b: 0, a: 0.8}
+  m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 89070bd95c20c5f4fb47b0e6809a8e60, type: 3}
+  m_Sprite: {fileID: 0}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -795,6 +790,7 @@ GameObject:
   - component: {fileID: 2213100540709484722}
   - component: {fileID: 2235700074133904332}
   - component: {fileID: 7896295735259205898}
+  - component: {fileID: 1605167197492367107}
   m_Layer: 5
   m_Name: ConfirmButton
   m_TagString: Untagged
@@ -904,6 +900,20 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &1605167197492367107
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8431138544652299064}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56a3160d5df90124d83575abc6841d27, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIButtonAudio
+  playHoverSound: 1
+  playConfirmSound: 1
 --- !u!1 &9165444704030284679
 GameObject:
   m_ObjectHideFlags: 0

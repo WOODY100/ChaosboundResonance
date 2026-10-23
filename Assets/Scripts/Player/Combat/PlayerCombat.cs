@@ -23,6 +23,17 @@ public sealed class PlayerCombat : MonoBehaviour
     [SerializeField] private GameObject slashPrefab;
     [SerializeField] private Transform attackSpawnPoint;
 
+    [Header("Attack Audio")]
+    [SerializeField] private AudioSource attackAudioSource;
+    [SerializeField] private AudioClip slashSound;
+    [SerializeField, Range(0f, 1f)]
+    private float slashVolume = 1f;
+
+    [SerializeField] private AudioClip hitSound;
+
+    [SerializeField, Range(0f, 1f)]
+    private float hitVolume = 0.8f;
+
     private Animator animator;
     private PlayerModifierSystem modifierSystem;
     private PlayerController controller;
@@ -429,6 +440,8 @@ public sealed class PlayerCombat : MonoBehaviour
                 isCritical);
 
         target.TakeDamage(damage);
+
+        PlayHitSound();
     }
 
     // =========================================================
@@ -436,8 +449,13 @@ public sealed class PlayerCombat : MonoBehaviour
     // =========================================================
 
     // Animation Event
+    // Animation Event
     public void SpawnSlash()
     {
+        // El sonido se sincroniza con el evento de animación.
+        PlaySlashSound();
+
+        // El efecto visual se procesa de manera independiente.
         if (slashPrefab == null ||
             attackSpawnPoint == null)
         {
@@ -577,5 +595,31 @@ public sealed class PlayerCombat : MonoBehaviour
         Gizmos.DrawRay(
             transform.position,
             rightDirection * attackRange);
+    }
+
+    private void PlaySlashSound()
+    {
+        if (attackAudioSource == null ||
+            slashSound == null)
+        {
+            return;
+        }
+
+        attackAudioSource.PlayOneShot(
+            slashSound,
+            slashVolume);
+    }
+
+    private void PlayHitSound()
+    {
+        if (attackAudioSource == null ||
+            hitSound == null)
+        {
+            return;
+        }
+
+        attackAudioSource.PlayOneShot(
+            hitSound,
+            hitVolume);
     }
 }

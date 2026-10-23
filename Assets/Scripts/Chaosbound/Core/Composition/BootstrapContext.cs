@@ -1,3 +1,4 @@
+using Chaosbound.Core.Audio;
 using Chaosbound.Core.GameFlow;
 using Chaosbound.Core.Runtime.SceneManagement;
 using Chaosbound.Core.Settings;
@@ -10,6 +11,7 @@ using Chaosbound.Gameplay.Save;
 using Chaosbound.UI.Loading;
 using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using GameFlowService = Chaosbound.Core.GameFlow.GameFlow;
 
 namespace Chaosbound.Core.Composition
@@ -40,8 +42,9 @@ namespace Chaosbound.Core.Composition
         [SerializeField] private ItemTooltipService itemTooltipService;
         [SerializeField] private GameSettingsRuntime gameSettingsRuntime;
         [SerializeField] private VideoSettingsRuntime videoSettingsRuntime;
-        [SerializeField] private PersistentMetaRuntime persistentMetaRuntime;
 
+        [SerializeField] private PersistentMetaRuntime persistentMetaRuntime;
+        [SerializeField] private AudioManager audioManager;
         [SerializeField]
         private SceneTransitionHost sceneTransitionHost;
         [SerializeField]
@@ -105,6 +108,7 @@ namespace Chaosbound.Core.Composition
             gameSettingsRuntime;
         public VideoSettingsRuntime VideoSettingsRuntime =>
             videoSettingsRuntime;
+        public AudioManager AudioManager => audioManager;
         public PersistentMetaRuntime PersistentMetaRuntime =>
             persistentMetaRuntime;
         public EquipmentLoadoutRuntime EquipmentLoadoutRuntime =>
@@ -194,6 +198,18 @@ namespace Chaosbound.Core.Composition
 
             gameSettingsRuntime.Initialize(
                 gameSettingsPersistenceService);
+
+            if (audioManager == null)
+            {
+                throw new InvalidOperationException(
+                    $"{nameof(BootstrapContext)} requires an " +
+                    $"{nameof(AudioManager)}.");
+            }
+
+            audioManager.Initialize(
+                gameSettingsRuntime.Settings);
+
+            audioManager.Bind(gameSettingsRuntime);
 
             if (sceneTransitionHost == null)
             {
@@ -666,6 +682,31 @@ namespace Chaosbound.Core.Composition
             return saveSlotService.GetAllSlotInfo();
         }
 
+        private void OnEnable()
+        {
+            SceneManager.sceneLoaded += HandleSceneLoaded;
+        }
+
+        private void OnDisable()
+        {
+            SceneManager.sceneLoaded -= HandleSceneLoaded;
+        }
+
+        private void HandleSceneLoaded(
+            Scene scene,
+            LoadSceneMode mode)
+        {
+            if (audioManager == null ||
+                gameSettingsRuntime == null ||
+                !gameSettingsRuntime.IsInitialized)
+            {
+                return;
+            }
+
+            audioManager.ApplySettings(
+                gameSettingsRuntime.Settings);
+        }
+
 #if UNITY_EDITOR
 
         //==========================================================
@@ -684,6 +725,7 @@ namespace Chaosbound.Core.Composition
             ValidateReference(persistentMetaRuntime, nameof(persistentMetaRuntime));
             ValidateReference(itemTooltipService, nameof(itemTooltipService));
             ValidateReference(gameSettingsRuntime, nameof(gameSettingsRuntime));
+            ValidateReference(audioManager, nameof(audioManager));
 
             if (string.IsNullOrWhiteSpace(saveFileName))
             {

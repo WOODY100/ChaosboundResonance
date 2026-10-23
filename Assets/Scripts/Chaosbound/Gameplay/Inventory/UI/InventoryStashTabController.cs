@@ -1,3 +1,4 @@
+using Chaosbound.Core.Audio;
 using UnityEngine;
 
 namespace Chaosbound.Gameplay.Inventory.UI
@@ -16,8 +17,14 @@ namespace Chaosbound.Gameplay.Inventory.UI
 
         [SerializeField] private GameObject trash;
 
+        [Header("Audio")]
+        [SerializeField] private UIAudioPlayer uiAudioPlayer;
+
+        private InventoryTabUI activeTab;
+
         private void Start()
         {
+            ResolveUIAudioPlayer();
             Initialize();
         }
 
@@ -31,6 +38,7 @@ namespace Chaosbound.Gameplay.Inventory.UI
             ValidateReferences();
             SubscribeTabs();
 
+            // Select the initial tab without playing a tab-switch sound.
             ShowInventory();
         }
 
@@ -144,6 +152,9 @@ namespace Chaosbound.Gameplay.Inventory.UI
             InventoryTabUI inactiveA,
             InventoryTabUI inactiveB)
         {
+            bool changedTab =
+                activeTab != null && activeTab != selected;
+
             if (selected != null)
                 selected.SetSelected(true);
 
@@ -152,6 +163,19 @@ namespace Chaosbound.Gameplay.Inventory.UI
 
             if (inactiveB != null)
                 inactiveB.SetSelected(false);
+
+            activeTab = selected;
+
+            if (changedTab && uiAudioPlayer != null)
+                uiAudioPlayer.PlayTabSwitch();
+        }
+
+        private void ResolveUIAudioPlayer()
+        {
+            if (uiAudioPlayer != null)
+                return;
+
+            uiAudioPlayer = FindAnyObjectByType<UIAudioPlayer>();
         }
 
         private void ValidateReferences()
@@ -209,6 +233,14 @@ namespace Chaosbound.Gameplay.Inventory.UI
                 UnityEngine.Debug.LogError(
                     "[InventoryStashTabController] " +
                     "Trash reference is missing.",
+                    this);
+            }
+
+            if (uiAudioPlayer == null)
+            {
+                UnityEngine.Debug.LogWarning(
+                    "[InventoryStashTabController] " +
+                    "UIAudioPlayer reference is missing.",
                     this);
             }
         }

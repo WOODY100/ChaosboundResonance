@@ -10,6 +10,13 @@ namespace Chaosbound.Core.Settings
         public bool ShowEnemyHealthBars = true;
         public bool Vibration = true;
 
+        // Audio
+        public float MasterVolume = 0.8f;
+        public float MusicVolume = 0.8f;
+        public float EffectsVolume = 0.8f;
+        public float UIVolume = 0.8f;
+        public bool MuteAll = false;
+
         public static GameSettingsData FromSettings(
             GameSettings settings)
         {
@@ -28,7 +35,22 @@ namespace Chaosbound.Core.Settings
                     settings.ShowEnemyHealthBars,
 
                 Vibration =
-                    settings.Vibration
+                    settings.Vibration,
+
+                MasterVolume =
+                    settings.MasterVolume,
+
+                MusicVolume =
+                    settings.MusicVolume,
+
+                EffectsVolume =
+                    settings.EffectsVolume,
+
+                UIVolume =
+                    settings.UIVolume,
+
+                MuteAll =
+                    settings.MuteAll
             };
         }
 
@@ -46,7 +68,22 @@ namespace Chaosbound.Core.Settings
                     ShowEnemyHealthBars,
 
                 Vibration =
-                    Vibration
+                    Vibration,
+
+                MasterVolume =
+                    MasterVolume,
+
+                MusicVolume =
+                    MusicVolume,
+
+                EffectsVolume =
+                    EffectsVolume,
+
+                UIVolume =
+                    UIVolume,
+
+                MuteAll =
+                    MuteAll
             };
         }
     }

@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using Chaosbound.Core.Audio;
 using Chaosbound.Core.Settings.UI;
 
 public sealed class OptionsMenuController : MonoBehaviour
@@ -26,6 +27,7 @@ public sealed class OptionsMenuController : MonoBehaviour
     [Header("Tab Controllers")]
     [SerializeField] private VideoSettingsUI videoSettingsUI;
     [SerializeField] private GameplaySettingsUI gameplaySettingsUI;
+    [SerializeField] private AudioSettingsUI audioSettingsUI;
 
     [Header("Footer Buttons")]
     [SerializeField] private Button applyButton;
@@ -33,6 +35,9 @@ public sealed class OptionsMenuController : MonoBehaviour
 
     [Header("Selection")]
     [SerializeField] private GameObject firstOptionsButton;
+
+    [Header("UI Audio")]
+    [SerializeField] private UIAudioPlayer uiAudioPlayer;
 
     private bool isOpen;
     private GameObject activeTab;
@@ -119,6 +124,9 @@ public sealed class OptionsMenuController : MonoBehaviour
         isOpen = false;
         optionsPanel.SetActive(false);
 
+        if (uiAudioPlayer != null)
+            uiAudioPlayer.PlayPopup();
+
         // Restauramos la posición y geometría originales.
         ApplyMainMenuPosition();
 
@@ -194,6 +202,19 @@ public sealed class OptionsMenuController : MonoBehaviour
             return;
         }
 
+        if (activeTab == audioContent)
+        {
+            if (audioSettingsUI != null)
+                audioSettingsUI.Apply();
+            else
+                Debug.LogError(
+                    "[OptionsMenuController] AudioSettingsUI " +
+                    "is not assigned.",
+                    this);
+
+            return;
+        }
+
         if (activeTab == gameplayContent)
         {
             if (gameplaySettingsUI != null)
@@ -228,6 +249,19 @@ public sealed class OptionsMenuController : MonoBehaviour
             return;
         }
 
+        if (activeTab == audioContent)
+        {
+            if (audioSettingsUI != null)
+                audioSettingsUI.RestoreDefaults();
+            else
+                Debug.LogError(
+                    "[OptionsMenuController] AudioSettingsUI " +
+                    "is not assigned.",
+                    this);
+
+            return;
+        }
+
         if (activeTab == gameplayContent)
         {
             if (gameplaySettingsUI != null)
@@ -247,9 +281,14 @@ public sealed class OptionsMenuController : MonoBehaviour
             this);
     }
 
+
     private void SetTab(GameObject tab)
     {
         if (tab == null)
+            return;
+
+        // No reproducir sonido si la pestaña ya está activa.
+        if (activeTab == tab)
             return;
 
         activeTab = tab;
@@ -265,5 +304,9 @@ public sealed class OptionsMenuController : MonoBehaviour
 
         if (controlsContent != null)
             controlsContent.SetActive(tab == controlsContent);
+
+        if (uiAudioPlayer != null)
+            uiAudioPlayer.PlayTabSwitch();
     }
+
 }

@@ -43,6 +43,7 @@ GameObject:
   - component: {fileID: 4777236258634498890}
   - component: {fileID: 8147469518392399759}
   - component: {fileID: 5463630734366664216}
+  - component: {fileID: 4380041389742077928}
   - component: {fileID: 4055586777931732939}
   - component: {fileID: 7456098046516693950}
   - component: {fileID: 8481841851863748374}
@@ -158,6 +159,103 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!82 &4380041389742077928
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1545538594216743131}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: -5181527255185644750, guid: 73734b99cf225cc47869a4cd1e9098da, type: 2}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!114 &4055586777931732939
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -173,6 +271,7 @@ MonoBehaviour:
   skillTreeWindow: {fileID: 0}
   skillTreeVisualController: {fileID: 0}
   debugMetaExperience: 500
+  expeditionSelectionWindowController: {fileID: 0}
 --- !u!114 &7456098046516693950
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -185,6 +284,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9a96acd953e4744580a645f7fad8aa1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
+  damageSound: {fileID: 8300000, guid: 6cce00181c2d224458bb48e42b5a0042, type: 3}
+  damageVolume: 0.6
+  deathSound: {fileID: 8300000, guid: 47db20b751968254db79831d28947919, type: 3}
+  deathVolume: 1
 --- !u!114 &8481841851863748374
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -202,6 +305,8 @@ MonoBehaviour:
   dashDuration: 0.18
   dashCooldown: 1
   gravity: -20
+  dashSound: {fileID: 8300000, guid: 639e804d45f51494cab14e1f9eb0ab9b, type: 3}
+  dashVolume: 0.8
 --- !u!114 &4092326677262735991
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -237,6 +342,11 @@ MonoBehaviour:
     m_Bits: 64
   slashPrefab: {fileID: 7611201976539897820, guid: b13c9887318689f4cb59c771397f3d2b, type: 3}
   attackSpawnPoint: {fileID: 1188860004668281879}
+  attackAudioSource: {fileID: 4380041389742077928}
+  slashSound: {fileID: 8300000, guid: 6f353291ef570424782ea93f10dbd867, type: 3}
+  slashVolume: 1
+  hitSound: {fileID: 8300000, guid: 51a445cf0b85fd24baa9df2a1cbbcad7, type: 3}
+  hitVolume: 0.8
 --- !u!114 &924644214286711018
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -262,6 +372,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerDamageReceiver
   globalDamageCooldown: 0.5
+  damageAudioSource: {fileID: 4380041389742077928}
+  damageSound: {fileID: 8300000, guid: 6cce00181c2d224458bb48e42b5a0042, type: 3}
+  damageVolume: 0.8
 --- !u!114 &8622593507927508397
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Audio;
 
 namespace Chaosbound.UI.Loading
 {
@@ -16,6 +17,9 @@ namespace Chaosbound.UI.Loading
 
         [SerializeField, Min(0f)]
         private float fadeDuration = 0.25f;
+
+        [Header("Audio")]
+        [SerializeField] private AudioMixerGroup musicMixerGroup;
 
         private Coroutine progressCoroutine;
         private bool isVisible;
@@ -68,6 +72,8 @@ namespace Chaosbound.UI.Loading
             if (!enabled)
                 return;
 
+            StopSceneMusic();
+
             StopProgressAnimation();
 
             SetProgress(0f);
@@ -100,6 +106,8 @@ namespace Chaosbound.UI.Loading
         {
             if (!enabled)
                 yield break;
+
+            StopSceneMusic();
 
             StopProgressAnimation();
 
@@ -208,6 +216,30 @@ namespace Chaosbound.UI.Loading
 
             canvasGroup.interactable = visible;
             canvasGroup.blocksRaycasts = visible;
+        }
+
+        private void StopSceneMusic()
+        {
+            if (musicMixerGroup == null)
+            {
+                Debug.LogWarning(
+                    "[LoadingScreenController] Music Mixer Group is not assigned.",
+                    this);
+                return;
+            }
+
+            AudioSource[] audioSources =
+                FindObjectsByType<AudioSource>(
+                    FindObjectsSortMode.None);
+
+            foreach (AudioSource source in audioSources)
+            {
+                if (source == null)
+                    continue;
+
+                if (source.outputAudioMixerGroup == musicMixerGroup)
+                    source.Stop();
+            }
         }
     }
 }

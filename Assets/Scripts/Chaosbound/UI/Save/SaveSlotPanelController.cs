@@ -11,6 +11,10 @@ public sealed class SaveSlotPanelController : MonoBehaviour
     [Header("Panels")]
     [SerializeField] private GameObject saveSlotPanel;
 
+    [Header("UI Audio")]
+    [SerializeField]
+    private Chaosbound.Core.Audio.UIAudioPlayer uiAudioPlayer;
+
     [Header("Title")]
     [SerializeField] private TMP_Text titleText;
 
@@ -91,8 +95,13 @@ public sealed class SaveSlotPanelController : MonoBehaviour
 
     public void ClosePanel()
     {
-        if (saveSlotPanel != null)
-            saveSlotPanel.SetActive(false);
+        if (saveSlotPanel == null || !saveSlotPanel.activeSelf)
+            return;
+
+        saveSlotPanel.SetActive(false);
+
+        if (uiAudioPlayer != null)
+            uiAudioPlayer.PlayPopup();
     }
 
     public void RefreshSlots()

@@ -1,3 +1,4 @@
+using Chaosbound.Core.Audio;
 using Chaosbound.Core.Composition;
 using Chaosbound.Core.GameFlow;
 using Chaosbound.Gameplay.Inventory.Stash;
@@ -9,12 +10,14 @@ namespace Chaosbound.Gameplay.Inventory.UI
     {
         [Header("References")]
         [SerializeField] private StashChestController chestController;
+        [SerializeField] private UIAudioPlayer uiAudioPlayer;
 
         private GameFlow gameFlow;
 
         private void Awake()
         {
             ResolveGameFlow();
+            ResolveUIAudioPlayer();
 
             if (gameFlow == null)
             {
@@ -27,6 +30,13 @@ namespace Chaosbound.Gameplay.Inventory.UI
             {
                 UnityEngine.Debug.LogError(
                     "[PersonalStashWindowController] StashChestController reference is missing.",
+                    this);
+            }
+
+            if (uiAudioPlayer == null)
+            {
+                UnityEngine.Debug.LogWarning(
+                    "[PersonalStashWindowController] UIAudioPlayer reference is missing.",
                     this);
             }
         }
@@ -50,10 +60,13 @@ namespace Chaosbound.Gameplay.Inventory.UI
             if (!closed)
                 return;
 
+            // Play the UI window-close sound only after a successful close.
+            if (uiAudioPlayer != null)
+                uiAudioPlayer.PlayPopup();
+
+            // The chest plays its own physical closing sound.
             if (chestController != null)
-            {
                 chestController.Close();
-            }
         }
 
         private void ResolveGameFlow()
@@ -66,6 +79,14 @@ namespace Chaosbound.Gameplay.Inventory.UI
 
             gameFlow =
                 bootstrapContext.GameFlow;
+        }
+
+        private void ResolveUIAudioPlayer()
+        {
+            if (uiAudioPlayer != null)
+                return;
+
+            uiAudioPlayer = FindAnyObjectByType<UIAudioPlayer>();
         }
     }
 }

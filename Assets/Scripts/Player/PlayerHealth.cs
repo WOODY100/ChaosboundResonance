@@ -12,12 +12,22 @@ public sealed class PlayerHealth : MonoBehaviour
     public float CurrentHealth =>
         currentHealth;
 
+    private bool isHealthInitialized;
+
     public float MaxHealth =>
         modifierSystem.GetStat(
             StatType.MaxHP);
 
     public bool IsDead =>
         isDead;
+
+    [Header("Damage Audio")]
+    [SerializeField] private AudioClip deathSound;
+
+    [SerializeField, Range(0f, 1f)]
+    private float deathVolume = 1f;
+
+    private AudioSource damageAudioSource;
 
     public event Action<float, float> OnHealthChanged;
     public event Action OnDeath;
@@ -26,6 +36,9 @@ public sealed class PlayerHealth : MonoBehaviour
     {
         modifierSystem =
             GetComponent<PlayerModifierSystem>();
+
+        damageAudioSource = 
+            GetComponent<AudioSource>();
 
         modifierSystem.OnStatChanged +=
             HandleStatChanged;
@@ -58,6 +71,11 @@ public sealed class PlayerHealth : MonoBehaviour
         float newValue)
     {
         if (statType != StatType.MaxHP)
+            return;
+
+        // Ignorar notificaciones anteriores
+        // a la inicialización de la salud.
+        if (!isHealthInitialized)
             return;
 
         currentHealth =
@@ -98,19 +116,14 @@ public sealed class PlayerHealth : MonoBehaviour
         if (amount <= 0f)
             return;
 
-        float previousHealth =
-            currentHealth;
-
         currentHealth -= amount;
 
-        float maxHealth =
-            MaxHealth;
+        float maxHealth = MaxHealth;
 
-        currentHealth =
-            Mathf.Clamp(
-                currentHealth,
-                0f,
-                maxHealth);
+        currentHealth = Mathf.Clamp(
+            currentHealth,
+            0f,
+            maxHealth);
 
         OnHealthChanged?.Invoke(
             currentHealth,
@@ -119,6 +132,7 @@ public sealed class PlayerHealth : MonoBehaviour
         if (currentHealth <= 0f)
         {
             Die();
+            return;
         }
     }
 
@@ -150,8 +164,9 @@ public sealed class PlayerHealth : MonoBehaviour
     {
         isDead = false;
 
-        currentHealth =
-            MaxHealth;
+        currentHealth = MaxHealth;
+
+        isHealthInitialized = true;
 
         OnHealthChanged?.Invoke(
             currentHealth,
@@ -164,6 +179,14 @@ public sealed class PlayerHealth : MonoBehaviour
             return;
 
         isDead = true;
+
+        if (damageAudioSource != null &&
+            deathSound != null)
+        {
+            damageAudioSource.PlayOneShot(
+                deathSound,
+                deathVolume);
+        }
 
         OnDeath?.Invoke();
     }

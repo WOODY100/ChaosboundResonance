@@ -1,4 +1,5 @@
 using Chaosbound.Content.Items;
+using Chaosbound.Core.Audio;
 using Chaosbound.Core.Composition;
 using Chaosbound.Core.GameFlow;
 using Chaosbound.Gameplay.Inventory.Persistent;
@@ -35,10 +36,15 @@ namespace Chaosbound.Gameplay.Inventory.UI
 
         private ItemResolver itemResolver;
 
+        private UIAudioPlayer uiAudioPlayer;
+
         private void Start()
         {
             BootstrapContext bootstrapContext =
                 BootstrapContext.Current;
+
+            uiAudioPlayer =
+                FindAnyObjectByType<UIAudioPlayer>();
 
             if (bootstrapContext == null)
                 return;
@@ -220,6 +226,11 @@ namespace Chaosbound.Gameplay.Inventory.UI
 
             if (!confirmed)
                 return;
+
+            if (uiAudioPlayer != null)
+            {
+                uiAudioPlayer.PlayItemDestroy();
+            }
 
             if (stashInventoryUI == null)
             {

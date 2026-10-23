@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Audio;
 
 namespace Chaosbound.Gameplay.Inventory.Stash
 {
@@ -8,6 +9,16 @@ namespace Chaosbound.Gameplay.Inventory.Stash
         [Header("References")]
         [SerializeField] private Transform chestLid;
         [SerializeField] private GameObject woodenBar;
+
+
+        [Header("Chest Audio")]
+        [SerializeField] private AudioSource audioSource;
+        [SerializeField] private AudioClip openClip;
+        [SerializeField] private AudioClip closeClip;
+
+        [Header("Audio Mixer")]
+        [SerializeField] private AudioMixerGroup effectsMixerGroup;
+
 
         [Header("Animation")]
         [SerializeField] private float openDuration = 0.5f;
@@ -44,6 +55,26 @@ namespace Chaosbound.Gameplay.Inventory.Stash
                     "[StashChestController] Wooden Bar reference is missing.",
                     this);
             }
+
+            if (audioSource == null)
+            {
+                audioSource = GetComponent<AudioSource>();
+            }
+
+            if (audioSource != null)
+            {
+                audioSource.playOnAwake = false;
+                audioSource.loop = false;
+
+                if (effectsMixerGroup != null)
+                    audioSource.outputAudioMixerGroup = effectsMixerGroup;
+            }
+            else
+            {
+                UnityEngine.Debug.LogError(
+                    "[StashChestController] AudioSource is missing.",
+                    this);
+            }
         }
 
         public void Open()
@@ -56,6 +87,9 @@ namespace Chaosbound.Gameplay.Inventory.Stash
 
         public void Close()
         {
+            if (!isOpen)
+                return;
+
             StartAnimation(false);
         }
 
@@ -72,6 +106,15 @@ namespace Chaosbound.Gameplay.Inventory.Stash
             if (animationRoutine != null)
             {
                 StopCoroutine(animationRoutine);
+                animationRoutine = null;
+            }
+
+            if (audioSource != null)
+            {
+                AudioClip clip = open ? openClip : closeClip;
+
+                if (clip != null)
+                    audioSource.PlayOneShot(clip);
             }
 
             animationRoutine = StartCoroutine(

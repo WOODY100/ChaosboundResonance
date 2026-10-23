@@ -1,10 +1,11 @@
-using Chaosbound.Runtime.Bootstrap;
 using Chaosbound.Content.Expeditions.Assets;
+using Chaosbound.Core.Audio;
 using Chaosbound.Core.Composition;
 using Chaosbound.Core.GameFlow;
+using Chaosbound.Runtime.Bootstrap;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 
 namespace Chaosbound.Gameplay.Expeditions.UI
 {
@@ -52,6 +53,8 @@ namespace Chaosbound.Gameplay.Expeditions.UI
         private Button startExpeditionButton;
 
         private int selectedExpeditionIndex;
+
+        private UIAudioPlayer uiAudioPlayer;
 
         private GameFlow gameFlow;
 
@@ -243,6 +246,9 @@ namespace Chaosbound.Gameplay.Expeditions.UI
         {
             if (expeditionDetailsRoot != null)
                 expeditionDetailsRoot.SetActive(false);
+
+            if (uiAudioPlayer != null)
+                uiAudioPlayer.PlayExpeditionCardSwitch();
         }
 
         private void OnCarouselSelectionChanged(int index)
@@ -403,6 +409,9 @@ namespace Chaosbound.Gameplay.Expeditions.UI
                 return;
 
             gameFlow = bootstrapContext.GameFlow;
+
+            uiAudioPlayer =
+                FindAnyObjectByType<UIAudioPlayer>();
         }
     }
 }

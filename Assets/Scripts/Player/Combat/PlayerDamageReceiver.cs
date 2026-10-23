@@ -6,6 +6,13 @@ public class PlayerDamageReceiver : MonoBehaviour, IDamageable
     [Header("Damage Settings")]
     [SerializeField] private float globalDamageCooldown = 0.5f;
 
+    [Header("Damage Audio")]
+    [SerializeField] private AudioSource damageAudioSource;
+    [SerializeField] private AudioClip damageSound;
+
+    [SerializeField, Range(0f, 1f)]
+    private float damageVolume = 0.8f;
+
     private PlayerModifierSystem modifierSystem;
 
     public bool IsInvulnerable { get; set; }
@@ -25,6 +32,12 @@ public class PlayerDamageReceiver : MonoBehaviour, IDamageable
     {
         health = GetComponent<PlayerHealth>();
         modifierSystem = GetComponent<PlayerModifierSystem>();
+
+        if (damageAudioSource == null)
+        {
+            damageAudioSource =
+                GetComponent<AudioSource>();
+        }
 
         if (health == null)
             Debug.LogError($"{name} requires PlayerHealth.");
@@ -47,6 +60,17 @@ public class PlayerDamageReceiver : MonoBehaviour, IDamageable
         lastDamageTime = Time.time;
 
         ApplyDamage(damageData);
+
+        // Solo reproducir si el jugador sigue vivo.
+        if (health != null &&
+            !health.IsDead &&
+            damageAudioSource != null &&
+            damageSound != null)
+        {
+            damageAudioSource.PlayOneShot(
+                damageSound,
+                damageVolume);
+        }
     }
 
     private void ApplyDamage(DamageData damageData)

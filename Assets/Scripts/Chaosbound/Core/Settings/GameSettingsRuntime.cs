@@ -12,6 +12,8 @@ namespace Chaosbound.Core.Settings
 
         public bool IsInitialized => settings != null;
 
+        public event Action<GameSettings> SettingsChanged;
+
         public void Initialize(
             GameSettingsPersistenceService service)
         {
@@ -22,6 +24,8 @@ namespace Chaosbound.Core.Settings
 
             persistenceService = service;
             settings = persistenceService.LoadOrCreateDefaults();
+
+            SettingsChanged?.Invoke(settings);
         }
 
         public void ApplySettings(GameSettings newSettings)
@@ -40,6 +44,8 @@ namespace Chaosbound.Core.Settings
             persistenceService.Save(newSettings);
 
             settings = newSettings;
+
+            SettingsChanged?.Invoke(settings);
         }
 
         public void RestoreDefaults()

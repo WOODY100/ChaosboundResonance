@@ -27,6 +27,14 @@ public sealed class PlayerController :
     [Header("Gravity")]
     [SerializeField] private float gravity = -20f;
 
+    [Header("Dash Audio")]
+    [SerializeField] private AudioClip dashSound;
+
+    [SerializeField, Range(0f, 1f)]
+    private float dashVolume = 0.8f;
+
+    private AudioSource dashAudioSource;
+
     private CharacterController controller;
     private PlayerInputActions inputActions;
 
@@ -54,6 +62,9 @@ public sealed class PlayerController :
 
     private void Awake()
     {
+        dashAudioSource = 
+            GetComponent<AudioSource>();
+
         controller =
             GetComponent<CharacterController>();
 
@@ -368,6 +379,13 @@ public sealed class PlayerController :
         if (damageReceiver != null)
         {
             damageReceiver.IsInvulnerable = true;
+        }
+
+        if (dashAudioSource != null && dashSound != null)
+        {
+            dashAudioSource.PlayOneShot(
+                dashSound,
+                dashVolume);
         }
 
         Vector3 dashDirection =
