@@ -23,6 +23,10 @@ namespace Chaosbound.Core.Audio
             "MusicVolume";
 
         [SerializeField]
+        private string ambienceVolumeParameter =
+            "AmbienceVolume";
+
+        [SerializeField]
         private string effectsVolumeParameter =
             "EffectsVolume";
 
@@ -110,11 +114,13 @@ namespace Chaosbound.Core.Audio
 
             float master = settings.MuteAll ? 0f : settings.MasterVolume;
             float music = settings.MuteAll ? 0f : settings.MusicVolume;
+            float ambience = settings.MuteAll ? 0f : settings.AmbienceVolume;
             float effects = settings.MuteAll ? 0f : settings.EffectsVolume;
             float ui = settings.MuteAll ? 0f : settings.UIVolume;
 
             SetVolume(masterVolumeParameter, master);
             SetVolume(musicVolumeParameter, music);
+            SetVolume(ambienceVolumeParameter, ambience);
             SetVolume(effectsVolumeParameter, effects);
             SetVolume(uiVolumeParameter, ui);
         }

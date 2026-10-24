@@ -13,6 +13,7 @@ namespace Chaosbound.Core.Settings
         // Audio
         public float MasterVolume = 0.8f;
         public float MusicVolume = 0.8f;
+        public float AmbienceVolume = 0.8f;
         public float EffectsVolume = 0.8f;
         public float UIVolume = 0.8f;
         public bool MuteAll = false;
@@ -42,6 +43,9 @@ namespace Chaosbound.Core.Settings
 
                 MusicVolume =
                     settings.MusicVolume,
+
+                AmbienceVolume =
+                    settings.AmbienceVolume,
 
                 EffectsVolume =
                     settings.EffectsVolume,
@@ -75,6 +79,9 @@ namespace Chaosbound.Core.Settings
 
                 MusicVolume =
                     MusicVolume,
+
+                AmbienceVolume =
+                    AmbienceVolume,
 
                 EffectsVolume =
                     EffectsVolume,

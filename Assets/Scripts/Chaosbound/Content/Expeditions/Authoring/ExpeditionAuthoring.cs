@@ -1,3 +1,4 @@
+using Chaosbound.Content.Expeditions.Authoring.Audio;
 using Chaosbound.Content.Expeditions.Authoring.Bosses;
 using Chaosbound.Content.Expeditions.Authoring.Combat;
 using Chaosbound.Content.Expeditions.Authoring.SkillProgression;
@@ -39,6 +40,11 @@ namespace Chaosbound.Content.Expeditions.Authoring
 
         [SerializeField]
         private PresentationAuthoring m_presentation = new();
+
+        [Header("Audio")]
+
+        [SerializeField]
+        private ExpeditionAudioAuthoring m_audio = new();
 
         [Header("World")]
 
@@ -106,6 +112,8 @@ namespace Chaosbound.Content.Expeditions.Authoring
         public IdentityAuthoring Identity => m_identity;
 
         public PresentationAuthoring Presentation => m_presentation;
+
+        public ExpeditionAudioAuthoring Audio => m_audio;
 
         public WorldAuthoring World => m_world;
 

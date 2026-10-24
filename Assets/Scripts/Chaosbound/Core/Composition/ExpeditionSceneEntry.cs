@@ -492,7 +492,9 @@ namespace Chaosbound.Core.Composition
             if (expeditionStartedMessage != null)
                 expeditionStartedMessage.SetActive(false);
 
-            // Resume simulation and expedition time only after the message.
+            // Start the expedition before transitioning into Playing.
+            composition?.StartExpeditionAudio();
+
             if (bootstrapContext != null &&
                 bootstrapContext.GameFlow != null)
             {

@@ -2,6 +2,7 @@ using Chaosbound.Content.Expeditions.Runtime.Configs;
 using Chaosbound.Content.Expeditions.Runtime.Minimap;
 using Chaosbound.Content.Expeditions.Runtime.World;
 using Chaosbound.Content.Portal.Exit;
+using Chaosbound.Gameplay.ExpeditionRuntime.Audio;
 using Chaosbound.Gameplay.ExpeditionRuntime.Runtime;
 using Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Config;
 using Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Coordinates;
@@ -101,6 +102,26 @@ namespace Chaosbound.Core.Composition
             if (sceneContext == null)
                 throw new InvalidOperationException(
                     "ExpeditionSceneContext is required before initializing an expedition.");
+        }
+
+        public void StartExpeditionAudio()
+        {
+            ExpeditionAudioController audioController =
+                sceneContext.ExpeditionAudioController;
+
+            if (audioController == null)
+            {
+                throw new InvalidOperationException(
+                    "ExpeditionAudioController is missing.");
+            }
+
+            if (runtimeConfig.Audio == null)
+            {
+                throw new InvalidOperationException(
+                    "RuntimeExpeditionAudioConfig is missing.");
+            }
+
+            audioController.Initialize(runtimeConfig.Audio);
         }
 
         #endregion
@@ -594,12 +615,34 @@ namespace Chaosbound.Core.Composition
             // Reserved for future initialization completion logic.
         }
 
+        private void InitializeAudio()
+        {
+            ExpeditionAudioController audioController =
+                sceneContext.ExpeditionAudioController;
+
+            if (audioController == null)
+            {
+                throw new InvalidOperationException(
+                    "ExpeditionAudioController is missing.");
+            }
+
+            if (runtimeConfig.Audio == null)
+            {
+                throw new InvalidOperationException(
+                    "RuntimeExpeditionAudioConfig is missing.");
+            }
+
+            audioController.Initialize(runtimeConfig.Audio);
+        }
+
         #endregion
 
         public void Cleanup()
         {
             skillEvolutionManager?.Cleanup();
             skillEvolutionManager = null;
+
+            sceneContext?.ExpeditionAudioController?.StopAudio();
         }
     }
 }

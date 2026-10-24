@@ -79,6 +79,13 @@ public class StormfallStrike : PooledBehaviour, IAreaStrike
 
     private IEnumerator StrikeRoutine()
     {
+        if (skill != null &&
+            SkillAudioPlayer.Instance != null)
+        {
+            SkillAudioPlayer.Instance.PlaySkillEvent(
+                skill.Definition.AudioDefinition);
+        }
+
         ApplyDamage();
 
         yield return new WaitForSeconds(beamLifetime);
@@ -86,9 +93,8 @@ public class StormfallStrike : PooledBehaviour, IAreaStrike
         if (lightningImpact != null)
             lightningImpact.SetActive(false);
 
-        float remainingLifetime = Mathf.Max(
-            0f,
-            totalLifetime - beamLifetime);
+        float remainingLifetime =
+            Mathf.Max(0f, totalLifetime - beamLifetime);
 
         yield return new WaitForSeconds(remainingLifetime);
 

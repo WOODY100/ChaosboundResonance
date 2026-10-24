@@ -1,3 +1,4 @@
+using Chaosbound.Content.Expeditions.Definitions.Audio;
 using Chaosbound.Content.Expeditions.Definitions.Bosses;
 using Chaosbound.Content.Expeditions.Definitions.Combat;
 using Chaosbound.Content.Expeditions.Definitions.SkillProgression;
@@ -36,6 +37,11 @@ namespace Chaosbound.Content.Expeditions.Definitions
         /// Gets the presentation configuration.
         /// </summary>
         public PresentationDefinition Presentation { get; }
+
+        /// <summary>
+        /// Gets the audio configuration.
+        /// </summary>
+        public ExpeditionAudioDefinition Audio { get; }
 
         /// <summary>
         /// Gets the world generation configuration.
@@ -101,6 +107,7 @@ namespace Chaosbound.Content.Expeditions.Definitions
             SceneDefinition scene,
             IdentityDefinition identity,
             PresentationDefinition presentation,
+            ExpeditionAudioDefinition audio,
             WorldDefinition world,
             EnemyDefinition enemy,
             SpawnDefinition spawn,
@@ -122,6 +129,9 @@ namespace Chaosbound.Content.Expeditions.Definitions
 
             if (presentation == null)
                 throw new ArgumentNullException(nameof(presentation));
+
+            if (audio == null)
+                throw new ArgumentNullException(nameof(audio));
 
             if (world == null)
                 throw new ArgumentNullException(nameof(world));
@@ -162,6 +172,7 @@ namespace Chaosbound.Content.Expeditions.Definitions
             Scene = scene;
             Identity = identity;
             Presentation = presentation;
+            Audio = audio;
             World = world;
             Enemy = enemy;
             Spawn = spawn;

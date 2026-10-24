@@ -1,3 +1,4 @@
+using Chaosbound.Content.Expeditions.Runtime.Audio;
 using Chaosbound.Content.Expeditions.Runtime.Bosses;
 using Chaosbound.Content.Expeditions.Runtime.Combat;
 using Chaosbound.Content.Expeditions.Runtime.Completion;
@@ -21,6 +22,8 @@ namespace Chaosbound.Content.Expeditions.Runtime.Configs
     /// </summary>
     public sealed class RuntimeExpeditionConfig
     {
+        public RuntimeExpeditionAudioConfig Audio { get; }
+
         public RuntimeSceneConfig Scene { get; }
 
         public RuntimeWorldConfig World { get; }
@@ -63,7 +66,8 @@ namespace Chaosbound.Content.Expeditions.Runtime.Configs
             RuntimeRewardsConfig rewards,
             RuntimeCompletionConfig completion,
             RuntimeMinimapConfig minimap,
-            IdentityDefinition identity)
+            IdentityDefinition identity,
+            RuntimeExpeditionAudioConfig audio)
         {
             Scene = scene ?? throw new ArgumentNullException(nameof(scene));
             World = world ?? throw new ArgumentNullException(nameof(world));
@@ -79,6 +83,7 @@ namespace Chaosbound.Content.Expeditions.Runtime.Configs
             Completion = completion ?? throw new ArgumentNullException(nameof(completion));
             Minimap = minimap ?? throw new ArgumentNullException(nameof(minimap));
             Identity = identity ?? throw new ArgumentNullException(nameof(identity));
+            Audio = audio ?? throw new ArgumentNullException(nameof(audio));
         }
     }
 }

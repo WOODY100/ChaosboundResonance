@@ -33,6 +33,16 @@ public class SkillDefinition : ScriptableObject
     public GameObject ExecutorPrefab;    // El executor lógico
 
     // =========================
+    // AUDIO
+    // =========================
+    [Header("Audio")]
+    [SerializeField]
+    private SkillAudioDefinition audioDefinition;
+
+    public SkillAudioDefinition AudioDefinition =>
+        audioDefinition;
+
+    // =========================
     // BASE STATS
     // =========================
     [Header("Base Stats")]

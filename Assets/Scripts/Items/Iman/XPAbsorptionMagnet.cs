@@ -7,6 +7,10 @@ public sealed class XPAbsorptionMagnet : AutoPickupBehaviour
     public const string ContentId =
         "xp_absorption_magnet";
 
+    [Header("Audio")]
+    [SerializeField]
+    private PowerUpAudioDefinition audioDefinition;
+
     protected override float GetPickupRadius()
     {
         return GetPlayerPickupRadius();
@@ -43,6 +47,21 @@ public sealed class XPAbsorptionMagnet : AutoPickupBehaviour
             fragment.Attract();
         }
 
+        PlayPickupAudio();
+
         ReturnToPool();
+    }
+
+    private void PlayPickupAudio()
+    {
+        if (audioDefinition == null)
+            return;
+
+        if (GameplayAudioPlayer.Instance == null)
+            return;
+
+        GameplayAudioPlayer.Instance.PlayOneShot(
+            audioDefinition.PickupClip,
+            audioDefinition.PickupVolume);
     }
 }

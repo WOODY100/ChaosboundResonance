@@ -1,3 +1,4 @@
+using Chaosbound.Content.Expeditions.Definitions.Audio;
 using Chaosbound.Content.Expeditions.Definitions.ExpeditionEvents;
 using Chaosbound.Content.Expeditions.Definitions.Minimap;
 using Chaosbound.Content.Expeditions.Definitions.Rewards;
@@ -7,6 +8,7 @@ using Chaosbound.Content.Expeditions.Definitions.Timeline;
 using Chaosbound.Content.Expeditions.Definitions.World;
 using Chaosbound.Content.Expeditions.Directors.Timeline;
 using Chaosbound.Content.Expeditions.Requests;
+using Chaosbound.Content.Expeditions.Runtime.Audio;
 using Chaosbound.Content.Expeditions.Runtime.Bosses;
 using Chaosbound.Content.Expeditions.Runtime.Combat;
 using Chaosbound.Content.Expeditions.Runtime.Completion;
@@ -59,6 +61,7 @@ namespace Chaosbound.Content.Expeditions.Runtime.Builders
             RuntimeRewardsConfig rewards = BuildRewards(request.Definition.Rewards);
             RuntimeCompletionConfig completion = runtimeCompletionBuilder.BuildCompletion(request.Definition.Completion);
             RuntimeMinimapConfig minimap = BuildMinimap(request.Definition.Minimap);
+            RuntimeExpeditionAudioConfig audio = new RuntimeExpeditionAudioConfig(request.Definition.Audio);
 
             // Assemble runtime.
             RuntimeExpeditionConfig runtimeConfig =
@@ -76,7 +79,8 @@ namespace Chaosbound.Content.Expeditions.Runtime.Builders
                     rewards,
                     completion,
                     minimap,
-                    request.Definition.Identity);
+                    request.Definition.Identity,
+                    audio);
 
             return runtimeConfig;
         }

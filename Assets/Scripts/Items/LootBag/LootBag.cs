@@ -16,6 +16,14 @@ public sealed class LootBag : PooledBehaviour
     [SerializeField, Min(0f)]
     private float openDelay = 2f;
 
+    [Header("Audio")]
+
+    [SerializeField]
+    private AudioClip openClip;
+
+    [SerializeField, Range(0f, 1f)]
+    private float openVolume = 1f;
+
     private Coroutine openRoutine;
     private bool isOpened;
     private bool isInitialized;
@@ -127,6 +135,13 @@ public sealed class LootBag : PooledBehaviour
         }
 
         isOpened = true;
+
+        if (GameplayAudioPlayer.Instance != null)
+        {
+            GameplayAudioPlayer.Instance.PlayOneShot(
+                openClip,
+                openVolume);
+        }
 
         PendingLoot pendingLoot =
             new PendingLoot(

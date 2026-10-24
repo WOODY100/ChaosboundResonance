@@ -15,6 +15,8 @@ namespace Chaosbound.Core.Settings
 
         public float MusicVolume { get; set; } = 0.8f;
 
+        public float AmbienceVolume { get; set; } = 0.8f;
+
         public float EffectsVolume { get; set; } = 0.8f;
 
         public float UIVolume { get; set; } = 0.8f;

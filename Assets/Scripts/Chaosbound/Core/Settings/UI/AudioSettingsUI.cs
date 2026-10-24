@@ -11,6 +11,7 @@ namespace Chaosbound.Core.Settings.UI
         [Header("Volume Sliders")]
         [SerializeField] private Slider masterVolumeSlider;
         [SerializeField] private Slider musicVolumeSlider;
+        [SerializeField] private Slider ambienceVolumeSlider;
         [SerializeField] private Slider effectsVolumeSlider;
         [SerializeField] private Slider uiVolumeSlider;
 
@@ -48,6 +49,9 @@ namespace Chaosbound.Core.Settings.UI
 
             SetSliderWithoutNotify(
                 musicVolumeSlider, settings.MusicVolume);
+
+            SetSliderWithoutNotify( 
+                ambienceVolumeSlider, settings.AmbienceVolume);
 
             SetSliderWithoutNotify(
                 effectsVolumeSlider, settings.EffectsVolume);
@@ -99,6 +103,9 @@ namespace Chaosbound.Core.Settings.UI
 
                 MusicVolume = GetSliderValue(
                     musicVolumeSlider, current.MusicVolume),
+
+                AmbienceVolume = GetSliderValue(
+                    ambienceVolumeSlider, current.AmbienceVolume),
 
                 EffectsVolume = GetSliderValue(
                     effectsVolumeSlider, current.EffectsVolume),
@@ -161,6 +168,7 @@ namespace Chaosbound.Core.Settings.UI
 
                 MasterVolume = 0.8f,
                 MusicVolume = 0.8f,
+                AmbienceVolume = 0.8f,
                 EffectsVolume = 0.8f,
                 UIVolume = 0.8f,
                 MuteAll = false

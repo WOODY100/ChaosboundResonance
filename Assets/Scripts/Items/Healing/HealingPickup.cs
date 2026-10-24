@@ -1,3 +1,4 @@
+
 using UnityEngine;
 
 public sealed class HealingPickup : AutoPickupBehaviour
@@ -8,6 +9,10 @@ public sealed class HealingPickup : AutoPickupBehaviour
     [Header("Healing")]
     [SerializeField]
     private float healAmount = 25f;
+
+    [Header("Audio")]
+    [SerializeField]
+    private PowerUpAudioDefinition audioDefinition;
 
     protected override float GetPickupRadius()
     {
@@ -37,12 +42,25 @@ public sealed class HealingPickup : AutoPickupBehaviour
         if (previousHealth >= maxHealth)
             return;
 
-        playerHealth.Heal(
-            healAmount);
+        playerHealth.Heal(healAmount);
 
         if (playerHealth.CurrentHealth > previousHealth)
         {
+            PlayPickupAudio();
             ReturnToPool();
         }
+    }
+
+    private void PlayPickupAudio()
+    {
+        if (audioDefinition == null)
+            return;
+
+        if (GameplayAudioPlayer.Instance == null)
+            return;
+
+        GameplayAudioPlayer.Instance.PlayOneShot(
+            audioDefinition.PickupClip,
+            audioDefinition.PickupVolume);
     }
 }

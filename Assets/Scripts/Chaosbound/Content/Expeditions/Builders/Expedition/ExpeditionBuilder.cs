@@ -1,5 +1,6 @@
 using Chaosbound.Content.Expeditions.Assets;
 using Chaosbound.Content.Expeditions.Authoring;
+using Chaosbound.Content.Expeditions.Builders.Audio;
 using Chaosbound.Content.Expeditions.Builders.Bosses;
 using Chaosbound.Content.Expeditions.Builders.Combat;
 using Chaosbound.Content.Expeditions.Builders.SkillProgression;
@@ -15,6 +16,7 @@ using Chaosbound.Content.Expeditions.Builders.Scene;
 using Chaosbound.Content.Expeditions.Builders.Spawn;
 using Chaosbound.Content.Expeditions.Builders.Timeline;
 using Chaosbound.Content.Expeditions.Builders.World;
+using Chaosbound.Content.Expeditions.Definitions.Audio;
 using Chaosbound.Content.Expeditions.Definitions;
 using Chaosbound.Content.Expeditions.Definitions.Bosses;
 using Chaosbound.Content.Expeditions.Definitions.Combat;
@@ -61,6 +63,9 @@ namespace Chaosbound.Content.Expeditions.Builders.Expedition
             PresentationDefinition presentation =
                 PresentationBuilder.Build(authoring.Presentation);
 
+            ExpeditionAudioDefinition audio =
+                ExpeditionAudioBuilder.Build(authoring.Audio);
+
             WorldDefinition world =
                 WorldBuilder.Build(authoring.World);
 
@@ -101,6 +106,7 @@ namespace Chaosbound.Content.Expeditions.Builders.Expedition
                 scene,
                 identity,
                 presentation,
+                audio,
                 world,
                 enemy,
                 spawn,

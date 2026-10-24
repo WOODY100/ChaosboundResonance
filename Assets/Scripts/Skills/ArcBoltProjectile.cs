@@ -104,14 +104,23 @@ public class ArcBoltProjectile : PooledBehaviour, IProjectile
         remainingPenetration = skill.Stats.PenetrationCount;
 
         initialized = true;
+
+        // Play the skill audio when the projectile is fired.
+        if (SkillAudioPlayer.Instance != null)
+        {
+            SkillAudioPlayer.Instance.PlaySkillEvent(
+                skill.Definition.AudioDefinition);
+        }
     }
+
 
     private void OnTriggerEnter(Collider other)
     {
         if (!initialized || hasImpacted)
             return;
 
-        IDamageable damageable = other.GetComponentInParent<IDamageable>();
+        IDamageable damageable =
+            other.GetComponentInParent<IDamageable>();
 
         if (damageable == null || damageable.IsDead)
             return;
@@ -132,6 +141,7 @@ public class ArcBoltProjectile : PooledBehaviour, IProjectile
         SpawnImpactVFX(hitPoint);
         ReturnToPool();
     }
+
 
     private void SpawnImpactVFX(Vector3 hitPoint)
     {

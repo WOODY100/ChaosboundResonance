@@ -1,3 +1,4 @@
+using Chaosbound.Gameplay.ExpeditionRuntime.Audio;
 using Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Config;
 using Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Markers;
 using Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Rendering;
@@ -115,6 +116,15 @@ namespace Chaosbound.Core.Composition
         private RectTransform minimapMapContent;
 
         //==========================================================
+        // Audio
+        //==========================================================
+
+        [Header("Audio")]
+
+        [SerializeField]
+        private ExpeditionAudioController expeditionAudioController;
+
+        //==========================================================
         // Public Properties
         //==========================================================
 
@@ -194,6 +204,11 @@ namespace Chaosbound.Core.Composition
 
         public RectTransform MinimapMapContent =>
             minimapMapContent;
+
+        // Audio
+
+        public ExpeditionAudioController ExpeditionAudioController =>
+            expeditionAudioController;
 
         //==========================================================
         // Unity
