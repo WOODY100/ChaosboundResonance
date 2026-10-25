@@ -117,16 +117,14 @@ namespace Chaosbound.Core.GameFlow
             // Stats
             //======================================================
 
-            if (current == GameFlowContext.Pause &&
-                requested == GameFlowContext.Stats)
+            if (requested == GameFlowContext.Stats)
             {
-                return GameFlowTransitionDecision.Push;
-            }
-
-            if (current == GameFlowContext.Inventory &&
-                requested == GameFlowContext.Stats)
-            {
-                return GameFlowTransitionDecision.Push;
+                if (current == GameFlowContext.Playing ||
+                    current == GameFlowContext.Pause ||
+                    current == GameFlowContext.Inventory)
+                {
+                    return GameFlowTransitionDecision.Push;
+                }
             }
 
             //======================================================

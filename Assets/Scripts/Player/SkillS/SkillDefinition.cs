@@ -89,6 +89,15 @@ public class SkillDefinition : ScriptableObject
 
     public IReadOnlyList<SkillEvolutionDefinition> Evolutions => evolutions;
 
+    // =========================
+    // EXECUTION PATTERN
+    // =========================
+    [Header("Execution Pattern")]
+    [Tooltip(
+        "Optional configuration for the skill's execution pattern. " +
+        "A null value preserves the executor's existing behavior.")]
+    public SkillExecutionPatternDefinition ExecutionPattern;
+
     private void OnValidate()
     {
         possibleModifiers ??= new List<SkillModifierDefinition>();

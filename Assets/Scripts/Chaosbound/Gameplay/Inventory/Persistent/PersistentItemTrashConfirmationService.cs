@@ -83,11 +83,6 @@ namespace Chaosbound.Gameplay.Inventory.Persistent
                 state.Items.TryRemove(
                     pendingItem);
 
-            UnityEngine.Debug.Log(
-                $"PersistentItemTrashConfirmationService: " +
-                $"Remove result = {removed}, " +
-                $"Item = {pendingItem.InstanceId}");
-
             if (!removed)
                 return false;
 

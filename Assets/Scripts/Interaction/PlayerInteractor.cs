@@ -20,6 +20,10 @@ public sealed class PlayerInteractor : MonoBehaviour
             return;
         }
 
+        Debug.Log(
+            $"[PlayerInteractor] Detected: {interactable}",
+            other);
+
         if (currentInteractable == interactable)
         {
             return;
@@ -47,10 +51,16 @@ public sealed class PlayerInteractor : MonoBehaviour
 
     public void TryInteract()
     {
+        Debug.Log(
+            $"[PlayerInteractor] TryInteract. CanInteract = {CanInteract}",
+            this);
+
         if (!CanInteract)
-        {
             return;
-        }
+
+        Debug.Log(
+            $"[PlayerInteractor] Calling Interact on {currentInteractable}",
+            this);
 
         currentInteractable.Interact(this);
     }

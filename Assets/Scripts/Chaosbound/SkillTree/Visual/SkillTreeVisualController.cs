@@ -707,6 +707,22 @@ public sealed class SkillTreeVisualController : MonoBehaviour
         RefreshSkillPoints();
     }
 
+    public void OpenSkillTree()
+    {
+        if (skillTreeWindow == null)
+        {
+            Debug.LogError(
+                "[SkillTreeVisualController] " +
+                "SkillTreeWindow is not assigned.",
+                this);
+
+            return;
+        }
+
+        skillTreeWindow.SetActive(true);
+        Build();
+    }
+
     private void OnDestroy()
     {
         if (nodeDetailsView != null)

@@ -1042,12 +1042,6 @@ namespace Chaosbound.Gameplay.Inventory.UI
 
             bool requested =
                 confirmationService.Request(item);
-
-            if (requested)
-            {
-                UnityEngine.Debug.Log(
-                    $"Inventory trash confirmation requested: {item.InstanceId}");
-            }
         }
 
         // =========================================================

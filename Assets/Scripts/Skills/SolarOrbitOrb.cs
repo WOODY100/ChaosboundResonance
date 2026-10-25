@@ -17,6 +17,7 @@ public class SolarOrbitOrb : PooledBehaviour, IOrbital
 
     private RuntimeSkill skill;
     private Transform owner;
+    private OrbitalPatternDefinition pattern;
     private System.Action onFinished;
     private Rigidbody rb;
 
@@ -28,6 +29,7 @@ public class SolarOrbitOrb : PooledBehaviour, IOrbital
     private float duration;
     private float radius;
     private float angularSpeed;
+    private float activeOrbitHeight;
     private bool finished;
     private Vector3 smoothedCenter;
 
@@ -45,6 +47,7 @@ public class SolarOrbitOrb : PooledBehaviour, IOrbital
     public void Initialize(
         RuntimeSkill runtimeSkill,
         Transform orbitOwner,
+        OrbitalPatternDefinition orbitalPattern,
         float startAngle,
         System.Action onOrbitFinished)
     {
@@ -66,38 +69,67 @@ public class SolarOrbitOrb : PooledBehaviour, IOrbital
 
         skill = runtimeSkill;
         owner = orbitOwner;
+        pattern = orbitalPattern;
         onFinished = onOrbitFinished;
 
         finished = false;
-
         currentAngle = startAngle;
 
-        radius = Mathf.Max(0.1f, skill.Stats.FinalRange);
         duration = Mathf.Max(0.01f, skill.Stats.FinalDuration);
         damage = Mathf.Max(0f, skill.Stats.FinalDamage);
 
+        // Without a pattern, preserve the original orbital behavior.
+        if (pattern == null)
+        {
+            radius = Mathf.Max(0.1f, skill.Stats.FinalRange);
+            activeOrbitHeight = orbitHeight;
+            angularSpeed = CalculateAttackSpeed(baseAngularSpeed);
+        }
+        else
+        {
+            radius = Mathf.Max(0.1f, pattern.OrbitRadius);
+            activeOrbitHeight = pattern.OrbitHeight;
+
+            if (pattern.Pattern == OrbitalPatternType.Orbit)
+            {
+                angularSpeed = pattern.RotateWithAttackSpeed
+                    ? CalculateAttackSpeed(pattern.AngularSpeed)
+                    : pattern.AngularSpeed;
+            }
+            else
+            {
+                angularSpeed = 0f;
+            }
+        }
+
         chaosAxis = Random.onUnitSphere;
-        chaosSpeed = chaosBaseSpeed + Random.Range(-chaosVariation, chaosVariation);
+        chaosSpeed = chaosBaseSpeed
+            + Random.Range(-chaosVariation, chaosVariation);
 
         smoothedCenter = owner.position;
+        lifetime = 0f;
+    }
 
-        float attackSpeedMultiplier = 1f;
+    private float CalculateAttackSpeed(float baseSpeed)
+    {
+        float multiplier = 1f;
 
-        if (skill.Definition.ScalesWithAttackSpeed)
+        if (skill != null &&
+            skill.Definition != null &&
+            skill.Definition.ScalesWithAttackSpeed)
         {
             PlayerModifierSystem modifierSystem =
                 owner.GetComponent<PlayerModifierSystem>();
 
             if (modifierSystem != null)
             {
-                attackSpeedMultiplier = Mathf.Max(
+                multiplier = Mathf.Max(
                     0.05f,
                     modifierSystem.GetStat(StatType.AttackSpeed));
             }
         }
 
-        angularSpeed = baseAngularSpeed * attackSpeedMultiplier;
-        lifetime = 0f;
+        return baseSpeed * multiplier;
     }
 
     private void Update()
@@ -113,13 +145,12 @@ public class SolarOrbitOrb : PooledBehaviour, IOrbital
         if (lifetime >= duration)
         {
             FinishOrbit();
-            return;
         }
     }
 
     private void LateUpdate()
     {
-        if (owner == null)
+        if (owner == null || finished)
             return;
 
         smoothedCenter = Vector3.Lerp(
@@ -128,26 +159,32 @@ public class SolarOrbitOrb : PooledBehaviour, IOrbital
             15f * Time.deltaTime
         );
 
-        RotateAroundOwner(smoothedCenter);
+        UpdateFormation(smoothedCenter);
         RotateChaotic();
     }
 
-    private void RotateAroundOwner(Vector3 center)
+    private void UpdateFormation(Vector3 center)
     {
-        currentAngle += angularSpeed * Time.deltaTime;
+        // Orbit rotates continuously. FixedRing and ForwardArc
+        // preserve their assigned angle relative to the world.
+        if (pattern == null ||
+            pattern.Pattern == OrbitalPatternType.Orbit)
+        {
+            currentAngle += angularSpeed * Time.deltaTime;
+        }
 
-        float rad = currentAngle * Mathf.Deg2Rad;
+        float radians = currentAngle * Mathf.Deg2Rad;
 
         Vector3 offset = new Vector3(
-            Mathf.Cos(rad),
+            Mathf.Cos(radians),
             0f,
-            Mathf.Sin(rad)
+            Mathf.Sin(radians)
         ) * radius;
 
-        Vector3 orbitPosition = center + offset;
-        orbitPosition.y += orbitHeight;
+        Vector3 position = center + offset;
+        position.y += activeOrbitHeight;
 
-        transform.position = orbitPosition;
+        transform.position = position;
     }
 
     private void RotateChaotic()
@@ -173,13 +210,13 @@ public class SolarOrbitOrb : PooledBehaviour, IOrbital
         if (skill == null || owner == null)
             return;
 
-        IDamageable damageable = other.GetComponentInParent<IDamageable>();
+        IDamageable damageable =
+            other.GetComponentInParent<IDamageable>();
 
         if (damageable == null || damageable.IsDead)
             return;
 
-        damageable.TakeDamage(new DamageData(
-            damage));
+        damageable.TakeDamage(new DamageData(damage));
     }
 
     private void FinishOrbit()
@@ -189,8 +226,10 @@ public class SolarOrbitOrb : PooledBehaviour, IOrbital
 
         finished = true;
 
-        onFinished?.Invoke();
+        System.Action callback = onFinished;
         onFinished = null;
+
+        callback?.Invoke();
 
         ReturnToPool();
     }
@@ -199,6 +238,7 @@ public class SolarOrbitOrb : PooledBehaviour, IOrbital
     {
         skill = null;
         owner = null;
+        pattern = null;
         onFinished = null;
 
         finished = false;
@@ -211,6 +251,7 @@ public class SolarOrbitOrb : PooledBehaviour, IOrbital
         duration = 0f;
         radius = 0f;
         angularSpeed = 0f;
+        activeOrbitHeight = 0f;
         smoothedCenter = Vector3.zero;
 
         transform.localRotation = Quaternion.identity;

@@ -1,5 +1,6 @@
-﻿using UnityEngine;
+﻿
 using System.Collections.Generic;
+using UnityEngine;
 
 public class ProjectileExecutor : MonoBehaviour, ISkillExecutor
 {
@@ -7,22 +8,42 @@ public class ProjectileExecutor : MonoBehaviour, ISkillExecutor
     private Transform owner;
     private PlayerModifierSystem modifierSystem;
 
-    private bool isExecuting = false;
+    private bool isExecuting;
 
     private static readonly Collider[] hitBuffer =
         new Collider[32];
 
     private readonly List<Transform> availableTargets =
-        new();
+        new List<Transform>();
 
     private readonly List<GameObject> activeProjectiles =
-        new();
+        new List<GameObject>();
+
+    private ProjectilePatternDefinition Pattern
+    {
+        get
+        {
+            if (skill == null || skill.Definition == null)
+                return null;
+
+            return skill.Definition.ExecutionPattern
+                as ProjectilePatternDefinition;
+        }
+    }
 
     public void Initialize(
         RuntimeSkill runtimeSkill,
         Transform skillOwner)
     {
         ResetExecutor();
+
+        if (runtimeSkill == null || skillOwner == null)
+        {
+            Debug.LogError(
+                "ProjectileExecutor requires a RuntimeSkill and an owner.",
+                this);
+            return;
+        }
 
         skill = runtimeSkill;
         owner = skillOwner;
@@ -33,7 +54,9 @@ public class ProjectileExecutor : MonoBehaviour, ISkillExecutor
         if (modifierSystem == null)
         {
             Debug.LogError(
-                $"ProjectileExecutor could not find PlayerModifierSystem on '{owner.name}'.");
+                "ProjectileExecutor could not find PlayerModifierSystem " +
+                "on '" + owner.name + "'.",
+                this);
         }
     }
 
@@ -46,14 +69,12 @@ public class ProjectileExecutor : MonoBehaviour, ISkillExecutor
 
         skill.TickCooldown(deltaTime);
 
-        if (isExecuting)
-            return;
-
-        if (skill.IsOnCooldown)
+        if (isExecuting || skill.IsOnCooldown)
             return;
 
         Execute();
 
+        // Preserve existing immediate-cooldown behavior.
         if (!skill.Definition.CooldownStartsAfterDuration)
         {
             skill.StartCooldown(
@@ -63,29 +84,60 @@ public class ProjectileExecutor : MonoBehaviour, ISkillExecutor
 
     private void Execute()
     {
+        ProjectilePatternDefinition pattern = Pattern;
+
+        // A missing pattern preserves the original behavior.
+        ProjectilePatternType patternType =
+            pattern != null
+                ? pattern.Pattern
+                : ProjectilePatternType.TargetNearest;
+
+        switch (patternType)
+        {
+            case ProjectilePatternType.TargetNearest:
+                ExecuteTargetNearest();
+                break;
+
+            case ProjectilePatternType.Fan:
+                ExecuteDirectionalPattern(
+                    pattern,
+                    ProjectilePatternType.Fan);
+                break;
+
+            case ProjectilePatternType.Radial:
+                ExecuteDirectionalPattern(
+                    pattern,
+                    ProjectilePatternType.Radial);
+                break;
+
+            case ProjectilePatternType.RandomSpread:
+                ExecuteDirectionalPattern(
+                    pattern,
+                    ProjectilePatternType.RandomSpread);
+                break;
+
+            case ProjectilePatternType.FixedDirection:
+                ExecuteDirectionalPattern(
+                    pattern,
+                    ProjectilePatternType.FixedDirection);
+                break;
+
+            default:
+                ExecuteTargetNearest();
+                break;
+        }
+    }
+
+    // =========================================================
+    // TARGET NEAREST
+    // Preserves the original target-based behavior.
+    // =========================================================
+
+    private void ExecuteTargetNearest()
+    {
         isExecuting = true;
 
-        int hits = Physics.OverlapSphereNonAlloc(
-            owner.position,
-            skill.Stats.FinalRange,
-            hitBuffer,
-            LayerMask.GetMask("Enemy")
-        );
-
-        if (hits == 0)
-        {
-            isExecuting = false;
-            return;
-        }
-
-        availableTargets.Clear();
-
-        for (int i = 0; i < hits; i++)
-        {
-            if (hitBuffer[i] != null)
-                availableTargets.Add(
-                    hitBuffer[i].transform);
-        }
+        FindAvailableTargets();
 
         if (availableTargets.Count == 0)
         {
@@ -93,31 +145,67 @@ public class ProjectileExecutor : MonoBehaviour, ISkillExecutor
             return;
         }
 
-        int projectilesToFire =
-            Mathf.Min(
-                skill.Stats.FinalCount,
-                availableTargets.Count);
+        int projectileCount = Mathf.Min(
+            Mathf.Max(0, skill.Stats.FinalCount),
+            availableTargets.Count);
 
-        for (int i = 0; i < projectilesToFire; i++)
+        for (int i = 0; i < projectileCount; i++)
         {
             Transform target =
-                GetClosestTarget(
-                    availableTargets);
+                GetClosestTarget(availableTargets);
 
             if (target == null)
                 break;
 
-            FireProjectile(target);
+            Vector3 direction =
+                target.position - owner.position;
+
+            if (direction.sqrMagnitude > 0.0001f)
+                FireProjectile(direction.normalized);
 
             availableTargets.Remove(target);
         }
 
         isExecuting = false;
 
-        if (skill.Definition.CooldownStartsAfterDuration)
+        StartDeferredCooldownIfNeeded();
+    }
+
+    private void FindAvailableTargets()
+    {
+        availableTargets.Clear();
+
+        int hits = Physics.OverlapSphereNonAlloc(
+            owner.position,
+            skill.Stats.FinalRange,
+            hitBuffer,
+            LayerMask.GetMask("Enemy"));
+
+        for (int i = 0; i < hits; i++)
         {
-            skill.StartCooldown(
-                skill.Stats.FinalCooldown);
+            Collider hit = hitBuffer[i];
+
+            if (hit == null)
+                continue;
+
+            IDamageable damageable =
+                hit.GetComponentInParent<IDamageable>();
+
+            if (damageable == null || damageable.IsDead)
+                continue;
+
+            // Use the damageable component's transform so that
+            // multiple colliders on one enemy do not duplicate it.
+            Component targetComponent =
+                damageable as Component;
+
+            if (targetComponent == null)
+                continue;
+
+            Transform target = targetComponent.transform;
+
+            if (!availableTargets.Contains(target))
+                availableTargets.Add(target);
         }
     }
 
@@ -125,7 +213,7 @@ public class ProjectileExecutor : MonoBehaviour, ISkillExecutor
         List<Transform> targets)
     {
         Transform closest = null;
-        float closestDist = float.MaxValue;
+        float closestDistance = float.MaxValue;
 
         foreach (Transform target in targets)
         {
@@ -133,12 +221,11 @@ public class ProjectileExecutor : MonoBehaviour, ISkillExecutor
                 continue;
 
             float distance =
-                (target.position - owner.position)
-                .sqrMagnitude;
+                (target.position - owner.position).sqrMagnitude;
 
-            if (distance < closestDist)
+            if (distance < closestDistance)
             {
-                closestDist = distance;
+                closestDistance = distance;
                 closest = target;
             }
         }
@@ -146,34 +233,227 @@ public class ProjectileExecutor : MonoBehaviour, ISkillExecutor
         return closest;
     }
 
-    private void FireProjectile(Transform target)
-    {
-        Vector3 direction =
-            (target.position - owner.position).normalized;
+    // =========================================================
+    // CONFIGURABLE DIRECTIONAL PATTERNS
+    // These patterns can fire without nearby enemies.
+    // =========================================================
 
-        GameObject projectileObj =
+    private void ExecuteDirectionalPattern(
+        ProjectilePatternDefinition pattern,
+        ProjectilePatternType patternType)
+    {
+        if (pattern == null)
+        {
+            ExecuteTargetNearest();
+            return;
+        }
+
+        int count = Mathf.Max(0, skill.Stats.FinalCount);
+
+        if (count == 0)
+            return;
+
+        isExecuting = true;
+
+        Vector3 baseDirection = GetBaseDirection(pattern);
+
+        Debug.Log(
+            $"[ProjectilePattern] Pattern={patternType}, " +
+            $"OwnerForward={owner.forward}, " +
+            $"BaseDirection={baseDirection}, " +
+            $"Count={count}, " +
+            $"Spread={pattern.SpreadAngle}");
+
+        for (int i = 0; i < count; i++)
+        {
+            Vector3 direction = GetPatternDirection(
+                pattern,
+                patternType,
+                baseDirection,
+                i,
+                count);
+
+            if (direction.sqrMagnitude > 0.0001f)
+                FireProjectile(direction.normalized);
+
+            Debug.Log(
+            $"[ProjectilePattern] Projectile {i + 1}/{count}: " +
+            $"Direction={direction}");
+        }
+
+        isExecuting = false;
+
+        StartDeferredCooldownIfNeeded();
+    }
+
+    private Vector3 GetBaseDirection(
+        ProjectilePatternDefinition pattern)
+    {
+        if (pattern.AimAtNearestTarget)
+        {
+            FindAvailableTargets();
+
+            Transform target =
+                GetClosestTarget(availableTargets);
+
+            if (target != null)
+            {
+                Vector3 toTarget =
+                    target.position - owner.position;
+
+                // Directional patterns operate on the horizontal plane.
+                toTarget.y = 0f;
+
+                if (toTarget.sqrMagnitude > 0.0001f)
+                    return toTarget.normalized;
+            }
+        }
+
+        Vector3 forward = owner.forward;
+        forward.y = 0f;
+
+        if (forward.sqrMagnitude < 0.0001f)
+            forward = Vector3.forward;
+
+        return forward.normalized;
+    }
+
+    private Vector3 GetPatternDirection(
+        ProjectilePatternDefinition pattern,
+        ProjectilePatternType patternType,
+        Vector3 baseDirection,
+        int index,
+        int count)
+    {
+        switch (patternType)
+        {
+            case ProjectilePatternType.Fan:
+                {
+                    float angle = 0f;
+
+                    if (count > 1)
+                    {
+                        float step =
+                            pattern.SpreadAngle / (count - 1);
+
+                        angle =
+                            -pattern.SpreadAngle * 0.5f +
+                            step * index;
+                    }
+
+                    return Quaternion.AngleAxis(
+                        angle,
+                        Vector3.up) * baseDirection;
+                }
+
+            case ProjectilePatternType.Radial:
+                {
+                    float angle = 360f * index / count;
+
+                    return Quaternion.AngleAxis(
+                        angle,
+                        Vector3.up) * baseDirection;
+                }
+
+            case ProjectilePatternType.RandomSpread:
+                {
+                    float angle = Random.Range(
+                        -pattern.RandomSpreadAngle,
+                        pattern.RandomSpreadAngle);
+
+                    return Quaternion.AngleAxis(
+                        angle,
+                        Vector3.up) * baseDirection;
+                }
+
+            case ProjectilePatternType.FixedDirection:
+                {
+                    Vector3 direction =
+                        owner.TransformDirection(
+                            pattern.LocalDirection);
+
+                    direction.y = 0f;
+
+                    if (direction.sqrMagnitude < 0.0001f)
+                        return baseDirection;
+
+                    return direction.normalized;
+                }
+
+            default:
+                return baseDirection;
+        }
+    }
+
+    // =========================================================
+    // PROJECTILE SPAWNING
+    // =========================================================
+
+    private void FireProjectile(Vector3 direction)
+    {
+        if (skill == null ||
+            owner == null ||
+            skill.Definition.ExecutionPrefab == null)
+        {
+            return;
+        }
+
+        if (PoolManager.Instance == null)
+        {
+            Debug.LogError(
+                "ProjectileExecutor could not find PoolManager.",
+                this);
+            return;
+        }
+
+        Quaternion rotation =
+            Quaternion.LookRotation(direction);
+
+        GameObject projectileObject =
             PoolManager.Instance.Get(
                 skill.Definition.ExecutionPrefab,
                 owner.position,
-                Quaternion.LookRotation(direction)
-            );
+                rotation);
 
-        if (projectileObj == null)
+        if (projectileObject == null)
             return;
 
-        TrackProjectile(projectileObj);
-
         IProjectile projectile =
-            projectileObj.GetComponent<IProjectile>();
+            projectileObject.GetComponent<IProjectile>();
 
-        if (projectile != null)
+        if (projectile == null)
         {
-            projectile.Initialize(
-                skill,
-                direction,
-                modifierSystem);
+            Debug.LogError(
+                "Projectile prefab '" +
+                projectileObject.name +
+                "' does not implement IProjectile.",
+                projectileObject);
+
+            ReturnProjectileToPool(projectileObject);
+            return;
+        }
+
+        activeProjectiles.Add(projectileObject);
+
+        projectile.Initialize(
+            skill,
+            direction,
+            modifierSystem);
+    }
+
+    private void StartDeferredCooldownIfNeeded()
+    {
+        if (skill != null &&
+            skill.Definition.CooldownStartsAfterDuration)
+        {
+            skill.StartCooldown(
+                skill.Stats.FinalCooldown);
         }
     }
+
+    // =========================================================
+    // POOLING / LIFECYCLE
+    // =========================================================
 
     private void CleanupInactiveProjectiles()
     {
@@ -183,25 +463,36 @@ public class ProjectileExecutor : MonoBehaviour, ISkillExecutor
                 !projectile.activeInHierarchy);
     }
 
-    public void Cleanup()
+    private void ReturnProjectileToPool(
+        GameObject projectile)
     {
-        foreach (GameObject projectile
-            in activeProjectiles)
+        if (projectile == null)
+            return;
+
+        PooledBehaviour pooledBehaviour =
+            projectile.GetComponent<PooledBehaviour>();
+
+        if (pooledBehaviour != null)
         {
-            if (projectile == null)
-                continue;
-
-            PooledObject pooledObject =
-                projectile.GetComponent<PooledObject>();
-
-            if (pooledObject != null)
-            {
-                pooledObject.ReturnToPool();
-            }
+            pooledBehaviour.ReturnToPool();
+            return;
         }
 
-        activeProjectiles.Clear();
+        PooledObject pooledObject =
+            projectile.GetComponent<PooledObject>();
 
+        if (pooledObject != null)
+        {
+            pooledObject.ReturnToPool();
+            return;
+        }
+
+        Destroy(projectile);
+    }
+
+    public void Cleanup()
+    {
+        CleanupProjectiles();
         isExecuting = false;
     }
 
@@ -216,15 +507,6 @@ public class ProjectileExecutor : MonoBehaviour, ISkillExecutor
         isExecuting = false;
     }
 
-    private void TrackProjectile(
-    GameObject projectile)
-    {
-        if (projectile == null)
-            return;
-
-        activeProjectiles.Add(projectile);
-    }
-
     private void CleanupProjectiles()
     {
         for (int i = activeProjectiles.Count - 1; i >= 0; i--)
@@ -233,26 +515,11 @@ public class ProjectileExecutor : MonoBehaviour, ISkillExecutor
                 activeProjectiles[i];
 
             if (projectile == null)
-            {
-                activeProjectiles.RemoveAt(i);
                 continue;
-            }
 
-            if (!projectile.activeInHierarchy)
-            {
-                activeProjectiles.RemoveAt(i);
-                continue;
-            }
-
-            PooledBehaviour pooledBehaviour =
-                projectile.GetComponent<PooledBehaviour>();
-
-            if (pooledBehaviour != null)
-            {
-                pooledBehaviour.ReturnToPool();
-            }
-
-            activeProjectiles.RemoveAt(i);
+            ReturnProjectileToPool(projectile);
         }
+
+        activeProjectiles.Clear();
     }
 }

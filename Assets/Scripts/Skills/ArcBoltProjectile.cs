@@ -11,6 +11,11 @@ public class ArcBoltProjectile : PooledBehaviour, IProjectile
     [Header("Lifetime")]
     [SerializeField] private float maxLifetime = 5f;
 
+    [Header("Range")]
+    [SerializeField] private float maxTravelDistance = 8f;
+
+    private Vector3 initialPosition;
+
     private RuntimeSkill skill;
     private PlayerModifierSystem modifierSystem;
     private Rigidbody rb;
@@ -34,6 +39,7 @@ public class ArcBoltProjectile : PooledBehaviour, IProjectile
         remainingPenetration = 0;
         skill = null;
         modifierSystem = null;
+        initialPosition = Vector3.zero;
 
         if (rb != null)
         {
@@ -49,8 +55,21 @@ public class ArcBoltProjectile : PooledBehaviour, IProjectile
 
         lifetimeTimer += Time.deltaTime;
 
-        if (lifetimeTimer >= maxLifetime)
+        // Return projectile when it reaches the maximum travel distance.
+        if (maxTravelDistance > 0f &&
+            (transform.position - initialPosition).sqrMagnitude
+                >= maxTravelDistance * maxTravelDistance)
+        {
             ReturnToPool();
+            return;
+        }
+
+        // Return projectile when its lifetime expires.
+        if (lifetimeTimer >= maxLifetime)
+        {
+            ReturnToPool();
+            return;
+        }
     }
 
     public void Initialize(
@@ -85,6 +104,7 @@ public class ArcBoltProjectile : PooledBehaviour, IProjectile
 
         skill = runtimeSkill;
         modifierSystem = ownerModifiers;
+        initialPosition = transform.position;
 
         float attackSpeedMultiplier = 1f;
 

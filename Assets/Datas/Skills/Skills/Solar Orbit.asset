@@ -18,15 +18,15 @@ MonoBehaviour:
   rarity: 0
   ExecutionPrefab: {fileID: 1680053805698003461, guid: 10f030a2481f20f4fa714e3072381b03, type: 3}
   ExecutorPrefab: {fileID: 8347496734988916624, guid: ff53bbfe8d261d44b81891c5f6a6b623, type: 3}
-  DamageType: 1
+  audioDefinition: {fileID: 0}
   BaseDamage: 18
   BaseCooldown: 5
   BaseSpawnRadius: 0
   BaseImpactRadius: 0
   BaseRange: 1.5
-  BaseDuration: 3
+  BaseDuration: 5
   BaseTickRate: 1
-  BaseCount: 1
+  BaseCount: 4
   ScalesWithAttackSpeed: 1
   CanCrit: 0
   IsDamageOverTime: 0
@@ -38,3 +38,4 @@ MonoBehaviour:
   - {fileID: 11400000, guid: a39bc10eb5079bf4eacb59ee47a14deb, type: 2}
   - {fileID: 11400000, guid: e5f77dc6ad5adf84d8973c4b060c8c1c, type: 2}
   evolutions: []
+  ExecutionPattern: {fileID: 11400000, guid: eaef1751ea3d4bd45aeaf3a8005adc9a, type: 2}
