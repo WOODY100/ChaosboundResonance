@@ -1,83 +1,62 @@
-﻿using System;
+using System;
 using UnityEngine;
 
-[RequireComponent(typeof(BossControllerBase))]
-public class BossHealth :
-    MonoBehaviour,
-    IDamageable
+public class BossHealth : MonoBehaviour, IDamageable
 {
     [Header("Health")]
-    [SerializeField]
-    private float maxHealth = 1000f;
-
+    [SerializeField, Min(1f)] private float maxHealth = 1000f;
     private float currentHealth;
+    private BossControllerBase legacyController;
 
-    public float CurrentHealth =>
-        currentHealth;
-
-    public float MaxHealth =>
-        maxHealth;
-
-    public bool IsDead =>
-        currentHealth <= 0f;
-
+    public float CurrentHealth => currentHealth;
+    public float MaxHealth => maxHealth;
+    public bool IsDead => currentHealth <= 0f;
     public event Action<BossHealth> OnDeath;
-
-    private BossControllerBase controller;
 
     private void Awake()
     {
-        controller =
-            GetComponent<BossControllerBase>();
+        legacyController = GetComponent<BossControllerBase>();
     }
 
     private void OnEnable()
     {
-        Initialize();
+        // Legacy/default initialization remains unchanged. The new Boss Runtime
+        // explicitly overrides this value from BossCombatDefinition afterwards.
+        InitializeLegacy();
     }
 
-    private void Initialize()
+    private void InitializeLegacy()
     {
         currentHealth = maxHealth;
     }
 
-    public void TakeDamage(
-        DamageData damage)
+    public void InitializeForRuntime(float initialMaxHealth)
     {
-        if (IsDead)
+        if (initialMaxHealth <= 0f)
+            throw new ArgumentOutOfRangeException(nameof(initialMaxHealth));
+
+        maxHealth = initialMaxHealth;
+        currentHealth = maxHealth;
+    }
+
+    public void TakeDamage(DamageData damage)
+    {
+        if (IsDead || damage.amount <= 0f)
             return;
 
-        if (damage.amount <= 0f)
-            return;
-
-        currentHealth -= damage.amount;
-
-        currentHealth =
-            Mathf.Clamp(
-                currentHealth,
-                0f,
-                maxHealth);
+        currentHealth = Mathf.Clamp(currentHealth - damage.amount, 0f, maxHealth);
 
         if (FloatingDamageManager.Instance != null)
         {
             FloatingDamageManager.Instance.ShowDamage(
-                transform.position,
-                damage.amount,
-                damage.isCrit);
+                transform.position, damage.amount, damage.isCrit);
         }
 
-        float healthPercent =
-            maxHealth > 0f
-                ? currentHealth / maxHealth
-                : 0f;
+        float healthPercent = maxHealth > 0f ? currentHealth / maxHealth : 0f;
+        legacyController?.OnHealthChanged(healthPercent);
 
-        controller?.OnHealthChanged(
-            healthPercent);
-
-        if (currentHealth <= 0f)
-        {
+        if (IsDead)
             Die();
-        }
     }
 
     private void Die()
@@ -85,17 +64,13 @@ public class BossHealth :
         if (!IsDead)
             return;
 
-        controller?.OnDeath();
-
+        legacyController?.OnDeath();
         OnDeath?.Invoke(this);
     }
 
     public float GetHealthPercent()
     {
-        if (maxHealth <= 0f)
-            return 0f;
-
-        return currentHealth / maxHealth;
+        return maxHealth <= 0f ? 0f : currentHealth / maxHealth;
     }
 
     private void OnValidate()

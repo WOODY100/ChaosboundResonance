@@ -71,13 +71,16 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Pipeline
             GameContentContext compositionContext,
             LootBurstPresentation lootBurstPresentation)
         {
-                    return new List<IExpeditionRuntimeStage>
+            BossEncounterOrchestrator encounterOrchestrator =
+                new BossEncounterOrchestrator(spawnRuntime);
+
+            return new List<IExpeditionRuntimeStage>
                     {
                         BuildTimeStage(),
                         BuildModifierStage(),
                         BuildTimelineStage(),
-                        BuildMiniBossStage(spawnRuntime),
-                        BuildBossStage(spawnRuntime),
+                        BuildMiniBossStage(spawnRuntime, encounterOrchestrator),
+                        BuildBossStage(spawnRuntime, encounterOrchestrator),
                         BuildCompletionStage(),
                         BuildExitPortalStage(spawnRuntime),
                         BuildCombatStage(spawnRuntime),
@@ -224,13 +227,15 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Pipeline
 
         private IExpeditionRuntimeStage
              BuildBossStage(
-        SpawnRuntime spawnRuntime)
+        SpawnRuntime spawnRuntime,
+        BossEncounterOrchestrator encounterOrchestrator)
         {
             return new BossStage(
                 new BossDomainDirector(
                     BuildBossSpawnPlanner(),
                     BuildBossSpawnRequestTranslator(),
-                    spawnRuntime));
+                    spawnRuntime,
+                    encounterOrchestrator));
         }
 
         private IExpeditionRuntimeStage
@@ -272,13 +277,15 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Pipeline
 
         private IExpeditionRuntimeStage
             BuildMiniBossStage(
-                SpawnRuntime spawnRuntime)
+                SpawnRuntime spawnRuntime,
+                BossEncounterOrchestrator encounterOrchestrator)
         {
             return new MiniBossStage(
                 new MiniBossDomainDirector(
                     BuildMiniBossSpawnPlanner(),
                     BuildMiniBossSpawnRequestTranslator(),
-                    spawnRuntime));
+                    spawnRuntime,
+                    encounterOrchestrator));
         }
 
         private BossSpawnPlanner

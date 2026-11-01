@@ -62,12 +62,15 @@ public class PersistentZone : PooledBehaviour
 
         if (particle != null)
         {
+            particle.Stop(
+                true,
+                ParticleSystemStopBehavior.StopEmittingAndClear);
+
             ParticleSystem.MainModule main = particle.main;
 
             main.duration = duration;
             main.startLifetime = duration;
 
-            particle.Clear();
             particle.Play();
         }
     }

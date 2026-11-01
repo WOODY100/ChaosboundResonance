@@ -257,13 +257,6 @@ public class ProjectileExecutor : MonoBehaviour, ISkillExecutor
 
         Vector3 baseDirection = GetBaseDirection(pattern);
 
-        Debug.Log(
-            $"[ProjectilePattern] Pattern={patternType}, " +
-            $"OwnerForward={owner.forward}, " +
-            $"BaseDirection={baseDirection}, " +
-            $"Count={count}, " +
-            $"Spread={pattern.SpreadAngle}");
-
         for (int i = 0; i < count; i++)
         {
             Vector3 direction = GetPatternDirection(
@@ -275,10 +268,6 @@ public class ProjectileExecutor : MonoBehaviour, ISkillExecutor
 
             if (direction.sqrMagnitude > 0.0001f)
                 FireProjectile(direction.normalized);
-
-            Debug.Log(
-            $"[ProjectilePattern] Projectile {i + 1}/{count}: " +
-            $"Direction={direction}");
         }
 
         isExecuting = false;

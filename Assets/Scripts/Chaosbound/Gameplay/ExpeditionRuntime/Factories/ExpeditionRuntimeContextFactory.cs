@@ -3,33 +3,28 @@ using Chaosbound.Content.Expeditions.Runtime.References;
 using Chaosbound.Core.Composition;
 using Chaosbound.Gameplay.ExpeditionRuntime.Context;
 using Chaosbound.Gameplay.ExpeditionRuntime.Runtime;
+using Chaosbound.Shared.Identifiers;
 using System;
 using UnityEngine;
 
 namespace Chaosbound.Gameplay.ExpeditionRuntime.Factories
 {
     /// <summary>
-    /// Builds the shared runtime context used by the
-    /// Expedition Runtime.
+    /// Builds the shared runtime context used by the Expedition Runtime.
+    /// The Player is registered once in the expedition reference registry.
     /// </summary>
     public sealed class ExpeditionRuntimeContextFactory
     {
-        private readonly RuntimeExpeditionConfig
-            runtimeConfig;
+        private const string PlayerDomainId = "player";
+        private static readonly ContentId PlayerContentId = new ContentId("player");
 
-        private readonly ExpeditionRuntimeState
-            runtimeState;
+        private readonly RuntimeExpeditionConfig runtimeConfig;
+        private readonly ExpeditionRuntimeState runtimeState;
 
-        /// <summary>
-        /// Creates a new runtime context.
-        /// </summary>
         public ExpeditionRuntimeContext Create()
         {
-            ExpeditionRuntimeReferences references =
-                BuildReferences();
-
-            ExpeditionRuntimeServices services =
-                BuildServices();
+            ExpeditionRuntimeReferences references = BuildReferences();
+            ExpeditionRuntimeServices services = BuildServices();
 
             return new ExpeditionRuntimeContext(
                 runtimeConfig,
@@ -40,27 +35,30 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Factories
 
         private ExpeditionRuntimeReferences BuildReferences()
         {
-            RuntimeReferencesConfig runtime =
-                BuildRuntimeReferences();
-
-            return new ExpeditionRuntimeReferences(
-                runtime);
+            RuntimeReferencesConfig runtime = BuildRuntimeReferences();
+            return new ExpeditionRuntimeReferences(runtime);
         }
 
-        private RuntimeReferencesConfig
-            BuildRuntimeReferences()
+        private RuntimeReferencesConfig BuildRuntimeReferences()
         {
-            ExpeditionSceneContext scene =
-                ExpeditionSceneContext.Current;
+            ExpeditionSceneContext scene = ExpeditionSceneContext.Current;
 
             if (scene == null)
-            {
                 throw new InvalidOperationException(
                     "ExpeditionSceneContext is not available.");
-            }
 
-            return new RuntimeReferencesConfig(
-                scene.Player.transform);
+            if (scene.Player == null)
+                throw new InvalidOperationException(
+                    "ExpeditionSceneContext does not contain a Player.");
+
+            Transform playerTransform = scene.Player.transform;
+
+            runtimeState.RuntimeReferences.Register(
+                PlayerDomainId,
+                PlayerContentId,
+                playerTransform);
+
+            return new RuntimeReferencesConfig(playerTransform);
         }
 
         private ExpeditionRuntimeServices BuildServices()
@@ -72,14 +70,10 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Factories
             RuntimeExpeditionConfig runtimeConfig,
             ExpeditionRuntimeState runtimeState)
         {
-            this.runtimeConfig =
-                runtimeConfig
-                ?? throw new ArgumentNullException(
-                    nameof(runtimeConfig));
-            this.runtimeState =
-                runtimeState
-                ?? throw new ArgumentNullException(
-                    nameof(runtimeState));
+            this.runtimeConfig = runtimeConfig
+                ?? throw new ArgumentNullException(nameof(runtimeConfig));
+            this.runtimeState = runtimeState
+                ?? throw new ArgumentNullException(nameof(runtimeState));
         }
     }
 }

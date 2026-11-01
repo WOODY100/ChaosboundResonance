@@ -26,6 +26,8 @@ namespace Chaosbound.Gameplay.MetaProgression.Persistent
 
         public void AddMetaExperience(int amount)
         {
+            EnsureInitialized();
+
             if (amount < 0)
             {
                 throw new ArgumentOutOfRangeException(
@@ -60,16 +62,59 @@ namespace Chaosbound.Gameplay.MetaProgression.Persistent
             if (state == null)
                 return false;
 
-            return state.TrySpendSkillPoints(amount);
+            bool spent = state.TrySpendSkillPoints(amount);
+
+            if (spent && amount > 0)
+                MetaProgressionChanged?.Invoke();
+
+            return spent;
+        }
+
+        public void RestoreProgression(
+            int experience,
+            int metaLevel,
+            int skillPoints)
+        {
+            EnsureInitialized();
+
+            if (!IsValidProgression(
+                    experience,
+                    metaLevel,
+                    skillPoints))
+            {
+                throw new ArgumentException(
+                    "The supplied meta progression values are invalid.");
+            }
+
+            state.RestoreProgression(
+                experience,
+                metaLevel,
+                skillPoints);
+
+            MetaProgressionChanged?.Invoke();
+        }
+
+        public static bool IsValidProgression(
+            int experience,
+            int metaLevel,
+            int skillPoints)
+        {
+            if (experience < 0 ||
+                metaLevel < 1 ||
+                skillPoints < 0)
+            {
+                return false;
+            }
+
+            int experienceRequired =
+                CalculateExperienceRequiredForLevel(metaLevel);
+
+            return experience < experienceRequired;
         }
 
         public void ResetProgression()
         {
-            if (state == null)
-            {
-                throw new InvalidOperationException(
-                    "PersistentMetaState is not initialized.");
-            }
+            EnsureInitialized();
 
             state.Clear();
 
@@ -96,21 +141,34 @@ namespace Chaosbound.Gameplay.MetaProgression.Persistent
 
         private int CalculateExperienceRequiredForNextLevel()
         {
+            return CalculateExperienceRequiredForLevel(
+                state.MetaLevel);
+        }
+
+        private static int CalculateExperienceRequiredForLevel(
+            int metaLevel)
+        {
             double requiredExperience =
                 BaseExperience *
                 Math.Pow(
                     ExperienceGrowthMultiplier,
-                    state.MetaLevel - 1);
+                    metaLevel - 1);
 
             if (requiredExperience >= int.MaxValue)
-            {
                 return int.MaxValue;
-            }
 
             return Math.Max(
                 1,
-                (int)Math.Round(
-                    requiredExperience));
+                (int)Math.Round(requiredExperience));
+        }
+
+        private void EnsureInitialized()
+        {
+            if (state == null)
+            {
+                throw new InvalidOperationException(
+                    "PersistentMetaState is not initialized.");
+            }
         }
     }
 }

@@ -1,4 +1,3 @@
-
 using UnityEngine;
 
 public sealed class HealingPickup : AutoPickupBehaviour
@@ -39,6 +38,8 @@ public sealed class HealingPickup : AutoPickupBehaviour
         float maxHealth =
             playerHealth.MaxHealth;
 
+        // Keep the pickup available. OnAutoPickupUpdate will re-arm it
+        // once the player has lost health.
         if (previousHealth >= maxHealth)
             return;
 
@@ -48,6 +49,26 @@ public sealed class HealingPickup : AutoPickupBehaviour
         {
             PlayPickupAudio();
             ReturnToPool();
+        }
+    }
+
+    protected override void OnAutoPickupUpdate()
+    {
+        if (!IsPickupTriggered || Player == null)
+            return;
+
+        PlayerHealth playerHealth =
+            Player.GetComponent<PlayerHealth>();
+
+        if (playerHealth == null || playerHealth.IsDead)
+            return;
+
+        // The pickup previously failed because health was full.
+        // Re-arm it only after health drops, avoiding repeated attempts
+        // every frame while the player remains at full health.
+        if (playerHealth.CurrentHealth < playerHealth.MaxHealth)
+        {
+            ResetPickupTrigger();
         }
     }
 

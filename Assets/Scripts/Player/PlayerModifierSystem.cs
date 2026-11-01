@@ -30,7 +30,7 @@ public class PlayerModifierSystem : MonoBehaviour
         CreateStat(StatType.CritDamage, 2f);
 
         CreateStat(StatType.MovementSpeed, 4f);
-        CreateStat(StatType.MaxHP, 100f);
+        CreateStat(StatType.MaxHP, 1000f);
         CreateStat(StatType.HPRegen, 0f);
         CreateStat(StatType.DamageReduction, 0f);
         CreateStat(StatType.Shield, 50f);

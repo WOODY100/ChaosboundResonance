@@ -1,58 +1,78 @@
 using Chaosbound.Content.Enemy.Bosses;
+using Chaosbound.Content.Enemy.Contracts;
+using Chaosbound.Content.Enemy.MiniBosses;
 using Chaosbound.Gameplay.ExpeditionRuntime.Runtime;
+using Chaosbound.Shared.Identifiers;
 using System;
 using UnityEngine;
 
 namespace Chaosbound.Gameplay.Bosses
 {
-    /// <summary>
-    /// Stores the runtime context associated with
-    /// a materialized Boss.
-    /// </summary>
     [RequireComponent(typeof(BossHealth))]
-    public sealed class BossRuntimeContext :
-        MonoBehaviour
+    public sealed class BossRuntimeContext : MonoBehaviour
     {
-        public BossData Boss
-        {
-            get;
-            private set;
-        }
+        private const string PlayerDomainId = "player";
+        private static readonly ContentId PlayerContentId = new ContentId("player");
 
-        public ExpeditionRuntimeState
-            ExpeditionRuntime
-        {
-            get;
-            private set;
-        }
+        private BossHealth health;
 
-        public bool IsInitialized
+        public IBossCombatContent Content { get; private set; }
+        public BossData Boss => Content as BossData;
+        public MiniBossData MiniBoss => Content as MiniBossData;
+        public BossCombatDefinition CombatDefinition =>
+            Content != null ? Content.CombatDefinition : null;
+        public ExpeditionRuntimeState ExpeditionRuntime { get; private set; }
+        public Transform PlayerTarget { get; private set; }
+        public bool IsInitialized { get; private set; }
+
+        private void Awake()
         {
-            get;
-            private set;
+            health = GetComponent<BossHealth>();
         }
 
         public void Initialize(
-            BossData boss,
+            IBossCombatContent content,
             ExpeditionRuntimeState expeditionRuntime)
         {
-            Boss =
-                boss
-                ?? throw new ArgumentNullException(
-                    nameof(boss));
+            if (content == null)
+                throw new ArgumentNullException(nameof(content));
+            if (expeditionRuntime == null)
+                throw new ArgumentNullException(nameof(expeditionRuntime));
+            if (content.CombatDefinition == null)
+                throw new InvalidOperationException(
+                    $"CombatDefinition is missing for content '{content.DisplayName}'.");
+            if (!content.CombatDefinition.Validate(out string error))
+                throw new InvalidOperationException(
+                    $"CombatDefinition for '{content.DisplayName}' is invalid: {error}");
 
-            ExpeditionRuntime =
-                expeditionRuntime
-                ?? throw new ArgumentNullException(
-                    nameof(expeditionRuntime));
+            if (!expeditionRuntime.RuntimeReferences.TryResolve(
+                PlayerDomainId,
+                PlayerContentId,
+                out Transform player))
+            {
+                throw new InvalidOperationException(
+                    "The expedition Player reference is not registered.");
+            }
 
+            if (health == null)
+                health = GetComponent<BossHealth>();
+            if (health == null)
+                throw new InvalidOperationException(
+                    "Boss prefab is missing BossHealth.");
+
+            health.InitializeForRuntime(content.CombatDefinition.BaseStats.MaxHP);
+
+            Content = content;
+            ExpeditionRuntime = expeditionRuntime;
+            PlayerTarget = player;
             IsInitialized = true;
         }
 
         private void OnDisable()
         {
-            Boss = null;
+            Content = null;
             ExpeditionRuntime = null;
+            PlayerTarget = null;
             IsInitialized = false;
         }
     }

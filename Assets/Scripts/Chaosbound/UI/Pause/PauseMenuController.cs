@@ -349,7 +349,7 @@ public sealed class PauseMenuController : MonoBehaviour
 
         confirmationController.Show(
             "¿Volver al menú principal?",
-            "Si continúas, saldrás de la expedición actual si hay una activa. " +
+            "Si continúas, saldrás de la expedición actual. " +
             "El progreso no completado no se registrará como una expedición completada.",
             "CANCELAR",
             "SALIR",

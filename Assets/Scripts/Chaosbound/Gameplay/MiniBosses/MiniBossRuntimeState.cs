@@ -55,5 +55,11 @@ namespace Chaosbound.Gameplay.MiniBosses
             State =
                 MiniBossDomainState.Completed;
         }
+
+        public void Fail()
+        {
+            State =
+                MiniBossDomainState.Failed;
+        }
     }
 }

@@ -8,6 +8,7 @@ namespace Chaosbound.Gameplay.Bosses
         Inactive,
         Starting,
         Active,
-        Completed
+        Completed,
+        Failed
     }
 }

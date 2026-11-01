@@ -208,7 +208,7 @@ MonoBehaviour:
   jumpWarningPrefab: {fileID: 6619929815922055732, guid: 06bea63b856266b4c9f6a037f4793012, type: 3}
   jumpImpactVFX: {fileID: 5139383056623360920, guid: 4d1ef90dcd31d3645a3a1c4341ab18eb, type: 3}
   jumpImpactRadius: 3
-  meleeRadius: 2
+  meleeRadius: 1.5
   stompRadius: 3
   chargeRadius: 1.5
   chargeVulnerabilityDuration: 0.8
@@ -229,7 +229,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe22b8080c1593045a86e6fd309b4313, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BossHealth
-  maxHealth: 200
+  maxHealth: 1500
 --- !u!114 &8323098854580776650
 MonoBehaviour:
   m_ObjectHideFlags: 0

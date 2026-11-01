@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7eee2c7f9ae3bda45b3330a0d5b29ba6, type: 3}
+  m_Name: Wizard_Attack_1H
+  m_EditorClassIdentifier: Assembly-CSharp::Chaosbound.Content.Enemy.Bosses.BossAttackDefinition
+  m_ContentId: wizard.attack.1h
+  m_DisplayName: Arcane Bolt
+  m_AvailablePhases:
+  - wizard.phase.01
+  - wizard.phase.02
+  m_Cooldown: 2.5
+  m_SelectionWeight: 3
+  m_MinimumRange: 0
+  m_MaximumRange: 12
+  m_Anticipation:
+    m_Duration: 0.35
+    m_PresentationVariant: 
+  m_Execution:
+    m_Duration: 0.25
+    m_ReleaseTime: 0.1
+  m_Recovery:
+    m_Duration: 0.55
+    m_PresentationVariant: 
+  m_TargetCapturePolicy: 0
+  m_FacingPolicy: 0
+  m_EffectDefinition: {fileID: 11400000, guid: 2960233fc0c46a0418dae1175a9a0ecf, type: 2}

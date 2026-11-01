@@ -345,6 +345,7 @@ MonoBehaviour:
   gameSettingsRuntime: {fileID: 1798433902}
   videoSettingsRuntime: {fileID: 962730595}
   persistentMetaRuntime: {fileID: 2089562489}
+  skillTreeDatabase: {fileID: 11400000, guid: 334efcbac2fdd7446b088f172374ffd8, type: 2}
   audioManager: {fileID: 1633361792}
   sceneTransitionHost: {fileID: 1215214481}
   loadingScreenController: {fileID: 1599084524}
@@ -2097,7 +2098,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Chaosbound.Gameplay.Items.UI.Tooltip.ItemTooltipService
   tooltipView: {fileID: 6601167035330248239}
-  hoverDelay: 2
+  hoverDelay: 0.5
   equipmentStatsView: {fileID: 8061373853141161808}
   comparisonTooltipView: {fileID: 507073053}
   equipmentStatDatabase: {fileID: 11400000, guid: 46df5f9156969f641b7620c9feac03e3, type: 2}
@@ -3498,6 +3499,7 @@ MonoBehaviour:
   audioMixer: {fileID: 24100000, guid: 73734b99cf225cc47869a4cd1e9098da, type: 2}
   masterVolumeParameter: MasterVolume
   musicVolumeParameter: MusicVolume
+  ambienceVolumeParameter: AmbienceVolume
   effectsVolumeParameter: EffectsVolume
   uiVolumeParameter: UIVolume
 --- !u!4 &1633361793

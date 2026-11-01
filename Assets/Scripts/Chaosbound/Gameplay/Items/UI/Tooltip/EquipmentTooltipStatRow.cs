@@ -14,7 +14,7 @@ namespace Chaosbound.Gameplay.Items.UI.Tooltip
         [Header("Comparison Colors")]
         [SerializeField] private Color improvedColor = Color.green;
         [SerializeField] private Color reducedColor = Color.red;
-        [SerializeField] private Color unchangedColor = Color.white;
+        [SerializeField] private Color unchangedColor = Color.black;
 
         public void SetStat(
             string displayName,
@@ -26,7 +26,7 @@ namespace Chaosbound.Gameplay.Items.UI.Tooltip
             if (value != null)
             {
                 value.text = displayValue;
-                value.color = Color.white;
+                value.color = Color.black;
             }
 
             ClearDifference();
@@ -44,7 +44,7 @@ namespace Chaosbound.Gameplay.Items.UI.Tooltip
             if (value != null)
             {
                 value.text = displayValue;
-                value.color = Color.white;
+                value.color = Color.black;
             }
 
             if (difference == null)
@@ -74,7 +74,7 @@ namespace Chaosbound.Gameplay.Items.UI.Tooltip
                     break;
 
                 default:
-                    difference.color = Color.white;
+                    difference.color = Color.black;
                     break;
             }
         }

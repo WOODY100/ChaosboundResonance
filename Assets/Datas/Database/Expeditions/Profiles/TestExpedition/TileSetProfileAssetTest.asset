@@ -1,0 +1,178 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a3c2a712751abc41a6cdc678b409326, type: 3}
+  m_Name: TileSetProfileAssetTest
+  m_EditorClassIdentifier: Assembly-CSharp::Chaosbound.Content.World.Themes.TileSets.TileSetProfile
+  centerSpawnTile:
+    prefab: {fileID: 6710106798364161545, guid: 4758124c488e5de48bd4ca36367e78d1, type: 3}
+    weight: 1
+    sizeX: 1
+    sizeZ: 1
+    allowRotate90: 0
+    randomYRotation: 0
+    minimapMask:
+      blockedCells: 00000000000000000000000000000000
+  centerTiles:
+  - prefab: {fileID: 8095242995647193555, guid: f9ebfe8d723b4e7438ed68506357dd60, type: 3}
+    weight: 1
+    sizeX: 1
+    sizeZ: 1
+    allowRotate90: 0
+    randomYRotation: 1
+    minimapMask:
+      blockedCells: 01000000000101000001010000000000
+  - prefab: {fileID: 6710106798364161545, guid: 4758124c488e5de48bd4ca36367e78d1, type: 3}
+    weight: 10
+    sizeX: 1
+    sizeZ: 1
+    allowRotate90: 0
+    randomYRotation: 1
+    minimapMask:
+      blockedCells: 00000000000000000000000000000000
+  - prefab: {fileID: 8864181292481440853, guid: 6a5c219a293bf4447bca4e32016b9fdb, type: 3}
+    weight: 1
+    sizeX: 1
+    sizeZ: 1
+    allowRotate90: 0
+    randomYRotation: 1
+    minimapMask:
+      blockedCells: 00000000000101000001010000000000
+  - prefab: {fileID: 810537249726882421, guid: 2e5084ce08ac57145b467e10f00d98bf, type: 3}
+    weight: 1
+    sizeX: 1
+    sizeZ: 1
+    allowRotate90: 0
+    randomYRotation: 1
+    minimapMask:
+      blockedCells: 00000101000001010101000001010000
+  - prefab: {fileID: 891246546632675621, guid: 849a00aa6d6321c47a27a3ae21ca2101, type: 3}
+    weight: 1
+    sizeX: 1
+    sizeZ: 1
+    allowRotate90: 0
+    randomYRotation: 1
+    minimapMask:
+      blockedCells: 00010100000000000100010101000101
+  - prefab: {fileID: 7324530185385750727, guid: dcb6e3d3793c04248b2da2fffcce4774, type: 3}
+    weight: 1
+    sizeX: 2
+    sizeZ: 1
+    allowRotate90: 0
+    randomYRotation: 0
+    minimapMask:
+      blockedCells: 00010101000101000001010100000101
+  - prefab: {fileID: 6115876083213008758, guid: 717372b769fe9e641b4ffa8519c39dd4, type: 3}
+    weight: 1
+    sizeX: 2
+    sizeZ: 1
+    allowRotate90: 0
+    randomYRotation: 0
+    minimapMask:
+      blockedCells: 00000000000101000001010000000000
+  edgeTiles:
+  - prefab: {fileID: 1039108247317628220, guid: 18fafd7ca9707754a9eee5a1f51ab595, type: 3}
+    weight: 1
+    sizeX: 1
+    sizeZ: 1
+    allowRotate90: 0
+    randomYRotation: 0
+    minimapMask:
+      blockedCells: 01000000010000000100000001000000
+  - prefab: {fileID: 1766241749739405014, guid: 250276a81efd05f4f8ea03c9fc9175bf, type: 3}
+    weight: 2
+    sizeX: 1
+    sizeZ: 1
+    allowRotate90: 0
+    randomYRotation: 0
+    minimapMask:
+      blockedCells: 01000000010000000100000001000000
+  - prefab: {fileID: 1766241749739405014, guid: 2a78e936d690c154e9e81ede200b6b97, type: 3}
+    weight: 2
+    sizeX: 1
+    sizeZ: 1
+    allowRotate90: 0
+    randomYRotation: 0
+    minimapMask:
+      blockedCells: 01000000010000000100000001000000
+  - prefab: {fileID: 1766241749739405014, guid: 5d522fd2b0274314d9c83d443abc702d, type: 3}
+    weight: 2
+    sizeX: 1
+    sizeZ: 1
+    allowRotate90: 0
+    randomYRotation: 0
+    minimapMask:
+      blockedCells: 01010000010100000100000001000000
+  - prefab: {fileID: 1766241749739405014, guid: 3fffbadc8db9aaa49ac6d77b54440839, type: 3}
+    weight: 3
+    sizeX: 1
+    sizeZ: 1
+    allowRotate90: 0
+    randomYRotation: 0
+    minimapMask:
+      blockedCells: 01000000010000000100000001000000
+  - prefab: {fileID: 1766241749739405014, guid: f89a7c7c4f0c6f9469e97cd334527950, type: 3}
+    weight: 4
+    sizeX: 1
+    sizeZ: 1
+    allowRotate90: 0
+    randomYRotation: 0
+    minimapMask:
+      blockedCells: 01000000010000000100000001000000
+  - prefab: {fileID: 1766241749739405014, guid: fd6055a94b3604945a8f691dcba47e79, type: 3}
+    weight: 4
+    sizeX: 1
+    sizeZ: 1
+    allowRotate90: 0
+    randomYRotation: 0
+    minimapMask:
+      blockedCells: 01000000010000000100000001000000
+  - prefab: {fileID: 1766241749739405014, guid: 44f80c011378c2c49ac8c4c63e425f27, type: 3}
+    weight: 4
+    sizeX: 1
+    sizeZ: 1
+    allowRotate90: 0
+    randomYRotation: 0
+    minimapMask:
+      blockedCells: 01000000010000000100000001010000
+  - prefab: {fileID: 6045806558579088540, guid: e75f9321a42e8e0449057de25496ccd5, type: 3}
+    weight: 1
+    sizeX: 1
+    sizeZ: 1
+    allowRotate90: 0
+    randomYRotation: 0
+    minimapMask:
+      blockedCells: 01000000010000000100000001000000
+  cornerTiles:
+  - prefab: {fileID: 4361663232910228153, guid: e29181f8db123034fa4c0f17d1b557dd, type: 3}
+    weight: 1
+    sizeX: 1
+    sizeZ: 1
+    allowRotate90: 0
+    randomYRotation: 0
+    minimapMask:
+      blockedCells: 01010101010001010100000001000000
+  - prefab: {fileID: 8928989179419764019, guid: 8559586e0ca2b294d8c90178c35aedf5, type: 3}
+    weight: 2
+    sizeX: 1
+    sizeZ: 1
+    allowRotate90: 0
+    randomYRotation: 0
+    minimapMask:
+      blockedCells: 01010101010100010100000001010000
+  - prefab: {fileID: 5391564172015307412, guid: 646ee33f8871da7459680a766917fa00, type: 3}
+    weight: 2
+    sizeX: 1
+    sizeZ: 1
+    allowRotate90: 0
+    randomYRotation: 0
+    minimapMask:
+      blockedCells: 01010101010101000101000001000000

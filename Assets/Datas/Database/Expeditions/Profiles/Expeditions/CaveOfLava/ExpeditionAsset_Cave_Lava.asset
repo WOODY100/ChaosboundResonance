@@ -1,0 +1,110 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8eec889e703da54b8ef07fbe45a4563, type: 3}
+  m_Name: ExpeditionAsset_Cave_Lava
+  m_EditorClassIdentifier: Assembly-CSharp::Chaosbound.Content.Expeditions.Assets.ExpeditionAsset
+  m_expedition:
+    m_Scene:
+      m_SceneName: CuevaDeLava
+    m_identity:
+      m_id: expedition.cave.lava
+    m_presentation:
+      m_displayName: CUEVA DE LAVA
+      m_description: Una cueva de la va llena de muchos peligros.
+      m_image: {fileID: 21300000, guid: 9874357fd0dd4ef438d8d62392224441, type: 3}
+    m_audio:
+      m_musicTracks:
+      - m_trackId: expedition_main_3
+        m_clip: {fileID: 8300000, guid: 222cfacb2763de545a1102de0dff0578, type: 3}
+        m_volume: 0.5
+      m_ambienceClip: {fileID: 8300000, guid: 3f0b5b9d812e71447a022047fb7d40aa, type: 3}
+      m_ambienceVolume: 1
+    m_world:
+      m_Width: 15
+      m_Height: 15
+      m_Theme: {fileID: 11400000, guid: 4dfb845e5f1fda1499ab9fd32de36236, type: 2}
+    m_enemy:
+      m_Content:
+      - {fileID: 11400000, guid: f5819a66bba33df429698f45f81dc0aa, type: 2}
+      - {fileID: 11400000, guid: bd38301ec6fd209459cdc8d6199033cd, type: 2}
+      - {fileID: 11400000, guid: e3af66caf09419f47a5046e7d60ef0e3, type: 2}
+      - {fileID: 11400000, guid: 9c8dab747c2ebb048a0f8a012bda248b, type: 2}
+      - {fileID: 11400000, guid: 66b6689c19fabf547afeda22e558174b, type: 2}
+    m_Spawn:
+      m_Placement: 0
+      m_Constraints: 05000000
+    m_combat:
+      m_TargetProgression:
+        m_Profile: {fileID: 11400000, guid: 8df0a772af085de4681c7986b695bc67, type: 2}
+      m_Tactics:
+      - m_MaximumTarget: 50
+        m_Melee:
+          m_Percentage: 0.8
+          m_NormalPercentage: 0.7
+          m_RunnerPercentage: 0.2
+          m_TankPercentage: 0.1
+        m_Ranged:
+          m_Percentage: 0.2
+          m_NormalPercentage: 1
+          m_RunnerPercentage: 0
+          m_TankPercentage: 0
+        m_Replenishment:
+          m_InitialDelay: 0.5
+          m_RecoveryInterval: 0.5
+        m_SpawnPattern:
+          m_PerimeterPercentage: 0.25
+          m_FrontPercentage: 0.25
+          m_RearPercentage: 0.25
+          m_FlankPercentage: 0.25
+    m_skillProgression:
+      m_maxSkillLevel: 20
+      m_evolutionRequiredLevel: 15
+    m_Timeline:
+      m_EventDefinitions:
+      - m_Id: dynamic
+        m_IconId: icon.dynamic
+        m_TriggerReference:
+          m_DomainId: 
+          m_ContentId: 
+      - m_Id: boss
+        m_IconId: icon.boss
+        m_TriggerReference:
+          m_DomainId: boss
+          m_ContentId: boss.start
+      m_FixedTimeRules:
+      - m_EventId: boss
+        m_TimeSeconds: 30
+      m_DistributedRules:
+      - m_EventIds:
+        - dynamic
+        m_StartTimeSeconds: 5
+        m_EndTimeType: 1
+        m_EndTimeSeconds: 0
+      m_CompletionTarget:
+        m_TimeSeconds: 30
+    m_expeditionEvents:
+      content: []
+    m_miniBosses:
+      m_Content: []
+    m_bosses:
+      m_Content:
+      - {fileID: 11400000, guid: 0b409907a923693498d5dfa590ac2d69, type: 2}
+    m_rewards:
+      m_completion:
+        m_itemContentIds: []
+        m_metaExperience: 50000
+    m_completion:
+      m_DomainId: boss
+      m_EventId: boss
+      m_ExitPortal: {fileID: 11400000, guid: 5bb45a6a7e36f2446be456743d7fd510, type: 2}
+    m_minimap:
+      m_walkableTexture: {fileID: 2800000, guid: 4eeb42d9cb8e87846b2a380f2764ca66, type: 3}

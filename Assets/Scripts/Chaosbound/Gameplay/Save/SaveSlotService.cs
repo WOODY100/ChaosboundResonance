@@ -9,8 +9,11 @@ namespace Chaosbound.Gameplay.Save
 
         private readonly SaveGameService[] saveServices;
 
-        public SaveSlotService()
+        public SaveSlotService(
+            SkillTreeDatabase skillTreeDatabase)
         {
+            if (skillTreeDatabase == null)
+                throw new ArgumentNullException(nameof(skillTreeDatabase));
             saveServices = new SaveGameService[SlotCount];
 
             for (int i = 0; i < SlotCount; i++)
@@ -22,7 +25,7 @@ namespace Chaosbound.Gameplay.Save
                     new FileSaveStorage(fileName);
 
                 saveServices[i] =
-                    new SaveGameService(storage, 1);
+                    new SaveGameService(storage, 3, skillTreeDatabase);
             }
         }
 

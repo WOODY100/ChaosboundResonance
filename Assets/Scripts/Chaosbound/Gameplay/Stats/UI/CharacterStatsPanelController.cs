@@ -9,6 +9,7 @@ namespace Chaosbound.Gameplay.Stats.UI
         [SerializeField] private CharacterStatsPanelUI panelUI;
 
         private CharacterStatsDisplayBuilder displayBuilder;
+        private PlayerSkillLoadout skillLoadout;
 
         private void Awake()
         {
@@ -32,9 +33,13 @@ namespace Chaosbound.Gameplay.Stats.UI
                 return;
             }
 
+            skillLoadout =
+                modifierSystem.GetComponent<PlayerSkillLoadout>();
+
             displayBuilder =
                 new CharacterStatsDisplayBuilder(
-                    modifierSystem);
+                    modifierSystem,
+                    skillLoadout);
         }
 
         private void OnEnable()
@@ -43,6 +48,9 @@ namespace Chaosbound.Gameplay.Stats.UI
                 return;
 
             modifierSystem.OnStatChanged += OnStatChanged;
+
+            if (skillLoadout != null)
+                skillLoadout.OnGlobalModifiersChanged += OnGlobalModifiersChanged;
         }
 
         private void Start()
@@ -56,11 +64,19 @@ namespace Chaosbound.Gameplay.Stats.UI
                 return;
 
             modifierSystem.OnStatChanged -= OnStatChanged;
+
+            if (skillLoadout != null)
+                skillLoadout.OnGlobalModifiersChanged -= OnGlobalModifiersChanged;
         }
 
         private void OnStatChanged(
             StatType statType,
             float value)
+        {
+            Refresh();
+        }
+
+        private void OnGlobalModifiersChanged()
         {
             Refresh();
         }

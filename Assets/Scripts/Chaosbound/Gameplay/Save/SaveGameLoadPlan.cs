@@ -10,12 +10,21 @@ namespace Chaosbound.Gameplay.Save
 
         public int MetaExperience { get; }
 
+        public int MetaLevel { get; }
+
+        public int MetaSkillPoints { get; }
+
+        public SaveSkillTreeLoadPlan SkillTree { get; }
+
         public ExpeditionProgressData ExpeditionProgress { get; }
 
         public SaveGameLoadPlan(
             SaveInventoryLoadPlan inventory,
             SaveEquipmentLoadPlan equipment,
             int metaExperience,
+            int metaLevel,
+            int metaSkillPoints,
+            SaveSkillTreeLoadPlan skillTree,
             ExpeditionProgressData expeditionProgress)
         {
             Inventory =
@@ -29,13 +38,24 @@ namespace Chaosbound.Gameplay.Save
                     nameof(equipment));
 
             if (metaExperience < 0)
-            {
                 throw new ArgumentOutOfRangeException(
                     nameof(metaExperience));
-            }
 
-            MetaExperience =
-                metaExperience;
+            if (metaLevel < 1)
+                throw new ArgumentOutOfRangeException(
+                    nameof(metaLevel));
+
+            if (metaSkillPoints < 0)
+                throw new ArgumentOutOfRangeException(
+                    nameof(metaSkillPoints));
+
+            MetaExperience = metaExperience;
+            MetaLevel = metaLevel;
+            MetaSkillPoints = metaSkillPoints;
+
+            SkillTree =
+                skillTree ??
+                throw new ArgumentNullException(nameof(skillTree));
 
             ExpeditionProgress =
                 expeditionProgress ??

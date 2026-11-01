@@ -44,5 +44,11 @@ namespace Chaosbound.Gameplay.Bosses
             State =
                 BossDomainState.Completed;
         }
+
+        public void Fail()
+        {
+            State =
+                BossDomainState.Failed;
+        }
     }
 }

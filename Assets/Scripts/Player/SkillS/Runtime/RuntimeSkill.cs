@@ -1,4 +1,4 @@
-﻿using Chaosbound.Content.Expeditions.Runtime.Configs;
+using Chaosbound.Content.Expeditions.Runtime.Configs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,6 +30,9 @@ public class RuntimeSkill
 
     private readonly List<SkillModifierDefinition> appliedModifiers = new();
 
+    // Meta-progression modifiers are kept separate from run modifiers.
+    private readonly List<ModifierEntry> globalModifiers = new();
+
     private readonly HashSet<SkillModifierDefinition> modifierHistory = new();
 
     private readonly RuntimeSkillProgressionConfig progressionConfig;
@@ -48,6 +51,28 @@ public class RuntimeSkill
 
     public IReadOnlyList<SkillModifierDefinition> Modifiers =>
         appliedModifiers;
+
+    public IReadOnlyList<ModifierEntry> GlobalModifiers =>
+        globalModifiers;
+
+    /// <summary>
+    /// Replaces the complete global modifier layer and recalculates this skill.
+    /// Replacing instead of appending prevents duplicate meta effects.
+    /// </summary>
+    public void SetGlobalModifiers(IReadOnlyList<ModifierEntry> modifiers)
+    {
+        globalModifiers.Clear();
+
+        if (modifiers != null)
+        {
+            for (int i = 0; i < modifiers.Count; i++)
+                globalModifiers.Add(modifiers[i]);
+        }
+
+        RecalculateStats();
+        CooldownDuration = stats.FinalCooldown;
+        CurrentCooldown = Mathf.Min(CurrentCooldown, CooldownDuration);
+    }
 
     public event Action<RuntimeSkill> OnCooldownFinished;
 
@@ -239,6 +264,14 @@ public class RuntimeSkill
         foreach (SkillModifierDefinition modifier in appliedModifiers)
         {
             ApplyModifierToStatsFlexible(modifier);
+        }
+
+        // Global meta modifiers are applied after run-specific modifiers,
+        // while remaining stored in their own collection.
+        for (int i = 0; i < globalModifiers.Count; i++)
+        {
+            ModifierEntry modifier = globalModifiers[i];
+            ApplySingleModifier(modifier.Type, modifier.Value);
         }
 
         stats.Calculate();

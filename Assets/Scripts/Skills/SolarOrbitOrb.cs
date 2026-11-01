@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(SphereCollider))]
@@ -9,6 +10,16 @@ public class SolarOrbitOrb : PooledBehaviour, IOrbital
 
     [Header("Orbit Settings")]
     [SerializeField] private float baseAngularSpeed = 180f;
+
+    [Header("Damage Settings")]
+    [SerializeField, Min(0.05f)]
+    private float damageInterval = 0.5f;
+
+    private readonly Dictionary<IDamageable, float> nextDamageTimes =
+        new Dictionary<IDamageable, float>();
+
+    private readonly Dictionary<IDamageable, HashSet<Collider>> activeContacts =
+        new Dictionary<IDamageable, HashSet<Collider>>();
 
     [Header("Chaotic Self Rotation")]
     [SerializeField] private float chaosBaseSpeed = 360f;
@@ -207,16 +218,37 @@ public class SolarOrbitOrb : PooledBehaviour, IOrbital
 
     private void OnTriggerEnter(Collider other)
     {
-        if (skill == null || owner == null)
+        HandleDamageContact(other);
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        HandleDamageContact(other);
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other == null)
             return;
 
         IDamageable damageable =
             other.GetComponentInParent<IDamageable>();
 
-        if (damageable == null || damageable.IsDead)
+        if (damageable == null)
             return;
 
-        damageable.TakeDamage(new DamageData(damage));
+        if (!activeContacts.TryGetValue(
+            damageable,
+            out HashSet<Collider> colliders))
+            return;
+
+        colliders.Remove(other);
+
+        if (colliders.Count > 0)
+            return;
+
+        activeContacts.Remove(damageable);
+        nextDamageTimes.Remove(damageable);
     }
 
     private void FinishOrbit()
@@ -257,5 +289,44 @@ public class SolarOrbitOrb : PooledBehaviour, IOrbital
         transform.localRotation = Quaternion.identity;
 
         damage = 0f;
+
+        nextDamageTimes.Clear();
+        activeContacts.Clear();
+    }
+
+    private void HandleDamageContact(Collider other)
+    {
+        if (skill == null || owner == null || other == null)
+            return;
+
+        IDamageable damageable =
+            other.GetComponentInParent<IDamageable>();
+
+        if (damageable == null || damageable.IsDead)
+            return;
+
+        if (!activeContacts.TryGetValue(
+            damageable,
+            out HashSet<Collider> colliders))
+        {
+            colliders = new HashSet<Collider>();
+            activeContacts.Add(damageable, colliders);
+        }
+
+        colliders.Add(other);
+
+        if (nextDamageTimes.TryGetValue(
+            damageable,
+            out float nextDamageTime) &&
+            Time.time < nextDamageTime)
+        {
+            return;
+        }
+
+        damageable.TakeDamage(new DamageData(damage));
+
+        float interval = Mathf.Max(0.05f, damageInterval);
+
+        nextDamageTimes[damageable] = Time.time + interval;
     }
 }

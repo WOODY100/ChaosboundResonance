@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73eb1edb05d06cf458f9634370362fe7, type: 3}
+  m_Name: Freeze Traps
+  m_EditorClassIdentifier: Assembly-CSharp::SkillDefinition
+  displayName: Freeze Zone
+  description: una zona de hielo al rededor del jugador
+  icon: {fileID: 21300000, guid: 91bf174d5ed4a5a4ab40b4d8541bef7d, type: 3}
+  rarity: 0
+  ExecutionPrefab: {fileID: 8195250700512117727, guid: ee5f8fd0bbe4e014a8c7289e19967bf1, type: 3}
+  ExecutorPrefab: {fileID: 6360831567790270051, guid: dbc2f49d783a20e4dbfb4c133fcfcc27, type: 3}
+  audioDefinition: {fileID: 0}
+  BaseDamage: 5
+  BaseCooldown: 5
+  BaseSpawnRadius: 1.5
+  BaseImpactRadius: 1.5
+  BaseRange: 0
+  BaseDuration: 4
+  BaseTickRate: 0.5
+  BaseCount: 1
+  ScalesWithAttackSpeed: 0
+  CanCrit: 0
+  IsDamageOverTime: 1
+  CooldownStartsAfterDuration: 1
+  possibleModifiers:
+  - {fileID: 11400000, guid: 2f5e3d0e53294fb469db6127808a28e3, type: 2}
+  - {fileID: 11400000, guid: d73b3007305f15e489006a821703bd7d, type: 2}
+  evolutions: []
+  ExecutionPattern: {fileID: 11400000, guid: e36f92a3cda994c4bbb46f0988672829, type: 2}

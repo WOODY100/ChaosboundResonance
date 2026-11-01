@@ -12,6 +12,8 @@ namespace Chaosbound.Gameplay.Save
             PersistentInventoryState inventoryState,
             EquipmentLoadoutRuntime equipmentLoadout,
             PersistentMetaState metaState,
+            SkillTreeDatabase skillTreeDatabase,
+            SkillTreeRuntimeState skillTreeState,
             ExpeditionProgressRuntime expeditionProgress)
         {
             if (saveVersion < 0)
@@ -30,9 +32,14 @@ namespace Chaosbound.Gameplay.Save
                 throw new ArgumentNullException(
                     nameof(metaState));
 
+            if (skillTreeDatabase == null)
+                throw new ArgumentNullException(nameof(skillTreeDatabase));
+
+            if (skillTreeState == null)
+                throw new ArgumentNullException(nameof(skillTreeState));
+
             if (expeditionProgress == null)
-                throw new ArgumentNullException(
-                    nameof(expeditionProgress));
+                throw new ArgumentNullException(nameof(expeditionProgress));
 
             return new SaveGameData
             {
@@ -49,6 +56,11 @@ namespace Chaosbound.Gameplay.Save
                 MetaProgression =
                     SaveMetaProgressionMapper.ToSaveData(
                         metaState),
+
+                SkillTree =
+                    SaveSkillTreeMapper.ToSaveData(
+                        skillTreeDatabase,
+                        skillTreeState),
 
                 ExpeditionProgress =
                     expeditionProgress.ToSaveData()

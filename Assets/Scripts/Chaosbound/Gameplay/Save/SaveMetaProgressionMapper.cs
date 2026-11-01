@@ -14,22 +14,25 @@ namespace Chaosbound.Gameplay.Save
 
             return new SaveMetaProgressionData
             {
-                Experience = state.Experience
+                Experience = state.Experience,
+                MetaLevel = state.MetaLevel,
+                SkillPoints = state.SkillPoints
             };
         }
 
         public static void ApplyLoadPlan(
             int experience,
-            PersistentMetaState state)
+            int metaLevel,
+            int skillPoints,
+            PersistentMetaRuntime runtime)
         {
-            if (state == null)
-                throw new ArgumentNullException(nameof(state));
+            if (runtime == null)
+                throw new ArgumentNullException(nameof(runtime));
 
-            if (experience < 0)
-                throw new ArgumentOutOfRangeException(nameof(experience));
-
-            state.Clear();
-            state.AddExperience(experience);
+            runtime.RestoreProgression(
+                experience,
+                metaLevel,
+                skillPoints);
         }
     }
 }

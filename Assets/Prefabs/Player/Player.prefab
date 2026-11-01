@@ -57,6 +57,7 @@ GameObject:
   - component: {fileID: 3967080049449003311}
   - component: {fileID: 755046934357331053}
   - component: {fileID: 1864340752066512939}
+  - component: {fileID: 7788514263303807805}
   - component: {fileID: 101089627876951994}
   - component: {fileID: 8838974530463216920}
   - component: {fileID: 7562626657679166679}
@@ -284,8 +285,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9a96acd953e4744580a645f7fad8aa1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
-  damageSound: {fileID: 8300000, guid: 6cce00181c2d224458bb48e42b5a0042, type: 3}
-  damageVolume: 0.6
   deathSound: {fileID: 8300000, guid: 47db20b751968254db79831d28947919, type: 3}
   deathVolume: 1
 --- !u!114 &8481841851863748374
@@ -339,7 +338,7 @@ MonoBehaviour:
   baseAttackCooldown: 0.9
   enemyLayer:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 320
   slashPrefab: {fileID: 7611201976539897820, guid: b13c9887318689f4cb59c771397f3d2b, type: 3}
   attackSpawnPoint: {fileID: 1188860004668281879}
   attackAudioSource: {fileID: 4380041389742077928}
@@ -439,7 +438,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PersistentZoneExecutor
   enemyLayer:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 320
 --- !u!114 &1864340752066512939
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -452,6 +451,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f111ff30c4a9a784b8db587c42cc6aa6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerModifierSystem
+--- !u!114 &7788514263303807805
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1545538594216743131}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 528e249fbe5f4ad4eb900c05ab3918a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SkillTreeStatsRuntimeComposition
 --- !u!114 &101089627876951994
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -580,10 +591,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.1344454
-  m_Height: 0.6352302
+  m_Radius: 0.2667971
+  m_Height: 0.69636744
   m_Direction: 0
-  m_Center: {x: 0.01252413, y: 1.360355, z: -0.04362234}
+  m_Center: {x: 0.012524128, y: 1.6108972, z: 0.07459076}
 --- !u!1 &4741954269998725200
 GameObject:
   m_ObjectHideFlags: 0
@@ -1333,10 +1344,6 @@ Cloth:
     collisionSphereDistance: 3.4028235e+38
   - maxDistance: 0
     collisionSphereDistance: 3.4028235e+38
-  - maxDistance: 0.027204651
-    collisionSphereDistance: 3.4028235e+38
-  - maxDistance: 0.027214235
-    collisionSphereDistance: 3.4028235e+38
   - maxDistance: 0
     collisionSphereDistance: 3.4028235e+38
   - maxDistance: 0
@@ -1347,17 +1354,21 @@ Cloth:
     collisionSphereDistance: 3.4028235e+38
   - maxDistance: 0
     collisionSphereDistance: 3.4028235e+38
-  - maxDistance: 0.027200563
+  - maxDistance: 0
     collisionSphereDistance: 3.4028235e+38
-  - maxDistance: 0.027283384
+  - maxDistance: 0
+    collisionSphereDistance: 3.4028235e+38
+  - maxDistance: 0
+    collisionSphereDistance: 3.4028235e+38
+  - maxDistance: 0
     collisionSphereDistance: 3.4028235e+38
   - maxDistance: 0.027538752
     collisionSphereDistance: 3.4028235e+38
-  - maxDistance: 0.027275873
+  - maxDistance: 0
     collisionSphereDistance: 3.4028235e+38
   - maxDistance: 0.027624732
     collisionSphereDistance: 3.4028235e+38
-  - maxDistance: 0.027383095
+  - maxDistance: 0
     collisionSphereDistance: 3.4028235e+38
   - maxDistance: 0.027851487
     collisionSphereDistance: 3.4028235e+38
@@ -1459,13 +1470,13 @@ Cloth:
     collisionSphereDistance: 3.4028235e+38
   - maxDistance: 0.028001254
     collisionSphereDistance: 3.4028235e+38
-  - maxDistance: 0.027294893
+  - maxDistance: 0
     collisionSphereDistance: 3.4028235e+38
-  - maxDistance: 0.027346058
+  - maxDistance: 0
     collisionSphereDistance: 3.4028235e+38
   - maxDistance: 0.027478416
     collisionSphereDistance: 3.4028235e+38
-  - maxDistance: 0.027379705
+  - maxDistance: 0
     collisionSphereDistance: 3.4028235e+38
   - maxDistance: 0.02770204
     collisionSphereDistance: 3.4028235e+38
@@ -1479,7 +1490,7 @@ Cloth:
     collisionSphereDistance: 3.4028235e+38
   - maxDistance: 0.02818258
     collisionSphereDistance: 3.4028235e+38
-  - maxDistance: 0.027387887
+  - maxDistance: 0
     collisionSphereDistance: 3.4028235e+38
   - maxDistance: 0.027443284
     collisionSphereDistance: 3.4028235e+38
@@ -1505,13 +1516,13 @@ Cloth:
     collisionSphereDistance: 3.4028235e+38
   - maxDistance: 0.027443284
     collisionSphereDistance: 3.4028235e+38
-  - maxDistance: 0.027200563
+  - maxDistance: 0
     collisionSphereDistance: 3.4028235e+38
   - maxDistance: 0.027685417
     collisionSphereDistance: 3.4028235e+38
   - maxDistance: 0.02770204
     collisionSphereDistance: 3.4028235e+38
-  - maxDistance: 0.027387887
+  - maxDistance: 0
     collisionSphereDistance: 3.4028235e+38
   - maxDistance: 0.02794001
     collisionSphereDistance: 3.4028235e+38
@@ -1519,8 +1530,6 @@ Cloth:
     collisionSphereDistance: 3.4028235e+38
   - maxDistance: 0
     collisionSphereDistance: 3.4028235e+38
-  - maxDistance: 0.027282864
-    collisionSphereDistance: 3.4028235e+38
   - maxDistance: 0
     collisionSphereDistance: 3.4028235e+38
   - maxDistance: 0
@@ -1541,7 +1550,9 @@ Cloth:
     collisionSphereDistance: 3.4028235e+38
   - maxDistance: 0
     collisionSphereDistance: 3.4028235e+38
-  - maxDistance: 0.02737816
+  - maxDistance: 0
+    collisionSphereDistance: 3.4028235e+38
+  - maxDistance: 0
     collisionSphereDistance: 3.4028235e+38
   - maxDistance: 0
     collisionSphereDistance: 3.4028235e+38
@@ -1675,7 +1686,7 @@ Cloth:
     collisionSphereDistance: 3.4028235e+38
   - maxDistance: 0.027649676
     collisionSphereDistance: 3.4028235e+38
-  - maxDistance: 0.027241265
+  - maxDistance: 0
     collisionSphereDistance: 3.4028235e+38
   - maxDistance: 0.065288834
     collisionSphereDistance: 3.4028235e+38
@@ -3043,11 +3054,11 @@ Cloth:
     collisionSphereDistance: 3.4028235e+38
   - maxDistance: 0.028389877
     collisionSphereDistance: 3.4028235e+38
-  - maxDistance: 0.027337182
+  - maxDistance: 0
     collisionSphereDistance: 3.4028235e+38
-  - maxDistance: 0.027265443
+  - maxDistance: 0
     collisionSphereDistance: 3.4028235e+38
-  - maxDistance: 0.027355397
+  - maxDistance: 0
     collisionSphereDistance: 3.4028235e+38
   - maxDistance: 0.027604444
     collisionSphereDistance: 3.4028235e+38

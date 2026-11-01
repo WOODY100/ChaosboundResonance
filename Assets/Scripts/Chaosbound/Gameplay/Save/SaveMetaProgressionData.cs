@@ -6,5 +6,9 @@ namespace Chaosbound.Gameplay.Save
     public sealed class SaveMetaProgressionData
     {
         public int Experience;
+
+        public int MetaLevel = 1;
+
+        public int SkillPoints;
     }
 }

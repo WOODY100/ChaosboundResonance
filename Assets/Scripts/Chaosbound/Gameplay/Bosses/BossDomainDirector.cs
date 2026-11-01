@@ -34,6 +34,9 @@ namespace Chaosbound.Gameplay.Bosses
         private readonly SpawnRuntime
             spawnRuntime;
 
+        private readonly BossEncounterOrchestrator
+            encounterOrchestrator;
+
         /// <summary>
         /// Executes the Boss Domain for the current
         /// Expedition Runtime tick.
@@ -74,6 +77,16 @@ namespace Chaosbound.Gameplay.Bosses
             BossSpawnPlanner spawnPlanner,
             BossSpawnRequestTranslator spawnRequestTranslator,
             SpawnRuntime spawnRuntime)
+            : this(spawnPlanner, spawnRequestTranslator, spawnRuntime,
+                new BossEncounterOrchestrator(spawnRuntime))
+        {
+        }
+
+        public BossDomainDirector(
+            BossSpawnPlanner spawnPlanner,
+            BossSpawnRequestTranslator spawnRequestTranslator,
+            SpawnRuntime spawnRuntime,
+            BossEncounterOrchestrator encounterOrchestrator)
         {
             this.spawnPlanner =
                 spawnPlanner
@@ -89,6 +102,11 @@ namespace Chaosbound.Gameplay.Bosses
                 spawnRuntime
                 ?? throw new ArgumentNullException(
                     nameof(spawnRuntime));
+
+            this.encounterOrchestrator =
+                encounterOrchestrator
+                ?? throw new ArgumentNullException(
+                    nameof(encounterOrchestrator));
         }
 
         private void HandleBossTrigger(
@@ -124,11 +142,22 @@ namespace Chaosbound.Gameplay.Bosses
                 spawnRequestTranslator.Translate(
                     spawnPlan);
 
-            spawnRuntime.Execute(
-                spawnRequest,
-                context.Config.Spawn,
-                context.References.Runtime,
-                context.State);
+            IReadOnlyList<GameObject> spawnedObjects =
+                spawnRuntime.Execute(
+                    spawnRequest,
+                    context.Config.Spawn,
+                    context.References.Runtime,
+                    context.State);
+
+            if (!encounterOrchestrator.PrepareAndStart(
+                spawnedObjects,
+                out string preparationError))
+            {
+                context.State.Boss.Fail();
+                Debug.LogError(
+                    "Boss encounter preparation failed: " + preparationError);
+                return;
+            }
 
             context.State.Boss.MarkActive();
         }

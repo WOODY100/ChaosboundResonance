@@ -78,6 +78,28 @@ namespace Chaosbound.Gameplay.MetaProgression.Persistent
             return true;
         }
 
+        public void RestoreProgression(
+            int restoredExperience,
+            int restoredMetaLevel,
+            int restoredSkillPoints)
+        {
+            if (restoredExperience < 0)
+                throw new ArgumentOutOfRangeException(
+                    nameof(restoredExperience));
+
+            if (restoredMetaLevel < 1)
+                throw new ArgumentOutOfRangeException(
+                    nameof(restoredMetaLevel));
+
+            if (restoredSkillPoints < 0)
+                throw new ArgumentOutOfRangeException(
+                    nameof(restoredSkillPoints));
+
+            experience = restoredExperience;
+            metaLevel = restoredMetaLevel;
+            skillPoints = restoredSkillPoints;
+        }
+
         public void Clear()
         {
             experience = 0;

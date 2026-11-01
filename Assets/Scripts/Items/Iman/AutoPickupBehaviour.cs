@@ -72,6 +72,17 @@ public abstract class AutoPickupBehaviour : PooledBehaviour
     {
     }
 
+    /// <summary>
+    /// Allows a pickup to retry after its activation conditions change.
+    /// </summary>
+    protected void ResetPickupTrigger()
+    {
+        if (pickupBlocked)
+            return;
+
+        pickupTriggered = false;
+    }
+
     protected void ResolvePlayer()
     {
         if (player != null)

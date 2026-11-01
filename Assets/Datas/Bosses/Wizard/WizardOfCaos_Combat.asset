@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a03394b54bb5dd948b05c63d39d37126, type: 3}
+  m_Name: WizardOfCaos_Combat
+  m_EditorClassIdentifier: Assembly-CSharp::Chaosbound.Content.Enemy.Bosses.BossCombatDefinition
+  m_BaseStats:
+    m_MaxHP: 3000
+    m_BaseDamage: 20
+  m_MovementSettings:
+    m_PreferredDistance: 7
+    m_MinimumDistance: 4
+    m_MaximumRetreatDistance: 10
+    m_RetreatCooldown: 3
+    m_RetreatSpeed: 4
+    m_RotationSpeed: 540
+    m_StoppingDistance: 0.5
+  m_CombatSettings:
+    m_WaitReevaluationInterval: 0.25
+  m_Phases:
+  - {fileID: 11400000, guid: 5e4c9dcc1b89e3243a8739075fd6d526, type: 2}
+  - {fileID: 11400000, guid: b3502955dff405a439026706dc56cf1f, type: 2}

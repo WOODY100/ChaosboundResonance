@@ -1,6 +1,7 @@
 using Chaosbound.Content.Expeditions.Runtime.Configs;
 using UnityEngine;
 using System;
+using System.Collections.Generic;
 
 public class PlayerSkillLoadout : MonoBehaviour
 {
@@ -12,7 +13,14 @@ public class PlayerSkillLoadout : MonoBehaviour
 
     private bool isInitialized;
 
+    private readonly List<ModifierEntry> globalModifiers =
+        new List<ModifierEntry>();
+
+    public IReadOnlyList<ModifierEntry> GlobalModifiers =>
+        globalModifiers;
+
     public event Action OnLoadoutChanged;
+    public event Action OnGlobalModifiersChanged;
 
     // ===============================
     // INICIALIZACIÓN
@@ -31,6 +39,39 @@ public class PlayerSkillLoadout : MonoBehaviour
 
         skillProgressionConfig = progressionConfig;
         isInitialized = true;
+    }
+
+    // ===============================
+    // GLOBAL META MODIFIERS
+    // ===============================
+
+    /// <summary>
+    /// Replaces the global modifier set and reapplies it to every owned skill.
+    /// Can be called before Initialize; newly assigned skills receive the set.
+    /// </summary>
+    public void SetGlobalModifiers(IReadOnlyList<ModifierEntry> modifiers)
+    {
+        globalModifiers.Clear();
+
+        if (modifiers != null)
+        {
+            for (int i = 0; i < modifiers.Count; i++)
+                globalModifiers.Add(modifiers[i]);
+        }
+
+        for (int i = 0; i < skillSlots.Length; i++)
+        {
+            if (skillSlots[i] != null)
+                skillSlots[i].SetGlobalModifiers(globalModifiers);
+        }
+
+        OnGlobalModifiersChanged?.Invoke();
+    }
+
+    private void ApplyGlobalModifiers(RuntimeSkill skill)
+    {
+        if (skill != null)
+            skill.SetGlobalModifiers(globalModifiers);
     }
 
     // ===============================
@@ -87,10 +128,13 @@ public class PlayerSkillLoadout : MonoBehaviour
         if (index == -1)
             return false;
 
-        skillSlots[index] =
+        RuntimeSkill runtimeSkill =
             new RuntimeSkill(
                 definition,
                 skillProgressionConfig);
+
+        ApplyGlobalModifiers(runtimeSkill);
+        skillSlots[index] = runtimeSkill;
 
         OnLoadoutChanged?.Invoke();
         return true;
@@ -109,10 +153,13 @@ public class PlayerSkillLoadout : MonoBehaviour
         if (slotIndex < 0 || slotIndex >= MaxSlots)
             return;
 
-        skillSlots[slotIndex] =
+        RuntimeSkill runtimeSkill =
             new RuntimeSkill(
                 newDefinition,
                 skillProgressionConfig);
+
+        ApplyGlobalModifiers(runtimeSkill);
+        skillSlots[slotIndex] = runtimeSkill;
 
         OnLoadoutChanged?.Invoke();
     }
@@ -133,6 +180,9 @@ public class PlayerSkillLoadout : MonoBehaviour
         if (skillSlots[slotIndex] == null)
             return false;
 
+        // Evolution creates a new RuntimeSkill instance. Reapply the
+        // current global set so evolved skills cannot lose meta effects.
+        ApplyGlobalModifiers(runtimeSkill);
         skillSlots[slotIndex] = runtimeSkill;
 
         OnLoadoutChanged?.Invoke();

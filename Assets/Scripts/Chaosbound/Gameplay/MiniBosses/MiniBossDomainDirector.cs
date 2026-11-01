@@ -1,3 +1,4 @@
+using Chaosbound.Gameplay.Bosses;
 using Chaosbound.Content.Enemy.MiniBosses;
 using Chaosbound.Content.Expeditions.Definitions.Timeline;
 using Chaosbound.Content.Expeditions.Runtime.MiniBosses;
@@ -9,6 +10,7 @@ using Chaosbound.Gameplay.Spawn.Contracts;
 using Chaosbound.Gameplay.Spawn.Runtime;
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Chaosbound.Gameplay.MiniBosses
 {
@@ -32,6 +34,9 @@ namespace Chaosbound.Gameplay.MiniBosses
 
         private readonly SpawnRuntime
             spawnRuntime;
+
+        private readonly BossEncounterOrchestrator
+            encounterOrchestrator;
 
         /// <summary>
         /// Executes the MiniBoss Domain for the current
@@ -73,6 +78,16 @@ namespace Chaosbound.Gameplay.MiniBosses
             MiniBossSpawnPlanner spawnPlanner,
             MiniBossSpawnRequestTranslator spawnRequestTranslator,
             SpawnRuntime spawnRuntime)
+            : this(spawnPlanner, spawnRequestTranslator, spawnRuntime,
+                new BossEncounterOrchestrator(spawnRuntime))
+        {
+        }
+
+        public MiniBossDomainDirector(
+            MiniBossSpawnPlanner spawnPlanner,
+            MiniBossSpawnRequestTranslator spawnRequestTranslator,
+            SpawnRuntime spawnRuntime,
+            BossEncounterOrchestrator encounterOrchestrator)
         {
             this.spawnPlanner =
                 spawnPlanner
@@ -88,6 +103,11 @@ namespace Chaosbound.Gameplay.MiniBosses
                 spawnRuntime
                 ?? throw new ArgumentNullException(
                     nameof(spawnRuntime));
+
+            this.encounterOrchestrator =
+                encounterOrchestrator
+                ?? throw new ArgumentNullException(
+                    nameof(encounterOrchestrator));
         }
 
         private void HandleMiniBossTrigger(
@@ -123,11 +143,24 @@ namespace Chaosbound.Gameplay.MiniBosses
                 spawnRequestTranslator.Translate(
                     spawnPlan);
 
-            spawnRuntime.Execute(
-                spawnRequest,
-                context.Config.Spawn,
-                context.References.Runtime,
-                context.State);
+            IReadOnlyList<UnityEngine.GameObject> spawnedObjects =
+                spawnRuntime.Execute(
+                    spawnRequest,
+                    context.Config.Spawn,
+                    context.References.Runtime,
+                    context.State);
+
+            if (!encounterOrchestrator.PrepareAndStart(
+                spawnedObjects,
+                out string preparationError))
+            {
+                context.State.MiniBoss.Fail();
+                UnityEngine.Debug.LogError(
+                    "MiniBoss encounter preparation failed: " + preparationError);
+                return;
+            }
+
+            context.State.MiniBoss.MarkActive();
         }
 
         private MiniBossData SelectMiniBoss(

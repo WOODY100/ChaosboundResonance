@@ -90,6 +90,52 @@ namespace Chaosbound.Gameplay.Spawn.Runtime
             return spawnedObjects;
         }
 
+        /// <summary>
+        /// Releases only the supplied objects from this runtime's
+        /// materialization tracking and returns them to their pools.
+        /// Objects from other spawn operations remain untouched.
+        /// </summary>
+        public void ReleaseMaterializedObjects(
+            IReadOnlyList<GameObject> objects)
+        {
+            if (objects == null || objects.Count == 0)
+                return;
+
+            HashSet<GameObject> objectsToRelease =
+                new HashSet<GameObject>();
+
+            for (int i = 0; i < objects.Count; i++)
+            {
+                GameObject obj = objects[i];
+                if (obj != null)
+                    objectsToRelease.Add(obj);
+            }
+
+            if (objectsToRelease.Count == 0)
+                return;
+
+            // Remove references before returning objects to the pool.
+            for (int i = materializedObjects.Count - 1; i >= 0; i--)
+            {
+                if (objectsToRelease.Contains(materializedObjects[i]))
+                    materializedObjects.RemoveAt(i);
+            }
+
+            foreach (GameObject obj in objectsToRelease)
+            {
+                if (obj == null)
+                    continue;
+
+                PooledObject pooledObject =
+                    obj.GetComponent<PooledObject>();
+
+                if (pooledObject != null)
+                    pooledObject.ReturnToPool();
+                else
+                    UnityEngine.Object.Destroy(obj);
+            }
+        }
+
         public void Cleanup()
         {
             foreach (GameObject obj in materializedObjects)

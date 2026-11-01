@@ -1,3 +1,4 @@
+using Chaosbound.Gameplay.Items.Testing;
 using Chaosbound.Gameplay.ExpeditionRuntime.Exit;
 using Chaosbound.Gameplay.ExpeditionRuntime.Settlement;
 using Chaosbound.Gameplay.MetaProgression.Persistent;
@@ -27,6 +28,8 @@ public class PlayerStatsDebugTest : MonoBehaviour
     expeditionSelectionWindowController;
 
     private PersistentMetaRuntime persistentMetaRuntime;
+
+    private WorldItemTestSpawner worldItemTestSpawner;
 
     private void Awake()
     {
@@ -63,10 +66,10 @@ public class PlayerStatsDebugTest : MonoBehaviour
         }
 
         // K = Spawn test item
-        /*if (Keyboard.current.kKey.wasPressedThisFrame)
+        if (Keyboard.current.kKey.wasPressedThisFrame)
         {
             worldItemTestSpawner?.SpawnAnotherItem();
-        }*/
+        }
 
         // J = Abandon Expedition
         if (Keyboard.current.jKey.wasPressedThisFrame)
@@ -86,11 +89,11 @@ public class PlayerStatsDebugTest : MonoBehaviour
             OpenSkillTree();
         }
 
-        // F = Open Expedition Selection
+        /* F = Open Expedition Selection
         if (Keyboard.current.fKey.wasPressedThisFrame)
         {
             OpenExpeditionSelection();
-        }
+        }*/
     }
 
     private void AddDebugMetaExperience()

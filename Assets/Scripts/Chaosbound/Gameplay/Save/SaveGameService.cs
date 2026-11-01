@@ -10,10 +10,12 @@ namespace Chaosbound.Gameplay.Save
     {
         private readonly ISaveStorage storage;
         private readonly int saveVersion;
+        private readonly SkillTreeDatabase skillTreeDatabase;
 
         public SaveGameService(
             ISaveStorage storage,
-            int saveVersion)
+            int saveVersion,
+            SkillTreeDatabase skillTreeDatabase)
         {
             this.storage =
                 storage ??
@@ -28,12 +30,17 @@ namespace Chaosbound.Gameplay.Save
 
             this.saveVersion =
                 saveVersion;
+
+            this.skillTreeDatabase =
+                skillTreeDatabase ??
+                throw new ArgumentNullException(nameof(skillTreeDatabase));
         }
 
         public void Save(
             PersistentInventoryState inventoryState,
             EquipmentLoadoutRuntime equipmentLoadout,
             PersistentMetaState metaState,
+            SkillTreeRuntimeState skillTreeState,
             ExpeditionProgressRuntime expeditionProgress)
         {
             if (expeditionProgress == null)
@@ -46,6 +53,8 @@ namespace Chaosbound.Gameplay.Save
                     inventoryState,
                     equipmentLoadout,
                     metaState,
+                    skillTreeDatabase,
+                    skillTreeState,
                     expeditionProgress);
 
             string json =
@@ -74,6 +83,9 @@ namespace Chaosbound.Gameplay.Save
                 return false;
 
             if (saveData.MetaProgression == null)
+                return false;
+
+            if (saveData.SkillTree == null)
                 return false;
 
             if (saveData.ExpeditionProgress == null)
@@ -111,14 +123,30 @@ namespace Chaosbound.Gameplay.Save
                 return false;
             }
 
-            if (saveData.MetaProgression.Experience < 0)
+            if (!PersistentMetaRuntime.IsValidProgression(
+                    saveData.MetaProgression.Experience,
+                    saveData.MetaProgression.MetaLevel,
+                    saveData.MetaProgression.SkillPoints))
+            {
                 return false;
+            }
+
+            if (!SaveSkillTreeMapper.TryPrepareLoad(
+                saveData.SkillTree,
+                skillTreeDatabase,
+                out SaveSkillTreeLoadPlan skillTreeLoadPlan))
+            {
+                return false;
+            }
 
             loadPlan =
                 new SaveGameLoadPlan(
                     inventoryLoadPlan,
                     equipmentLoadPlan,
                     saveData.MetaProgression.Experience,
+                    saveData.MetaProgression.MetaLevel,
+                    saveData.MetaProgression.SkillPoints,
+                    skillTreeLoadPlan,
                     saveData.ExpeditionProgress);
 
             return true;
@@ -128,7 +156,8 @@ namespace Chaosbound.Gameplay.Save
             SaveGameLoadPlan loadPlan,
             PersistentInventoryState inventoryState,
             EquipmentLoadoutRuntime equipmentLoadout,
-            PersistentMetaState metaState,
+            PersistentMetaRuntime metaRuntime,
+            SkillTreeRuntimeState skillTreeState,
             ExpeditionProgressRuntime expeditionProgress)
         {
             if (loadPlan == null)
@@ -140,8 +169,11 @@ namespace Chaosbound.Gameplay.Save
             if (equipmentLoadout == null)
                 throw new ArgumentNullException(nameof(equipmentLoadout));
 
-            if (metaState == null)
-                throw new ArgumentNullException(nameof(metaState));
+            if (metaRuntime == null)
+                throw new ArgumentNullException(nameof(metaRuntime));
+
+            if (skillTreeState == null)
+                throw new ArgumentNullException(nameof(skillTreeState));
 
             if (expeditionProgress == null)
                 throw new ArgumentNullException(nameof(expeditionProgress));
@@ -164,7 +196,17 @@ namespace Chaosbound.Gameplay.Save
 
             SaveMetaProgressionMapper.ApplyLoadPlan(
                 loadPlan.MetaExperience,
-                metaState);
+                loadPlan.MetaLevel,
+                loadPlan.MetaSkillPoints,
+                metaRuntime);
+
+            if (!SaveSkillTreeMapper.ApplyLoadPlan(
+                loadPlan.SkillTree,
+                skillTreeState,
+                skillTreeDatabase))
+            {
+                return false;
+            }
 
             return expeditionProgress.ApplySaveData(
                 loadPlan.ExpeditionProgress);

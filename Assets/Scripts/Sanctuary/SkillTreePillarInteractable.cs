@@ -36,8 +36,6 @@ public sealed class SkillTreePillarInteractable :
 
     public void Interact(PlayerInteractor interactor)
     {
-        Debug.Log("[SkillTreePillar] Interact received.", this);
-
         if (skillTreeVisualController == null)
         {
             Debug.LogError(
@@ -45,11 +43,6 @@ public sealed class SkillTreePillarInteractable :
                 this);
             return;
         }
-
-        Debug.Log(
-            $"[SkillTreePillar] GameFlow context: " +
-            $"{(gameFlow != null ? gameFlow.CurrentContext.ToString() : "NULL")}",
-            this);
 
         if (gameFlow == null)
         {
@@ -75,11 +68,6 @@ public sealed class SkillTreePillarInteractable :
 
         gameFlow.Request(GameFlowContext.Stats);
 
-        Debug.Log(
-            $"[SkillTreePillar] Context after request: " +
-            $"{gameFlow.CurrentContext}",
-            this);
-
         if (gameFlow.CurrentContext != GameFlowContext.Stats)
         {
             Debug.LogWarning(
@@ -87,10 +75,6 @@ public sealed class SkillTreePillarInteractable :
                 this);
             return;
         }
-
-        Debug.Log(
-            "[SkillTreePillar] Opening Skill Tree.",
-            this);
 
         skillTreeVisualController.OpenSkillTree();
     }

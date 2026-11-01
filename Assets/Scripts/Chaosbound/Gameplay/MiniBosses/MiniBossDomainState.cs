@@ -11,6 +11,8 @@ namespace Chaosbound.Gameplay.MiniBosses
 
         Active = 2,
 
-        Completed = 3
+        Completed = 3,
+
+        Failed = 4
     }
 }

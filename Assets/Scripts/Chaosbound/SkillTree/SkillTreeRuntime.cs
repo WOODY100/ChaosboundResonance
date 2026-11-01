@@ -8,6 +8,8 @@ public sealed class SkillTreeRuntime
     private readonly SkillTreeRuntimeState state;
     private readonly PersistentMetaRuntime persistentMetaRuntime;
 
+    public event Action ProgressionChanged;
+
     public SkillTreeDatabase Database
     {
         get { return database; }
@@ -25,7 +27,8 @@ public sealed class SkillTreeRuntime
 
     public SkillTreeRuntime(
         SkillTreeDatabase database,
-        PersistentMetaRuntime persistentMetaRuntime)
+        PersistentMetaRuntime persistentMetaRuntime,
+        SkillTreeRuntimeState state)
     {
         if (database == null)
             throw new ArgumentNullException(nameof(database));
@@ -34,9 +37,12 @@ public sealed class SkillTreeRuntime
             throw new ArgumentNullException(
                 nameof(persistentMetaRuntime));
 
+        if (state == null)
+            throw new ArgumentNullException(nameof(state));
+
         this.database = database;
         this.persistentMetaRuntime = persistentMetaRuntime;
-        this.state = new SkillTreeRuntimeState();
+        this.state = state;
     }
 
     public SkillTreeNodeDefinition GetNode(string nodeId)
@@ -107,7 +113,11 @@ public sealed class SkillTreeRuntime
         if (!persistentMetaRuntime.TrySpendSkillPoints(node.Cost))
             return false;
 
-        return state.AddPurchasedNode(node.NodeId);
+        if (!state.AddPurchasedNode(node.NodeId))
+            return false;
+
+        NotifyProgressionChanged();
+        return true;
     }
 
     public bool CanSelectChoice(
@@ -185,7 +195,13 @@ public sealed class SkillTreeRuntime
             node.NodeId))
             return false;
 
+        NotifyProgressionChanged();
         return true;
+    }
+
+    internal void NotifyProgressionChanged()
+    {
+        ProgressionChanged?.Invoke();
     }
 
     private bool EvaluateRequirement(NodeRequirement requirement)

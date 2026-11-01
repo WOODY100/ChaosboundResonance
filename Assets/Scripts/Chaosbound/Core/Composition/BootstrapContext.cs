@@ -44,6 +44,13 @@ namespace Chaosbound.Core.Composition
         [SerializeField] private VideoSettingsRuntime videoSettingsRuntime;
 
         [SerializeField] private PersistentMetaRuntime persistentMetaRuntime;
+
+        [Header("Skill Tree")]
+        [SerializeField] private SkillTreeDatabase skillTreeDatabase;
+
+        private SkillTreeRuntimeState skillTreeRuntimeState;
+        private SkillTreeRuntime skillTreeRuntime;
+
         [SerializeField] private AudioManager audioManager;
         [SerializeField]
         private SceneTransitionHost sceneTransitionHost;
@@ -111,6 +118,13 @@ namespace Chaosbound.Core.Composition
         public AudioManager AudioManager => audioManager;
         public PersistentMetaRuntime PersistentMetaRuntime =>
             persistentMetaRuntime;
+
+        public SkillTreeRuntime SkillTreeRuntime =>
+            skillTreeRuntime;
+
+        public SkillTreeRuntimeState SkillTreeRuntimeState =>
+            skillTreeRuntimeState;
+
         public EquipmentLoadoutRuntime EquipmentLoadoutRuntime =>
             equipmentLoadoutRuntime;
         public EquipmentInventoryService EquipmentInventoryService =>
@@ -145,6 +159,11 @@ namespace Chaosbound.Core.Composition
         {
             RegisterCurrentContext();
 
+            skillTreeRuntimeState =
+                new SkillTreeRuntimeState();
+
+            CreateSkillTreeRuntime();
+
             equipmentLoadoutRuntime =
                 new EquipmentLoadoutRuntime();
 
@@ -158,10 +177,11 @@ namespace Chaosbound.Core.Composition
             saveGameService =
                 new SaveGameService(
                     saveStorage,
-                    1);
+                    3,
+                    skillTreeDatabase);
 
             saveSlotService =
-                new SaveSlotService();
+                new SaveSlotService(skillTreeDatabase);
 
             ISaveStorage settingsStorage =
                 new FileSaveStorage(
@@ -262,6 +282,42 @@ namespace Chaosbound.Core.Composition
             Current = this;
         }
 
+        private void CreateSkillTreeRuntime()
+        {
+            if (skillTreeDatabase == null)
+            {
+                throw new InvalidOperationException(
+                    $"{nameof(BootstrapContext)} requires a " +
+                    $"{nameof(SkillTreeDatabase)}.");
+            }
+
+            if (persistentMetaRuntime == null)
+            {
+                throw new InvalidOperationException(
+                    $"{nameof(BootstrapContext)} requires a " +
+                    $"{nameof(PersistentMetaRuntime)}.");
+            }
+
+            if (skillTreeRuntimeState == null)
+            {
+                skillTreeRuntimeState =
+                    new SkillTreeRuntimeState();
+            }
+
+            if (!skillTreeDatabase.Validate())
+            {
+                throw new InvalidOperationException(
+                    $"{nameof(BootstrapContext)} cannot initialize " +
+                    "an invalid SkillTreeDatabase.");
+            }
+
+            skillTreeRuntime =
+                new SkillTreeRuntime(
+                    skillTreeDatabase,
+                    persistentMetaRuntime,
+                    skillTreeRuntimeState);
+        }
+
         private void CreateGameFlow()
         {
             if (gameFlowConfiguration == null)
@@ -345,12 +401,17 @@ namespace Chaosbound.Core.Composition
                 throw new InvalidOperationException(
                     "ExpeditionProgressRuntime is not initialized.");
 
+            if (skillTreeRuntimeState == null)
+                throw new InvalidOperationException(
+                    "SkillTreeRuntimeState is not initialized.");
+
             try
             {
                 saveSlotService.GetService(activeSaveSlotIndex).Save(
                     persistentInventoryRuntime.State,
                     equipmentLoadoutRuntime,
                     persistentMetaRuntime.State,
+                    skillTreeRuntimeState,
                     expeditionProgressRuntime);
 
                 return true;
@@ -426,6 +487,13 @@ namespace Chaosbound.Core.Composition
                     "is not ready.");
             }
 
+            if (skillTreeRuntimeState == null)
+            {
+                throw new InvalidOperationException(
+                    $"{nameof(BootstrapContext)} SkillTreeRuntimeState " +
+                    "is not ready.");
+            }
+
             if (!slotSaveService.TryLoad(
                 out SaveGameLoadPlan loadPlan))
             {
@@ -437,7 +505,8 @@ namespace Chaosbound.Core.Composition
                 loadPlan,
                 persistentInventoryRuntime.State,
                 equipmentLoadoutRuntime,
-                persistentMetaRuntime.State,
+                persistentMetaRuntime,
+                skillTreeRuntimeState,
                 expeditionProgressRuntime);
 
             if (!applied)
@@ -449,6 +518,9 @@ namespace Chaosbound.Core.Composition
             }
 
             activeSaveSlotIndex = slotIndex;
+
+            skillTreeRuntime?.NotifyProgressionChanged();
+
             return true;
         }
 
@@ -489,6 +561,11 @@ namespace Chaosbound.Core.Composition
             equipmentLoadoutRuntime.Clear();
 
             persistentMetaRuntime.ResetProgression();
+
+            if (skillTreeRuntimeState != null)
+                skillTreeRuntimeState.Clear();
+
+            skillTreeRuntime?.NotifyProgressionChanged();
 
             expeditionProgressRuntime.Clear();
 
@@ -723,6 +800,7 @@ namespace Chaosbound.Core.Composition
             ValidateReference(levelUpManager, nameof(levelUpManager));
             ValidateReference(gameFlowConfiguration, nameof(gameFlowConfiguration));
             ValidateReference(persistentMetaRuntime, nameof(persistentMetaRuntime));
+            ValidateReference(skillTreeDatabase, nameof(skillTreeDatabase));
             ValidateReference(itemTooltipService, nameof(itemTooltipService));
             ValidateReference(gameSettingsRuntime, nameof(gameSettingsRuntime));
             ValidateReference(audioManager, nameof(audioManager));

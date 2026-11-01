@@ -63,6 +63,53 @@ public sealed class SkillTreeRuntimeState
         return true;
     }
 
+    public bool Restore(
+        IEnumerable<string> purchasedIds,
+        IDictionary<string, string> choices)
+    {
+        if (purchasedIds == null || choices == null)
+            return false;
+
+        HashSet<string> validatedPurchased =
+            new HashSet<string>();
+
+        foreach (string nodeId in purchasedIds)
+        {
+            if (string.IsNullOrWhiteSpace(nodeId))
+                return false;
+
+            if (!validatedPurchased.Add(nodeId))
+                return false;
+        }
+
+        Dictionary<string, string> validatedChoices =
+            new Dictionary<string, string>();
+
+        foreach (KeyValuePair<string, string> pair in choices)
+        {
+            if (string.IsNullOrWhiteSpace(pair.Key) ||
+                string.IsNullOrWhiteSpace(pair.Value))
+                return false;
+
+            if (!validatedPurchased.Contains(pair.Key) ||
+                validatedChoices.ContainsKey(pair.Key))
+                return false;
+
+            validatedChoices.Add(pair.Key, pair.Value);
+        }
+
+        purchasedNodeIds.Clear();
+        selectedChoices.Clear();
+
+        foreach (string nodeId in validatedPurchased)
+            purchasedNodeIds.Add(nodeId);
+
+        foreach (KeyValuePair<string, string> pair in validatedChoices)
+            selectedChoices.Add(pair.Key, pair.Value);
+
+        return true;
+    }
+
     public void Clear()
     {
         purchasedNodeIds.Clear();

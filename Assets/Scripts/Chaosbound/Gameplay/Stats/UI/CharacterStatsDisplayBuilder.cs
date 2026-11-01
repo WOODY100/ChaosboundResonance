@@ -5,11 +5,14 @@ namespace Chaosbound.Gameplay.Stats.UI
     public sealed class CharacterStatsDisplayBuilder
     {
         private readonly PlayerModifierSystem modifierSystem;
+        private readonly PlayerSkillLoadout skillLoadout;
 
         public CharacterStatsDisplayBuilder(
-            PlayerModifierSystem modifierSystem)
+            PlayerModifierSystem modifierSystem,
+            PlayerSkillLoadout skillLoadout)
         {
             this.modifierSystem = modifierSystem;
+            this.skillLoadout = skillLoadout;
         }
 
         public CharacterStatsDisplayData Build()
@@ -29,6 +32,7 @@ namespace Chaosbound.Gameplay.Stats.UI
             BuildOffense(offense);
             BuildDefense(defense);
             BuildUtility(utility);
+            BuildGlobalSkillModifiers(globalSkillModifiers);
 
             return new CharacterStatsDisplayData(
                 offense,
@@ -95,6 +99,137 @@ namespace Chaosbound.Gameplay.Stats.UI
             result.Add(CreateEntry(
                 StatType.XPGain,
                 StatDisplayFormat.Percent));
+        }
+
+
+        private void BuildGlobalSkillModifiers(
+            List<GlobalSkillModifierDisplayEntry> result)
+        {
+            if (skillLoadout == null || skillLoadout.GlobalModifiers == null)
+                return;
+
+            IReadOnlyList<ModifierEntry> modifiers =
+                skillLoadout.GlobalModifiers;
+
+            for (int i = 0; i < modifiers.Count; i++)
+            {
+                ModifierEntry modifier = modifiers[i];
+                string displayName;
+                StatDisplayFormat format;
+                float displayValue = modifier.Value;
+
+                GetGlobalModifierPresentation(
+                    modifier.Type,
+                    out displayName,
+                    out format);
+
+                if (IsBooleanModifier(modifier.Type))
+                    displayValue = 1f;
+
+                result.Add(new GlobalSkillModifierDisplayEntry(
+                    modifier.Type.ToString(),
+                    displayName,
+                    displayValue,
+                    format));
+            }
+        }
+
+        private static void GetGlobalModifierPresentation(
+            SkillModifierType type,
+            out string displayName,
+            out StatDisplayFormat format)
+        {
+            displayName = type.ToString();
+            format = StatDisplayFormat.Decimal;
+
+            switch (type)
+            {
+                case SkillModifierType.FlatDamage:
+                    displayName = "Skill Damage";
+                    format = StatDisplayFormat.Integer;
+                    break;
+                case SkillModifierType.PercentDamage:
+                    displayName = "Skill Damage";
+                    format = StatDisplayFormat.Percent;
+                    break;
+                case SkillModifierType.CriticalChance:
+                    displayName = "Skill Critical Chance";
+                    format = StatDisplayFormat.Percent;
+                    break;
+                case SkillModifierType.CriticalDamageBonus:
+                    displayName = "Skill Critical Damage";
+                    format = StatDisplayFormat.Percent;
+                    break;
+                case SkillModifierType.CooldownPercent:
+                    displayName = "Skill Cooldown Reduction";
+                    format = StatDisplayFormat.Percent;
+                    break;
+                case SkillModifierType.TickRatePercent:
+                    displayName = "Skill Tick Rate";
+                    format = StatDisplayFormat.Percent;
+                    break;
+                case SkillModifierType.SpawnRadiusPercent:
+                    displayName = "Skill Spawn Radius";
+                    format = StatDisplayFormat.Percent;
+                    break;
+                case SkillModifierType.ImpactRadiusPercent:
+                    displayName = "Skill Impact Radius";
+                    format = StatDisplayFormat.Percent;
+                    break;
+                case SkillModifierType.RangePercent:
+                    displayName = "Skill Range";
+                    format = StatDisplayFormat.Percent;
+                    break;
+                case SkillModifierType.DurationPercent:
+                    displayName = "Skill Duration";
+                    format = StatDisplayFormat.Percent;
+                    break;
+                case SkillModifierType.ExtraCount:
+                    displayName = "Extra Skill Count";
+                    format = StatDisplayFormat.Integer;
+                    break;
+                case SkillModifierType.Penetration:
+                    displayName = "Skill Penetration";
+                    format = StatDisplayFormat.Integer;
+                    break;
+                case SkillModifierType.ChainCount:
+                    displayName = "Skill Chain Count";
+                    format = StatDisplayFormat.Integer;
+                    break;
+                case SkillModifierType.SpawnZoneOnHit:
+                    displayName = "Spawn Zone Chance";
+                    format = StatDisplayFormat.Percent;
+                    break;
+                case SkillModifierType.ExplodeOnKill:
+                    displayName = "Explode on Kill";
+                    format = StatDisplayFormat.Integer;
+                    break;
+                case SkillModifierType.SplitOnImpact:
+                    displayName = "Split on Impact";
+                    format = StatDisplayFormat.Integer;
+                    break;
+                case SkillModifierType.ApplyBurn:
+                    displayName = "Apply Burn";
+                    format = StatDisplayFormat.Integer;
+                    break;
+                case SkillModifierType.ApplyShock:
+                    displayName = "Apply Shock";
+                    format = StatDisplayFormat.Integer;
+                    break;
+                case SkillModifierType.ApplyPoison:
+                    displayName = "Apply Poison";
+                    format = StatDisplayFormat.Integer;
+                    break;
+            }
+        }
+
+        private static bool IsBooleanModifier(SkillModifierType type)
+        {
+            return type == SkillModifierType.ExplodeOnKill ||
+                   type == SkillModifierType.SplitOnImpact ||
+                   type == SkillModifierType.ApplyBurn ||
+                   type == SkillModifierType.ApplyShock ||
+                   type == SkillModifierType.ApplyPoison;
         }
 
         private CharacterStatDisplayEntry CreateEntry(

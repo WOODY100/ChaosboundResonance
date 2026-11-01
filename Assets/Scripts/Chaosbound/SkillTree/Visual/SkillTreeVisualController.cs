@@ -1,8 +1,10 @@
+using Chaosbound.Core.Audio;
 using Chaosbound.Core.Composition;
+using Chaosbound.Core.GameFlow;
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 using TMPro;
+using UnityEngine;
 
 public sealed class SkillTreeVisualController : MonoBehaviour
 {
@@ -38,6 +40,8 @@ public sealed class SkillTreeVisualController : MonoBehaviour
 
     [SerializeField]
     private TMP_Text skillPointsText;
+
+    private GameFlow gameFlow;
 
     public event Action<SkillTreeNodeDefinition> NodeSelected;
 
@@ -150,35 +154,41 @@ public sealed class SkillTreeVisualController : MonoBehaviour
             return;
         }
 
-        if (runtime == null ||
-            runtime.Database != database)
+        BootstrapContext context =
+            BootstrapContext.Current;
+
+        if (context == null)
         {
-            BootstrapContext context =
-                BootstrapContext.Current;
+            Debug.LogError(
+                $"[{nameof(SkillTreeVisualController)}] " +
+                "No BootstrapContext available.",
+                this);
 
-            if (context == null)
-            {
-                Debug.LogError(
-                    $"[{nameof(SkillTreeVisualController)}] " +
-                    "No BootstrapContext available.",
-                    this);
+            return;
+        }
 
-                return;
-            }
+        runtime = context.SkillTreeRuntime;
 
-            if (context.PersistentMetaRuntime == null)
-            {
-                Debug.LogError(
-                    $"[{nameof(SkillTreeVisualController)}] " +
-                    "No PersistentMetaRuntime available.",
-                    this);
+        if (runtime == null)
+        {
+            Debug.LogError(
+                $"[{nameof(SkillTreeVisualController)}] " +
+                "BootstrapContext has not initialized SkillTreeRuntime.",
+                this);
 
-                return;
-            }
+            return;
+        }
 
-            runtime = new SkillTreeRuntime(
-                database,
-                context.PersistentMetaRuntime);
+        if (runtime.Database != database)
+        {
+            Debug.LogError(
+                $"[{nameof(SkillTreeVisualController)}] " +
+                "The assigned SkillTreeDatabase does not match " +
+                "the database owned by BootstrapContext.",
+                this);
+
+            runtime = null;
+            return;
         }
 
         IReadOnlyList<SkillTreeNodeDefinition> nodes =
@@ -593,6 +603,23 @@ public sealed class SkillTreeVisualController : MonoBehaviour
 
         if (skillTreeWindow != null)
             skillTreeWindow.SetActive(false);
+
+        if (gameFlow == null)
+        {
+            ResolveGameFlow();
+
+            if (gameFlow == null)
+                return;
+        }
+
+        if (gameFlow.CurrentContext != GameFlowContext.Stats)
+            return;
+
+        bool closed =
+            gameFlow.Pop(GameFlowContext.Stats);
+
+        if (!closed)
+            return;
     }
 
     private void RefreshSelectedNodeDetails()
@@ -657,6 +684,8 @@ public sealed class SkillTreeVisualController : MonoBehaviour
         RefreshSelectedNodeDetails();
 
         RefreshSkillPoints();
+
+        PersistSkillTreeProgress();
     }
 
     private void RefreshConnectionVisualStates()
@@ -705,6 +734,32 @@ public sealed class SkillTreeVisualController : MonoBehaviour
         RefreshSelectedNodeDetails();
 
         RefreshSkillPoints();
+
+        PersistSkillTreeProgress();
+    }
+
+    private void PersistSkillTreeProgress()
+    {
+        BootstrapContext context =
+            BootstrapContext.Current;
+
+        if (context == null)
+        {
+            Debug.LogError(
+                "[SkillTreeVisualController] Cannot persist Skill Tree " +
+                "purchase because BootstrapContext is unavailable.",
+                this);
+
+            return;
+        }
+
+        if (!context.SavePersistentState())
+        {
+            Debug.LogWarning(
+                "[SkillTreeVisualController] Skill Tree purchase remains " +
+                "in runtime memory but could not be saved.",
+                this);
+        }
     }
 
     public void OpenSkillTree()
@@ -721,6 +776,17 @@ public sealed class SkillTreeVisualController : MonoBehaviour
 
         skillTreeWindow.SetActive(true);
         Build();
+    }
+
+    private void ResolveGameFlow()
+    {
+        BootstrapContext bootstrapContext =
+            BootstrapContext.Current;
+
+        if (bootstrapContext == null)
+            return;
+
+        gameFlow = bootstrapContext.GameFlow;
     }
 
     private void OnDestroy()
