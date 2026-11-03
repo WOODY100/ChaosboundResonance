@@ -31,6 +31,7 @@ namespace Chaosbound.Gameplay.Bosses
         [Header("Locomotion States")]
         [SerializeField] private string idleState = "Idle";
         [SerializeField] private string walkState = "Walk";
+        [SerializeField] private string retreatState = "Walk_Back";
         [SerializeField] private string deathState = "Death";
 
         [Header("Attack States")]
@@ -104,10 +105,26 @@ namespace Chaosbound.Gameplay.Bosses
                 return;
 
             BossMovementState movementState = movementRuntime.State;
-            bool moving = movementState == BossMovementState.Approach ||
-                          movementState == BossMovementState.Retreat;
 
-            PlayState(moving ? walkState : idleState);
+            switch (movementState)
+            {
+                case BossMovementState.Approach:
+                    PlayState(walkState);
+                    break;
+
+                case BossMovementState.Retreat:
+                    // Use the dedicated backward locomotion state when configured.
+                    // Fall back to the regular walk state for Bosses without one.
+                    PlayState(
+                        string.IsNullOrWhiteSpace(retreatState)
+                            ? walkState
+                            : retreatState);
+                    break;
+
+                default:
+                    PlayState(idleState);
+                    break;
+            }
         }
 
         private void HandlePresentationStateChanged(

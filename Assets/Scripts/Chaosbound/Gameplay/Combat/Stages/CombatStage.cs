@@ -30,6 +30,10 @@ namespace Chaosbound.Gameplay.Combat.Stages
         private readonly SpawnRuntime
             spawnRuntime;
 
+        private readonly CombatTierProgressionDirector
+            tierProgressionDirector =
+                new CombatTierProgressionDirector();
+
         public CombatStage(
             CombatDirector combatDirector,
             CombatSpawnRequestTranslator spawnRequestTranslator,
@@ -99,6 +103,11 @@ namespace Chaosbound.Gameplay.Combat.Stages
             CombatRuntimeState combatState =
                 context.State.Combat;
 
+            tierProgressionDirector.Update(
+                combatState,
+                context.State.Completion,
+                context.State.Timeline);
+
             if (combatState.ActiveTactic == null)
             {
                 combatDirector.SetActiveTactic(
@@ -134,7 +143,8 @@ namespace Chaosbound.Gameplay.Combat.Stages
                 combatDirector.BuildSpawnPlan(
                     combatState,
                     context.Config.Enemy,
-                    replenishmentDecision);
+                    replenishmentDecision,
+                    combatState.ActiveEnemyTier);
 
             SpawnRequest spawnRequest =
                 spawnRequestTranslator.Translate(

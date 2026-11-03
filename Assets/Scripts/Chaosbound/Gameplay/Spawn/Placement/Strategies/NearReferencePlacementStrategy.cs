@@ -16,6 +16,11 @@ namespace Chaosbound.Gameplay.Spawn.Placement.Strategies
         /// </summary>
         private const float DefaultSpawnRadius = 3f;
 
+        /// <summary>
+        /// Additional search distance applied per failed placement attempt.
+        /// </summary>
+        private const float SpawnRadiusStep = 1.5f;
+
         /// <inheritdoc/>
         public PlacementResolution Resolve(
             PlacementContext context)
@@ -26,12 +31,16 @@ namespace Chaosbound.Gameplay.Spawn.Placement.Strategies
             Vector2 direction =
                 UnityEngine.Random.insideUnitCircle.normalized;
 
+            float spawnRadius =
+                DefaultSpawnRadius +
+                context.AttemptIndex * SpawnRadiusStep;
+
             Vector3 offset =
                 new Vector3(
                     direction.x,
                     0f,
                     direction.y)
-                * DefaultSpawnRadius;
+                * spawnRadius;
 
             Vector3 position =
                 context.SpatialOrigin.Position + offset;

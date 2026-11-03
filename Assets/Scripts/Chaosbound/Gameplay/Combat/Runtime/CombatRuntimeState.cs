@@ -2,6 +2,7 @@ using Chaosbound.Content.Expeditions.Runtime.Combat;
 using Chaosbound.Gameplay.Combat.Models;
 using Chaosbound.Gameplay.Combat.Results;
 using Chaosbound.Gameplay.Combat.Runtime.Replenishment;
+using Chaosbound.Shared.Enums;
 using System;
 
 namespace Chaosbound.Gameplay.Combat.Runtime
@@ -19,6 +20,16 @@ namespace Chaosbound.Gameplay.Combat.Runtime
             get;
             private set;
         }
+
+        /// <summary>
+        /// Gets the tier used for newly planned enemy spawns.
+        /// Existing enemies keep the tier with which they spawned.
+        /// </summary>
+        public EnemyTier ActiveEnemyTier
+        {
+            get;
+            private set;
+        } = EnemyTier.Tier1;
 
         public CombatResult CombatResult
         {
@@ -60,6 +71,29 @@ namespace Chaosbound.Gameplay.Combat.Runtime
                     nameof(spawnPlan));
         }
 
+        /// <summary>
+        /// Advances the active enemy tier by one step,
+        /// stopping at Tier4.
+        /// </summary>
+        public void AdvanceEnemyTier()
+        {
+            if (ActiveEnemyTier >= EnemyTier.Tier4)
+                return;
+
+            ActiveEnemyTier =
+                (EnemyTier)((int)ActiveEnemyTier + 1);
+        }
+
+        /// <summary>
+        /// Activates the final enemy tier without
+        /// allowing the progression to move backwards.
+        /// </summary>
+        public void ActivateFinalEnemyTier()
+        {
+            ActiveEnemyTier =
+                EnemyTier.Tier4;
+        }
+
         public void SetActiveTactic(
             RuntimeCombatTactic tactic)
         {
@@ -90,6 +124,7 @@ namespace Chaosbound.Gameplay.Combat.Runtime
         public void Clear()
         {
             ActiveTactic = null;
+            ActiveEnemyTier = EnemyTier.Tier1;
             CombatResult = null;
             ReconciliationResult = null;
             SpawnPlan = null;

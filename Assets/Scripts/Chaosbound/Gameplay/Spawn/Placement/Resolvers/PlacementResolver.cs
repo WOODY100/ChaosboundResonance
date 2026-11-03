@@ -111,8 +111,14 @@ namespace Chaosbound.Gameplay.Spawn.Placement.Resolvers
                  attempt < MaxPlacementAttempts;
                  attempt++)
             {
+                PlacementContext attemptContext =
+                    new PlacementContext(
+                        context.Intent,
+                        context.SpatialOrigin,
+                        attempt);
+
                 PlacementResolution candidate =
-                    strategy.Resolve(context);
+                    strategy.Resolve(attemptContext);
 
                 if (!candidate.IsSuccess)
                 {

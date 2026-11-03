@@ -9,6 +9,7 @@ using Chaosbound.Gameplay.ExpeditionRuntime.ExitPortal.Runtime;
 using Chaosbound.Gameplay.ExpeditionRuntime.ExitPortal.Services;
 using Chaosbound.Gameplay.Spawn.Contracts;
 using Chaosbound.Gameplay.Spawn.Runtime;
+using System.Collections.Generic;
 using System;
 using UnityEngine;
 
@@ -104,11 +105,19 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.ExitPortal
                 context.Config.Spawn.WithPlacement(
                     SpawnPlacementPolicy.AroundCompletionOrigin);
 
-            spawnRuntime.Execute(
-                spawnRequest,
-                portalSpawnConfig,
-                context.References.Runtime,
-                context.State);
+            IReadOnlyList<GameObject> materializedPortals =
+                spawnRuntime.Execute(
+                    spawnRequest,
+                    portalSpawnConfig,
+                    context.References.Runtime,
+                    context.State);
+
+            if (materializedPortals == null ||
+                materializedPortals.Count == 0 ||
+                materializedPortals[0] == null)
+            {
+                return;
+            }
 
             state.MarkSpawned();
         }

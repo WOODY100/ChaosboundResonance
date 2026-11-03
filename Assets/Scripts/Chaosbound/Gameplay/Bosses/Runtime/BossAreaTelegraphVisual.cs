@@ -64,7 +64,7 @@ public sealed class BossAreaTelegraphVisual : MonoBehaviour
             rotatingSymbol.Rotate(
                 Vector3.up,
                 symbolRotationSpeed * Time.deltaTime,
-                Space.Self);
+                Space.World);
         }
 
         if (visualRoot != null && pulseAmplitude > 0f && pulseFrequency > 0f)

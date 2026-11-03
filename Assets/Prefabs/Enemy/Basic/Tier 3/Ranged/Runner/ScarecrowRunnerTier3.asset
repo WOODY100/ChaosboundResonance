@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 447969a4cc83221428c6b5b49c1d7db3, type: 3}
+  m_Name: ScarecrowRunnerTier3
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyVariantData
+  m_ContentId: scarecrow.ranged.runner.tier3
+  m_DisplayName: Scarecrow
+  m_BaseHealth: 100
+  m_BaseDamage: 11
+  m_MoveSpeed: 4.6
+  m_Category: 0
+  m_CombatType: 1
+  m_Roles: 01000000
+  m_Tier: 3
+  m_MovementPolicy: 1
+  m_PreferredDistance: 5
+  m_DistanceTolerance: 0.5
+  m_Attack:
+    m_Range: 6
+    m_Angle: 90
+    m_Cooldown: 1.4
+    m_AnimationClip: {fileID: 7400000, guid: 2b1c0e30c8cd1dc45946be1a4952c99d, type: 3}
+    m_ImpactNormalizedTime: 0.45
+    m_Ability: {fileID: 11400000, guid: 7c3ac793dad145f4aaf10322cd165fc9, type: 2}
+  m_Rewards: {fileID: 11400000, guid: 49df9f82a86982e4c9970aa36f2a9f68, type: 2}
+  m_ModelPrefab: {fileID: 2353253739944982998, guid: 5ae9741d12a975c428236e5392588d29, type: 3}
+  m_SpawnPrefab: {fileID: 2353253739944982998, guid: 5ae9741d12a975c428236e5392588d29, type: 3}

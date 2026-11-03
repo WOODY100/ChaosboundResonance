@@ -7,6 +7,7 @@ using Chaosbound.Gameplay.Combat.Results;
 using Chaosbound.Gameplay.Combat.Runtime;
 using Chaosbound.Gameplay.Combat.Runtime.Replenishment;
 using Chaosbound.Gameplay.Combat.Services;
+using Chaosbound.Shared.Enums;
 using System;
 
 namespace Chaosbound.Gameplay.Combat.Director
@@ -78,13 +79,14 @@ namespace Chaosbound.Gameplay.Combat.Director
         /// Builds a concrete CombatSpawnPlan from the current
         /// replenishment decision.
         ///
-        /// The enemy tier is currently resolved by the
-        /// CombatReplenishmentPlanBuilder, which temporarily uses Tier1.
+        /// The active enemy tier is read from CombatRuntimeState
+        /// and applied to newly planned replenishment.
         /// </summary>
         public CombatSpawnPlan BuildSpawnPlan(
             CombatRuntimeState runtimeState,
             RuntimeEnemyConfig enemyConfig,
-            ReplenishmentDecision decision)
+            ReplenishmentDecision decision,
+            EnemyTier activeTier)
         {
             if (runtimeState == null)
             {
@@ -109,7 +111,8 @@ namespace Chaosbound.Gameplay.Combat.Director
 
             CombatReplenishmentPlan replenishmentPlan =
                 replenishmentPlanBuilder.Build(
-                    decision);
+                    decision,
+                    activeTier);
 
             CombatSpawnPlan spawnPlan =
                 spawnPlanner.Build(

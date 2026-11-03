@@ -34,11 +34,30 @@ MonoBehaviour:
       m_Theme: {fileID: 11400000, guid: 4dfb845e5f1fda1499ab9fd32de36236, type: 2}
     m_enemy:
       m_Content:
-      - {fileID: 11400000, guid: f5819a66bba33df429698f45f81dc0aa, type: 2}
-      - {fileID: 11400000, guid: bd38301ec6fd209459cdc8d6199033cd, type: 2}
-      - {fileID: 11400000, guid: e3af66caf09419f47a5046e7d60ef0e3, type: 2}
-      - {fileID: 11400000, guid: 9c8dab747c2ebb048a0f8a012bda248b, type: 2}
-      - {fileID: 11400000, guid: 66b6689c19fabf547afeda22e558174b, type: 2}
+      - {fileID: 11400000, guid: bc1bc3ae31525fb419ca843fc4c3399d, type: 2}
+      - {fileID: 11400000, guid: b8461439ce2aa744d822f117a2a6cd08, type: 2}
+      - {fileID: 11400000, guid: 09b676de660760b4392849fa5ac70e90, type: 2}
+      - {fileID: 11400000, guid: 3973d8868f6b40e4c915278e6f0d157f, type: 2}
+      - {fileID: 11400000, guid: ea585ef30ec45da42bbd43a7a5ffbd1d, type: 2}
+      - {fileID: 11400000, guid: f9ce1b8bbe3d4464089ce1dc28237517, type: 2}
+      - {fileID: 11400000, guid: 84e380621b7a29d4bbf07d69948f077b, type: 2}
+      - {fileID: 11400000, guid: 7f1d97056322fe84bb04bd9988c06f84, type: 2}
+      - {fileID: 11400000, guid: 5f0caf4256a5b8243911fc7f7c252bef, type: 2}
+      - {fileID: 11400000, guid: ba8ea734a51bc4e4daff74f46d906bf5, type: 2}
+      - {fileID: 11400000, guid: 4d1081b5ff2e82d409c10712ddb7e1ed, type: 2}
+      - {fileID: 11400000, guid: e01ebf44f7467a249bd93a748a1f8465, type: 2}
+      - {fileID: 11400000, guid: 503be7888679b4f45b48620170077060, type: 2}
+      - {fileID: 11400000, guid: 210ae3cfa2b789e4cba13da0f4a4f85e, type: 2}
+      - {fileID: 11400000, guid: 1a6ef7fbccfddc74295d94b0158e08da, type: 2}
+      - {fileID: 11400000, guid: 00b4845e50e9a644bb628f2983f7e515, type: 2}
+      - {fileID: 11400000, guid: d7a5bc4023c777444ae9f4a8e503b8fd, type: 2}
+      - {fileID: 11400000, guid: d27f98c5f8531014cbc07b86e6b62fcc, type: 2}
+      - {fileID: 11400000, guid: 01d71e79feee44843bc748fbbdff667b, type: 2}
+      - {fileID: 11400000, guid: cdd7c8cf6e113b24ca252f278494e24c, type: 2}
+      - {fileID: 11400000, guid: 2fa7dafc4754a4c4180e1b3a9c73bd54, type: 2}
+      - {fileID: 11400000, guid: 0726f408d7e211d4bb2704b0ec69d6ef, type: 2}
+      - {fileID: 11400000, guid: 8ca715d8b61a08248bdd517a27db9ad7, type: 2}
+      - {fileID: 11400000, guid: e0503f6029d8f4d46a121a0396698b33, type: 2}
     m_Spawn:
       m_Placement: 0
       m_Constraints: 05000000
@@ -48,18 +67,18 @@ MonoBehaviour:
       m_Tactics:
       - m_MaximumTarget: 50
         m_Melee:
-          m_Percentage: 0.8
+          m_Percentage: 0.7
           m_NormalPercentage: 0.7
           m_RunnerPercentage: 0.2
           m_TankPercentage: 0.1
         m_Ranged:
-          m_Percentage: 0.2
-          m_NormalPercentage: 1
-          m_RunnerPercentage: 0
-          m_TankPercentage: 0
+          m_Percentage: 0.3
+          m_NormalPercentage: 0.7
+          m_RunnerPercentage: 0.2
+          m_TankPercentage: 0.1
         m_Replenishment:
-          m_InitialDelay: 0.5
-          m_RecoveryInterval: 0.5
+          m_InitialDelay: 1
+          m_RecoveryInterval: 0.75
         m_SpawnPattern:
           m_PerimeterPercentage: 0.25
           m_FrontPercentage: 0.25
@@ -70,11 +89,16 @@ MonoBehaviour:
       m_evolutionRequiredLevel: 15
     m_Timeline:
       m_EventDefinitions:
-      - m_Id: dynamic
+      - m_Id: combat_tier_step_1
         m_IconId: icon.dynamic
         m_TriggerReference:
-          m_DomainId: 
-          m_ContentId: 
+          m_DomainId: combat
+          m_ContentId: tier_progression
+      - m_Id: combat_tier_step_2
+        m_IconId: icon.dynamic
+        m_TriggerReference:
+          m_DomainId: combat
+          m_ContentId: tier_progression
       - m_Id: boss
         m_IconId: icon.boss
         m_TriggerReference:
@@ -82,15 +106,16 @@ MonoBehaviour:
           m_ContentId: boss.start
       m_FixedTimeRules:
       - m_EventId: boss
-        m_TimeSeconds: 30
+        m_TimeSeconds: 1500
       m_DistributedRules:
       - m_EventIds:
-        - dynamic
-        m_StartTimeSeconds: 5
+        - combat_tier_step_1
+        - combat_tier_step_2
+        m_StartTimeSeconds: 300
         m_EndTimeType: 1
-        m_EndTimeSeconds: 0
+        m_EndTimeSeconds: 1500
       m_CompletionTarget:
-        m_TimeSeconds: 30
+        m_TimeSeconds: 1500
     m_expeditionEvents:
       content: []
     m_miniBosses:

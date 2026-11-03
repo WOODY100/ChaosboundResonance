@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -189,11 +189,15 @@ public class PersistentZoneExecutor : MonoBehaviour, ISkillExecutor
         Vector3 forward,
         float spawnRadius)
     {
-        if (pattern == null ||
-            pattern.Pattern == PersistentZonePatternType.MultiZone)
-        {
+        // Without an assigned pattern, preserve the original smart
+        // placement that prioritizes nearby enemies.
+        if (pattern == null)
             return GetSmartPosition(origin, spawnRadius);
-        }
+
+        // MultiZone uses the same random distribution as AreaStrike's
+        // MultiPoint pattern: random positions around the player.
+        if (pattern.Pattern == PersistentZonePatternType.MultiZone)
+            return GetRandomPointAroundPlayer(origin, spawnRadius);
 
         if (pattern.Pattern == PersistentZonePatternType.SingleZone)
             return origin;
@@ -235,6 +239,17 @@ public class PersistentZoneExecutor : MonoBehaviour, ISkillExecutor
 
         if (skill != null)
             skill.StartCooldown(skill.Stats.FinalCooldown);
+    }
+
+    private Vector3 GetRandomPointAroundPlayer(Vector3 origin, float radius)
+    {
+        Vector2 randomCircle =
+            Random.insideUnitCircle * Mathf.Max(0f, radius);
+
+        return origin + new Vector3(
+            randomCircle.x,
+            0f,
+            randomCircle.y);
     }
 
     private Vector3 GetSmartPosition(Vector3 origin, float radius)

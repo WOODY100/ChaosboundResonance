@@ -42,6 +42,12 @@ namespace Chaosbound.Gameplay.Bosses
         private Vector3 fixedFacingDirection;
         private Vector3 capturedFacingDirection;
         private float originalAgentSpeed;
+        private Vector3 activeDestination;
+        private Vector3 lastProgressPosition;
+        private bool hasActiveDestination;
+        private float navigationNoProgressTimer;
+        private float navigationRecoveryTimer;
+        private int navigationRecoveryAttempts;
 
         public BossMovementState State => state;
         public bool IsInitialized => isInitialized;
@@ -106,6 +112,7 @@ namespace Chaosbound.Gameplay.Bosses
             retreatRequestedDistance = 0f;
             hasApproachDestination = false;
             isFacingRequestActive = false;
+            ResetNavigationWatchdog(true);
 
             originalAgentSpeed = agent.speed;
             agent.updateRotation = false;
@@ -132,6 +139,7 @@ namespace Chaosbound.Gameplay.Bosses
             target = null;
             hasApproachDestination = false;
             StopNavigation();
+            ResetNavigationWatchdog(true);
             if (isInitialized && state != BossMovementState.Unavailable)
                 state = HasMovementLocks ? BossMovementState.MovementLocked : BossMovementState.Idle;
         }
@@ -167,13 +175,16 @@ namespace Chaosbound.Gameplay.Bosses
 
             if (!TrySetDestination(destination))
             {
-                SetUnavailable();
+                RequestHoldPosition();
                 return false;
             }
 
+            bool startingApproach = state != BossMovementState.Approach;
             lastApproachDestination = destination;
             hasApproachDestination = true;
             state = BossMovementState.Approach;
+            if (startingApproach)
+                ResetNavigationWatchdog();
             return true;
         }
 
@@ -188,6 +199,7 @@ namespace Chaosbound.Gameplay.Bosses
             StopNavigation();
             state = BossMovementState.HoldPosition;
             hasApproachDestination = false;
+            ResetNavigationWatchdog(true);
             return true;
         }
 
@@ -235,6 +247,7 @@ namespace Chaosbound.Gameplay.Bosses
                 return false;
 
             retreatDestination = hit.position;
+            ResetNavigationWatchdog();
             agent.speed = settings.RetreatSpeed;
             retreatCooldownRemaining = settings.RetreatCooldown;
             state = BossMovementState.Retreat;
@@ -346,9 +359,17 @@ namespace Chaosbound.Gameplay.Bosses
             }
 
             if (state == BossMovementState.Approach)
+            {
                 TickApproach();
+                if (state == BossMovementState.Approach)
+                    TickNavigationWatchdog(deltaTime, false);
+            }
             else if (state == BossMovementState.Retreat)
+            {
                 TickRetreat();
+                if (state == BossMovementState.Retreat)
+                    TickNavigationWatchdog(deltaTime, true);
+            }
 
             TickFacing(deltaTime);
         }
@@ -385,7 +406,7 @@ namespace Chaosbound.Gameplay.Bosses
             {
                 if (!TrySetDestination(desired))
                 {
-                    SetUnavailable();
+                    RequestHoldPosition();
                     return;
                 }
 
@@ -396,17 +417,6 @@ namespace Chaosbound.Gameplay.Bosses
             if (agent.pathPending)
                 return;
 
-            if (agent.pathStatus == NavMeshPathStatus.PathInvalid)
-            {
-                SetUnavailable();
-                return;
-            }
-
-            if (!agent.hasPath && !agent.pathPending &&
-                distance > settings.PreferredDistance)
-            {
-                SetUnavailable();
-            }
         }
 
         private void TickRetreat()
@@ -420,8 +430,6 @@ namespace Chaosbound.Gameplay.Bosses
                 return;
             }
 
-            if (!agent.pathPending && agent.pathStatus == NavMeshPathStatus.PathInvalid)
-                FinishRetreat();
         }
 
         private void FinishRetreat()
@@ -429,6 +437,113 @@ namespace Chaosbound.Gameplay.Bosses
             StopNavigation();
             agent.speed = originalAgentSpeed;
             state = BossMovementState.HoldPosition;
+            ResetNavigationWatchdog(true);
+        }
+
+        private void TickNavigationWatchdog(float deltaTime, bool retreat)
+        {
+            if (agent.pathPending)
+                return;
+
+            bool reachedCompleteDestination = agent.hasPath &&
+                agent.pathStatus == NavMeshPathStatus.PathComplete &&
+                agent.remainingDistance <= agent.stoppingDistance + 0.05f;
+            bool reachedPartialEndpoint = agent.hasPath &&
+                agent.pathStatus == NavMeshPathStatus.PathPartial &&
+                agent.remainingDistance <= agent.stoppingDistance + 0.05f;
+            bool destinationReachedWithoutPath = !agent.hasPath &&
+                hasActiveDestination &&
+                HorizontalDistance(transform.position, activeDestination) <=
+                agent.stoppingDistance + 0.1f;
+
+            if (reachedCompleteDestination || reachedPartialEndpoint ||
+                destinationReachedWithoutPath)
+            {
+                if (retreat)
+                    FinishRetreat();
+                else
+                    RequestHoldPosition();
+                return;
+            }
+
+            if (agent.pathStatus == NavMeshPathStatus.PathInvalid)
+            {
+                TryRecoverNavigation(retreat);
+                return;
+            }
+
+            float progress = HorizontalDistance(transform.position, lastProgressPosition);
+            if (progress >= settings.NavigationProgressThreshold)
+            {
+                lastProgressPosition = transform.position;
+                navigationNoProgressTimer = 0f;
+                navigationRecoveryTimer = 0f;
+                return;
+            }
+
+            navigationNoProgressTimer += deltaTime;
+            if (navigationNoProgressTimer < settings.NavigationNoProgressTimeout)
+                return;
+
+            navigationRecoveryTimer += deltaTime;
+            if (navigationRecoveryAttempts < settings.NavigationRecoveryAttempts)
+            {
+                TryRecoverNavigation(retreat);
+                return;
+            }
+
+            if (navigationRecoveryTimer >= settings.NavigationRecoveryTimeout)
+                AbortNavigationGracefully(retreat);
+        }
+
+        private void TryRecoverNavigation(bool retreat)
+        {
+            if (!AgentReady() || !hasActiveDestination)
+            {
+                AbortNavigationGracefully(retreat);
+                return;
+            }
+
+            if (navigationRecoveryAttempts >= settings.NavigationRecoveryAttempts)
+            {
+                AbortNavigationGracefully(retreat);
+                return;
+            }
+
+            navigationRecoveryAttempts++;
+            navigationNoProgressTimer = 0f;
+            navigationRecoveryTimer = 0f;
+            lastProgressPosition = transform.position;
+
+            agent.isStopped = false;
+            if (!agent.SetDestination(activeDestination))
+                AbortNavigationGracefully(retreat);
+        }
+
+        private void AbortNavigationGracefully(bool retreat)
+        {
+            if (retreat)
+            {
+                FinishRetreat();
+                return;
+            }
+
+            RequestHoldPosition();
+            ResetNavigationWatchdog(true);
+        }
+
+        private void ResetNavigationWatchdog(bool clearDestination = false)
+        {
+            if (clearDestination)
+            {
+                activeDestination = Vector3.zero;
+                hasActiveDestination = false;
+            }
+
+            lastProgressPosition = transform.position;
+            navigationNoProgressTimer = 0f;
+            navigationRecoveryTimer = 0f;
+            navigationRecoveryAttempts = 0;
         }
 
         private void TickFacing(float deltaTime)
@@ -489,7 +604,12 @@ namespace Chaosbound.Gameplay.Bosses
                 return false;
 
             agent.isStopped = false;
-            return agent.SetDestination(destination);
+            if (!agent.SetDestination(destination))
+                return false;
+
+            activeDestination = destination;
+            hasActiveDestination = true;
+            return true;
         }
 
         private void StopNavigation()
@@ -533,6 +653,7 @@ namespace Chaosbound.Gameplay.Bosses
             hasApproachDestination = false;
             retreatCooldownRemaining = 0f;
             retreatRequestedDistance = 0f;
+            ResetNavigationWatchdog(true);
             isInitialized = false;
             state = BossMovementState.Idle;
 

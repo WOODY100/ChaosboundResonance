@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 447969a4cc83221428c6b5b49c1d7db3, type: 3}
+  m_Name: KingCobraNormalTier1
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyVariantData
+  m_ContentId: king.cobra.normal.tier1
+  m_DisplayName: King Cobra
+  m_BaseHealth: 100
+  m_BaseDamage: 10
+  m_MoveSpeed: 3.5
+  m_Category: 0
+  m_CombatType: 0
+  m_Roles: 00000000
+  m_Tier: 1
+  m_MovementPolicy: 0
+  m_PreferredDistance: 3
+  m_DistanceTolerance: 0.5
+  m_Attack:
+    m_Range: 2.2
+    m_Angle: 90
+    m_Cooldown: 1.5
+    m_AnimationClip: {fileID: 7400000, guid: 5edf87567fd11dd4e93c0945e9674336, type: 3}
+    m_ImpactNormalizedTime: 0.45
+    m_Ability: {fileID: 0}
+  m_Rewards: {fileID: 11400000, guid: 49df9f82a86982e4c9970aa36f2a9f68, type: 2}
+  m_ModelPrefab: {fileID: 2353253739944982998, guid: 307566999291f2944a1c2af88e4fddf7, type: 3}
+  m_SpawnPrefab: {fileID: 2353253739944982998, guid: 307566999291f2944a1c2af88e4fddf7, type: 3}

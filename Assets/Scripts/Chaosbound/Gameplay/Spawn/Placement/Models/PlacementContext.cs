@@ -21,11 +21,17 @@ namespace Chaosbound.Gameplay.Spawn.Placement.Models
         public SpawnSpatialOrigin SpatialOrigin { get; }
 
         /// <summary>
+        /// Gets the zero-based placement attempt currently being evaluated.
+        /// </summary>
+        public int AttemptIndex { get; }
+
+        /// <summary>
         /// Creates a new placement context.
         /// </summary>
         public PlacementContext(
             PlacementIntent intent,
-            SpawnSpatialOrigin spatialOrigin)
+            SpawnSpatialOrigin spatialOrigin,
+            int attemptIndex = 0)
         {
             Intent =
                 intent
@@ -33,6 +39,11 @@ namespace Chaosbound.Gameplay.Spawn.Placement.Models
 
             SpatialOrigin =
                 spatialOrigin;
+
+            if (attemptIndex < 0)
+                throw new ArgumentOutOfRangeException(nameof(attemptIndex));
+
+            AttemptIndex = attemptIndex;
         }
     }
 }

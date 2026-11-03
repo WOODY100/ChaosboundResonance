@@ -9,9 +9,7 @@ namespace Chaosbound.Gameplay.Combat.Services
     /// Builds a concrete CombatReplenishmentPlan from
     /// a replenishment decision.
     ///
-    /// The enemy tier is temporarily fixed to Tier1 until
-    /// the Expedition Progression/Timeline system provides
-    /// the active tier.
+    /// The active enemy tier is supplied by Combat runtime state.
     /// </summary>
     public sealed class CombatReplenishmentPlanBuilder
     {
@@ -19,7 +17,8 @@ namespace Chaosbound.Gameplay.Combat.Services
         /// Builds a replenishment plan from the supplied decision.
         /// </summary>
         public CombatReplenishmentPlan Build(
-            ReplenishmentDecision decision)
+            ReplenishmentDecision decision,
+            EnemyTier activeTier)
         {
             if (!decision.IsRequired)
             {
@@ -28,16 +27,11 @@ namespace Chaosbound.Gameplay.Combat.Services
                     "that does not require replenishment.");
             }
 
-            // Temporary until Expedition Progression/Timeline
-            // provides the active EnemyTier.
-            EnemyTier tier =
-                EnemyTier.Tier1;
-
             return new CombatReplenishmentPlan(
                 decision.CombatType,
                 decision.Role,
                 decision.Quantity,
-                tier);
+                activeTier);
         }
     }
 }

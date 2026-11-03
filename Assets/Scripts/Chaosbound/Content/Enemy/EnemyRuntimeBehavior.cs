@@ -133,7 +133,10 @@ public sealed class EnemyRuntimeBehavior :
             return;
         }
 
-        if (combat.IsAttacking)
+        if (combat.IsAttacking ||
+            (combat.IsOnCooldown &&
+             runtimeContext.Variant.MovementPolicy ==
+             EnemyMovementPolicyType.Approach))
         {
             currentIntent =
                 EnemyMovementIntent.None();

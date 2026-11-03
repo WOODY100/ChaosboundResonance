@@ -23,7 +23,7 @@ public class PlayerModifierSystem : MonoBehaviour
 
     private void InitializeBaseStats()
     {
-        CreateStat(StatType.Damage, 10f);
+        CreateStat(StatType.Damage, 20f);
         CreateStat(StatType.AttackSpeed, 1f);
 
         CreateStat(StatType.CritChance, 0f);
