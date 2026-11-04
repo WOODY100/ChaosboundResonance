@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using UnityEngine;
 
 public class MinotaurBossController : BossControllerBase
@@ -331,7 +331,8 @@ public class MinotaurBossController : BossControllerBase
             DamageData dmg = new DamageData
             {
                 amount = jumpDamage,
-                source = gameObject
+                source = gameObject,
+                analyticsSourceCategory = "BossLegacy"
             };
 
             receiver.ReceiveDamage(dmg);
@@ -390,7 +391,8 @@ public class MinotaurBossController : BossControllerBase
                     DamageData dmg = new DamageData
                     {
                         amount = damage,
-                        source = gameObject
+                        source = gameObject,
+                analyticsSourceCategory = "BossLegacy"
                     };
 
                     receiver.ReceiveDamage(dmg);
@@ -441,7 +443,8 @@ public class MinotaurBossController : BossControllerBase
                 DamageData dmg = new DamageData
                 {
                     amount = chargeDamage,
-                    source = gameObject
+                    source = gameObject,
+                analyticsSourceCategory = "BossLegacy"
                 };
 
                 receiver.ReceiveDamage(dmg);

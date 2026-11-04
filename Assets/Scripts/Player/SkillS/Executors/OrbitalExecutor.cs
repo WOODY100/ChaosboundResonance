@@ -1,4 +1,4 @@
-﻿
+
 using UnityEngine;
 using System.Collections.Generic;
 
@@ -33,7 +33,11 @@ public class OrbitalExecutor : MonoBehaviour, ISkillExecutor
         if (isActive || skill.IsOnCooldown)
             return;
 
-        ActivateOrbit();
+        string executionId = null;
+#if UNITY_EDITOR
+        executionId = SkillDamageAttribution.CreateExecutionId();
+#endif
+        ActivateOrbit(executionId);
 
         if (!skill.Definition.CooldownStartsAfterDuration)
         {
@@ -41,7 +45,7 @@ public class OrbitalExecutor : MonoBehaviour, ISkillExecutor
         }
     }
 
-    private void ActivateOrbit()
+    private void ActivateOrbit(string executionId)
     {
         if (skill.Stats.FinalCount <= 0)
             return;
@@ -101,7 +105,8 @@ public class OrbitalExecutor : MonoBehaviour, ISkillExecutor
                 owner,
                 pattern,
                 startAngles[i],
-                OnSingleOrbFinished);
+                OnSingleOrbFinished,
+                executionId);
         }
     }
 

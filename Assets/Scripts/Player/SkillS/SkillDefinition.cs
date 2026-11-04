@@ -13,11 +13,14 @@ public class SkillDefinition : ScriptableObject
     // =========================
     [Header("UI")]
     [SerializeField] private string displayName;
+    [SerializeField, Tooltip("Stable readable Analytics identifier, e.g. arc_bolt.")]
+    private string analyticsId;
     [SerializeField] private string description;
     [SerializeField] private Sprite icon;
     [SerializeField] private SkillRarity rarity;
 
     public string DisplayName => displayName;
+    public string AnalyticsId => analyticsId;
     public string Description => description;
     public Sprite Icon => icon;
     public SkillRarity Rarity => rarity;
@@ -27,10 +30,10 @@ public class SkillDefinition : ScriptableObject
     // =========================
     [Header("Execution Settings")]
     [Tooltip("Visual object instantiated by the executor.")]
-    public GameObject ExecutionPrefab;   // El VFX / lógica visual
+    public GameObject ExecutionPrefab;   // El VFX / lÃ³gica visual
 
     [Tooltip("Executor responsible for the skill logic.")]
-    public GameObject ExecutorPrefab;    // El executor lógico
+    public GameObject ExecutorPrefab;    // El executor lÃ³gico
 
     // =========================
     // AUDIO
@@ -100,6 +103,9 @@ public class SkillDefinition : ScriptableObject
 
     private void OnValidate()
     {
+        if (string.IsNullOrWhiteSpace(analyticsId))
+            analyticsId = CreateAnalyticsId(name);
+
         possibleModifiers ??= new List<SkillModifierDefinition>();
         evolutions ??= new List<SkillEvolutionDefinition>();
 
@@ -118,5 +124,31 @@ public class SkillDefinition : ScriptableObject
 
         if (ExecutorPrefab == null)
             Debug.LogWarning($"{name}: ExecutorPrefab is missing.", this);
+    }
+    private static string CreateAnalyticsId(string assetName)
+    {
+        if (string.IsNullOrWhiteSpace(assetName))
+            return "unnamed_skill";
+
+        System.Text.StringBuilder builder = new System.Text.StringBuilder();
+        bool previousUnderscore = false;
+
+        for (int i = 0; i < assetName.Length; i++)
+        {
+            char c = char.ToLowerInvariant(assetName[i]);
+
+            if (char.IsLetterOrDigit(c))
+            {
+                builder.Append(c);
+                previousUnderscore = false;
+            }
+            else if (!previousUnderscore && builder.Length > 0)
+            {
+                builder.Append('_');
+                previousUnderscore = true;
+            }
+        }
+
+        return builder.ToString().Trim('_');
     }
 }

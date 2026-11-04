@@ -161,6 +161,15 @@ namespace Chaosbound.Gameplay.MiniBosses
             }
 
             context.State.MiniBoss.MarkActive();
+
+#if UNITY_EDITOR
+            Chaosbound.Development.Analytics.ExpeditionTelemetryCollector
+                .RegisterPhaseStarted(
+                    "MiniBoss",
+                    selectedMiniBoss.Id.ToString(),
+                    selectedMiniBoss.DisplayName,
+                    context.State.ElapsedTime.TotalSeconds);
+#endif
         }
 
         private MiniBossData SelectMiniBoss(

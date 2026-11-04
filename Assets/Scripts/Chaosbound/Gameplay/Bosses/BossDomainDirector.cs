@@ -160,6 +160,15 @@ namespace Chaosbound.Gameplay.Bosses
             }
 
             context.State.Boss.MarkActive();
+
+#if UNITY_EDITOR
+            Chaosbound.Development.Analytics.ExpeditionTelemetryCollector
+                .RegisterPhaseStarted(
+                    "Boss",
+                    selectedBoss.Id.ToString(),
+                    selectedBoss.DisplayName,
+                    context.State.ElapsedTime.TotalSeconds);
+#endif
         }
 
         private BossData SelectBoss(

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
 public class ArcBoltProjectile : PooledBehaviour, IProjectile
@@ -18,6 +18,7 @@ public class ArcBoltProjectile : PooledBehaviour, IProjectile
 
     private RuntimeSkill skill;
     private PlayerModifierSystem modifierSystem;
+    private string executionId;
     private Rigidbody rb;
 
     private int remainingPenetration;
@@ -39,6 +40,7 @@ public class ArcBoltProjectile : PooledBehaviour, IProjectile
         remainingPenetration = 0;
         skill = null;
         modifierSystem = null;
+        executionId = null;
         initialPosition = Vector3.zero;
 
         if (rb != null)
@@ -75,7 +77,8 @@ public class ArcBoltProjectile : PooledBehaviour, IProjectile
     public void Initialize(
     RuntimeSkill runtimeSkill,
     Vector3 direction,
-    PlayerModifierSystem ownerModifiers)
+    PlayerModifierSystem ownerModifiers,
+    string castExecutionId)
     {
         ResetPooledState();
 
@@ -104,6 +107,7 @@ public class ArcBoltProjectile : PooledBehaviour, IProjectile
 
         skill = runtimeSkill;
         modifierSystem = ownerModifiers;
+        executionId = castExecutionId;
         initialPosition = transform.position;
 
         float attackSpeedMultiplier = 1f;
@@ -207,8 +211,21 @@ public class ArcBoltProjectile : PooledBehaviour, IProjectile
             damage *= criticalResult.DamageMultiplier;
         }
 
+        string skillId = null;
+        string readableSkillId = null;
+        string skillDisplayName = null;
+#if UNITY_EDITOR
+        skillId = SkillDamageAttribution.GetSkillDefinitionId(skill.Definition);
+        readableSkillId = SkillDamageAttribution.GetReadableSkillId(skill.Definition);
+        skillDisplayName = SkillDamageAttribution.GetSkillDisplayName(skill.Definition);
+#endif
         target.TakeDamage(new DamageData(
             damage,
-            criticalResult.IsCritical));
+            criticalResult.IsCritical,
+            skillId,
+            executionId,
+            null,
+            readableSkillId,
+            skillDisplayName));
     }
 }

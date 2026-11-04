@@ -182,6 +182,7 @@ public sealed class EnemyProjectile : PooledBehaviour
             owner != null
                 ? owner.gameObject
                 : null;
+        damageData.analyticsSourceCategory = "EnemyProjectile";
 
         damageable.TakeDamage(damageData);
 

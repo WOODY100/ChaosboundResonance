@@ -203,6 +203,29 @@ namespace Chaosbound.Gameplay.Spawn.Materialization
                 .RuntimeComposition
                 .Increment(enemy);
 
+#if UNITY_EDITOR
+            if (health != null && runtimeContext.IsInitialized)
+            {
+                System.Collections.Generic.IReadOnlyList<Chaosbound.Shared.Enums.EnemyRole> roles =
+                    enemy.Roles;
+                string[] roleIds = roles != null
+                    ? new string[roles.Count]
+                    : new string[0];
+
+                for (int i = 0; i < roleIds.Length; i++)
+                    roleIds[i] = roles[i].ToString();
+
+                Chaosbound.Development.Analytics.ExpeditionTelemetryCollector
+                    .RegisterEnemySpawned(
+                        health.EnemyLifeId,
+                        enemy.Id.ToString(),
+                        enemy.DisplayName,
+                        enemy.Tier.ToString(),
+                        roleIds,
+                        (float)context.RuntimeState.ExpeditionRuntime.ElapsedTime.TotalSeconds);
+            }
+#endif
+
             return spawnedObject;
         }
     }

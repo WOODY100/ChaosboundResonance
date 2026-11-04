@@ -5,6 +5,7 @@ public interface IProjectile
     void Initialize(
         RuntimeSkill skill,
         Vector3 direction,
-        PlayerModifierSystem ownerModifiers
+        PlayerModifierSystem ownerModifiers,
+        string executionId
     );
 }

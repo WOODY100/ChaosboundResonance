@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: WizardOfCaos_Combat
   m_EditorClassIdentifier: Assembly-CSharp::Chaosbound.Content.Enemy.Bosses.BossCombatDefinition
   m_BaseStats:
-    m_MaxHP: 3000
-    m_BaseDamage: 20
+    m_MaxHP: 10000
+    m_BaseDamage: 50
   m_MovementSettings:
     m_PreferredDistance: 7
     m_MinimumDistance: 4
@@ -23,6 +23,10 @@ MonoBehaviour:
     m_RetreatSpeed: 4
     m_RotationSpeed: 540
     m_StoppingDistance: 0.5
+    m_NavigationNoProgressTimeout: 0
+    m_NavigationRecoveryTimeout: 0
+    m_NavigationRecoveryAttempts: 0
+    m_NavigationProgressThreshold: 0
   m_CombatSettings:
     m_WaitReevaluationInterval: 0.25
   m_Phases:

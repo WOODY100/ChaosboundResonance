@@ -72,6 +72,15 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Completion
                     context.State.Completion.Complete(
                         completedEvent);
 
+#if UNITY_EDITOR
+                    Chaosbound.Development.Analytics.ExpeditionTelemetryCollector
+                        .RegisterPhaseMilestone(
+                            "Completion",
+                            "completion",
+                            "Expedition Completion",
+                            context.State.ElapsedTime.TotalSeconds);
+#endif
+
                     break;
                 }
             }

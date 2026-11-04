@@ -1,4 +1,4 @@
-﻿
+
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -82,6 +82,15 @@ public class ProjectileExecutor : MonoBehaviour, ISkillExecutor
         }
     }
 
+    private string CreateExecutionId()
+    {
+#if UNITY_EDITOR
+        return SkillDamageAttribution.CreateExecutionId();
+#else
+        return null;
+#endif
+    }
+
     private void Execute()
     {
         ProjectilePatternDefinition pattern = Pattern;
@@ -92,38 +101,40 @@ public class ProjectileExecutor : MonoBehaviour, ISkillExecutor
                 ? pattern.Pattern
                 : ProjectilePatternType.TargetNearest;
 
+        string executionId = CreateExecutionId();
+
         switch (patternType)
         {
             case ProjectilePatternType.TargetNearest:
-                ExecuteTargetNearest();
+                ExecuteTargetNearest(executionId);
                 break;
 
             case ProjectilePatternType.Fan:
                 ExecuteDirectionalPattern(
                     pattern,
-                    ProjectilePatternType.Fan);
+                    ProjectilePatternType.Fan, executionId);
                 break;
 
             case ProjectilePatternType.Radial:
                 ExecuteDirectionalPattern(
                     pattern,
-                    ProjectilePatternType.Radial);
+                    ProjectilePatternType.Radial, executionId);
                 break;
 
             case ProjectilePatternType.RandomSpread:
                 ExecuteDirectionalPattern(
                     pattern,
-                    ProjectilePatternType.RandomSpread);
+                    ProjectilePatternType.RandomSpread, executionId);
                 break;
 
             case ProjectilePatternType.FixedDirection:
                 ExecuteDirectionalPattern(
                     pattern,
-                    ProjectilePatternType.FixedDirection);
+                    ProjectilePatternType.FixedDirection, executionId);
                 break;
 
             default:
-                ExecuteTargetNearest();
+                ExecuteTargetNearest(executionId);
                 break;
         }
     }
@@ -133,7 +144,7 @@ public class ProjectileExecutor : MonoBehaviour, ISkillExecutor
     // Preserves the original target-based behavior.
     // =========================================================
 
-    private void ExecuteTargetNearest()
+    private void ExecuteTargetNearest(string executionId)
     {
         isExecuting = true;
 
@@ -161,7 +172,7 @@ public class ProjectileExecutor : MonoBehaviour, ISkillExecutor
                 target.position - owner.position;
 
             if (direction.sqrMagnitude > 0.0001f)
-                FireProjectile(direction.normalized);
+                FireProjectile(direction.normalized, executionId);
 
             availableTargets.Remove(target);
         }
@@ -240,11 +251,12 @@ public class ProjectileExecutor : MonoBehaviour, ISkillExecutor
 
     private void ExecuteDirectionalPattern(
         ProjectilePatternDefinition pattern,
-        ProjectilePatternType patternType)
+        ProjectilePatternType patternType,
+        string executionId)
     {
         if (pattern == null)
         {
-            ExecuteTargetNearest();
+            ExecuteTargetNearest(executionId);
             return;
         }
 
@@ -267,7 +279,7 @@ public class ProjectileExecutor : MonoBehaviour, ISkillExecutor
                 count);
 
             if (direction.sqrMagnitude > 0.0001f)
-                FireProjectile(direction.normalized);
+                FireProjectile(direction.normalized, executionId);
         }
 
         isExecuting = false;
@@ -378,7 +390,7 @@ public class ProjectileExecutor : MonoBehaviour, ISkillExecutor
     // PROJECTILE SPAWNING
     // =========================================================
 
-    private void FireProjectile(Vector3 direction)
+    private void FireProjectile(Vector3 direction, string executionId)
     {
         if (skill == null ||
             owner == null ||
@@ -427,7 +439,8 @@ public class ProjectileExecutor : MonoBehaviour, ISkillExecutor
         projectile.Initialize(
             skill,
             direction,
-            modifierSystem);
+            modifierSystem,
+            executionId);
     }
 
     private void StartDeferredCooldownIfNeeded()

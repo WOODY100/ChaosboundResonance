@@ -59,7 +59,22 @@ public class PlayerDamageReceiver : MonoBehaviour, IDamageable
 
         lastDamageTime = Time.time;
 
+        float healthBeforeDamage =
+            health.CurrentHealth;
+
         ApplyDamage(damageData);
+
+#if UNITY_EDITOR
+        float actualDamageReceived =
+            Mathf.Max(
+                0f,
+                healthBeforeDamage - health.CurrentHealth);
+
+        Chaosbound.Development.Analytics.ExpeditionTelemetryCollector
+                        .RegisterPlayerDamageReceived(
+                actualDamageReceived,
+                damageData.analyticsSourceCategory);
+#endif
 
         // Solo reproducir si el jugador sigue vivo.
         if (health != null &&

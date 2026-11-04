@@ -56,6 +56,11 @@ public class PlayerExperienceSystem : MonoBehaviour
 
         CurrentXP += finalAmount;
 
+#if UNITY_EDITOR
+        Chaosbound.Development.Analytics.ExpeditionTelemetryCollector
+            .RegisterExperienceGained(finalAmount);
+#endif
+
         CheckLevelUp();
     }
 
@@ -83,6 +88,11 @@ public class PlayerExperienceSystem : MonoBehaviour
             RecalculateRequiredXP();
 
             OnLevelUp?.Invoke(CurrentLevel);
+
+#if UNITY_EDITOR
+            Chaosbound.Development.Analytics.ExpeditionTelemetryCollector
+                .RegisterLevelUp(CurrentLevel);
+#endif
         }
 
         OnXPChanged?.Invoke(CurrentXP, RequiredXP);

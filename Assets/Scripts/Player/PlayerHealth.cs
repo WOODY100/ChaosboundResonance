@@ -104,8 +104,8 @@ public sealed class PlayerHealth : MonoBehaviour
             return;
 
         Heal(
-            regen *
-            Time.deltaTime);
+            regen * Time.deltaTime,
+            "PassiveRegeneration");
     }
 
     public void TakeDamage(float amount)
@@ -138,6 +138,11 @@ public sealed class PlayerHealth : MonoBehaviour
 
     public void Heal(float amount)
     {
+        Heal(amount, "Unknown");
+    }
+
+    public void Heal(float amount, string sourceType)
+    {
         if (isDead)
             return;
 
@@ -147,6 +152,10 @@ public sealed class PlayerHealth : MonoBehaviour
         float maxHealth =
             MaxHealth;
 
+#if UNITY_EDITOR
+        float healthBeforeHealing = currentHealth;
+#endif
+
         currentHealth += amount;
 
         currentHealth =
@@ -154,6 +163,13 @@ public sealed class PlayerHealth : MonoBehaviour
                 currentHealth,
                 0f,
                 maxHealth);
+
+#if UNITY_EDITOR
+        Chaosbound.Development.Analytics.ExpeditionTelemetryCollector
+            .RegisterPlayerHealing(
+                Mathf.Max(0f, currentHealth - healthBeforeHealing),
+                sourceType);
+#endif
 
         OnHealthChanged?.Invoke(
             currentHealth,

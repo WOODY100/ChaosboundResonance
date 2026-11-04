@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PersistentZone : PooledBehaviour
 {
     private RuntimeSkill skill;
+    private string executionId;
 
     private float duration;
     private float tickRate;
@@ -36,7 +37,7 @@ public class PersistentZone : PooledBehaviour
         particle = GetComponentInChildren<ParticleSystem>();
     }
 
-    public void Initialize(RuntimeSkill runtimeSkill)
+    public void Initialize(RuntimeSkill runtimeSkill, string castExecutionId)
     {
         ResetPooledState();
 
@@ -48,6 +49,7 @@ public class PersistentZone : PooledBehaviour
         }
 
         skill = runtimeSkill;
+        executionId = castExecutionId;
         radius = Mathf.Max(0.1f, skill.Stats.FinalImpactRadius);
         tickRate = Mathf.Max(0.1f, skill.Stats.FinalTickRate);
         duration = Mathf.Max(0.01f, skill.Stats.FinalDuration);
@@ -158,10 +160,17 @@ public class PersistentZone : PooledBehaviour
             if (target == null)
                 continue;
 
+            string skillId = null;
+            string readableSkillId = null;
+            string skillDisplayName = null;
+#if UNITY_EDITOR
+            skillId = SkillDamageAttribution.GetSkillDefinitionId(skill.Definition);
+            readableSkillId = SkillDamageAttribution.GetReadableSkillId(skill.Definition);
+            skillDisplayName = SkillDamageAttribution.GetSkillDisplayName(skill.Definition);
+#endif
             target.TakeDamage(new DamageData(
-                totalDamage,
-                false
-            ));
+                totalDamage, false, skillId, executionId,
+                null, readableSkillId, skillDisplayName));
         }
 
         accumulatedDamage.Clear();
@@ -185,6 +194,7 @@ public class PersistentZone : PooledBehaviour
     protected override void ResetPooledState()
     {
         skill = null;
+        executionId = null;
 
         duration = 0f;
         tickRate = 0f;

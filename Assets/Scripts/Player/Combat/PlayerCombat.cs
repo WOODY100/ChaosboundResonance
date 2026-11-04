@@ -437,7 +437,10 @@ public sealed class PlayerCombat : MonoBehaviour
         DamageData damage =
             new DamageData(
                 damageAmount,
-                isCritical);
+                isCritical,
+                null,
+                null,
+                "PlayerBasicAttack");
 
         target.TakeDamage(damage);
 

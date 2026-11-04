@@ -7,5 +7,10 @@ public class UpgradeOption
     public SkillModifierDefinition ModifierDefinition;
     public int TargetSlotIndex;
 
+#if UNITY_EDITOR
+    [System.NonSerialized]
+    public string AnalyticsOptionId;
+#endif
+
     public readonly List<UpgradeEffect> Effects = new();
 }

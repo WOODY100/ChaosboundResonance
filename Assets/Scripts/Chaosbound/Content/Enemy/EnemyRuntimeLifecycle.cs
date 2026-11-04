@@ -155,6 +155,27 @@ public sealed class EnemyRuntimeLifecycle :
             .Statistics
             .RegisterEnemyDefeated();
 
+#if UNITY_EDITOR
+        if (enemyHealth != null)
+        {
+            Chaosbound.Development.Analytics.ExpeditionTelemetryCollector
+                .RegisterEnemyLifeDefeated(
+                    enemyHealth.EnemyLifeId,
+                    (float)runtimeContext.ExpeditionRuntime.ElapsedTime.TotalSeconds);
+
+            Chaosbound.Development.Analytics.ExpeditionTelemetryCollector
+                .RegisterSkillLastHit(
+                    enemyHealth.LastHitSkillDefinitionId,
+                    enemyHealth.LastHitExecutionId,
+                    enemyHealth.EnemyTierId,
+                    enemyHealth.LastHitSourceCategory,
+                    enemyHealth.LastHitSkillId,
+                    enemyHealth.LastHitSkillDisplayName);
+        }
+        Chaosbound.Development.Analytics.ExpeditionTelemetryCollector
+            .RegisterEnemyDefeated();
+#endif
+
         deathRoutine =
             StartCoroutine(
                 DeathRoutine(

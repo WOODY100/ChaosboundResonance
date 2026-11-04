@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 
 [RequireComponent(typeof(EnemyRuntimeContext))]
@@ -30,11 +30,21 @@ public sealed class EnemyHealth :
     public event Action<float> OnDamageTaken;
 
     private EnemyRuntimeStats runtimeStats;
+    private EnemyRuntimeContext runtimeContext;
+
+    public string LastHitSkillDefinitionId { get; private set; }
+    public string LastHitExecutionId { get; private set; }
+    public string LastHitSourceCategory { get; private set; }
+    public string LastHitSkillId { get; private set; }
+    public string LastHitSkillDisplayName { get; private set; }
+    public string EnemyTierId { get; private set; }
+    public string EnemyLifeId { get; private set; }
 
     private void Awake()
     {
         runtimeStats =
             GetComponent<EnemyRuntimeStats>();
+        runtimeContext = GetComponent<EnemyRuntimeContext>();
     }
 
     private void OnEnable()
@@ -69,6 +79,18 @@ public sealed class EnemyHealth :
             MaxHealth;
 
         IsDead = false;
+        LastHitSkillDefinitionId = null;
+        LastHitExecutionId = null;
+        LastHitSourceCategory = null;
+        LastHitSkillId = null;
+        LastHitSkillDisplayName = null;
+        EnemyTierId = runtimeContext != null && runtimeContext.Variant != null
+            ? runtimeContext.Variant.Tier.ToString() : null;
+#if UNITY_EDITOR
+        EnemyLifeId = Guid.NewGuid().ToString("N");
+#else
+        EnemyLifeId = null;
+#endif
     }
 
     public void TakeDamage(
@@ -82,10 +104,46 @@ public sealed class EnemyHealth :
         if (finalDamage <= 0f)
             return;
 
+        float healthBeforeDamage =
+            CurrentHealth;
+
         CurrentHealth =
             Mathf.Max(
                 0f,
                 CurrentHealth - finalDamage);
+
+#if UNITY_EDITOR
+        float effectiveDamage = healthBeforeDamage - CurrentHealth;
+        if (effectiveDamage > 0f)
+        {
+            string skillId = damageData.skillDefinitionId;
+            string tierId = EnemyTierId;
+            // Every effective hit replaces the previous last-hit source,
+            // including unknown damage, so attribution cannot become stale.
+            LastHitSkillDefinitionId = skillId;
+            LastHitExecutionId = damageData.executionId;
+            LastHitSourceCategory = damageData.analyticsSourceCategory;
+            LastHitSkillId = damageData.skillId;
+            LastHitSkillDisplayName = damageData.skillDisplayName;
+            Chaosbound.Development.Analytics.ExpeditionTelemetryCollector
+                .RegisterDamageDealtToEnemy(
+                    effectiveDamage, skillId, tierId,
+                    damageData.analyticsSourceCategory,
+                    damageData.skillId,
+                    damageData.skillDisplayName);
+
+            Chaosbound.Development.Analytics.ExpeditionTelemetryCollector
+                .RegisterEnemyLifeDamage(
+                    EnemyLifeId,
+                    tierId,
+                    skillId,
+                    damageData.skillId,
+                    damageData.skillDisplayName,
+                    damageData.analyticsSourceCategory,
+                    damageData.executionId,
+                    effectiveDamage);
+        }
+#endif
 
         OnDamageTaken?.Invoke(
             finalDamage);
@@ -116,5 +174,12 @@ public sealed class EnemyHealth :
         MaxHealth = 0f;
         CurrentHealth = 0f;
         IsDead = false;
+        LastHitSkillDefinitionId = null;
+        LastHitExecutionId = null;
+        LastHitSourceCategory = null;
+        LastHitSkillId = null;
+        LastHitSkillDisplayName = null;
+        EnemyTierId = null;
+        EnemyLifeId = null;
     }
 }

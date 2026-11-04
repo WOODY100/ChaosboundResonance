@@ -45,6 +45,7 @@ public class SolarOrbitOrb : PooledBehaviour, IOrbital
     private Vector3 smoothedCenter;
 
     private float damage;
+    private string executionId;
 
     protected override void Awake()
     {
@@ -60,7 +61,8 @@ public class SolarOrbitOrb : PooledBehaviour, IOrbital
         Transform orbitOwner,
         OrbitalPatternDefinition orbitalPattern,
         float startAngle,
-        System.Action onOrbitFinished)
+        System.Action onOrbitFinished,
+        string castExecutionId)
     {
         ResetPooledState();
 
@@ -82,6 +84,7 @@ public class SolarOrbitOrb : PooledBehaviour, IOrbital
         owner = orbitOwner;
         pattern = orbitalPattern;
         onFinished = onOrbitFinished;
+        executionId = castExecutionId;
 
         finished = false;
         currentAngle = startAngle;
@@ -269,6 +272,7 @@ public class SolarOrbitOrb : PooledBehaviour, IOrbital
     protected override void ResetPooledState()
     {
         skill = null;
+        executionId = null;
         owner = null;
         pattern = null;
         onFinished = null;
@@ -323,7 +327,17 @@ public class SolarOrbitOrb : PooledBehaviour, IOrbital
             return;
         }
 
-        damageable.TakeDamage(new DamageData(damage));
+        string skillId = null;
+        string readableSkillId = null;
+        string skillDisplayName = null;
+#if UNITY_EDITOR
+        skillId = SkillDamageAttribution.GetSkillDefinitionId(skill.Definition);
+        readableSkillId = SkillDamageAttribution.GetReadableSkillId(skill.Definition);
+        skillDisplayName = SkillDamageAttribution.GetSkillDisplayName(skill.Definition);
+#endif
+        damageable.TakeDamage(new DamageData(
+            damage, false, skillId, executionId,
+            null, readableSkillId, skillDisplayName));
 
         float interval = Mathf.Max(0.05f, damageInterval);
 

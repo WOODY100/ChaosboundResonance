@@ -118,6 +118,7 @@ namespace Chaosbound.Gameplay.Bosses
                 DamageData damageData = new DamageData(
                     releaseContext.EffectiveDamage * definition.DamageMultiplier);
                 damageData.source = executionContext.Owner.gameObject;
+                damageData.analyticsSourceCategory = "BossAreaAttack";
                 damageable.TakeDamage(damageData);
             }
 

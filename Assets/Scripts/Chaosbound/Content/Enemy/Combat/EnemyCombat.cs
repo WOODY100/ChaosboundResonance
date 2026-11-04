@@ -502,6 +502,7 @@ public sealed class EnemyCombat :
                 runtimeStats.Damage);
 
         damageData.source = gameObject;
+        damageData.analyticsSourceCategory = "EnemyMelee";
 
         damageReceiver.ReceiveDamage(
             damageData);

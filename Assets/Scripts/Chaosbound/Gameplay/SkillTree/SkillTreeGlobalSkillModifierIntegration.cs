@@ -36,6 +36,11 @@ public sealed class SkillTreeGlobalSkillModifierIntegration : IDisposable
             return false;
         }
 
+#if UNITY_EDITOR
+        SkillTreeAnalyticsProvenanceRecorder.RegisterEffects(
+            skillTreeRuntime.Database, skillTreeRuntime.State, false);
+#endif
+
         loadout.SetGlobalModifiers(modifiers);
         return true;
     }

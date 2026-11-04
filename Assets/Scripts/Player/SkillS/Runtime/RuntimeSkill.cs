@@ -3,6 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+#if UNITY_EDITOR
+using Chaosbound.Development.Analytics;
+#endif
 
 public class RuntimeSkill
 {
@@ -61,6 +64,11 @@ public class RuntimeSkill
     /// </summary>
     public void SetGlobalModifiers(IReadOnlyList<ModifierEntry> modifiers)
     {
+#if UNITY_EDITOR
+        ExpeditionSkillStatsSnapshot previousStats =
+            ExpeditionTelemetryCollector.CaptureSkillStats(stats);
+        int previousLevel = Level;
+#endif
         globalModifiers.Clear();
 
         if (modifiers != null)
@@ -72,6 +80,12 @@ public class RuntimeSkill
         RecalculateStats();
         CooldownDuration = stats.FinalCooldown;
         CurrentCooldown = Mathf.Min(CurrentCooldown, CooldownDuration);
+#if UNITY_EDITOR
+        ExpeditionTelemetryCollector.RegisterSkillStatsChanged(
+            GetAnalyticsSkillId(), Definition.DisplayName,
+            "GlobalModifiersReplaced", string.Empty, "GlobalSkillModifierLayer", 0f,
+            previousLevel, Level, previousStats, stats);
+#endif
     }
 
     public event Action<RuntimeSkill> OnCooldownFinished;
@@ -106,6 +120,12 @@ public class RuntimeSkill
 
         CooldownDuration = stats.FinalCooldown;
         CurrentCooldown = 0f;
+#if UNITY_EDITOR
+        ExpeditionTelemetryCollector.RegisterSkillStatsChanged(
+            GetAnalyticsSkillId(), Definition.DisplayName,
+            "SkillCreated", string.Empty, "InitialStats", 0f,
+            0, Level, null, stats);
+#endif
     }
 
     // =========================================================
@@ -134,6 +154,11 @@ public class RuntimeSkill
         if (!CanApplyModifier(modifier))
             return false;
 
+#if UNITY_EDITOR
+        ExpeditionSkillStatsSnapshot previousStats =
+            ExpeditionTelemetryCollector.CaptureSkillStats(stats);
+        int previousLevel = Level;
+#endif
         appliedModifiers.Add(modifier);
 
         modifierHistory.Add(modifier);
@@ -141,7 +166,14 @@ public class RuntimeSkill
         RecalculateStats();
 
         Level++;
-
+#if UNITY_EDITOR
+        ExpeditionTelemetryCollector.RegisterSkillStatsChanged(
+            GetAnalyticsSkillId(), Definition.DisplayName,
+            "SkillModifierApplied", modifier.DisplayName,
+            modifier.UsesMultiModifier ? "SkillModifierDefinition.MultiEntry" : "SkillModifierDefinition.Legacy",
+            modifier.UsesMultiModifier ? 0f : modifier.Value,
+            previousLevel, Level, previousStats, stats);
+#endif
         OnLevelChanged?.Invoke(this);
 
         return true;
@@ -199,7 +231,18 @@ public class RuntimeSkill
             evolvedSkill.modifierHistory.Add(modifier);
         }
 
+#if UNITY_EDITOR
+        ExpeditionSkillStatsSnapshot previousEvolvedStats =
+            ExpeditionTelemetryCollector.CaptureSkillStats(evolvedSkill.stats);
+#endif
         evolvedSkill.RecalculateStats();
+#if UNITY_EDITOR
+        ExpeditionTelemetryCollector.RegisterSkillStatsChanged(
+            evolvedSkill.GetAnalyticsSkillId(), resultingDefinition.DisplayName,
+            "EvolutionModifiersTransferred", string.Empty, "RetainedSkillModifiers",
+            preview.RetainedModifiers.Count, 1, evolvedSkill.Level,
+            previousEvolvedStats, evolvedSkill.stats);
+#endif
 
         evolvedSkill.CooldownDuration =
             evolvedSkill.stats.FinalCooldown;
@@ -417,4 +460,14 @@ public class RuntimeSkill
                 break;
         }
     }
+#if UNITY_EDITOR
+    private string GetAnalyticsSkillId()
+    {
+        if (Definition == null) return string.Empty;
+        return string.IsNullOrEmpty(Definition.AnalyticsId)
+            ? Definition.name
+            : Definition.AnalyticsId;
+    }
+#endif
+
 }

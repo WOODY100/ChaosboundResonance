@@ -98,6 +98,7 @@ public sealed class BossProjectileBehaviour : MonoBehaviour
 
         DamageData damageData = new DamageData(damage);
         damageData.source = owner != null ? owner.gameObject : null;
+        damageData.analyticsSourceCategory = "BossProjectile";
         damageable.TakeDamage(damageData);
 
         ReturnToPool();

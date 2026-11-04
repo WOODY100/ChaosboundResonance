@@ -43,7 +43,7 @@ public sealed class HealingPickup : AutoPickupBehaviour
         if (previousHealth >= maxHealth)
             return;
 
-        playerHealth.Heal(healAmount);
+        playerHealth.Heal(healAmount, "Pickup");
 
         if (playerHealth.CurrentHealth > previousHealth)
         {

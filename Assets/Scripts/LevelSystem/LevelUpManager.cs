@@ -39,6 +39,10 @@ public class LevelUpManager : MonoBehaviour
 
     private int pendingLevelUps;
 
+#if UNITY_EDITOR
+    private string currentAnalyticsOptionId;
+#endif
+
     private LevelUpPhase phase =
         LevelUpPhase.None;
 
@@ -210,6 +214,14 @@ public class LevelUpManager : MonoBehaviour
             upgradeGenerator.GenerateOptions(
                 loadout);
 
+#if UNITY_EDITOR
+        currentAnalyticsOptionId =
+            Chaosbound.Development.Analytics.ExpeditionTelemetryCollector
+                .RegisterLevelUpOptionsGenerated(
+                    currentOptions,
+                    experience != null ? experience.CurrentLevel : 1);
+#endif
+
         OnLevelUpOptionsGenerated?.Invoke(
             currentOptions);
     }
@@ -229,6 +241,14 @@ public class LevelUpManager : MonoBehaviour
         {
             return;
         }
+
+#if UNITY_EDITOR
+        Chaosbound.Development.Analytics.ExpeditionTelemetryCollector
+            .RegisterLevelUpOptionSelected(
+                option,
+                experience != null ? experience.CurrentLevel : 1);
+        currentAnalyticsOptionId = option.AnalyticsOptionId;
+#endif
 
         ApplyUpgrade(option);
     }
@@ -274,19 +294,49 @@ public class LevelUpManager : MonoBehaviour
 
                 if (loadout.HasFreeSlot())
                 {
-                    loadout.AssignSkill(
-                        newSkill);
+                    int assignedSlot = loadout.GetFirstFreeSlotIndex();
+                    bool assigned = loadout.AssignSkill(newSkill);
+
+#if UNITY_EDITOR
+                    Chaosbound.Development.Analytics.ExpeditionTelemetryCollector
+                        .RegisterLevelUpEffect(
+                            currentAnalyticsOptionId,
+                            "AddNewSkill",
+                            newSkill != null ? newSkill.name : string.Empty,
+                            string.Empty,
+                            assignedSlot,
+                            string.Empty,
+                            string.Empty,
+                            0f,
+                            0f,
+                            0f,
+                            assigned,
+                            assigned ? "Applied" : "Failed");
+#endif
                 }
                 else
                 {
-                    pendingReplaceSkill =
-                        newSkill;
+                    pendingReplaceSkill = newSkill;
 
-                    phase =
-                        LevelUpPhase.SelectingReplacement;
+#if UNITY_EDITOR
+                    Chaosbound.Development.Analytics.ExpeditionTelemetryCollector
+                        .RegisterLevelUpEffect(
+                            currentAnalyticsOptionId,
+                            "AddNewSkill",
+                            newSkill != null ? newSkill.name : string.Empty,
+                            string.Empty,
+                            -1,
+                            string.Empty,
+                            string.Empty,
+                            0f,
+                            0f,
+                            0f,
+                            false,
+                            "AwaitingReplacement");
+#endif
 
-                    OnReplaceRequested?.Invoke(
-                        pendingReplaceSkill);
+                    phase = LevelUpPhase.SelectingReplacement;
+                    OnReplaceRequested?.Invoke(pendingReplaceSkill);
                 }
 
                 break;
@@ -294,11 +344,28 @@ public class LevelUpManager : MonoBehaviour
             case UpgradeEffectType.SkillModifier:
 
                 RuntimeSkill skill =
-                    loadout.GetSkill(
-                        effect.TargetSlotIndex);
+                    loadout.GetSkill(effect.TargetSlotIndex);
 
-                skill?.ApplyModifier(
-                    effect.SkillModifier);
+                int previousSkillLevel = skill != null ? skill.Level : 0;
+                bool modifierApplied =
+                    skill != null && skill.ApplyModifier(effect.SkillModifier);
+
+#if UNITY_EDITOR
+                Chaosbound.Development.Analytics.ExpeditionTelemetryCollector
+                    .RegisterLevelUpEffect(
+                        currentAnalyticsOptionId,
+                        "SkillModifier",
+                        effect.SkillModifier != null ? effect.SkillModifier.name : string.Empty,
+                        skill != null && skill.Definition != null ? skill.Definition.name : string.Empty,
+                        effect.TargetSlotIndex,
+                        string.Empty,
+                        string.Empty,
+                        0f,
+                        previousSkillLevel,
+                        skill != null ? skill.Level : 0,
+                        modifierApplied,
+                        modifierApplied ? "Applied" : "Failed");
+#endif
 
                 break;
 
@@ -314,6 +381,10 @@ public class LevelUpManager : MonoBehaviour
     private void ApplyGlobalModifier(
         UpgradeEffect effect)
     {
+        float previousValue = modifierSystem != null
+            ? modifierSystem.GetStat(effect.TargetStat)
+            : 0f;
+
         ModifierSource source =
             new ModifierSource(
                 "RunUpgrade_" +
@@ -335,6 +406,28 @@ public class LevelUpManager : MonoBehaviour
         modifierSystem?.AddSource(
             ModifierLayer.Run,
             source);
+
+#if UNITY_EDITOR
+        float newValue = modifierSystem != null
+            ? modifierSystem.GetStat(effect.TargetStat)
+            : previousValue;
+
+        Chaosbound.Development.Analytics.ExpeditionTelemetryCollector
+            .RegisterLevelUpEffect(
+                currentAnalyticsOptionId,
+                "GlobalModifier",
+                effect.GlobalDefinition != null
+                    ? effect.GlobalDefinition.name : "Fallback",
+                string.Empty,
+                -1,
+                effect.TargetStat.ToString(),
+                effect.ModifierType.ToString(),
+                effect.Value,
+                previousValue,
+                newValue,
+                modifierSystem != null,
+                modifierSystem != null ? "Applied" : "Failed");
+#endif
     }
 
     //==========================================================
@@ -352,9 +445,41 @@ public class LevelUpManager : MonoBehaviour
         if (pendingReplaceSkill == null)
             return;
 
-        loadout.ReplaceSkill(
-            index,
-            pendingReplaceSkill);
+        SkillDefinition replacedSkill =
+            loadout.GetSkill(index) != null
+                ? loadout.GetSkill(index).Definition
+                : null;
+
+        SkillDefinition replacementSkill = pendingReplaceSkill;
+        bool replacementValid =
+            index >= 0 &&
+            index < PlayerSkillLoadout.MaxSlots &&
+            replacedSkill != null &&
+            replacementSkill != null;
+
+        loadout.ReplaceSkill(index, replacementSkill);
+
+#if UNITY_EDITOR
+        Chaosbound.Development.Analytics.ExpeditionTelemetryCollector
+            .RegisterLevelUpEffect(
+                currentAnalyticsOptionId,
+                "SkillReplacement",
+                replacementSkill != null ? replacementSkill.name : string.Empty,
+                replacedSkill != null ? replacedSkill.name : string.Empty,
+                index,
+                string.Empty,
+                string.Empty,
+                0f,
+                0f,
+                0f,
+                replacementValid,
+                replacementValid ? "Applied" : "Failed");
+
+        Chaosbound.Development.Analytics.ExpeditionTelemetryCollector
+            .UpdateLevelUpSelectionStatus(
+                currentAnalyticsOptionId,
+                replacementValid ? "AppliedWithReplacement" : "ReplacementFailed");
+#endif
 
         pendingReplaceSkill = null;
 
@@ -373,6 +498,13 @@ public class LevelUpManager : MonoBehaviour
 
         pendingReplaceSkill = null;
 
+#if UNITY_EDITOR
+        Chaosbound.Development.Analytics.ExpeditionTelemetryCollector
+            .UpdateLevelUpSelectionStatus(
+                currentAnalyticsOptionId,
+                "ReplacementCancelled");
+#endif
+
         phase =
             LevelUpPhase.SelectingUpgrade;
 
@@ -387,6 +519,11 @@ public class LevelUpManager : MonoBehaviour
     {
         if (pendingLevelUps <= 0)
             return;
+
+#if UNITY_EDITOR
+        Chaosbound.Development.Analytics.ExpeditionTelemetryCollector
+            .CompleteLevelUpSelection(currentAnalyticsOptionId);
+#endif
 
         pendingLevelUps--;
 

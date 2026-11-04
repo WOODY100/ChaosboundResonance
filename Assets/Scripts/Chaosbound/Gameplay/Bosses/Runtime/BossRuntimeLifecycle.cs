@@ -97,12 +97,30 @@ namespace Chaosbound.Gameplay.Bosses
                 domainId = "boss";
                 eventId = "boss";
                 runtimeContext.ExpeditionRuntime.Boss.Complete();
+
+#if UNITY_EDITOR
+                Chaosbound.Development.Analytics.ExpeditionTelemetryCollector
+                    .RegisterPhaseCompleted(
+                        "Boss",
+                        runtimeContext.Content.Id.ToString(),
+                        runtimeContext.Content.DisplayName,
+                        runtimeContext.ExpeditionRuntime.ElapsedTime.TotalSeconds);
+#endif
             }
             else if (runtimeContext.MiniBoss != null)
             {
                 domainId = "miniboss";
                 eventId = "miniboss";
                 runtimeContext.ExpeditionRuntime.MiniBoss.Complete();
+
+#if UNITY_EDITOR
+                Chaosbound.Development.Analytics.ExpeditionTelemetryCollector
+                    .RegisterPhaseCompleted(
+                        "MiniBoss",
+                        runtimeContext.Content.Id.ToString(),
+                        runtimeContext.Content.DisplayName,
+                        runtimeContext.ExpeditionRuntime.ElapsedTime.TotalSeconds);
+#endif
             }
             else
             {

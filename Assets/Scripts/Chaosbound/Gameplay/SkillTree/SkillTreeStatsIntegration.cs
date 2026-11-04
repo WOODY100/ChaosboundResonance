@@ -50,6 +50,11 @@ public sealed class SkillTreeStatsIntegration : IDisposable
             return false;
         }
 
+#if UNITY_EDITOR
+        SkillTreeAnalyticsProvenanceRecorder.RegisterEffects(
+            skillTreeRuntime.Database, skillTreeRuntime.State, true);
+#endif
+
         // AddSource replaces an existing source with the same ID.
         // An empty source is intentional: it clears stale tree bonuses.
         playerModifierSystem.AddSource(

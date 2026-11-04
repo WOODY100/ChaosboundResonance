@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -83,13 +83,19 @@ public class AreaStrikeExecutor :
 
         isExecuting = true;
 
+        string executionId = null;
+#if UNITY_EDITOR
+        executionId = SkillDamageAttribution.CreateExecutionId();
+#endif
+
         StartCoroutine(
             SpawnStrikesWithDelay(
                 pattern,
                 origin,
                 forward,
                 count,
-                spawnDelay));
+                spawnDelay,
+                executionId));
     }
 
     private IEnumerator SpawnStrikesWithDelay(
@@ -97,7 +103,8 @@ public class AreaStrikeExecutor :
         Vector3 origin,
         Vector3 forward,
         int count,
-        float spawnDelay)
+        float spawnDelay,
+        string executionId)
     {
         for (int i = 0; i < count; i++)
         {
@@ -108,7 +115,7 @@ public class AreaStrikeExecutor :
                 i,
                 count);
 
-            SpawnStrike(position);
+            SpawnStrike(position, executionId);
 
             if (i < count - 1 && spawnDelay > 0f)
             {
@@ -217,7 +224,7 @@ public class AreaStrikeExecutor :
         return forward.normalized;
     }
 
-    private void SpawnStrike(Vector3 position)
+    private void SpawnStrike(Vector3 position, string executionId)
     {
         if (skill == null ||
             skill.Definition.ExecutionPrefab == null)
@@ -256,7 +263,7 @@ public class AreaStrikeExecutor :
         }
 
         activeStrikes.Add(strikeObj);
-        strike.Initialize(skill);
+        strike.Initialize(skill, executionId);
     }
 
     private void CleanupInactiveStrikes()

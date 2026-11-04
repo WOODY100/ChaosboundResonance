@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using UnityEngine;
 
 public class StormfallStrike : PooledBehaviour, IAreaStrike
@@ -12,6 +12,7 @@ public class StormfallStrike : PooledBehaviour, IAreaStrike
 
     private RuntimeSkill skill;
     private float damage;
+    private string executionId;
 
     private Coroutine activeRoutine;
     private ParticleSystem[] particleSystems;
@@ -50,10 +51,11 @@ public class StormfallStrike : PooledBehaviour, IAreaStrike
 
         skill = null;
         damage = 0f;
+        executionId = null;
         activeRoutine = null;
     }
 
-    public void Initialize(RuntimeSkill runtimeSkill)
+    public void Initialize(RuntimeSkill runtimeSkill, string castExecutionId)
     {
         if (activeRoutine != null)
         {
@@ -71,6 +73,7 @@ public class StormfallStrike : PooledBehaviour, IAreaStrike
         }
 
         skill = runtimeSkill;
+        executionId = castExecutionId;
 
         damage = Mathf.Max(0f, skill.Stats.FinalDamage);
 
@@ -129,8 +132,17 @@ public class StormfallStrike : PooledBehaviour, IAreaStrike
             if (damageable == null || damageable.IsDead)
                 continue;
 
+            string skillId = null;
+            string readableSkillId = null;
+            string skillDisplayName = null;
+#if UNITY_EDITOR
+            skillId = SkillDamageAttribution.GetSkillDefinitionId(skill.Definition);
+            readableSkillId = SkillDamageAttribution.GetReadableSkillId(skill.Definition);
+            skillDisplayName = SkillDamageAttribution.GetSkillDisplayName(skill.Definition);
+#endif
             damageable.TakeDamage(new DamageData(
-                damage));
+                damage, false, skillId, executionId,
+            null, readableSkillId, skillDisplayName));
         }
     }
 

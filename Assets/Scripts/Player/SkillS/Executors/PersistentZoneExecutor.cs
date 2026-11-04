@@ -50,10 +50,14 @@ public class PersistentZoneExecutor : MonoBehaviour, ISkillExecutor
 
     private void Execute()
     {
-        StartCoroutine(ExecuteSequence());
+        string executionId = null;
+#if UNITY_EDITOR
+        executionId = SkillDamageAttribution.CreateExecutionId();
+#endif
+        StartCoroutine(ExecuteSequence(executionId));
     }
 
-    private IEnumerator ExecuteSequence()
+    private IEnumerator ExecuteSequence(string executionId)
     {
         isExecuting = true;
 
@@ -113,7 +117,7 @@ public class PersistentZoneExecutor : MonoBehaviour, ISkillExecutor
                 forward,
                 radius);
 
-            PersistentZone zone = SpawnZoneAt(position);
+            PersistentZone zone = SpawnZoneAt(position, executionId);
 
             if (zone != null)
             {
@@ -290,7 +294,7 @@ public class PersistentZoneExecutor : MonoBehaviour, ISkillExecutor
         return skill.Stats.FinalCount + 2;
     }
 
-    private PersistentZone SpawnZoneAt(Vector3 position)
+    private PersistentZone SpawnZoneAt(Vector3 position, string executionId)
     {
         CleanupInactiveZones();
 
@@ -319,7 +323,7 @@ public class PersistentZoneExecutor : MonoBehaviour, ISkillExecutor
         }
 
         activeZones.Add(zoneObject);
-        zone.Initialize(skill);
+        zone.Initialize(skill, executionId);
 
         return zone;
     }
