@@ -147,7 +147,9 @@ namespace Chaosbound.Gameplay.Items.UI.Tooltip
                             itemData,
                             item);
 
-                    equipmentStatsView.Show(stats);
+                    equipmentStatsView.Show(
+                        stats,
+                        equipmentStatDatabase);
                 }
                 else
                 {
@@ -381,7 +383,8 @@ namespace Chaosbound.Gameplay.Items.UI.Tooltip
             CurrentItem = candidateItem;
 
             comparisonTooltipView.Show(
-                tooltipData);
+                tooltipData,
+                equipmentStatDatabase);
 
             comparisonTooltipView.PositionAtScreenPoint(
                 screenPosition);

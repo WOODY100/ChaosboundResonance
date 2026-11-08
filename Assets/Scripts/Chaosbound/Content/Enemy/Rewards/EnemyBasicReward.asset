@@ -14,8 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyRewardDefinition
   m_Rewards:
   - m_Type: 0
+    m_Currency: {fileID: 0}
     m_Chance: 1
     m_Amount: 5
   - m_Type: 1
+    m_Currency: {fileID: 0}
     m_Chance: 0.05
     m_Amount: 1
+  - m_Type: 2
+    m_Currency: {fileID: 11400000, guid: afe0f04c044381f4c9883b8b8d5c260d, type: 2}
+    m_Chance: 1
+    m_Amount: 2

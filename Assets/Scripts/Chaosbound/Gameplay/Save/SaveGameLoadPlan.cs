@@ -18,6 +18,8 @@ namespace Chaosbound.Gameplay.Save
 
         public ExpeditionProgressData ExpeditionProgress { get; }
 
+        public SaveCurrencyLoadPlan Currency { get; }
+
         public SaveGameLoadPlan(
             SaveInventoryLoadPlan inventory,
             SaveEquipmentLoadPlan equipment,
@@ -25,7 +27,8 @@ namespace Chaosbound.Gameplay.Save
             int metaLevel,
             int metaSkillPoints,
             SaveSkillTreeLoadPlan skillTree,
-            ExpeditionProgressData expeditionProgress)
+            ExpeditionProgressData expeditionProgress,
+            SaveCurrencyLoadPlan currency)
         {
             Inventory =
                 inventory ??
@@ -61,6 +64,10 @@ namespace Chaosbound.Gameplay.Save
                 expeditionProgress ??
                 throw new ArgumentNullException(
                     nameof(expeditionProgress));
+
+            Currency =
+                currency ??
+                throw new ArgumentNullException(nameof(currency));
         }
     }
 }

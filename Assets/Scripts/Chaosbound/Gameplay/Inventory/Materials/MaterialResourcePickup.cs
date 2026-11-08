@@ -14,8 +14,6 @@ public sealed class MaterialResourcePickup :
     private int amount;
     private bool isInitialized;
 
-    private MaterialResolver materialResolver;
-
     public string ContentId =>
         contentId;
 
@@ -93,17 +91,10 @@ public sealed class MaterialResourcePickup :
         if (context == null)
             return false;
 
-        if (context.MaterialDatabase == null)
+        if (context.MaterialResolver == null)
             return false;
 
-        if (materialResolver == null)
-        {
-            materialResolver =
-                new MaterialResolver(
-                    context.MaterialDatabase);
-        }
-
-        return materialResolver.TryResolve(
+        return context.MaterialResolver.TryResolve(
             contentId,
             out materialDefinition);
     }

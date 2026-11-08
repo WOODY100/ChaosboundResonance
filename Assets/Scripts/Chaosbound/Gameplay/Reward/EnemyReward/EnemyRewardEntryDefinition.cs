@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using Chaosbound.Content.Currency;
 
 [Serializable]
 public sealed class EnemyRewardEntryDefinition
@@ -8,6 +9,9 @@ public sealed class EnemyRewardEntryDefinition
 
     [SerializeField]
     private EnemyRewardType m_Type;
+
+    [SerializeField]
+    private CurrencyDefinition m_Currency;
 
     [Header("Resolution")]
 
@@ -20,6 +24,9 @@ public sealed class EnemyRewardEntryDefinition
 
     public EnemyRewardType Type =>
         m_Type;
+
+    public CurrencyDefinition Currency =>
+        m_Currency;
 
     public float Chance =>
         m_Chance;

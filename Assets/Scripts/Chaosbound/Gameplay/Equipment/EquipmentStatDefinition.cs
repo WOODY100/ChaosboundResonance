@@ -5,8 +5,20 @@ namespace Chaosbound.Gameplay.Equipment
     [CreateAssetMenu(
         menuName = "Chaosbound/Equipment/Equipment Stat Definition",
         fileName = "EquipmentStatDefinition")]
+
     public sealed class EquipmentStatDefinition : ScriptableObject
     {
+        [Header("Display Information")]
+
+        [SerializeField]
+        private string displayName;
+
+        [TextArea(2, 4)]
+        [SerializeField]
+        private string description;
+
+        [Header("Stat Configuration")]
+
         [SerializeField]
         private StatType statType;
 
@@ -24,6 +36,12 @@ namespace Chaosbound.Gameplay.Equipment
 
         [SerializeField]
         private float weight = 1f;
+
+        public string DisplayName =>
+            displayName;
+
+        public string Description =>
+            description;
 
         public StatType StatType =>
             statType;
@@ -45,7 +63,11 @@ namespace Chaosbound.Gameplay.Equipment
 
         private void OnValidate()
         {
+            if (displayName != null)
+                displayName = displayName.Trim();
+
             minimumValue = Mathf.Max(0f, minimumValue);
+
             maximumValue = Mathf.Max(
                 minimumValue,
                 maximumValue);

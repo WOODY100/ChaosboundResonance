@@ -37,7 +37,9 @@ namespace Chaosbound.Gameplay.Equipment
                 GetComponent<ItemTooltipPositioner>();
         }
 
-        public void Show(EquipmentComparisonTooltipData data)
+        public void Show(
+            EquipmentComparisonTooltipData data,
+            EquipmentStatDatabase statDatabase)
         {
             if (data == null)
             {
@@ -56,7 +58,8 @@ namespace Chaosbound.Gameplay.Equipment
 
                 statsView.ShowComparison(
                     entries,
-                    false);
+                    false,
+                    statDatabase);
             }
 
             gameObject.SetActive(true);

@@ -54,6 +54,7 @@ namespace Chaosbound.Core.Composition
             materialDatabase;
 
         private ItemContentResolver itemContentResolver;
+        private MaterialResolver materialResolver;
 
         //==========================================================
         // Public Properties
@@ -79,6 +80,10 @@ namespace Chaosbound.Core.Composition
             ItemContentResolver =>
                 itemContentResolver;
 
+        public MaterialResolver
+            MaterialResolver =>
+                materialResolver;
+
         //==========================================================
         // Unity
         //==========================================================
@@ -91,6 +96,13 @@ namespace Chaosbound.Core.Composition
                 new ItemContentResolver(
                     itemDatabase,
                     expeditionRewardItemDatabase);
+
+            if (materialDatabase != null)
+            {
+                materialResolver =
+                    new MaterialResolver(
+                        materialDatabase);
+            }
         }
 
         private void OnDestroy()

@@ -452,6 +452,7 @@ GameObject:
   - component: {fileID: 1505896443268450505}
   - component: {fileID: 1145483175190398973}
   - component: {fileID: 70403181297318005}
+  - component: {fileID: 3632217831386009601}
   m_Layer: 5
   m_Name: InventorySlotUI
   m_TagString: Untagged
@@ -507,6 +508,8 @@ MonoBehaviour:
   itemIcon: {fileID: 6096660599230620825}
   newIndicator: {fileID: 2216330415796872707}
   equippedIndicator: {fileID: 5195959998178005007}
+  selectionFrame: {fileID: 518415580779681290}
+  selectedFrameColor: {r: 0, g: 0.43016768, b: 1, a: 1}
 --- !u!114 &3867506318441159711
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -564,6 +567,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 44bb3e4093151dd4fae8f5c07bb82603, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Chaosbound.Gameplay.Items.UI.Tooltip.ItemTooltipHoverHandler
+--- !u!114 &3632217831386009601
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7628160869954246724}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2df0fc81341a6645aa668d3bc32eba2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Chaosbound.Gameplay.Inventory.UI.BlacksmithInventorySlotDragHandler
+  slotUI: {fileID: 371994064184117809}
+  rootCanvas: {fileID: 0}
 --- !u!1 &8209699615378467269
 GameObject:
   m_ObjectHideFlags: 0

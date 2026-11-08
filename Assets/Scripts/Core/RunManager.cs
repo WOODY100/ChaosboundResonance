@@ -109,16 +109,16 @@ public class RunManager : MonoBehaviour
                 "ExpeditionProgressRuntime is not available.");
         }
 
-        if (compositionContext.ExpeditionRewardItemDatabase == null)
-        {
-            throw new InvalidOperationException(
-                "ExpeditionRewardItemDatabase is not available.");
-        }
-
         if (compositionContext == null)
         {
             throw new InvalidOperationException(
                 "GameContentContext is not available.");
+        }
+
+        if (compositionContext.ExpeditionRewardItemDatabase == null)
+        {
+            throw new InvalidOperationException(
+                "ExpeditionRewardItemDatabase is not available.");
         }
 
         if (context.GameFlow == null)
@@ -168,7 +168,8 @@ public class RunManager : MonoBehaviour
                 context.PersistentMetaRuntime,
                 context.PersistentInventoryRuntime.State.SecureInventory,
                 expeditionRewardItemResolver,
-                itemInstanceFactory);
+                itemInstanceFactory,
+                context.PersistentCurrencyState);
 
         expeditionSecurePreservationService =
             new ExpeditionSecurePreservationService(
@@ -220,7 +221,9 @@ public class RunManager : MonoBehaviour
 
         expeditionDirector.StartExpedition(
             config);
-        
+
+        expeditionSettlementService.ResetForNewExpedition();
+
         if (expeditionExitService != null)
             expeditionExitService.ResetForNewExpedition();
     }

@@ -12,6 +12,8 @@ namespace Chaosbound.Gameplay.Equipment
 
         public event Action<ItemInstance> ProgressionChanged;
 
+        public int UpgradesPerTier => progressionConfig.UpgradesPerTier;
+
         public EquipmentProgressionRuntime(
             EquipmentProgressionConfig progressionConfig,
             EquipmentTierOptionGenerator optionGenerator)
@@ -92,10 +94,7 @@ namespace Chaosbound.Gameplay.Equipment
             EquipmentRolledStat rolledStat =
                 selectedOption.ToRolledStat();
 
-            if (!itemInstance.TryAddUnlockedStat(rolledStat))
-                return false;
-
-            if (!itemInstance.TryAdvanceTier())
+            if (!itemInstance.TryApplyTierUp(rolledStat))
                 return false;
 
             ProgressionChanged?.Invoke(itemInstance);

@@ -27,7 +27,6 @@ namespace Chaosbound.Gameplay.Inventory.UI
 
         private PersistentMaterialsState materialsState;
         private PersistentMaterialSeenState materialSeenState;
-        private MaterialResolver materialResolver;
 
         private void Awake()
         {
@@ -39,8 +38,7 @@ namespace Chaosbound.Gameplay.Inventory.UI
             ResolveDependencies();
 
             if (materialsState == null ||
-                materialSeenState == null ||
-                materialResolver == null)
+                materialSeenState == null)
             {
                 return;
             }
@@ -76,22 +74,6 @@ namespace Chaosbound.Gameplay.Inventory.UI
 
                 materialSeenState =
                     state.MaterialSeenState;
-            }
-
-            if (materialResolver == null)
-            {
-                GameContentContext contentContext =
-                    GameContentContext.Current;
-
-                if (contentContext == null)
-                    return;
-
-                if (contentContext.MaterialDatabase == null)
-                    return;
-
-                materialResolver =
-                    new MaterialResolver(
-                        contentContext.MaterialDatabase);
             }
         }
 
@@ -176,7 +158,16 @@ namespace Chaosbound.Gameplay.Inventory.UI
             {
                 MaterialDefinition definition;
 
-                if (!materialResolver.TryResolve(
+                GameContentContext contentContext =
+                    GameContentContext.Current;
+
+                if (contentContext == null ||
+                    contentContext.MaterialResolver == null)
+                {
+                    continue;
+                }
+
+                if (!contentContext.MaterialResolver.TryResolve(
                         pair.Key,
                         out definition))
                 {

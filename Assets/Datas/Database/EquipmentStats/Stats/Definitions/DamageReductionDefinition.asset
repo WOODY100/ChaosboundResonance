@@ -12,9 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdd06fc618651ff468fbbca06424d54a, type: 3}
   m_Name: DamageReductionDefinition
   m_EditorClassIdentifier: Assembly-CSharp::Chaosbound.Gameplay.Equipment.EquipmentStatDefinition
+  displayName: "Reducci\xF3n de da\xF1o"
+  description: "Reduce el da\xF1o recibido de los enemigos."
   statType: 7
-  modifierType: 0
-  minimumValue: 0
-  maximumValue: 0
-  upgradeGrowth: 0
+  modifierType: 1
+  minimumValue: 0.02
+  maximumValue: 0.08
+  upgradeGrowth: 0.02
   weight: 1

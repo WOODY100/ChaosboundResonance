@@ -5,6 +5,9 @@ using Chaosbound.Gameplay.Equipment;
 [CustomEditor(typeof(EquipmentStatDefinition))]
 public sealed class EquipmentStatDefinitionEditor : Editor
 {
+    private SerializedProperty displayName;
+    private SerializedProperty description;
+
     private SerializedProperty statType;
     private SerializedProperty modifierType;
     private SerializedProperty minimumValue;
@@ -14,6 +17,12 @@ public sealed class EquipmentStatDefinitionEditor : Editor
 
     private void OnEnable()
     {
+        displayName =
+            serializedObject.FindProperty("displayName");
+
+        description =
+            serializedObject.FindProperty("description");
+
         statType =
             serializedObject.FindProperty("statType");
 
@@ -38,14 +47,26 @@ public sealed class EquipmentStatDefinitionEditor : Editor
         serializedObject.Update();
 
         EditorGUILayout.LabelField(
-            "Stat",
+            "Display Information",
             EditorStyles.boldLabel);
 
         EditorGUILayout.PropertyField(
-            statType);
+            displayName,
+            new GUIContent("Display Name"));
 
         EditorGUILayout.PropertyField(
-            modifierType);
+            description,
+            new GUIContent("Description"));
+
+        EditorGUILayout.Space();
+
+        EditorGUILayout.LabelField(
+            "Stat",
+            EditorStyles.boldLabel);
+
+        EditorGUILayout.PropertyField(statType);
+
+        EditorGUILayout.PropertyField(modifierType);
 
         EditorGUILayout.Space();
 
@@ -111,8 +132,8 @@ public sealed class EquipmentStatDefinitionEditor : Editor
     }
 
     private static void DrawPercentProperty(
-    SerializedProperty property,
-    string label)
+        SerializedProperty property,
+        string label)
     {
         float internalValue =
             property.floatValue;

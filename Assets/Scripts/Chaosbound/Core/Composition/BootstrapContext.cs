@@ -9,6 +9,7 @@ using Chaosbound.Gameplay.Items.UI.Tooltip;
 using Chaosbound.Gameplay.MetaProgression.Persistent;
 using Chaosbound.Gameplay.Save;
 using Chaosbound.UI.Loading;
+using Chaosbound.Gameplay.Currency.Persistent;
 using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -64,6 +65,7 @@ namespace Chaosbound.Core.Composition
         private EquipmentInventoryService equipmentInventoryService;
         private GameSettingsPersistenceService gameSettingsPersistenceService;
         private VideoSettingsPersistenceService videoSettingsPersistenceService;
+        private PersistentCurrencyState persistentCurrencyState;
 
         [SerializeField]
         private string settingsFileName = "chaosbound_settings.json";
@@ -151,6 +153,9 @@ namespace Chaosbound.Core.Composition
         public LoadingScreenController LoadingScreenController =>
             loadingScreenController;
 
+        public PersistentCurrencyState PersistentCurrencyState =>
+            persistentCurrencyState;
+
         //==========================================================
         // Unity
         //==========================================================
@@ -169,6 +174,9 @@ namespace Chaosbound.Core.Composition
 
             expeditionProgressRuntime =
                 new ExpeditionProgressRuntime();
+
+            persistentCurrencyState =
+                new PersistentCurrencyState();
 
             ISaveStorage saveStorage =
                 new FileSaveStorage(
@@ -401,6 +409,10 @@ namespace Chaosbound.Core.Composition
                 throw new InvalidOperationException(
                     "ExpeditionProgressRuntime is not initialized.");
 
+            if (persistentCurrencyState == null)
+                throw new InvalidOperationException(
+                    "PersistentCurrencyState is not initialized.");
+
             if (skillTreeRuntimeState == null)
                 throw new InvalidOperationException(
                     "SkillTreeRuntimeState is not initialized.");
@@ -412,7 +424,8 @@ namespace Chaosbound.Core.Composition
                     equipmentLoadoutRuntime,
                     persistentMetaRuntime.State,
                     skillTreeRuntimeState,
-                    expeditionProgressRuntime);
+                    expeditionProgressRuntime,
+                    persistentCurrencyState);
 
                 return true;
             }
@@ -428,6 +441,10 @@ namespace Chaosbound.Core.Composition
 
         public bool LoadPersistentState()
         {
+            if (saveSlotService == null)
+                throw new InvalidOperationException(
+                    "SaveSlotService is not initialized.");
+
             if (!saveSlotService.IsValidSlot(activeSaveSlotIndex))
             {
                 Debug.LogWarning(
@@ -494,6 +511,12 @@ namespace Chaosbound.Core.Composition
                     "is not ready.");
             }
 
+            if (persistentCurrencyState == null)
+            {
+                throw new InvalidOperationException(
+                    "PersistentCurrencyState is not initialized.");
+            }
+
             if (!slotSaveService.TryLoad(
                 out SaveGameLoadPlan loadPlan))
             {
@@ -507,7 +530,8 @@ namespace Chaosbound.Core.Composition
                 equipmentLoadoutRuntime,
                 persistentMetaRuntime,
                 skillTreeRuntimeState,
-                expeditionProgressRuntime);
+                expeditionProgressRuntime,
+                persistentCurrencyState);
 
             if (!applied)
             {
@@ -556,6 +580,14 @@ namespace Chaosbound.Core.Composition
                 return false;
             }
 
+            if (persistentCurrencyState == null)
+            {
+                Debug.LogError(
+                    "[BootstrapContext] PersistentCurrencyState is not ready.");
+
+                return false;
+            }
+
             persistentInventoryRuntime.State.Clear();
 
             equipmentLoadoutRuntime.Clear();
@@ -568,6 +600,8 @@ namespace Chaosbound.Core.Composition
             skillTreeRuntime?.NotifyProgressionChanged();
 
             expeditionProgressRuntime.Clear();
+
+            persistentCurrencyState.Clear();
 
             return true;
         }

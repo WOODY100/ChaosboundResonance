@@ -6,6 +6,7 @@ namespace Chaosbound.Gameplay.Save
     public sealed class SaveSlotService
     {
         public const int SlotCount = 3;
+        public const int CurrentSaveVersion = 5;
 
         private readonly SaveGameService[] saveServices;
 
@@ -25,7 +26,10 @@ namespace Chaosbound.Gameplay.Save
                     new FileSaveStorage(fileName);
 
                 saveServices[i] =
-                    new SaveGameService(storage, 3, skillTreeDatabase);
+                    new SaveGameService(
+                        storage,
+                        CurrentSaveVersion,
+                        skillTreeDatabase);
             }
         }
 

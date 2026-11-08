@@ -1,5 +1,7 @@
 using Chaosbound.Content.Items;
 using Chaosbound.Gameplay.ExpeditionRuntime.Result;
+using Chaosbound.Core.Composition;
+using Chaosbound.Gameplay.Items.Runtime;
 using System;
 using System.Collections.Generic;
 using TMPro;
@@ -40,9 +42,6 @@ namespace Chaosbound.UI.ExpeditionResult
         [SerializeField] private Transform rewardItemsContainer;
 
         [SerializeField] private Image rewardItemIconPrefab;
-
-        [SerializeField]
-        private ExpeditionRewardItemDatabase rewardItemDatabase;
 
         [Header("Actions")]
 
@@ -228,12 +227,13 @@ namespace Chaosbound.UI.ExpeditionResult
             metaExperienceValue.text = Mathf.Max(0, amount).ToString();
         }
 
-        private void SetRewardItems(IReadOnlyList<string> contentIds)
+        private void SetRewardItems(
+    IReadOnlyList<string> contentIds)
         {
             if (rewardItemsContainer == null)
                 return;
 
-            // Remove icons from the previous result, if any.
+            // Remove icons from the previous result.
             for (int i = rewardItemsContainer.childCount - 1; i >= 0; i--)
             {
                 Transform child = rewardItemsContainer.GetChild(i);
@@ -257,38 +257,54 @@ namespace Chaosbound.UI.ExpeditionResult
             if (rewardItemIconPrefab == null)
             {
                 Debug.LogWarning(
-                    $"{nameof(ExpeditionResultPanel)}: Reward Item Icon Prefab is not assigned.",
+                    $"{nameof(ExpeditionResultPanel)}: " +
+                    "Reward Item Icon Prefab is not assigned.",
                     this);
+
                 return;
             }
 
-            if (rewardItemDatabase == null)
+            GameContentContext contentContext =
+                GameContentContext.Current;
+
+            if (contentContext == null ||
+                contentContext.ItemContentResolver == null)
             {
-                Debug.LogWarning(
-                    $"{nameof(ExpeditionResultPanel)}: Reward Item Database is not assigned.",
+                Debug.LogError(
+                    $"{nameof(ExpeditionResultPanel)}: " +
+                    "GameContentContext or ItemContentResolver " +
+                    "is unavailable.",
                     this);
+
                 return;
             }
+
+            ItemContentResolver itemResolver =
+                contentContext.ItemContentResolver;
 
             for (int i = 0; i < contentIds.Count; i++)
             {
                 string contentId = contentIds[i];
 
-                if (!rewardItemDatabase.TryGet(
-                    contentId,
-                    out ItemBaseData item))
+                if (!itemResolver.TryResolve(
+                        contentId,
+                        out ItemBaseData item))
                 {
                     Debug.LogWarning(
-                        $"Could not resolve expedition reward item '{contentId}'.",
+                        $"Could not resolve expedition reward item " +
+                        $"'{contentId}' through ItemContentResolver.",
                         this);
+
                     continue;
                 }
 
                 if (item == null || item.Icon == null)
                 {
                     Debug.LogWarning(
-                        $"Expedition reward item '{contentId}' has no icon.",
+                        $"Expedition reward item '{contentId}' " +
+                        "has no icon.",
                         this);
+
                     continue;
                 }
 

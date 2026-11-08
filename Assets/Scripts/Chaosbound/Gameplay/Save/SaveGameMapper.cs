@@ -2,6 +2,7 @@ using System;
 using Chaosbound.Gameplay.Equipment;
 using Chaosbound.Gameplay.Inventory.Persistent;
 using Chaosbound.Gameplay.MetaProgression.Persistent;
+using Chaosbound.Gameplay.Currency.Persistent;
 
 namespace Chaosbound.Gameplay.Save
 {
@@ -14,7 +15,8 @@ namespace Chaosbound.Gameplay.Save
             PersistentMetaState metaState,
             SkillTreeDatabase skillTreeDatabase,
             SkillTreeRuntimeState skillTreeState,
-            ExpeditionProgressRuntime expeditionProgress)
+            ExpeditionProgressRuntime expeditionProgress,
+            PersistentCurrencyState currencyState)
         {
             if (saveVersion < 0)
                 throw new ArgumentOutOfRangeException(
@@ -41,6 +43,9 @@ namespace Chaosbound.Gameplay.Save
             if (expeditionProgress == null)
                 throw new ArgumentNullException(nameof(expeditionProgress));
 
+            if (currencyState == null)
+                throw new ArgumentNullException(nameof(currencyState));
+
             return new SaveGameData
             {
                 SaveVersion = saveVersion,
@@ -63,7 +68,11 @@ namespace Chaosbound.Gameplay.Save
                         skillTreeState),
 
                 ExpeditionProgress =
-                    expeditionProgress.ToSaveData()
+                    expeditionProgress.ToSaveData(),
+
+                Currency =
+                    SaveCurrencyMapper.ToSaveData(
+                        currencyState)
             };
         }
     }

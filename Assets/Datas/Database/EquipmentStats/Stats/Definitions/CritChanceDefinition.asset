@@ -12,9 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdd06fc618651ff468fbbca06424d54a, type: 3}
   m_Name: CritChanceDefinition
   m_EditorClassIdentifier: Assembly-CSharp::Chaosbound.Gameplay.Equipment.EquipmentStatDefinition
+  displayName: "Probabilidad de cr\xEDtico"
+  description: "Aumenta la probabilidad de que tus ataques realicen un golpe cr\xEDtico."
   statType: 3
   modifierType: 1
-  minimumValue: 0.005
-  maximumValue: 0.0069999998
-  upgradeGrowth: 0.0005
+  minimumValue: 0
+  maximumValue: 0
+  upgradeGrowth: 0
   weight: 1

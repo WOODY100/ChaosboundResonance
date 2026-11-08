@@ -23,6 +23,14 @@ namespace Chaosbound.Gameplay.Inventory.UI
         [Header("Equipped Indicator")]
         [SerializeField] private GameObject equippedIndicator;
 
+        [Header("Selection Indicator")]
+        [SerializeField] private Image selectionFrame;
+        [SerializeField]
+        private Color selectedFrameColor =
+            new Color(0.30f, 0.60f, 1f, 1f);
+
+        private Color defaultFrameColor;
+
         private ItemResolver resolver;
         private ItemInstance currentItem;
 
@@ -44,6 +52,9 @@ namespace Chaosbound.Gameplay.Inventory.UI
 
         private void Awake()
         {
+            if (selectionFrame != null)
+                defaultFrameColor = selectionFrame.color;
+
             Clear();
         }
 
@@ -285,12 +296,25 @@ namespace Chaosbound.Gameplay.Inventory.UI
                 itemIcon.enabled = false;
             }
 
+            SetSelected(false);
+
             SetNewIndicator(false);
 
             if (equippedIndicator != null)
             {
                 equippedIndicator.SetActive(false);
             }
+        }
+
+        public void SetSelected(bool selected)
+        {
+            if (selectionFrame == null)
+                return;
+
+            selectionFrame.color =
+                selected
+                    ? selectedFrameColor
+                    : defaultFrameColor;
         }
     }
 }

@@ -1,7 +1,10 @@
+using Chaosbound.Gameplay.Inventory.UI;
 using Chaosbound.Gameplay.Items.Testing;
 using Chaosbound.Gameplay.ExpeditionRuntime.Exit;
 using Chaosbound.Gameplay.ExpeditionRuntime.Settlement;
 using Chaosbound.Gameplay.MetaProgression.Persistent;
+using Chaosbound.Gameplay.Currency.Persistent;
+using Chaosbound.Core.Composition;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -9,11 +12,13 @@ public class PlayerStatsDebugTest : MonoBehaviour
 {
     private PlayerExperienceSystem experience;
 
-    [SerializeField]
-    private GameObject skillTreeWindow;
+    [Header("Blacksmith Debug")]
 
     [SerializeField]
-    private SkillTreeVisualController skillTreeVisualController;
+    private GameObject blacksmithWindow;
+
+    [SerializeField]
+    private BlacksmithInventoryUI blacksmithInventoryUI;
 
     [Header("Meta Progression Debug")]
 
@@ -22,10 +27,13 @@ public class PlayerStatsDebugTest : MonoBehaviour
 
     [Header("Expedition Selection Debug")]
 
+    [Header("Currency Debug")]
+
     [SerializeField]
-    private Chaosbound.Gameplay.Expeditions.UI
-    .ExpeditionSelectionWindowController
-    expeditionSelectionWindowController;
+    private int debugGoldAmount = 1000;
+
+    private const string GoldContentId = "gold";
+    private PersistentCurrencyState persistentCurrencyState;
 
     private PersistentMetaRuntime persistentMetaRuntime;
 
@@ -33,6 +41,13 @@ public class PlayerStatsDebugTest : MonoBehaviour
 
     private void Awake()
     {
+        BootstrapContext context = BootstrapContext.Current;
+
+        if (context != null)
+        {
+            persistentCurrencyState = context.PersistentCurrencyState;
+        }
+
         experience =
             GetComponent<PlayerExperienceSystem>();
 
@@ -83,17 +98,64 @@ public class PlayerStatsDebugTest : MonoBehaviour
             TestDoubleSettlement();
         }
 
-        // U = Open Skill Tree
+        // U = Open Blacksmith Window
         if (Keyboard.current.uKey.wasPressedThisFrame)
         {
-            OpenSkillTree();
+            OpenBlacksmithWindow();
         }
 
-        /* F = Open Expedition Selection
+        // F = Add Debug Gold
         if (Keyboard.current.fKey.wasPressedThisFrame)
         {
-            OpenExpeditionSelection();
-        }*/
+            AddDebugGold();
+        }
+    }
+
+    private void AddDebugGold()
+    {
+        if (persistentCurrencyState == null)
+        {
+            Debug.LogError(
+                "[PlayerStatsDebugTest] " +
+                "PersistentCurrencyState is not available.",
+                this);
+
+            return;
+        }
+
+        if (debugGoldAmount <= 0)
+        {
+            Debug.LogError(
+                "[PlayerStatsDebugTest] " +
+                "Debug Gold Amount must be greater than zero.",
+                this);
+
+            return;
+        }
+
+        int goldBefore =
+            persistentCurrencyState.GetAmount(GoldContentId);
+
+        if (!persistentCurrencyState.Add(
+                GoldContentId,
+                debugGoldAmount))
+        {
+            Debug.LogError(
+                "[PlayerStatsDebugTest] " +
+                "Could not add debug Gold.",
+                this);
+
+            return;
+        }
+
+        int goldAfter =
+            persistentCurrencyState.GetAmount(GoldContentId);
+
+        Debug.Log(
+            "[PlayerStatsDebugTest] " +
+            $"Debug Gold Added: {debugGoldAmount} | " +
+            $"Before: {goldBefore} | After: {goldAfter}",
+            this);
     }
 
     private void AddDebugMetaExperience()
@@ -342,57 +404,34 @@ public class PlayerStatsDebugTest : MonoBehaviour
             RunManager.Instance.CurrentRunConfig);
     }
 
-    private void OpenSkillTree()
+    private void OpenBlacksmithWindow()
     {
-        if (skillTreeWindow == null)
+        if (blacksmithWindow == null)
         {
             Debug.LogError(
                 "[PlayerStatsDebugTest] " +
-                "SkillTreeWindow is not assigned.",
+                "BlacksmithWindow is not assigned.",
                 this);
 
             return;
         }
 
-        if (skillTreeVisualController == null)
+        if (blacksmithInventoryUI == null)
         {
             Debug.LogError(
                 "[PlayerStatsDebugTest] " +
-                "SkillTreeVisualController is not assigned.",
+                "BlacksmithInventoryUI is not assigned.",
                 this);
 
             return;
         }
 
-        skillTreeWindow.SetActive(true);
+        blacksmithWindow.SetActive(true);
 
-        skillTreeVisualController.Build();
+        blacksmithInventoryUI.RefreshInventory();
 
         Debug.Log(
             "[PlayerStatsDebugTest] " +
-            "Skill Tree opened and built.");
-    }
-
-    private void OpenExpeditionSelection()
-    {
-        if (expeditionSelectionWindowController == null)
-        {
-            Debug.LogError(
-                "[PlayerStatsDebugTest] " +
-                "ExpeditionSelectionWindowController " +
-                "is not assigned.",
-                this);
-
-            return;
-        }
-
-        bool opened =
-            expeditionSelectionWindowController.Open();
-
-        Debug.Log(
-            "[PlayerStatsDebugTest] " +
-            "Expedition Selection Open() result: " +
-            opened,
-            this);
+            "Blacksmith Window opened.");
     }
 }

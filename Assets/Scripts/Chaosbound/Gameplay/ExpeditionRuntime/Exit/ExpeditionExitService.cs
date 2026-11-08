@@ -80,8 +80,8 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Exit
         }
 
         public void Exit(
-    ExpeditionExitReason reason,
-    RuntimeExpeditionConfig expeditionConfig)
+            ExpeditionExitReason reason,
+            RuntimeExpeditionConfig expeditionConfig)
         {
             Exit(
                 reason,
@@ -94,39 +94,18 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Exit
             RuntimeExpeditionConfig expeditionConfig,
             ExpeditionExitDestination destination)
         {
-            if (exitRequested)
-            {
-                Debug.LogWarning(
-                    "[ExpeditionExitService] An exit is already in progress.");
+            bool prepared = PrepareExit(
+                reason,
+                expeditionConfig);
+
+            if (!prepared)
                 return;
-            }
 
-            exitRequested = true;
-
-            try
-            {
-                if (reason == ExpeditionExitReason.Completed)
-                {
-                    HandleCompletedExit(expeditionConfig);
-                }
-                else
-                {
-                    HandleNonCompletedExit();
-                }
-            }
-            catch (Exception exception)
-            {
-                Debug.LogError(
-                    "[ExpeditionExitService] Exit failed: " + exception);
-            }
-            finally
-            {
-                ReturnToDestination(destination);
-            }
+            CompleteExit(destination);
         }
 
         private bool HandleCompletedExit(
-    RuntimeExpeditionConfig expeditionConfig)
+            RuntimeExpeditionConfig expeditionConfig)
         {
             if (expeditionConfig == null)
             {
@@ -212,8 +191,33 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Exit
                 return false;
             }
 
+            var runtimeState =
+                expeditionDirector.RuntimeState;
+
+            if (runtimeState == null)
+            {
+                Debug.LogError(
+                    "[ExpeditionExitService] Cannot settle currency " +
+                    "because Expedition Runtime State is null.");
+
+                return false;
+            }
+
+            bool currencySettlementSucceeded =
+                settlementService.TrySettleCurrency(
+                    runtimeState);
+
+            if (!currencySettlementSucceeded)
+            {
+                Debug.LogError(
+                    "[ExpeditionExitService] Expedition currency " +
+                    "settlement failed.");
+
+                return false;
+            }
+
             return TrySavePersistentState(
-                "secure Inventory preservation");
+                "secure Inventory preservation and currency settlement");
         }
 
         private bool TrySavePersistentState(string operation)

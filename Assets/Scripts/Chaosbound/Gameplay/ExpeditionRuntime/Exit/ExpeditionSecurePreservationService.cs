@@ -46,6 +46,9 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Exit
                 ItemInstance item =
                     secureItems[i];
 
+                if (persistentItems.Contains(item))
+                    continue;
+
                 if (!persistentItems.TryAdd(item))
                 {
                     return false;

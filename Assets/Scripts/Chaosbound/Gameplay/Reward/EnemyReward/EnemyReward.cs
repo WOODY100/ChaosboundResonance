@@ -1,3 +1,4 @@
+using Chaosbound.Content.Currency;
 using System;
 using UnityEngine;
 
@@ -140,6 +141,14 @@ public sealed class EnemyReward :
 
                 break;
 
+            case EnemyRewardType.Currency:
+
+                GrantCurrency(
+                    reward.Currency,
+                    reward.Amount);
+
+                break;
+
             default:
 
                 Debug.LogWarning(
@@ -278,6 +287,48 @@ public sealed class EnemyReward :
 
             lootBag.Initialize();
         }
+    }
+
+    private void GrantCurrency(
+        CurrencyDefinition currency,
+        int amount)
+    {
+        if (amount <= 0)
+            return;
+
+        if (currency == null)
+        {
+            Debug.LogError(
+                $"Enemy '{name}' cannot grant currency because " +
+                "Currency Definition is not assigned.",
+                this);
+
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(currency.ContentId))
+        {
+            Debug.LogError(
+                $"Enemy '{name}' cannot grant currency because " +
+                $"Currency Definition '{currency.name}' has an invalid ContentId.",
+                this);
+
+            return;
+        }
+
+        if (runtimeContext.ExpeditionRuntime == null)
+        {
+            Debug.LogError(
+                $"Enemy '{name}' cannot grant currency because " +
+                "Expedition Runtime is not available.",
+                this);
+
+            return;
+        }
+
+        runtimeContext.ExpeditionRuntime.Currency.Add(
+            currency.ContentId,
+            amount);
     }
 
     private bool RollChance(

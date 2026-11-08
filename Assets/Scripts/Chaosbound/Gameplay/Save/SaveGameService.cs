@@ -3,6 +3,7 @@ using Chaosbound.Core.Composition;
 using Chaosbound.Gameplay.Equipment;
 using Chaosbound.Gameplay.Inventory.Persistent;
 using Chaosbound.Gameplay.MetaProgression.Persistent;
+using Chaosbound.Gameplay.Currency.Persistent;
 
 namespace Chaosbound.Gameplay.Save
 {
@@ -41,11 +42,16 @@ namespace Chaosbound.Gameplay.Save
             EquipmentLoadoutRuntime equipmentLoadout,
             PersistentMetaState metaState,
             SkillTreeRuntimeState skillTreeState,
-            ExpeditionProgressRuntime expeditionProgress)
+            ExpeditionProgressRuntime expeditionProgress,
+            PersistentCurrencyState currencyState)
         {
             if (expeditionProgress == null)
                 throw new ArgumentNullException(
                     nameof(expeditionProgress));
+
+            if (currencyState == null)
+                throw new ArgumentNullException(
+                    nameof(currencyState));
 
             SaveGameData saveData =
                 SaveGameMapper.ToSaveData(
@@ -55,7 +61,8 @@ namespace Chaosbound.Gameplay.Save
                     metaState,
                     skillTreeDatabase,
                     skillTreeState,
-                    expeditionProgress);
+                    expeditionProgress,
+                    currencyState);
 
             string json =
                 SaveGameJsonSerializer.Serialize(
@@ -93,6 +100,13 @@ namespace Chaosbound.Gameplay.Save
 
             if (!ExpeditionProgressDataValidator.IsValid(
                     saveData.ExpeditionProgress))
+            {
+                return false;
+            }
+
+            if (!SaveCurrencyMapper.TryPrepareLoad(
+                saveData.Currency,
+                out SaveCurrencyLoadPlan currencyLoadPlan))
             {
                 return false;
             }
@@ -147,7 +161,8 @@ namespace Chaosbound.Gameplay.Save
                     saveData.MetaProgression.MetaLevel,
                     saveData.MetaProgression.SkillPoints,
                     skillTreeLoadPlan,
-                    saveData.ExpeditionProgress);
+                    saveData.ExpeditionProgress,
+                    currencyLoadPlan);
 
             return true;
         }
@@ -158,7 +173,8 @@ namespace Chaosbound.Gameplay.Save
             EquipmentLoadoutRuntime equipmentLoadout,
             PersistentMetaRuntime metaRuntime,
             SkillTreeRuntimeState skillTreeState,
-            ExpeditionProgressRuntime expeditionProgress)
+            ExpeditionProgressRuntime expeditionProgress,
+            PersistentCurrencyState currencyState)
         {
             if (loadPlan == null)
                 throw new ArgumentNullException(nameof(loadPlan));
@@ -178,10 +194,13 @@ namespace Chaosbound.Gameplay.Save
             if (expeditionProgress == null)
                 throw new ArgumentNullException(nameof(expeditionProgress));
 
+            if (currencyState == null)
+                throw new ArgumentNullException(nameof(currencyState));
+
             // Validate the expedition progress before applying
             // the other persistent state.
             if (!ExpeditionProgressDataValidator.IsValid(
-                    loadPlan.ExpeditionProgress))
+                loadPlan.ExpeditionProgress))
             {
                 return false;
             }
@@ -208,8 +227,17 @@ namespace Chaosbound.Gameplay.Save
                 return false;
             }
 
-            return expeditionProgress.ApplySaveData(
-                loadPlan.ExpeditionProgress);
+            if (!expeditionProgress.ApplySaveData(
+                loadPlan.ExpeditionProgress))
+            {
+                return false;
+            }
+
+            SaveCurrencyMapper.ApplyLoadPlan(
+                loadPlan.Currency,
+                currencyState);
+
+            return true;
         }
 
         public bool TryLoad(

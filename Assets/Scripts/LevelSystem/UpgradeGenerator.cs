@@ -32,9 +32,9 @@ public class UpgradeGenerator : MonoBehaviour
             Debug.LogError("UpgradeGenerator: SkillDatabase not assigned.");
             return new List<UpgradeOption>
             {
-                CreateFallback(StatType.Damage,0.1f),
-                CreateFallback(StatType.AttackSpeed,0.1f),
-                CreateFallback(StatType.MovementSpeed,0.1f)
+                CreateFallback(StatType.Damage, 10f),
+                CreateFallback(StatType.AttackSpeed, 10f),
+                CreateFallback(StatType.MovementSpeed, 10f)
             };
         }
 
@@ -54,15 +54,15 @@ public class UpgradeGenerator : MonoBehaviour
 
         if (options.Count == 0)
         {
-            options.Add(CreateFallback(StatType.Damage, 0.1f));
-            options.Add(CreateFallback(StatType.AttackSpeed, 0.1f));
-            options.Add(CreateFallback(StatType.MovementSpeed, 0.1f));
+            options.Add(CreateFallback(StatType.Damage, 10f));
+            options.Add(CreateFallback(StatType.AttackSpeed, 10f));
+            options.Add(CreateFallback(StatType.MovementSpeed, 10f));
             return options;
         }
 
         while (options.Count < 3)
         {
-            UpgradeOption fallback = CreateFallback(StatType.Damage, 0.05f);
+            UpgradeOption fallback = CreateFallback(StatType.Damage, 5f);
 
             if (!ContainsSimilarOption(options, fallback))
                 options.Add(fallback);

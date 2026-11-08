@@ -5,6 +5,7 @@ using Chaosbound.Gameplay.Inventory.Persistent;
 using Chaosbound.Gameplay.Inventory.Runtime;
 using Chaosbound.Gameplay.Items.Runtime;
 using Chaosbound.Gameplay.MetaProgression.Persistent;
+using Chaosbound.Gameplay.Currency.Persistent;
 using System;
 using System.Collections.Generic;
 
@@ -23,6 +24,9 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Settlement
         private readonly ItemInstanceFactory
             itemInstanceFactory;
 
+        private readonly PersistentCurrencyState persistentCurrency;
+        private bool isCurrencySettled;
+
         private bool isSettled;
 
         public ExpeditionSettlementService(
@@ -31,7 +35,8 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Settlement
             PersistentMetaRuntime persistentMetaRuntime,
             SecureInventoryState secureInventory,
             ExpeditionRewardItemResolver expeditionRewardItemResolver,
-            ItemInstanceFactory itemInstanceFactory)
+            ItemInstanceFactory itemInstanceFactory,
+            PersistentCurrencyState persistentCurrency)
         {
             this.persistentItems =
                 persistentItems ??
@@ -59,6 +64,11 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Settlement
                 itemInstanceFactory ??
                 throw new ArgumentNullException(
                     nameof(itemInstanceFactory));
+
+            this.persistentCurrency =
+                persistentCurrency ??
+                throw new ArgumentNullException(
+                    nameof(persistentCurrency));
         }
 
         public bool IsSettled =>
@@ -100,6 +110,9 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Settlement
 
             Commit(plan);
 
+            expeditionState.Currency.Clear();
+            isCurrencySettled = true;
+
             isSettled = true;
 
             result =
@@ -133,6 +146,13 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Settlement
             }
 
             if (!TryPrepareMaterials(
+                expeditionState,
+                plan))
+            {
+                return false;
+            }
+
+            if (!TryPrepareCurrency(
                 expeditionState,
                 plan))
             {
@@ -212,7 +232,9 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Settlement
                 KeyValuePair<string, int> entry
                 in amounts)
             {
-                string contentId = entry.Key;
+                string contentId =
+                    entry.Key?.Trim();
+
                 int amount = entry.Value;
 
                 if (string.IsNullOrWhiteSpace(contentId))
@@ -232,6 +254,42 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Settlement
                 }
 
                 plan.MaterialAmounts[contentId.Trim()] =
+                    amount;
+            }
+
+            return true;
+        }
+
+        private bool TryPrepareCurrency(
+            ExpeditionRuntimeState expeditionState,
+            SettlementPlan plan)
+        {
+            IReadOnlyDictionary<string, int> amounts =
+                expeditionState.Currency.GetAmounts();
+
+            foreach (
+                KeyValuePair<string, int> entry
+                in amounts)
+            {
+                string contentId = entry.Key?.Trim();
+                int amount = entry.Value;
+
+                if (string.IsNullOrWhiteSpace(contentId))
+                    return false;
+
+                if (amount <= 0)
+                    return false;
+
+                int currentAmount =
+                    persistentCurrency.GetAmount(contentId);
+
+                if (currentAmount < 0)
+                    return false;
+
+                if (amount > int.MaxValue - currentAmount)
+                    return false;
+
+                plan.CurrencyAmounts[contentId] =
                     amount;
             }
 
@@ -362,6 +420,26 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Settlement
             }
 
             RemoveSettledSecureItems(plan);
+
+            CommitCurrency(plan);
+        }
+
+        private void CommitCurrency(
+            SettlementPlan plan)
+        {
+            foreach (
+                KeyValuePair<string, int> entry
+                in plan.CurrencyAmounts)
+            {
+                if (!persistentCurrency.Add(
+                    entry.Key,
+                    entry.Value))
+                {
+                    throw new InvalidOperationException(
+                        "Settlement commit failed while " +
+                        "adding expedition currency.");
+                }
+            }
         }
 
         private void RemoveSettledSecureItems(
@@ -434,6 +512,40 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Settlement
                 0);
         }
 
+        public bool TrySettleCurrency(
+            ExpeditionRuntimeState expeditionState)
+        {
+            if (expeditionState == null)
+                return false;
+
+            if (isCurrencySettled)
+                return true;
+
+            SettlementPlan plan =
+                new SettlementPlan();
+
+            if (!TryPrepareCurrency(
+                expeditionState,
+                plan))
+            {
+                return false;
+            }
+
+            CommitCurrency(plan);
+
+            expeditionState.Currency.Clear();
+
+            isCurrencySettled = true;
+
+            return true;
+        }
+
+        public void ResetForNewExpedition()
+        {
+            isCurrencySettled = false;
+            isSettled = false;
+        }
+
         private sealed class SettlementPlan
         {
             public readonly List<ItemInstance>
@@ -446,6 +558,11 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Settlement
 
             public readonly Dictionary<string, int>
                 MaterialAmounts =
+                    new Dictionary<string, int>(
+                        StringComparer.Ordinal);
+
+            public readonly Dictionary<string, int>
+                CurrencyAmounts =
                     new Dictionary<string, int>(
                         StringComparer.Ordinal);
 

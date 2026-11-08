@@ -1,3 +1,4 @@
+using Chaosbound.Content.Currency;
 using Chaosbound.Gameplay.ExpeditionRuntime.Director;
 using Chaosbound.Gameplay.ExpeditionRuntime.Runtime;
 using System;
@@ -10,9 +11,14 @@ public class HUDController : MonoBehaviour
     [SerializeField] private TMP_Text timerText;
     [SerializeField] private HealthOrbController healthOrb;
 
+    [Header("Currency")]
+    [SerializeField] private TMP_Text goldText;
+    [SerializeField] private CurrencyDefinition goldCurrency;
+
     private PlayerHealth playerHealth;
     private RunManager runManager;
     private int lastSecond = -1;
+    private int lastGoldAmount = -1;
 
     private void Update()
     {
@@ -35,6 +41,7 @@ public class HUDController : MonoBehaviour
             return;
 
         UpdateTimer(runtimeState.ElapsedTime);
+        UpdateGold(runtimeState);
     }
 
     private void UpdateTimer(
@@ -53,6 +60,29 @@ public class HUDController : MonoBehaviour
 
         timerText.text =
             elapsedTime.ToString(@"mm\:ss");
+    }
+
+    private void UpdateGold(
+        ExpeditionRuntimeState runtimeState)
+    {
+        if (goldText == null ||
+            goldCurrency == null ||
+            runtimeState == null)
+        {
+            return;
+        }
+
+        int currentAmount =
+            runtimeState.Currency.GetAmount(
+                goldCurrency.ContentId);
+
+        if (currentAmount == lastGoldAmount)
+            return;
+
+        lastGoldAmount = currentAmount;
+
+        goldText.text =
+            currentAmount.ToString("N0");
     }
 
     public void ShowHUD()
@@ -80,6 +110,9 @@ public class HUDController : MonoBehaviour
         RunManager manager)
     {
         runManager = manager;
+
+        lastSecond = -1;
+        lastGoldAmount = -1;
     }
 
     public void Initialize(

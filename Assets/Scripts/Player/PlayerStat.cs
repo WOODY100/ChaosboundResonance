@@ -28,7 +28,7 @@ public class PlayerStat
                     break;
 
                 case ModifierType.Percent:
-                    percent += mod.Value;
+                    percent += mod.Value / 100f;
                     break;
 
                 case ModifierType.FinalMultiplier:

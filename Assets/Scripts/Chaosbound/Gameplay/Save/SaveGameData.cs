@@ -16,5 +16,7 @@ namespace Chaosbound.Gameplay.Save
         public SaveSkillTreeData SkillTree;
 
         public ExpeditionProgressData ExpeditionProgress;
+
+        public SaveCurrencyData Currency;
     }
 }

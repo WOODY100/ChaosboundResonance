@@ -154,12 +154,13 @@ public sealed class SkillTreeNodeEffectDetailsView : MonoBehaviour
 
             case ModifierType.Percent:
                 return
-                    $"+{effect.Value * 100f:0.##}% " +
+                    $"{(effect.Value >= 0f ? "+" : "")}" +
+                    $"{effect.Value:0.##}% " +
                     statName;
 
             case ModifierType.FinalMultiplier:
                 return
-                    $"+{effect.Value * 100f:0.##}% " +
+                    $"×{effect.Value:0.##} " +
                     $"Final {statName}";
 
             default:
@@ -196,10 +197,8 @@ public sealed class SkillTreeNodeEffectDetailsView : MonoBehaviour
                     modifierName;
 
             case SkillModifierType.PercentDamage:
-                return
-                    $"+{value * 100f:0.##}% " +
-                    modifierName;
-
+            case SkillModifierType.CriticalChance:
+            case SkillModifierType.CriticalDamageBonus:
             case SkillModifierType.CooldownPercent:
             case SkillModifierType.TickRatePercent:
             case SkillModifierType.SpawnRadiusPercent:
@@ -207,7 +206,8 @@ public sealed class SkillTreeNodeEffectDetailsView : MonoBehaviour
             case SkillModifierType.RangePercent:
             case SkillModifierType.DurationPercent:
                 return
-                    $"+{value * 100f:0.##}% " +
+                    $"{(value >= 0f ? "+" : "")}" +
+                    $"{value:0.##}% " +
                     modifierName;
 
             case SkillModifierType.ExtraCount:

@@ -118,6 +118,11 @@ namespace Chaosbound.Gameplay.Stats.UI
                 StatDisplayFormat format;
                 float displayValue = modifier.Value;
 
+                if (IsPercentageModifier(modifier.Type))
+                {
+                    displayValue /= 100f;
+                }
+
                 GetGlobalModifierPresentation(
                     modifier.Type,
                     out displayName,
@@ -131,6 +136,27 @@ namespace Chaosbound.Gameplay.Stats.UI
                     displayName,
                     displayValue,
                     format));
+            }
+        }
+
+        private static bool IsPercentageModifier(
+            SkillModifierType type)
+        {
+            switch (type)
+            {
+                case SkillModifierType.PercentDamage:
+                case SkillModifierType.CriticalChance:
+                case SkillModifierType.CriticalDamageBonus:
+                case SkillModifierType.CooldownPercent:
+                case SkillModifierType.TickRatePercent:
+                case SkillModifierType.SpawnRadiusPercent:
+                case SkillModifierType.ImpactRadiusPercent:
+                case SkillModifierType.RangePercent:
+                case SkillModifierType.DurationPercent:
+                    return true;
+
+                default:
+                    return false;
             }
         }
 

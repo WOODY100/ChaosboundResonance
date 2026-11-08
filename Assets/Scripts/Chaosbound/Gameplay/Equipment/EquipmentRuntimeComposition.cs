@@ -1,4 +1,7 @@
 using Chaosbound.Core.Composition;
+using Chaosbound.Content.Items;
+using Chaosbound.Content.Materials;
+using Chaosbound.Gameplay.Inventory.Persistent;
 using Chaosbound.Gameplay.Items.Runtime;
 using UnityEngine;
 
@@ -7,14 +10,42 @@ namespace Chaosbound.Gameplay.Equipment
     public sealed class EquipmentRuntimeComposition : MonoBehaviour
     {
         [Header("Equipment Configuration")]
-        [SerializeField] private EquipmentStatDatabase statDatabase;
-        [SerializeField] private EquipmentProgressionConfig progressionConfig;
+
+        [SerializeField]
+        private EquipmentStatDatabase statDatabase;
+
+        [SerializeField]
+        private EquipmentProgressionConfig progressionConfig;
 
         private EquipmentStatsIntegration integration;
         private EquipmentProgressionRuntime progressionRuntime;
+        private EquipmentUpgradeService upgradeService;
+        private EquipmentUpgradeSession upgradeSession;
+
+        private bool isComposed;
+
+        //==========================================================
+        // Public Runtime Access
+        //==========================================================
 
         public EquipmentProgressionRuntime ProgressionRuntime =>
             progressionRuntime;
+
+        public EquipmentUpgradeService UpgradeService =>
+            upgradeService;
+
+        public EquipmentUpgradeSession UpgradeSession =>
+            upgradeSession;
+
+        public bool IsComposed =>
+            isComposed;
+
+        public EquipmentStatDatabase StatDatabase =>
+            statDatabase;
+
+        //==========================================================
+        // Unity Lifecycle
+        //==========================================================
 
         private void Start()
         {
@@ -23,11 +54,18 @@ namespace Chaosbound.Gameplay.Equipment
 
         private void OnDestroy()
         {
-            DisposeIntegration();
+            DisposeComposition();
         }
+
+        //==========================================================
+        // Composition
+        //==========================================================
 
         private void Compose()
         {
+            if (isComposed)
+                return;
+
             BootstrapContext bootstrapContext =
                 BootstrapContext.Current;
 
@@ -35,7 +73,8 @@ namespace Chaosbound.Gameplay.Equipment
             {
                 Debug.LogError(
                     "[Equipment Runtime Composition] " +
-                    "BootstrapContext is not available.");
+                    "BootstrapContext is not available.",
+                    this);
 
                 return;
             }
@@ -47,8 +86,35 @@ namespace Chaosbound.Gameplay.Equipment
             {
                 Debug.LogError(
                     "[Equipment Runtime Composition] " +
-                    "BootstrapContext does not provide " +
-                    "EquipmentLoadoutRuntime.");
+                    "EquipmentLoadoutRuntime is not available.",
+                    this);
+
+                return;
+            }
+
+            PersistentInventoryRuntime inventoryRuntime =
+                bootstrapContext.PersistentInventoryRuntime;
+
+            if (inventoryRuntime == null ||
+                inventoryRuntime.State == null)
+            {
+                Debug.LogError(
+                    "[Equipment Runtime Composition] " +
+                    "PersistentInventoryRuntime is not ready.",
+                    this);
+
+                return;
+            }
+
+            PersistentMaterialsState materialsState =
+                inventoryRuntime.State.Materials;
+
+            if (materialsState == null)
+            {
+                Debug.LogError(
+                    "[Equipment Runtime Composition] " +
+                    "PersistentMaterialsState is not available.",
+                    this);
 
                 return;
             }
@@ -61,7 +127,8 @@ namespace Chaosbound.Gameplay.Equipment
                 Debug.LogError(
                     "[Equipment Runtime Composition] " +
                     "PlayerModifierSystem was not found on this " +
-                    "GameObject.");
+                    "GameObject.",
+                    this);
 
                 return;
             }
@@ -70,7 +137,8 @@ namespace Chaosbound.Gameplay.Equipment
             {
                 Debug.LogError(
                     "[Equipment Runtime Composition] " +
-                    "Missing EquipmentStatDatabase.");
+                    "Missing EquipmentStatDatabase.",
+                    this);
 
                 return;
             }
@@ -79,7 +147,8 @@ namespace Chaosbound.Gameplay.Equipment
             {
                 Debug.LogError(
                     "[Equipment Runtime Composition] " +
-                    "Missing EquipmentProgressionConfig.");
+                    "Missing EquipmentProgressionConfig.",
+                    this);
 
                 return;
             }
@@ -91,7 +160,8 @@ namespace Chaosbound.Gameplay.Equipment
             {
                 Debug.LogError(
                     "[Equipment Runtime Composition] " +
-                    "GameContentContext is not available.");
+                    "GameContentContext is not available.",
+                    this);
 
                 return;
             }
@@ -103,11 +173,28 @@ namespace Chaosbound.Gameplay.Equipment
             {
                 Debug.LogError(
                     "[Equipment Runtime Composition] " +
-                    "GameContentContext does not provide an " +
-                    "ItemContentResolver.");
+                    "ItemContentResolver is not available.",
+                    this);
 
                 return;
             }
+
+            MaterialResolver materialResolver =
+                contentContext.MaterialResolver;
+
+            if (materialResolver == null)
+            {
+                Debug.LogError(
+                    "[Equipment Runtime Composition] " +
+                    "MaterialResolver is not available.",
+                    this);
+
+                return;
+            }
+
+            //======================================================
+            // Equipment Stat Infrastructure
+            //======================================================
 
             EquipmentStatResolver statResolver =
                 new EquipmentStatResolver(
@@ -123,10 +210,41 @@ namespace Chaosbound.Gameplay.Equipment
                     statDatabase,
                     progressionConfig.OptionsPerTier);
 
+            //======================================================
+            // Progression Runtime
+            //======================================================
+
             progressionRuntime =
                 new EquipmentProgressionRuntime(
                     progressionConfig,
                     optionGenerator);
+
+            //======================================================
+            // Upgrade Service
+            //======================================================
+
+            upgradeService =
+                new EquipmentUpgradeService(
+                    itemContentResolver,
+                    materialResolver,
+                    materialsState,
+                    progressionConfig,
+                    progressionRuntime,
+                    bootstrapContext,
+                    bootstrapContext.PersistentCurrencyState);
+
+            //======================================================
+            // Upgrade Session
+            //======================================================
+
+            upgradeSession =
+                new EquipmentUpgradeSession(
+                    upgradeService,
+                    bootstrapContext);
+
+            //======================================================
+            // Equipment Stats Integration
+            //======================================================
 
             integration =
                 new EquipmentStatsIntegration(
@@ -136,15 +254,32 @@ namespace Chaosbound.Gameplay.Equipment
                     progressionRuntime);
 
             integration.Refresh();
+
+            isComposed = true;
         }
 
-        private void DisposeIntegration()
-        {
-            if (integration == null)
-                return;
+        //==========================================================
+        // Disposal
+        //==========================================================
 
-            integration.Dispose();
-            integration = null;
+        private void DisposeComposition()
+        {
+            if (integration != null)
+            {
+                integration.Dispose();
+                integration = null;
+            }
+
+            if (upgradeSession != null)
+            {
+                upgradeSession.Close();
+                upgradeSession = null;
+            }
+
+            upgradeService = null;
+            progressionRuntime = null;
+
+            isComposed = false;
         }
     }
 }

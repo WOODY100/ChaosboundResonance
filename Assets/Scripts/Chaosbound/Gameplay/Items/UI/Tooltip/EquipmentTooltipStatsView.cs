@@ -20,7 +20,8 @@ namespace Chaosbound.Gameplay.Items.UI.Tooltip
         public int RowCount => rows.Count;
 
         public void Show(
-            IReadOnlyList<EquipmentTooltipStatData> stats)
+            IReadOnlyList<EquipmentTooltipStatData> stats,
+            EquipmentStatDatabase statDatabase)
         {
             Clear();
 
@@ -39,7 +40,9 @@ namespace Chaosbound.Gameplay.Items.UI.Tooltip
                     continue;
 
                 row.SetStat(
-                    GetStatDisplayName(stat.StatType),
+                    GetStatDisplayName(
+                        stat.StatType,
+                        statDatabase),
                     FormatValue(
                         stat.ModifierType,
                         stat.Value));
@@ -48,7 +51,8 @@ namespace Chaosbound.Gameplay.Items.UI.Tooltip
 
         public void ShowComparison(
             IReadOnlyList<EquipmentComparisonDisplayEntry> entries,
-            bool showCandidateValues)
+            bool showCandidateValues,
+            EquipmentStatDatabase statDatabase)
         {
             Clear();
 
@@ -100,7 +104,9 @@ namespace Chaosbound.Gameplay.Items.UI.Tooltip
                     continue;
 
                 row.SetComparisonStat(
-                    GetStatDisplayName(entry.StatType),
+                    GetStatDisplayName(
+                        entry.StatType,
+                        statDatabase),
                     displayValue,
                     differenceText,
                     displayState);
@@ -212,49 +218,26 @@ namespace Chaosbound.Gameplay.Items.UI.Tooltip
         }
 
         private static string GetStatDisplayName(
-            StatType statType)
+            StatType statType,
+            EquipmentStatDatabase statDatabase)
         {
-            switch (statType)
+            if (statDatabase != null &&
+                statDatabase.TryGetDefinition(
+                    statType,
+                    out EquipmentStatDefinition definition))
             {
-                case StatType.Damage:
-                    return "DAMAGE";
-
-                case StatType.AttackSpeed:
-                    return "ATTACK SPEED";
-
-                case StatType.MovementSpeed:
-                    return "MOVEMENT SPEED";
-
-                case StatType.CritChance:
-                    return "CRIT CHANCE";
-
-                case StatType.CritDamage:
-                    return "CRIT DAMAGE";
-
-                case StatType.MaxHP:
-                    return "MAX HP";
-
-                case StatType.HPRegen:
-                    return "HP REGEN";
-
-                case StatType.DamageReduction:
-                    return "DAMAGE REDUCTION";
-
-                case StatType.Shield:
-                    return "SHIELD";
-
-                case StatType.PickupRadius:
-                    return "PICKUP RADIUS";
-
-                case StatType.Luck:
-                    return "LUCK";
-
-                case StatType.XPGain:
-                    return "XP GAIN";
-
-                default:
-                    return statType.ToString();
+                if (!string.IsNullOrWhiteSpace(
+                        definition.DisplayName))
+                {
+                    return definition.DisplayName;
+                }
             }
+
+            Debug.LogWarning(
+                "[EquipmentTooltipStatsView] " +
+                $"Could not resolve display name for '{statType}'.");
+
+            return statType.ToString();
         }
 
         private static string FormatValue(
@@ -314,12 +297,9 @@ namespace Chaosbound.Gameplay.Items.UI.Tooltip
             if (Mathf.Approximately(value, 0f))
                 return "0%";
 
-            float percentage =
-                value * 100f;
-
-            return percentage > 0f
-                ? "+" + percentage.ToString("0.##") + "%"
-                : percentage.ToString("0.##") + "%";
+            return value > 0f
+                ? "+" + value.ToString("0.##") + "%"
+                : value.ToString("0.##") + "%";
         }
 
         private static string FormatSignedMultiplier(

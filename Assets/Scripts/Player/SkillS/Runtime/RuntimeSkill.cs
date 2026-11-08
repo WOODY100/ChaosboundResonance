@@ -393,39 +393,39 @@ public class RuntimeSkill
                 break;
 
             case SkillModifierType.PercentDamage:
-                stats.PercentDamage += value;
+                stats.PercentDamage += value / 100f;
                 break;
 
             case SkillModifierType.CriticalChance:
-                stats.CriticalChance += value;
+                stats.CriticalChance += value / 100f;
                 break;
 
             case SkillModifierType.CriticalDamageBonus:
-                stats.CriticalDamageBonus += value;
+                stats.CriticalDamageBonus += value / 100f;
                 break;
 
             case SkillModifierType.CooldownPercent:
-                stats.PercentCooldownReduction += value;
+                stats.PercentCooldownReduction += value / 100f;
                 break;
 
             case SkillModifierType.TickRatePercent:
-                stats.PercentTickRate += value;
+                stats.PercentTickRate += value / 100f;
                 break;
 
             case SkillModifierType.SpawnRadiusPercent:
-                stats.PercentSpawnRadius += value;
+                stats.PercentSpawnRadius += value / 100f;
                 break;
 
             case SkillModifierType.ImpactRadiusPercent:
-                stats.PercentImpactRadius += value;
+                stats.PercentImpactRadius += value / 100f;
                 break;
 
             case SkillModifierType.RangePercent:
-                stats.PercentRange += value;
+                stats.PercentRange += value / 100f;
                 break;
 
             case SkillModifierType.DurationPercent:
-                stats.PercentDuration += value;
+                stats.PercentDuration += value / 100f;
                 break;
 
             case SkillModifierType.ExtraCount:

@@ -65,7 +65,7 @@ MonoBehaviour:
       m_TargetProgression:
         m_Profile: {fileID: 11400000, guid: 8df0a772af085de4681c7986b695bc67, type: 2}
       m_Tactics:
-      - m_MaximumTarget: 50
+      - m_MaximumTarget: 10
         m_Melee:
           m_Percentage: 0.7
           m_NormalPercentage: 0.7
@@ -106,16 +106,16 @@ MonoBehaviour:
           m_ContentId: boss.start
       m_FixedTimeRules:
       - m_EventId: boss
-        m_TimeSeconds: 1500
+        m_TimeSeconds: 60
       m_DistributedRules:
       - m_EventIds:
         - combat_tier_step_1
         - combat_tier_step_2
-        m_StartTimeSeconds: 300
+        m_StartTimeSeconds: 10
         m_EndTimeType: 1
-        m_EndTimeSeconds: 1500
+        m_EndTimeSeconds: 60
       m_CompletionTarget:
-        m_TimeSeconds: 1500
+        m_TimeSeconds: 60
     m_expeditionEvents:
       content: []
     m_miniBosses:
@@ -125,7 +125,15 @@ MonoBehaviour:
       - {fileID: 11400000, guid: 0b409907a923693498d5dfa590ac2d69, type: 2}
     m_rewards:
       m_completion:
-        m_itemContentIds: []
+        m_itemContentIds:
+        - armor_basic
+        - boots_basic
+        - gloves_basic
+        - reward_helmet_basico
+        - pants_basic
+        - pendant_basic
+        - relic_basic
+        - ring_basic
         m_metaExperience: 50000
     m_completion:
       m_DomainId: boss
