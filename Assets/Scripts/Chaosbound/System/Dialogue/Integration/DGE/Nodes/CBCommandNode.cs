@@ -43,10 +43,15 @@ namespace Chaosbound.Systems.Dialogue.Integration.DGE.Nodes
 
             if (outputs.Count > OutputCount)
             {
-                Debug.LogError(
+                Debug.LogWarning(
                     "[CBCommandNode] Invalid output count. " +
-                    "Command nodes must have exactly three output slots.",
+                    "Removing extra output slots. " +
+                    "Command nodes must have exactly three outputs.",
                     this);
+
+                outputs.RemoveRange(
+                    OutputCount,
+                    outputs.Count - OutputCount);
             }
         }
 

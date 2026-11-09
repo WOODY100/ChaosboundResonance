@@ -364,7 +364,16 @@ namespace NovaVertexCode.DialogGraphEngine
 
             if (node is CBCommandNode commandNode)
             {
+                int previousOutputCount = commandNode.outputs != null
+                    ? commandNode.outputs.Count
+                    : 0;
+
                 commandNode.EnsureOutputSlots();
+
+                if (previousOutputCount != CBCommandNode.OutputCount)
+                {
+                    EditorUtility.SetDirty(commandNode);
+                }
 
                 graphNode = new CBCommandGraphNode(commandNode, this);
             }

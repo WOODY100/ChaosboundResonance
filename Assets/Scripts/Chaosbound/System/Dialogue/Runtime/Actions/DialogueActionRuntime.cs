@@ -1,4 +1,3 @@
-using System;
 using Chaosbound.Systems.Dialogue.Runtime.Actions.Definitions;
 using Chaosbound.Systems.Dialogue.Runtime.Actions.Execution;
 using Chaosbound.Systems.Dialogue.Runtime.Actions.Registry;
@@ -10,15 +9,8 @@ namespace Chaosbound.Systems.Dialogue.Runtime.Actions
         private readonly DialogueActionRegistry registry;
         private readonly DialogueActionExecutor executor;
 
-        public DialogueActionRuntime(
-            IProgressionWindowService progressionWindowService)
+        public DialogueActionRuntime()
         {
-            if (progressionWindowService == null)
-            {
-                throw new ArgumentNullException(
-                    nameof(progressionWindowService));
-            }
-
             registry = new DialogueActionRegistry();
 
             registry.Register<OpenProgressionWindowDefinition>(

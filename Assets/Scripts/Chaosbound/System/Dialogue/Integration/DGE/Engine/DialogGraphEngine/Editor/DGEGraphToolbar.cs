@@ -29,6 +29,7 @@ namespace NovaVertexCode.DialogGraphEngine
 
             var dialogSelector = new DropdownField
             {
+                name = "dge-dialog-selector",
                 label = "Dialog:",
                 choices = dialogManager.GetDialogFolders(),
                 value = dialogManager.CurrentDialogFolder

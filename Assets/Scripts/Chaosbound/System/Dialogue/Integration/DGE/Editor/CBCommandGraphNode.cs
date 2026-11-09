@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
@@ -15,8 +14,12 @@ namespace Chaosbound.Systems.Dialogue.Integration.DGE.Editor
     public sealed class CBCommandGraphNode : DGEGraphNode
     {
         private DropdownField definitionDropdown;
-        private List<DialogueActionDefinition> availableDefinitions =
-            new List<DialogueActionDefinition>();
+
+        private readonly Dictionary<string, DialogueActionDefinition>
+            availableDefinitions =
+                new Dictionary<string, DialogueActionDefinition>();
+
+        private CBCommandNode commandNode;
 
         public CBCommandGraphNode(
             CBCommandNode commandNode,
@@ -28,8 +31,10 @@ namespace Chaosbound.Systems.Dialogue.Integration.DGE.Editor
 
             commandNode.EnsureOutputSlots();
 
+            this.commandNode = commandNode;
+
             BuildDefinitionSelector(commandNode);
-            BuildCommandOutputs(commandNode);
+            BuildCommandOutputs();
 
             RefreshExpandedState();
             RefreshPorts();
@@ -38,71 +43,124 @@ namespace Chaosbound.Systems.Dialogue.Integration.DGE.Editor
         private void BuildDefinitionSelector(
             CBCommandNode commandNode)
         {
-            availableDefinitions = LoadAvailableDefinitions();
+            List<string> choices =
+                LoadAvailableDefinitions(commandNode);
 
-            List<string> choices = availableDefinitions
-                .Select(definition => definition.name)
-                .ToList();
+            string selectedPath =
+                GetDefinitionPath(commandNode.ActionDefinition);
 
-            choices.Insert(0, "Select command...");
+            int selectedIndex = choices.IndexOf(selectedPath);
 
-            string selectedName =
-                commandNode.ActionDefinition != null
-                    ? commandNode.ActionDefinition.name
-                    : "Select command...";
+            if (selectedIndex < 0)
+                selectedIndex = 0;
 
             definitionDropdown = new DropdownField(
                 "Command",
                 choices,
-                selectedName);
+                selectedIndex);
 
             definitionDropdown.RegisterValueChangedCallback(evt =>
             {
-                if (evt.newValue == "Select command...")
-                {
-                    commandNode.SetActionDefinition(null);
-                }
-                else
-                {
-                    DialogueActionDefinition selected =
-                        availableDefinitions.FirstOrDefault(
-                            definition => definition.name == evt.newValue);
+                DialogueActionDefinition selectedDefinition = null;
 
-                    commandNode.SetActionDefinition(selected);
+                if (!string.IsNullOrEmpty(evt.newValue))
+                {
+                    if (!availableDefinitions.TryGetValue(
+                        evt.newValue,
+                        out selectedDefinition))
+                    {
+                        Debug.LogError(
+                            "[CBCommandGraphNode] Could not resolve " +
+                            "selected definition at path: " + evt.newValue,
+                            commandNode);
+
+                        return;
+                    }
                 }
+
+                if (commandNode.ActionDefinition == selectedDefinition)
+                    return;
+
+                Undo.RecordObject(
+                    commandNode,
+                    "Change Dialogue Command");
+
+                commandNode.SetActionDefinition(selectedDefinition);
 
                 EditorUtility.SetDirty(commandNode);
             });
 
+            definitionDropdown.RegisterCallback<AttachToPanelEvent>(
+                OnDropdownAttached);
+
+            definitionDropdown.RegisterCallback<DetachFromPanelEvent>(
+                OnDropdownDetached);
+
             mainContainer.Add(definitionDropdown);
         }
 
-        private List<DialogueActionDefinition> LoadAvailableDefinitions()
+        private List<string> LoadAvailableDefinitions(
+            CBCommandNode commandNode)
         {
-            List<DialogueActionDefinition> definitions =
-                new List<DialogueActionDefinition>();
+            availableDefinitions.Clear();
+
+            List<string> choices = new List<string>
+            {
+                string.Empty
+            };
 
             string[] assetGuids =
-                AssetDatabase.FindAssets("t:DialogueActionDefinition");
+                AssetDatabase.FindAssets("t:ScriptableObject");
 
             foreach (string guid in assetGuids)
             {
-                string path = AssetDatabase.GUIDToAssetPath(guid);
+                string path =
+                    AssetDatabase.GUIDToAssetPath(guid);
+
+                if (string.IsNullOrEmpty(path))
+                    continue;
 
                 DialogueActionDefinition definition =
-                    AssetDatabase.LoadAssetAtPath<DialogueActionDefinition>(
-                        path);
+                    AssetDatabase.LoadAssetAtPath<
+                        DialogueActionDefinition>(path);
 
-                if (definition != null)
+                if (definition == null)
+                    continue;
+
+                availableDefinitions[path] = definition;
+                choices.Add(path);
+            }
+
+            // Include the current definition if it was not
+            // found by the general asset search.
+            if (commandNode.ActionDefinition != null)
+            {
+                string selectedPath =
+                    GetDefinitionPath(commandNode.ActionDefinition);
+
+                if (!string.IsNullOrEmpty(selectedPath) &&
+                    !availableDefinitions.ContainsKey(selectedPath))
                 {
-                    definitions.Add(definition);
+                    availableDefinitions[selectedPath] =
+                        commandNode.ActionDefinition;
+
+                    choices.Add(selectedPath);
                 }
             }
 
-            return definitions;
+            return choices;
         }
 
-        private void BuildCommandOutputs(CBCommandNode commandNode)
+        private string GetDefinitionPath(
+            DialogueActionDefinition definition)
+        {
+            if (definition == null)
+                return string.Empty;
+
+            return AssetDatabase.GetAssetPath(definition);
+        }
+
+        private void BuildCommandOutputs()
         {
             outputContainer.Clear();
 
@@ -132,6 +190,38 @@ namespace Chaosbound.Systems.Dialogue.Integration.DGE.Editor
             port.AddToClassList("cb-command-output");
 
             outputContainer.Add(port);
+        }
+
+        private void OnDropdownAttached(AttachToPanelEvent evt)
+        {
+            Undo.undoRedoPerformed -= RefreshDefinitionDropdown;
+            Undo.undoRedoPerformed += RefreshDefinitionDropdown;
+        }
+
+        private void OnDropdownDetached(DetachFromPanelEvent evt)
+        {
+            Undo.undoRedoPerformed -= RefreshDefinitionDropdown;
+        }
+
+        private void RefreshDefinitionDropdown()
+        {
+            if (definitionDropdown == null || commandNode == null)
+                return;
+
+            string selectedPath =
+                GetDefinitionPath(commandNode.ActionDefinition);
+
+            if (!definitionDropdown.choices.Contains(selectedPath))
+            {
+                Debug.LogWarning(
+                    "[CBCommandGraphNode] Definition path not found " +
+                    "in dropdown choices: " + selectedPath,
+                    commandNode);
+
+                return;
+            }
+
+            definitionDropdown.SetValueWithoutNotify(selectedPath);
         }
     }
 }

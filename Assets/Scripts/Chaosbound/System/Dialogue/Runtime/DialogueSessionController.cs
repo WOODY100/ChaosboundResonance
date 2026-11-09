@@ -55,6 +55,10 @@ namespace Chaosbound.Systems.Dialogue
 
         private bool commandExecutionInProgress;
 
+        private int sessionGeneration;
+
+        private Task activeCommandTask;
+
         public CancellationToken SessionCancellationToken =>
             sessionCancellation != null
                 ? sessionCancellation.Token
@@ -106,11 +110,8 @@ namespace Chaosbound.Systems.Dialogue
                     "or does not implement IProgressionWindowService.",
                     this);
             }
-            else
-            {
-                actionRuntime = new DialogueActionRuntime(
-                    progressionWindowService);
-            }
+
+            actionRuntime = new DialogueActionRuntime();
         }
 
         private void OnEnable()
@@ -173,9 +174,23 @@ namespace Chaosbound.Systems.Dialogue
             if (gameFlow.CurrentContext != GameFlowContext.Playing)
                 return false;
 
+            if (activeCommandTask != null && !activeCommandTask.IsCompleted)
+            {
+                Debug.LogWarning(
+                    "[Dialogue] Cannot start a new session while a previous command is still completing.",
+                    this);
+
+                return false;
+            }
+
+            activeCommandTask = null;
+
             if (!gameFlow.Request(GameFlowContext.Dialogue))
                 return false;
 
+            sessionGeneration++;
+
+            commandExecutionInProgress = false;
             sessionActive = true;
 
             sessionCancellation = new CancellationTokenSource();
@@ -187,8 +202,6 @@ namespace Chaosbound.Systems.Dialogue
                 CloseSession();
                 return false;
             }
-
-            sessionActive = true;
 
             dialogSelection.StartDialog();
 
@@ -248,63 +261,114 @@ namespace Chaosbound.Systems.Dialogue
                     return;
                 }
 
-                ExecuteCommandNodeAsync(commandNode);
+                int generation = sessionGeneration;
+
+                commandExecutionInProgress = true;
+
+                activeCommandTask = ExecuteCommandNodeAsync(
+                    commandNode,
+                    generation);
+
                 return;
             }
 
             onNodePresented.Invoke(node);
         }
 
-        private async void ExecuteCommandNodeAsync(
-            CBCommandNode commandNode)
+        private async Task ExecuteCommandNodeAsync(
+            CBCommandNode commandNode,
+            int generation)
         {
-            commandExecutionInProgress = true;
-
-            DialogueActionResult result;
-
             try
             {
-                result = await ExecuteCommandAsync(
+                DialogueActionResult result = await ExecuteCommandAsync(
                     commandNode.ActionDefinition);
+
+                // La ejecución pertenece a una sesión anterior.
+                if (!IsCurrentSession(generation))
+                    return;
+
+                int outputIndex;
+
+                switch (result)
+                {
+                    case DialogueActionResult.Success:
+                        outputIndex = CBCommandNode.SuccessOutputIndex;
+                        break;
+
+                    case DialogueActionResult.Failure:
+                        outputIndex = CBCommandNode.FailureOutputIndex;
+                        break;
+
+                    case DialogueActionResult.Cancelled:
+                        outputIndex = CBCommandNode.CancelledOutputIndex;
+                        break;
+
+                    default:
+                        Debug.LogError(
+                            "[Dialogue] Invalid DialogueActionResult received.",
+                            this);
+
+                        outputIndex = CBCommandNode.FailureOutputIndex;
+                        break;
+                }
+
+                bool continued =
+                    dialogSelection.ContinueFromCurrentNode(
+                        commandNode,
+                        outputIndex);
+
+                if (!continued)
+                {
+                    Debug.LogError(
+                        "[Dialogue] Failed to continue from CBCommandNode.",
+                        commandNode);
+                }
             }
             catch (OperationCanceledException)
             {
-                commandExecutionInProgress = false;
-
-                // La sesión fue cancelada técnicamente.
-                // No debe confundirse con el resultado Cancelled.
-                return;
+                // La cancelación técnica no debe utilizar ningún puerto.
+                if (IsCurrentSession(generation))
+                {
+                    Debug.LogWarning(
+                        "[Dialogue] Command was cancelled while its session remained active.",
+                        this);
+                }
             }
             catch (Exception exception)
             {
-                commandExecutionInProgress = false;
+                if (!IsCurrentSession(generation))
+                    return;
 
                 Debug.LogException(exception, this);
 
-                if (!sessionActive)
-                    return;
+                bool continued =
+                    dialogSelection.ContinueFromCurrentNode(
+                        commandNode,
+                        CBCommandNode.FailureOutputIndex);
 
-                result = DialogueActionResult.Failure;
+                if (!continued)
+                {
+                    Debug.LogError(
+                        "[Dialogue] Failed to continue through Failure output.",
+                        commandNode);
+                }
             }
-
-            commandExecutionInProgress = false;
-
-            if (!sessionActive)
-                return;
-
-            int outputIndex = (int)result;
-
-            bool continued =
-                dialogSelection.ContinueFromCurrentNode(
-                    commandNode,
-                    outputIndex);
-
-            if (!continued)
+            finally
             {
-                Debug.LogError(
-                    "[Dialogue] Failed to continue from CBCommandNode.",
-                    commandNode);
+                // Una ejecución antigua nunca modifica el estado de otra sesión.
+                if (generation == sessionGeneration)
+                {
+                    commandExecutionInProgress = false;
+                    activeCommandTask = null;
+                }
             }
+        }
+
+        private bool IsCurrentSession(int generation)
+        {
+            return sessionActive &&
+                   generation == sessionGeneration;
         }
 
         private void HandleDialogueEnded()
@@ -321,6 +385,10 @@ namespace Chaosbound.Systems.Dialogue
                 return;
 
             sessionActive = false;
+
+            sessionGeneration++;
+
+            commandExecutionInProgress = false;
 
             // Cancel pending dialogue actions.
             if (sessionCancellation != null)

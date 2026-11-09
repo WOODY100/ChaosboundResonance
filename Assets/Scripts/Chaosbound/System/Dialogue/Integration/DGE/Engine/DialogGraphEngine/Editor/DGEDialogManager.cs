@@ -270,14 +270,18 @@ namespace NovaVertexCode.DialogGraphEngine
 
         private void UpdateDialogSelector(DGEGraphView graphView)
         {
-            var dialogSelector = graphView.Q<DropdownField>();
+            var dialogSelector =
+                graphView.Q<DropdownField>("dge-dialog-selector");
+
             if (dialogSelector != null)
             {
                 dialogSelector.choices = GetDialogFolders();
+
                 if (!dialogSelector.choices.Contains(currentDialogFolder))
                 {
                     dialogSelector.choices.Add(currentDialogFolder);
                 }
+
                 dialogSelector.SetValueWithoutNotify(currentDialogFolder); // Используем SetValueWithoutNotify
             }
         }
