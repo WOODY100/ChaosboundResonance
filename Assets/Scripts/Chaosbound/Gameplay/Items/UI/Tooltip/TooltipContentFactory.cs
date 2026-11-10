@@ -20,7 +20,10 @@ namespace Chaosbound.Gameplay.Items.UI.Tooltip
                     itemData.EquipmentType),
                 "TIER " + item.CurrentTier,
                 string.Empty,
-                itemData.Description);
+                itemData.Description,
+                itemData.Category == ItemCategory.Equipment,
+                item.CurrentTier,
+                item.UpgradeLevel);
         }
 
         public static TooltipContent CreateMaterialContent(

@@ -15,7 +15,12 @@ namespace Chaosbound.Gameplay.Equipment
         [SerializeField] private TMP_Text itemName;
         [SerializeField] private TMP_Text category;
         [SerializeField] private TMP_Text tier;
+        [SerializeField] private Image tierFrame;
+        [SerializeField] private TMP_Text upgradeLevelText;
         [SerializeField] private TMP_Text quantity;
+
+        [Header("Tier Presentation")]
+        [SerializeField] private ItemTierPresentationDatabase tierPresentationDatabase;
         [SerializeField] private TMP_Text description;
 
         [Header("Comparison Stats")]
@@ -114,6 +119,32 @@ namespace Chaosbound.Gameplay.Equipment
             gameObject.SetActive(false);
         }
 
+
+        private void ApplyTierPresentation(ItemTier itemTier)
+        {
+            if (tierPresentationDatabase == null)
+            {
+                Debug.LogWarning(
+                    "[EquipmentComparisonTooltipView] ItemTierPresentationDatabase is not assigned.",
+                    this);
+                return;
+            }
+
+            if (!tierPresentationDatabase.TryGet(
+                    itemTier,
+                    out ItemTierPresentationDefinition definition))
+            {
+                Debug.LogWarning(
+                    $"[EquipmentComparisonTooltipView] No presentation found for tier: {itemTier}.",
+                    this);
+                return;
+            }
+
+            Color color = definition.NameColor;
+            if (tier != null) tier.color = color;
+            if (tierFrame != null) tierFrame.color = color;
+        }
+
         private void ApplyItemInformation(
             ItemBaseData baseData,
             ItemInstance item)
@@ -144,6 +175,13 @@ namespace Chaosbound.Gameplay.Equipment
             {
                 tier.text = "TIER " + item.CurrentTier;
             }
+
+            if (upgradeLevelText != null)
+            {
+                upgradeLevelText.text = item.UpgradeLevel.ToString();
+            }
+
+            ApplyTierPresentation(item.CurrentTier);
 
             if (quantity != null)
             {

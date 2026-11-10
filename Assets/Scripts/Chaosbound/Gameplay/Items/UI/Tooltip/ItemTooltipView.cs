@@ -1,3 +1,4 @@
+using Chaosbound.Content.Items;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,8 +12,13 @@ namespace Chaosbound.Gameplay.Items.UI.Tooltip
         [SerializeField] private TMP_Text itemName;
         [SerializeField] private TMP_Text category;
         [SerializeField] private TMP_Text secondaryText;
+        [SerializeField] private Image tierFrame;
+        [SerializeField] private TMP_Text upgradeLevelText;
         [SerializeField] private TMP_Text quantityText;
         [SerializeField] private TMP_Text description;
+
+        [Header("Tier Presentation")]
+        [SerializeField] private ItemTierPresentationDatabase tierPresentationDatabase;
 
         private ItemTooltipPositioner positioner;
         private bool isVisible;
@@ -21,8 +27,7 @@ namespace Chaosbound.Gameplay.Items.UI.Tooltip
 
         private void Awake()
         {
-            positioner =
-                GetComponent<ItemTooltipPositioner>();
+            positioner = GetComponent<ItemTooltipPositioner>();
         }
 
         public void Show(TooltipContent content)
@@ -36,72 +41,64 @@ namespace Chaosbound.Gameplay.Items.UI.Tooltip
             if (itemIcon != null)
             {
                 itemIcon.sprite = content.Icon;
-                itemIcon.enabled =
-                    content.Icon != null;
+                itemIcon.enabled = content.Icon != null;
             }
 
-            if (itemName != null)
+            SetText(itemName, content.DisplayName);
+            SetText(category, content.CategoryText);
+            SetText(secondaryText, content.SecondaryText);
+            SetText(quantityText, content.QuantityText);
+            SetText(description, content.Description);
+
+            bool showProgression = content.HasEquipmentProgression;
+            if (upgradeLevelText != null)
             {
-                itemName.text =
-                    content.DisplayName;
-
-                 itemName.gameObject.SetActive(
-                     !string.IsNullOrEmpty(
-                         content.DisplayName));
+                upgradeLevelText.text = content.UpgradeLevel.ToString();
+                upgradeLevelText.gameObject.SetActive(showProgression);
             }
 
-            if (category != null)
-            {
-                category.text =
-                    content.CategoryText;
+            if (tierFrame != null)
+                tierFrame.gameObject.SetActive(showProgression);
 
-                 category.gameObject.SetActive(
-                     !string.IsNullOrEmpty(
-                         content.CategoryText));
-            }
-
-            if (secondaryText != null)
-            {
-                secondaryText.text =
-                    content.SecondaryText;
-
-                 secondaryText.gameObject.SetActive(
-                     !string.IsNullOrEmpty(
-                         content.SecondaryText));
-            }
-
-            if (quantityText != null)
-            {
-                quantityText.text =
-                    content.QuantityText;
-
-                 quantityText.gameObject.SetActive(
-                     !string.IsNullOrEmpty(
-                         content.QuantityText));
-            }
-
-            if (description != null)
-            {
-                description.text =
-                    content.Description;
-
-                 description.gameObject.SetActive(
-                     !string.IsNullOrEmpty(
-                         content.Description));
-            }
+            if (showProgression)
+                ApplyTierPresentation(content.Tier);
 
             gameObject.SetActive(true);
             isVisible = true;
         }
 
-        public void PositionAtScreenPoint(
-            Vector2 screenPoint)
+        private static void SetText(TMP_Text target, string value)
         {
-            if (positioner == null)
-                return;
+            if (target == null) return;
+            target.text = value;
+            target.gameObject.SetActive(!string.IsNullOrEmpty(value));
+        }
 
-            positioner.PositionAtScreenPoint(
-                screenPoint);
+        private void ApplyTierPresentation(ItemTier tier)
+        {
+            if (tierPresentationDatabase == null)
+            {
+                Debug.LogWarning(
+                    "[ItemTooltipView] ItemTierPresentationDatabase is not assigned.", this);
+                return;
+            }
+
+            if (!tierPresentationDatabase.TryGet(tier, out ItemTierPresentationDefinition definition))
+            {
+                Debug.LogWarning(
+                    $"[ItemTooltipView] No presentation found for tier: {tier}.", this);
+                return;
+            }
+
+            Color color = definition.NameColor;
+            if (secondaryText != null) secondaryText.color = color;
+            if (tierFrame != null) tierFrame.color = color;
+        }
+
+        public void PositionAtScreenPoint(Vector2 screenPoint)
+        {
+            if (positioner == null) return;
+            positioner.PositionAtScreenPoint(screenPoint);
         }
 
         public void Hide()
