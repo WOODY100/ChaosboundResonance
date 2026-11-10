@@ -1,151 +1,158 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace Chaosbound.Gameplay.ExpeditionRuntime.Modifiers
 {
     /// <summary>
-    /// Stores the active modifiers of the current expedition.
-    ///
-    /// This class owns modifier state only.
-    /// It does not know how individual gameplay domains
-    /// apply modifiers to their statistics.
+    /// Source of truth for active modifier applications in one expedition.
+    /// Mutations are exposed to the domain director; notifications are raised
+    /// only after the corresponding state change has completed.
     /// </summary>
     public sealed class ExpeditionModifierState
     {
-        private readonly List<ExpeditionModifier>
-            modifiers;
+        private readonly List<ExpeditionModifier> modifiers =
+            new List<ExpeditionModifier>();
+        private readonly ReadOnlyCollection<ExpeditionModifier> readOnlyModifiers;
 
-        /// <summary>
-        /// Gets the currently active expedition modifiers.
-        /// </summary>
-        public IReadOnlyList<ExpeditionModifier> Modifiers =>
-            modifiers;
+        public IReadOnlyList<ExpeditionModifier> Modifiers => readOnlyModifiers;
 
-        /// <summary>
-        /// Creates a new expedition modifier state.
-        /// </summary>
+        public event Action<ExpeditionModifier> ModifierAdded;
+        public event Action<ExpeditionModifier, ExpeditionModifier> ModifierUpdated;
+        public event Action<ExpeditionModifier> ModifierRemoved;
+        public event Action<IReadOnlyList<ExpeditionModifier>> ModifiersCleared;
+
         public ExpeditionModifierState()
         {
-            modifiers =
-                new List<ExpeditionModifier>();
+            readOnlyModifiers = modifiers.AsReadOnly();
         }
 
-        /// <summary>
-        /// Adds a modifier to the current expedition state.
-        ///
-        /// Each addition represents an independent application
-        /// of the modifier and therefore supports stacking.
-        /// </summary>
-        public void Add(
-            ExpeditionModifier modifier)
+        public ExpeditionModifier FindByApplicationId(string applicationId)
+        {
+            if (string.IsNullOrWhiteSpace(applicationId))
+                return null;
+
+            return modifiers.FirstOrDefault(
+                item => string.Equals(item.ApplicationId, applicationId, StringComparison.Ordinal));
+        }
+
+        public ExpeditionModifier FindByDefinitionId(string definitionId)
+        {
+            if (string.IsNullOrWhiteSpace(definitionId))
+                return null;
+
+            return modifiers.FirstOrDefault(
+                item => string.Equals(item.DefinitionId, definitionId, StringComparison.Ordinal));
+        }
+
+        public IReadOnlyList<ExpeditionModifier> FindAllByDefinitionId(string definitionId)
+        {
+            if (string.IsNullOrWhiteSpace(definitionId))
+                return Array.Empty<ExpeditionModifier>();
+
+            return modifiers.Where(
+                item => string.Equals(item.DefinitionId, definitionId, StringComparison.Ordinal)).ToArray();
+        }
+
+        internal void Add(ExpeditionModifier modifier)
         {
             if (modifier == null)
-            {
-                throw new ArgumentNullException(
-                    nameof(modifier));
-            }
+                throw new ArgumentNullException(nameof(modifier));
+            if (FindByApplicationId(modifier.ApplicationId) != null)
+                throw new InvalidOperationException(
+                    $"ApplicationId '{modifier.ApplicationId}' already exists.");
 
             modifiers.Add(modifier);
+            ModifierAdded?.Invoke(modifier);
         }
 
-        /// <summary>
-        /// Removes the specified modifier from the current state.
-        /// </summary>
-        /// <returns>
-        /// True when the modifier was present and removed.
-        /// </returns>
-        public bool Remove(
-            ExpeditionModifier modifier)
+        internal bool Replace(ExpeditionModifier previous, ExpeditionModifier current)
         {
-            if (modifier == null)
+            if (previous == null)
+                throw new ArgumentNullException(nameof(previous));
+            if (current == null)
+                throw new ArgumentNullException(nameof(current));
+
+            int index = modifiers.FindIndex(
+                item => string.Equals(item.ApplicationId, previous.ApplicationId, StringComparison.Ordinal));
+            if (index < 0)
+                return false;
+            if (!string.Equals(previous.ApplicationId, current.ApplicationId, StringComparison.Ordinal))
+                throw new InvalidOperationException("Replacing an application must preserve ApplicationId.");
+
+            modifiers[index] = current;
+            ModifierUpdated?.Invoke(previous, current);
+            return true;
+        }
+
+        internal bool RemoveByApplicationId(string applicationId)
+        {
+            int index = modifiers.FindIndex(
+                item => string.Equals(item.ApplicationId, applicationId, StringComparison.Ordinal));
+            if (index < 0)
+                return false;
+
+            ExpeditionModifier removed = modifiers[index];
+            modifiers.RemoveAt(index);
+            ModifierRemoved?.Invoke(removed);
+            return true;
+        }
+
+        internal IReadOnlyList<ExpeditionModifier> RemoveAll()
+        {
+            if (modifiers.Count == 0)
+                return Array.Empty<ExpeditionModifier>();
+
+            ExpeditionModifier[] removed = modifiers.ToArray();
+            modifiers.Clear();
+            ModifiersCleared?.Invoke(removed);
+            return removed;
+        }
+
+        public float GetTotalPercent(
+            ExpeditionModifierTarget target,
+            string statId)
+        {
+            if (string.IsNullOrWhiteSpace(statId))
+                throw new ArgumentException("StatId cannot be empty.", nameof(statId));
+
+            float total = 0f;
+            foreach (ExpeditionModifier modifier in modifiers)
             {
-                throw new ArgumentNullException(
-                    nameof(modifier));
+                foreach (ExpeditionModifierEffect effect in modifier.Effects)
+                {
+                    if (effect.Target == target &&
+                        string.Equals(effect.StatId, statId, StringComparison.Ordinal) &&
+                        effect.Operation == ModifierType.Percent)
+                    {
+                        total += effect.Value;
+                    }
+                }
             }
 
-            return modifiers.Remove(modifier);
+            return total;
         }
 
-        /// <summary>
-        /// Gets the total additive percentage for the specified
-        /// target and stat.
-        ///
-        /// Percentages are summed directly:
-        ///
-        /// +20% +30% -10% = +40%
-        ///
-        /// The result is intended to be applied against the
-        /// stat base value by the consuming runtime system.
-        /// </summary>
+        // Compatibility overload: querying state is deliberately side-effect free.
         public float GetTotalPercent(
             ExpeditionModifierTarget target,
             string statId,
             TimeSpan currentTime)
         {
-            ValidateStatId(statId);
-
-            RemoveExpired(currentTime);
-
-            float totalPercent = 0f;
-
-            foreach (ExpeditionModifier modifier in modifiers)
-            {
-                foreach (ExpeditionModifierEffect effect
-                    in modifier.Effects)
-                {
-                    if (effect.Target != target)
-                        continue;
-
-                    if (!string.Equals(
-                        effect.StatId,
-                        statId,
-                        StringComparison.Ordinal))
-                    {
-                        continue;
-                    }
-
-                    totalPercent += effect.Percent;
-                }
-            }
-
-            return totalPercent;
+            return GetTotalPercent(target, statId);
         }
 
-        /// <summary>
-        /// Removes all timed modifiers that have expired.
-        /// </summary>
-        public void RemoveExpired(
-            TimeSpan currentTime)
+        // Legacy compatibility. Expiration is coordinated through the director.
+        internal void RemoveExpired(TimeSpan currentTime)
         {
-            for (int i = modifiers.Count - 1; i >= 0; i--)
-            {
-                ExpeditionModifier modifier =
-                    modifiers[i];
+            string[] expired = modifiers
+                .Where(item => item.IsExpired(currentTime))
+                .Select(item => item.ApplicationId)
+                .ToArray();
 
-                if (modifier.IsExpired(currentTime))
-                {
-                    modifiers.RemoveAt(i);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Clears all active modifiers.
-        /// </summary>
-        public void Clear()
-        {
-            modifiers.Clear();
-        }
-
-        private static void ValidateStatId(
-            string statId)
-        {
-            if (string.IsNullOrWhiteSpace(statId))
-            {
-                throw new ArgumentException(
-                    "StatId cannot be empty.",
-                    nameof(statId));
-            }
+            foreach (string id in expired)
+                RemoveByApplicationId(id);
         }
     }
 }
