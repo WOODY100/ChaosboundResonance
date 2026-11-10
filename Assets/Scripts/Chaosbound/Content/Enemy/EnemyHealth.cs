@@ -93,6 +93,30 @@ public sealed class EnemyHealth :
 #endif
     }
 
+    /// <summary>
+    /// Updates maximum health while preserving the enemy's current health ratio.
+    /// </summary>
+    public void RefreshMaxHealth(float newMaxHealth)
+    {
+        if (newMaxHealth < 0f)
+            throw new ArgumentOutOfRangeException(nameof(newMaxHealth));
+
+        float previousMaxHealth = MaxHealth;
+        float healthRatio = previousMaxHealth > 0f
+            ? CurrentHealth / previousMaxHealth
+            : 1f;
+
+        MaxHealth = newMaxHealth;
+
+        if (IsDead)
+        {
+            CurrentHealth = 0f;
+            return;
+        }
+
+        CurrentHealth = Mathf.Clamp(MaxHealth * healthRatio, 0f, MaxHealth);
+    }
+
     public void TakeDamage(
         DamageData damageData)
     {

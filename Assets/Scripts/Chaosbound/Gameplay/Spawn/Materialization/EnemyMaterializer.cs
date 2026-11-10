@@ -1,4 +1,5 @@
 using Chaosbound.Gameplay.Spawn.Execution;
+using Chaosbound.Gameplay.ExpeditionRuntime.Modifiers.Integration;
 using Chaosbound.Gameplay.Spawn.Infrastructure;
 using Chaosbound.Gameplay.Spawn.Integration;
 using Chaosbound.Gameplay.Spawn.Placement.Models;
@@ -196,6 +197,13 @@ namespace Chaosbound.Gameplay.Spawn.Materialization
             }
 
             scheduler.Initialize();
+
+            runtimeContext.BindModifierIntegration(
+                new ExpeditionEnemyModifierIntegration(
+                    context.RuntimeState.ExpeditionRuntime.Modifiers,
+                    runtimeStats,
+                    health,
+                    navigation));
 
             context
                 .RuntimeState

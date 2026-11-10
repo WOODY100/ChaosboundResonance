@@ -1,5 +1,6 @@
 using Chaosbound.Gameplay.ExpeditionRuntime.Runtime;
 using System;
+using Chaosbound.Gameplay.ExpeditionRuntime.Modifiers.Integration;
 using UnityEngine;
 
 /// <summary>
@@ -38,6 +39,21 @@ public sealed class EnemyRuntimeContext : MonoBehaviour
     /// <summary>
     /// Initializes the runtime context.
     /// </summary>
+    private ExpeditionEnemyModifierIntegration modifierIntegration;
+
+    /// <summary>
+    /// Owns the modifier subscription for this pooled enemy instance.
+    /// </summary>
+    public void BindModifierIntegration(
+        ExpeditionEnemyModifierIntegration integration)
+    {
+        if (integration == null)
+            throw new ArgumentNullException(nameof(integration));
+
+        modifierIntegration?.Dispose();
+        modifierIntegration = integration;
+    }
+
     public void Initialize(
         EnemyVariantData variant,
         ExpeditionRuntimeState expeditionRuntime)
@@ -57,6 +73,9 @@ public sealed class EnemyRuntimeContext : MonoBehaviour
 
     private void OnDisable()
     {
+        modifierIntegration?.Dispose();
+        modifierIntegration = null;
+
         Variant = null;
         ExpeditionRuntime = null;
         IsInitialized = false;

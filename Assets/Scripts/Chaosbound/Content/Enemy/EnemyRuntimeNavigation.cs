@@ -116,6 +116,20 @@ public sealed class EnemyRuntimeNavigation :
     /// Executes the supplied movement intent.
     /// Navigation owns the interpretation of movement intents.
     /// </summary>
+    /// <summary>
+    /// Updates NavMeshAgent speed after effective enemy stats change.
+    /// </summary>
+    public void RefreshMoveSpeed(float moveSpeed)
+    {
+        if (moveSpeed <= 0f)
+            throw new ArgumentOutOfRangeException(nameof(moveSpeed));
+
+        if (!IsInitialized || agent == null || !agent.enabled)
+            return;
+
+        agent.speed = moveSpeed;
+    }
+
     public void ExecuteIntent(
         EnemyMovementIntent intent)
     {

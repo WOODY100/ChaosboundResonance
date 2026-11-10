@@ -18,7 +18,6 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Modifiers.Tests
     public sealed class ExpeditionModifierDomainManualTest : MonoBehaviour
     {
         [ContextMenu("Run Expedition Modifier Domain Tests")]
-        [ContextMenu("Run Expedition Modifier Domain Tests")]
         private void RunTests()
         {
             int passed = 0;
@@ -48,6 +47,9 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Modifiers.Tests
             passed++;
 
             TestPlayerTemporaryIntegration();
+            passed++;
+
+            TestEnemyModifierIntegration();
             passed++;
 
             Debug.Log(
@@ -494,7 +496,75 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Modifiers.Tests
 
             Debug.Log("[Expedition Modifier Domain Tests] PASS: Player Temporary integration.");
         }
-        
+
+
+        private static void TestEnemyModifierIntegration()
+        {
+            ExpeditionRuntimeState expeditionState = new ExpeditionRuntimeState();
+
+            EnemyVariantData variant =
+                ScriptableObject.CreateInstance<EnemyVariantData>();
+            SetPrivateField(variant, "m_BaseHealth", 100f);
+            SetPrivateField(variant, "m_BaseDamage", 10f);
+            SetPrivateField(variant, "m_MoveSpeed", 3.5f);
+
+            GameObject enemyObject = new GameObject("EnemyModifierIntegrationTest");
+            EnemyRuntimeContext context = enemyObject.AddComponent<EnemyRuntimeContext>();
+            EnemyRuntimeStats stats = enemyObject.AddComponent<EnemyRuntimeStats>();
+            EnemyHealth health = enemyObject.AddComponent<EnemyHealth>();
+            EnemyRuntimeNavigation navigation = enemyObject.AddComponent<EnemyRuntimeNavigation>();
+
+            context.Initialize(variant, expeditionState);
+            stats.Initialize();
+            health.Initialize();
+            SetPrivateField(health, "<CurrentHealth>k__BackingField", 50f);
+
+            ExpeditionEnemyModifierIntegration integration =
+                new ExpeditionEnemyModifierIntegration(
+                    expeditionState.Modifiers, stats, health, navigation);
+
+            ExpeditionModifierDomainDirector director =
+                new ExpeditionModifierDomainDirector();
+
+            ExpeditionModifier modifier = new ExpeditionModifier(
+                "enemy-app-1",
+                "test.enemy.stats",
+                "test.producer",
+                new[]
+                {
+                    new ExpeditionModifierEffect(ExpeditionModifierTarget.Enemy, "MaxHealth", ModifierType.Percent, 0.20f),
+                    new ExpeditionModifierEffect(ExpeditionModifierTarget.Enemy, "Damage", ModifierType.Percent, 0.50f),
+                    new ExpeditionModifierEffect(ExpeditionModifierTarget.Enemy, "MoveSpeed", ModifierType.Percent, 0.20f)
+                },
+                ExpeditionModifierLifetime.Expedition,
+                ExpeditionModifierStackingPolicy.Independent,
+                1, 1,
+                TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero,
+                TimeSpan.Zero, TimeSpan.Zero);
+
+            director.AddModifier(expeditionState.Modifiers, modifier);
+
+            AssertApproximately(stats.MaxHealth, 120f, "Enemy MaxHealth should refresh from expedition modifiers.");
+            AssertApproximately(health.MaxHealth, 120f, "EnemyHealth.MaxHealth should follow refreshed runtime stats.");
+            AssertApproximately(health.CurrentHealth, 60f, "Current health should preserve its 50% ratio after MaxHealth changes.");
+            AssertApproximately(stats.Damage, 15f, "Enemy damage should refresh from expedition modifiers.");
+            AssertApproximately(stats.MoveSpeed, 4.2f, "Enemy movement speed stat should refresh from expedition modifiers.");
+
+            director.RemoveModifier(expeditionState.Modifiers, modifier.ApplicationId);
+
+            AssertApproximately(stats.MaxHealth, 100f, "Removing the modifier should restore base MaxHealth.");
+            AssertApproximately(health.MaxHealth, 100f, "EnemyHealth.MaxHealth should restore with the runtime stat.");
+            AssertApproximately(health.CurrentHealth, 50f, "Current health ratio should remain 50% after removing MaxHealth modifier.");
+            AssertApproximately(stats.Damage, 10f, "Removing the modifier should restore base Damage.");
+            AssertApproximately(stats.MoveSpeed, 3.5f, "Removing the modifier should restore base MoveSpeed.");
+
+            integration.Dispose();
+            UnityEngine.Object.DestroyImmediate(enemyObject);
+            UnityEngine.Object.DestroyImmediate(variant);
+
+            Debug.Log("[Expedition Modifier Domain Tests] PASS: Enemy modifier integration and health ratio.");
+        }
+
         private static ExpeditionModifierDefinition CreateDefinition(
             string contentId,
             ExpeditionModifierLifetime lifetime,
