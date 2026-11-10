@@ -373,6 +373,23 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Runtime
             IReadOnlyList<Vector3> worldPositions,
             MinimapMarkerView markerPrefab)
         {
+            ClearWorldMarkers();
+
+            AddWorldMarkers(
+                worldPositions,
+                markerPrefab,
+                MinimapMarkerType.ModifierStructure);
+        }
+
+        /// <summary>
+        /// Adds fixed world markers without removing markers
+        /// that were registered previously.
+        /// </summary>
+        public void AddWorldMarkers(
+            IReadOnlyList<Vector3> worldPositions,
+            MinimapMarkerView markerPrefab,
+            MinimapMarkerType markerType)
+        {
             if (worldPositions == null)
             {
                 throw new ArgumentNullException(
@@ -400,8 +417,6 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Runtime
                     "Minimap viewport is missing.");
             }
 
-            ClearWorldMarkers();
-
             for (int i = 0;
                  i < worldPositions.Count;
                  i++)
@@ -409,7 +424,7 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Runtime
                 MinimapMarkerData marker =
                     new MinimapMarkerData(
                         GetNextWorldMarkerId(),
-                        MinimapMarkerType.ModifierStructure,
+                        markerType,
                         worldPositions[i]);
 
                 MinimapMarkerView markerView =

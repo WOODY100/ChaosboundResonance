@@ -1,5 +1,8 @@
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
+#if UNITY_EDITOR
+using Chaosbound.Gameplay.Debugging.SkillGizmos;
+#endif
 
 public class MinotaurBossController : BossControllerBase
 {
@@ -484,6 +487,48 @@ public class MinotaurBossController : BossControllerBase
     {
         StartCoroutine(ChargeVulnerabilityWindow());
     }
+
+#if UNITY_EDITOR
+    private void OnDrawGizmos()
+    {
+        if (!SkillGizmoUtility.ShouldDraw(this, false, SkillGizmoUtility.Category.Boss))
+            return;
+
+        Vector3 groundPosition = transform.position;
+        groundPosition.y = 0f;
+
+        // Combat selection ranges from BossControllerBase.
+        SkillGizmoUtility.DrawGroundCircle(
+            groundPosition, meleeRange, new Color(0.2f, 0.85f, 1f, 0.75f));
+        SkillGizmoUtility.DrawGroundCircle(
+            groundPosition, midRange, new Color(0.2f, 0.5f, 1f, 0.55f));
+
+        // Actual radial damage queries used by this legacy Minotaur controller.
+        SkillGizmoUtility.DrawWireSphere(
+            groundPosition, meleeRadius, new Color(1f, 0.75f, 0.15f, 0.95f));
+        SkillGizmoUtility.DrawWireSphere(
+            groundPosition, stompRadius, new Color(1f, 0.25f, 0.1f, 0.95f));
+        SkillGizmoUtility.DrawWireSphere(
+            groundPosition, chargeRadius, new Color(0.9f, 0.2f, 1f, 0.95f));
+
+        if (jumpImpactRadius > 0f)
+        {
+            Vector3 jumpCenter = jumpTargetPosition;
+            if (jumpCenter.sqrMagnitude < 0.0001f)
+                jumpCenter = groundPosition;
+            else
+                jumpCenter.y = 0f;
+
+            SkillGizmoUtility.DrawWireSphere(
+                jumpCenter, jumpImpactRadius, new Color(1f, 0.1f, 0.1f, 1f));
+            SkillGizmoUtility.DrawGroundCircle(
+                jumpCenter, jumpImpactRadius, new Color(1f, 0.1f, 0.1f, 0.85f));
+
+            if (jumpTargetPosition.sqrMagnitude >= 0.0001f)
+                Gizmos.DrawLine(groundPosition, jumpCenter);
+        }
+    }
+#endif
 
     private IEnumerator ChargeVulnerabilityWindow()
     {

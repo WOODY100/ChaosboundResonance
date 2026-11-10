@@ -67,9 +67,24 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Bootstrap
         /// </summary>
         public ExpeditionDirector Build()
         {
+            if (compositionContext.ItemContentResolver == null)
+            {
+                throw new InvalidOperationException(
+                    "ItemContentResolver is not available.");
+            }
+
+            ItemResolver itemResolver =
+                new ItemResolver(
+                    compositionContext.ItemContentResolver);
+
+            ItemInstanceFactory itemInstanceFactory =
+                new ItemInstanceFactory();
+
             spawnRuntime =
                 new SpawnRuntimeBootstrap()
-                    .Build();
+                    .Build(
+                        itemResolver,
+                        itemInstanceFactory);
 
             ExpeditionRuntimePipeline runtimePipeline =
                 BuildRuntimePipeline(

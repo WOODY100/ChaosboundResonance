@@ -82,7 +82,7 @@ namespace Chaosbound.Gameplay.Bosses
                 return BossAttackMaterializationResult.Invalid;
             }
 
-            if (!visual.Initialize(definition.VisualDuration))
+            if (!visual.Initialize(definition.VisualDuration, definition.Radius))
                 return BossAttackMaterializationResult.Failed;
 
             damagedTargets.Clear();

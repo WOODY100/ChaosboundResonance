@@ -4151,7 +4151,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 1815741086831199767, guid: 9e3e6383febadda40a85fb9ebfda9347, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
@@ -12376,6 +12377,7 @@ MonoBehaviour:
   minimapBossMarkerView: {fileID: 499879316}
   minimapExitPortalMarkerView: {fileID: 1105885152}
   minimapModifierStructureMarkerView: {fileID: 5445361310254441564, guid: 2ac9fb0402d88d74eaa4a44eadcc67e2, type: 3}
+  minimapChestMarkerView: {fileID: 5445361310254441564, guid: 7e163cfe867a0ba44921e2b8fbc2492a, type: 3}
   minimapMapViewport: {fileID: 1744354675}
   minimapMapContent: {fileID: 411330957}
   expeditionAudioController: {fileID: 98767396}

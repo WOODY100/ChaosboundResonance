@@ -12,6 +12,7 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Markers
         Objective = 4,
         Event = 5,
         PointOfInterest = 6,
-        ModifierStructure = 7
+        ModifierStructure = 7,
+        Chest = 8
     }
 }

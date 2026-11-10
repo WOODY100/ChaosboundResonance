@@ -67,6 +67,9 @@ namespace Chaosbound.Core.Composition
         private VideoSettingsPersistenceService videoSettingsPersistenceService;
         private PersistentCurrencyState persistentCurrencyState;
 
+        private SanctuaryPlayerSaveBinding sanctuaryPlayerBinding;
+        private SaveSanctuaryPlayerData sanctuaryPlayerSaveData;
+
         [SerializeField]
         private string settingsFileName = "chaosbound_settings.json";
 
@@ -379,7 +382,68 @@ namespace Chaosbound.Core.Composition
                     gameFlow);
         }
 
+        public void RegisterSanctuaryPlayer(
+            SanctuaryPlayerSaveBinding binding)
+        {
+            if (binding == null)
+                return;
+
+            sanctuaryPlayerBinding = binding;
+
+            // A slot may have been loaded before the Sanctuary scene.
+            // Apply its saved transform when the scene Player registers.
+            sanctuaryPlayerBinding.Apply(sanctuaryPlayerSaveData);
+        }
+
+        public void UnregisterSanctuaryPlayer(
+            SanctuaryPlayerSaveBinding binding)
+        {
+            if (sanctuaryPlayerBinding == binding)
+                sanctuaryPlayerBinding = null;
+        }
+
+        public bool CaptureSanctuaryPlayerState()
+        {
+            if (gameFlow == null ||
+                gameFlow.CurrentEnvironment != GameFlowEnvironment.Sanctuary)
+            {
+                return false;
+            }
+
+            if (sanctuaryPlayerBinding == null)
+            {
+                Debug.LogWarning(
+                    "[BootstrapContext] Cannot capture Sanctuary Player transform " +
+                    "because no SanctuaryPlayerSaveBinding is registered.");
+
+                return false;
+            }
+
+            sanctuaryPlayerSaveData = sanctuaryPlayerBinding.Capture();
+            return true;
+        }
+
+        private SaveSanctuaryPlayerData CaptureSanctuaryPlayerDataForSave(
+            bool captureSanctuaryPlayer)
+        {
+            if (!captureSanctuaryPlayer ||
+                gameFlow == null ||
+                gameFlow.CurrentEnvironment != GameFlowEnvironment.Sanctuary)
+            {
+                return sanctuaryPlayerSaveData;
+            }
+
+            CaptureSanctuaryPlayerState();
+
+            return sanctuaryPlayerSaveData;
+        }
+
         public bool SavePersistentState()
+        {
+            return SavePersistentState(true);
+        }
+
+        private bool SavePersistentState(bool captureSanctuaryPlayer)
         {
             if (saveSlotService == null)
                 throw new InvalidOperationException(
@@ -425,7 +489,8 @@ namespace Chaosbound.Core.Composition
                     persistentMetaRuntime.State,
                     skillTreeRuntimeState,
                     expeditionProgressRuntime,
-                    persistentCurrencyState);
+                    persistentCurrencyState,
+                    CaptureSanctuaryPlayerDataForSave(captureSanctuaryPlayer));
 
                 return true;
             }
@@ -541,6 +606,15 @@ namespace Chaosbound.Core.Composition
                 return false;
             }
 
+            sanctuaryPlayerSaveData = loadPlan.SanctuaryPlayer;
+
+            if (gameFlow != null &&
+                gameFlow.CurrentEnvironment == GameFlowEnvironment.Sanctuary &&
+                sanctuaryPlayerBinding != null)
+            {
+                sanctuaryPlayerBinding.Apply(sanctuaryPlayerSaveData);
+            }
+
             activeSaveSlotIndex = slotIndex;
 
             skillTreeRuntime?.NotifyProgressionChanged();
@@ -603,6 +677,15 @@ namespace Chaosbound.Core.Composition
 
             persistentCurrencyState.Clear();
 
+            sanctuaryPlayerSaveData = null;
+
+            if (gameFlow != null &&
+                gameFlow.CurrentEnvironment == GameFlowEnvironment.Sanctuary &&
+                sanctuaryPlayerBinding != null)
+            {
+                sanctuaryPlayerBinding.ResetToInitialTransform();
+            }
+
             return true;
         }
 
@@ -636,8 +719,10 @@ namespace Chaosbound.Core.Composition
 
             activeSaveSlotIndex = slotIndex;
 
-            // Create the initial save immediately.
-            if (!SavePersistentState())
+            // Create the initial save immediately. Sanctuary may not be loaded
+            // yet, so preserve the default/empty player transform data without
+            // attempting to capture a scene Player binding.
+            if (!SavePersistentState(false))
             {
                 Debug.LogError(
                     "[BootstrapContext] Failed to create the initial save " +

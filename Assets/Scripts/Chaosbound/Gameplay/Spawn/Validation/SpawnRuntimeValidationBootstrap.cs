@@ -13,6 +13,7 @@ using Chaosbound.Gameplay.Spawn.Reference.Factories;
 using Chaosbound.Gameplay.Spawn.Reference.Providers;
 using Chaosbound.Gameplay.Spawn.Reference.Resolvers;
 using Chaosbound.Gameplay.Spawn.Scheduling;
+using Chaosbound.Gameplay.Items.Runtime;
 using System;
 using UnityEngine;
 using UnityEngine.AI;
@@ -28,8 +29,16 @@ namespace Chaosbound.Gameplay.Spawn.Validation
         /// <summary>
         /// Builds a fully initialized SpawnJobExecutor.
         /// </summary>
-        public SpawnJobExecutor Build()
+        public SpawnJobExecutor Build(
+            ItemResolver itemResolver,
+            ItemInstanceFactory itemInstanceFactory)
         {
+            if (itemResolver == null)
+                throw new ArgumentNullException(nameof(itemResolver));
+
+            if (itemInstanceFactory == null)
+                throw new ArgumentNullException(nameof(itemInstanceFactory));
+
             SpawnBatchCalculator batchCalculator =
                 BuildBatchCalculator();
 
@@ -46,7 +55,9 @@ namespace Chaosbound.Gameplay.Spawn.Validation
                     taskFactory);
 
             ScheduledSpawnTaskExecutor taskExecutor =
-                BuildTaskExecutor();
+                BuildTaskExecutor(
+                    itemResolver,
+                    itemInstanceFactory);
 
             SpawnJobRuntimeStateFactory runtimeStateFactory =
                 BuildRuntimeStateFactory();
@@ -55,15 +66,11 @@ namespace Chaosbound.Gameplay.Spawn.Validation
                 scheduler,
                 runtimeStateFactory,
                 taskExecutor,
-
                 BuildPlacementIntentFactory(),
-
                 BuildReferenceContextFactory(),
                 BuildReferenceResolver(),
-
                 BuildPlacementContextFactory(),
                 BuildPlacementResolver(),
-
                 BuildResolvedSpawnTaskFactory());
         }
 
@@ -143,14 +150,20 @@ namespace Chaosbound.Gameplay.Spawn.Validation
         }
 
         private ItemMaterializer
-            BuildItemMaterializer()
+            BuildItemMaterializer(
+                ItemResolver itemResolver,
+                ItemInstanceFactory itemInstanceFactory)
         {
             return new ItemMaterializer(
-                BuildInstantiationService());
+                BuildInstantiationService(),
+                itemResolver,
+                itemInstanceFactory);
         }
 
         private SpawnMaterializerResolver
-            BuildMaterializerResolver()
+            BuildMaterializerResolver(
+                ItemResolver itemResolver,
+                ItemInstanceFactory itemInstanceFactory)
         {
             return new SpawnMaterializerResolver(
                 BuildEnemyMaterializer(),
@@ -158,7 +171,9 @@ namespace Chaosbound.Gameplay.Spawn.Validation
                 BuildMiniBossMaterializer(),
                 BuildExitPortalMaterializer(),
                 BuildResourceMaterializer(),
-                BuildItemMaterializer());
+                BuildItemMaterializer(
+                    itemResolver,
+                    itemInstanceFactory));
         }
 
         private SpawnExecutionContextFactory
@@ -168,11 +183,15 @@ namespace Chaosbound.Gameplay.Spawn.Validation
         }
 
         private ScheduledSpawnTaskExecutor
-            BuildTaskExecutor()
+            BuildTaskExecutor(
+                ItemResolver itemResolver,
+                ItemInstanceFactory itemInstanceFactory)
         {
             return new ScheduledSpawnTaskExecutor(
                 BuildExecutionContextFactory(),
-                BuildMaterializerResolver());
+                BuildMaterializerResolver(
+                    itemResolver,
+                    itemInstanceFactory));
         }
 
         private SpawnJobRuntimeStateFactory

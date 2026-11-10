@@ -1,4 +1,7 @@
-using UnityEngine;
+﻿using UnityEngine;
+#if UNITY_EDITOR
+using Chaosbound.Gameplay.Debugging.SkillGizmos;
+#endif
 
 /// <summary>
 /// Pooled visual warning for a Boss area attack.
@@ -78,4 +81,17 @@ public sealed class BossAreaTelegraphVisual : MonoBehaviour
                 initialVisualScale.z * baseDiameter * pulse);
         }
     }
+
+#if UNITY_EDITOR
+    private void OnDrawGizmos()
+    {
+        if (baseDiameter <= 0f ||
+            !SkillGizmoUtility.ShouldDraw(this, false, SkillGizmoUtility.Category.Boss))
+            return;
+
+        float radius = baseDiameter * 0.5f;
+        SkillGizmoUtility.DrawGroundCircle(
+            transform.position, radius, new Color(1f, 0.75f, 0.15f, 1f));
+    }
+#endif
 }

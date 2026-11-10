@@ -16,7 +16,8 @@ namespace Chaosbound.Gameplay.Save
             SkillTreeDatabase skillTreeDatabase,
             SkillTreeRuntimeState skillTreeState,
             ExpeditionProgressRuntime expeditionProgress,
-            PersistentCurrencyState currencyState)
+            PersistentCurrencyState currencyState,
+            SaveSanctuaryPlayerData sanctuaryPlayerData)
         {
             if (saveVersion < 0)
                 throw new ArgumentOutOfRangeException(
@@ -72,7 +73,9 @@ namespace Chaosbound.Gameplay.Save
 
                 Currency =
                     SaveCurrencyMapper.ToSaveData(
-                        currencyState)
+                        currencyState),
+
+                SanctuaryPlayer = sanctuaryPlayerData
             };
         }
     }

@@ -29,6 +29,9 @@ namespace Chaosbound.Content.World.Themes.Decorations
         [SerializeField]
         private List<DecorationPrefabEntry> modifierStructures = new();
 
+        [SerializeField]
+        private List<DecorationPrefabEntry> chestPrefabs = new();
+
         //==========================================================
         // Density
         //==========================================================
@@ -54,6 +57,14 @@ namespace Chaosbound.Content.World.Themes.Decorations
         [Min(0)]
         [SerializeField]
         private int maxModifierStructuresPerTile = 1;
+
+        [Min(0)]
+        [SerializeField]
+        private int minChestsPerExpedition = 1;
+
+        [Min(0)]
+        [SerializeField]
+        private int maxChestsPerExpedition = 2;
 
         //==========================================================
         // Spawn Chances
@@ -118,6 +129,9 @@ namespace Chaosbound.Content.World.Themes.Decorations
         public IReadOnlyList<DecorationPrefabEntry> ModifierStructures =>
             modifierStructures;
 
+        public IReadOnlyList<DecorationPrefabEntry> ChestPrefabs =>
+            chestPrefabs;
+
         //==========================================================
         // Density Properties
         //==========================================================
@@ -136,6 +150,12 @@ namespace Chaosbound.Content.World.Themes.Decorations
 
         public int MaxModifierStructuresPerTile =>
             maxModifierStructuresPerTile;
+
+        public int MinChestsPerExpedition =>
+            minChestsPerExpedition;
+
+        public int MaxChestsPerExpedition =>
+            maxChestsPerExpedition;
 
         //==========================================================
         // Spawn Chance Properties
@@ -189,6 +209,12 @@ namespace Chaosbound.Content.World.Themes.Decorations
                     0,
                     maxModifierStructuresPerTile);
 
+            minChestsPerExpedition =
+                Mathf.Max(0, minChestsPerExpedition);
+
+            maxChestsPerExpedition =
+                Mathf.Max(minChestsPerExpedition, maxChestsPerExpedition);
+
             maxBlockedNeighbors =
                 Mathf.Clamp(
                     maxBlockedNeighbors,
@@ -210,6 +236,9 @@ namespace Chaosbound.Content.World.Themes.Decorations
             modifierStructures ??=
                 new List<DecorationPrefabEntry>();
 
+            chestPrefabs ??=
+                new List<DecorationPrefabEntry>();
+
             props.RemoveAll(
                 entry => entry == null);
 
@@ -223,6 +252,9 @@ namespace Chaosbound.Content.World.Themes.Decorations
                 entry => entry == null);
 
             modifierStructures.RemoveAll(
+                entry => entry == null);
+
+            chestPrefabs.RemoveAll(
                 entry => entry == null);
         }
 #endif

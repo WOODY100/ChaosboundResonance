@@ -62,6 +62,7 @@ GameObject:
   - component: {fileID: 8838974530463216920}
   - component: {fileID: 7562626657679166679}
   - component: {fileID: -4713281016645015628}
+  - component: {fileID: 1815741086831199767}
   m_Layer: 3
   m_Name: Player
   m_TagString: Player
@@ -269,10 +270,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8cd4a686644c7004b919ae6152c74fbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerStatsDebugTest
-  skillTreeWindow: {fileID: 0}
-  skillTreeVisualController: {fileID: 0}
+  blacksmithWindow: {fileID: 0}
+  blacksmithInventoryUI: {fileID: 0}
   debugMetaExperience: 500
-  expeditionSelectionWindowController: {fileID: 0}
+  debugGoldAmount: 1000
 --- !u!114 &7456098046516693950
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -540,6 +541,18 @@ MonoBehaviour:
   baselinePickupRadius: 0
   baselineLuck: 0
   baselineXPGain: 0
+--- !u!114 &1815741086831199767
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1545538594216743131}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05baab75a2674859854c457ab308c46f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Chaosbound.Core.Composition.SanctuaryPlayerSaveBinding
 --- !u!1 &1794849942587771134
 GameObject:
   m_ObjectHideFlags: 0

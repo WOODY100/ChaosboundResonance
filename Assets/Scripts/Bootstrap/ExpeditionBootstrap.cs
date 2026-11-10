@@ -91,6 +91,10 @@ namespace Chaosbound.Runtime.Bootstrap
             RuntimeExpeditionConfig runtime =
                 runtimeBuilder.BuildRunConfig(request);
 
+            // Snapshot the Sanctuary Player transform before the scene is unloaded.
+            // Expedition saves must preserve this snapshot without replacing it.
+            context.CaptureSanctuaryPlayerState();
+
             runSession.SetRun(runtime);
 
             sceneTransitionService.LoadScene(

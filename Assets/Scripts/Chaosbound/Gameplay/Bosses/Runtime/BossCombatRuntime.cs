@@ -1,7 +1,10 @@
-using Chaosbound.Content.Enemy.Bosses;
+﻿using Chaosbound.Content.Enemy.Bosses;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+#if UNITY_EDITOR
+using Chaosbound.Gameplay.Debugging.SkillGizmos;
+#endif
 
 namespace Chaosbound.Gameplay.Bosses
 {
@@ -554,6 +557,7 @@ namespace Chaosbound.Gameplay.Bosses
             {
                 movement.ClearFacingRequest();
                 movement.LockMovement(BossMovementLockOwner.Death);
+                movement.LockFacing(BossMovementLockOwner.Death);
             }
         }
 
@@ -641,5 +645,72 @@ namespace Chaosbound.Gameplay.Bosses
         {
             // Intentionally does not initialize or start combat.
         }
+
+#if UNITY_EDITOR
+        private void OnDrawGizmos()
+        {
+            if (!SkillGizmoUtility.ShouldDraw(this, false, SkillGizmoUtility.Category.Boss))
+                return;
+
+            BossRuntimeContext context = runtimeContext != null
+                ? runtimeContext
+                : GetComponent<BossRuntimeContext>();
+
+            if (context == null || !context.IsInitialized ||
+                context.CombatDefinition == null)
+                return;
+
+            BossMovementSettings movementSettings =
+                context.CombatDefinition.MovementSettings;
+
+            // These are movement/combat positioning bands, not damage areas.
+            SkillGizmoUtility.DrawGroundCircle(
+                transform.position,
+                movementSettings.PreferredDistance,
+                new Color(0.2f, 0.85f, 1f, 0.9f));
+
+            SkillGizmoUtility.DrawGroundCircle(
+                transform.position,
+                movementSettings.MinimumDistance,
+                new Color(1f, 0.65f, 0.15f, 0.9f));
+
+            BossPhaseDefinition phase = activePhase;
+            if (phase == null)
+                return;
+
+            IReadOnlyList<BossAttackDefinition> attacks = phase.AvailableAttacks;
+            for (int i = 0; i < attacks.Count; i++)
+            {
+                BossAttackDefinition attack = attacks[i];
+                if (attack == null)
+                    continue;
+
+                bool isActiveAttack =
+                    activeExecutionContext != null &&
+                    activeExecutionContext.AttackDefinition == attack;
+
+                Color rangeColor = isActiveAttack
+                    ? new Color(1f, 0.2f, 0.75f, 1f)
+                    : new Color(0.95f, 0.95f, 0.95f, 0.55f);
+
+                if (attack.MinimumRange > 0f)
+                {
+                    SkillGizmoUtility.DrawGroundCircle(
+                        transform.position,
+                        attack.MinimumRange,
+                        rangeColor);
+                }
+
+                if (attack.MaximumRange > 0f)
+                {
+                    SkillGizmoUtility.DrawGroundCircle(
+                        transform.position,
+                        attack.MaximumRange,
+                        rangeColor);
+                }
+            }
+        }
+#endif
+
     }
 }

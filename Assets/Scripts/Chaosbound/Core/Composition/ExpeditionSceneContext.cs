@@ -110,6 +110,9 @@ namespace Chaosbound.Core.Composition
         private MinimapMarkerView minimapModifierStructureMarkerView;
 
         [SerializeField]
+        private MinimapMarkerView minimapChestMarkerView;
+
+        [SerializeField]
         private RectTransform minimapMapViewport;
 
         [SerializeField]
@@ -198,6 +201,9 @@ namespace Chaosbound.Core.Composition
 
         public MinimapMarkerView MinimapModifierStructureMarkerView =>
             minimapModifierStructureMarkerView;
+
+        public MinimapMarkerView MinimapChestMarkerView =>
+            minimapChestMarkerView;
 
         public RectTransform MinimapMapViewport =>
             minimapMapViewport;

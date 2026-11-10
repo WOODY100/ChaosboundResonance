@@ -1,5 +1,8 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
+#if UNITY_EDITOR
+using Chaosbound.Gameplay.Debugging.SkillGizmos;
+#endif
 
 [RequireComponent(typeof(SphereCollider))]
 [RequireComponent(typeof(Rigidbody))]
@@ -343,4 +346,24 @@ public class SolarOrbitOrb : PooledBehaviour, IOrbital
 
         nextDamageTimes[damageable] = Time.time + interval;
     }
+
+#if UNITY_EDITOR
+    private void OnDrawGizmos()
+    {
+        if (owner == null || radius <= 0f ||
+            !SkillGizmoUtility.ShouldDraw(this, false, SkillGizmoUtility.Category.Player))
+            return;
+
+        Vector3 center = owner.position + Vector3.up * activeOrbitHeight;
+        SkillGizmoUtility.DrawGroundCircle(
+            center, radius, new Color(0.2f, 0.85f, 1f, 0.9f));
+        SkillGizmoUtility.DrawCollider(
+            GetComponent<SphereCollider>(), new Color(1f, 0.75f, 0.15f, 0.95f));
+        if (SkillGizmoUtility.IsLayerEnabled(SkillGizmoUtility.VisualLayer.Geometry))
+        {
+            Gizmos.color = Color.white;
+            Gizmos.DrawLine(center, transform.position);
+        }
+    }
+#endif
 }

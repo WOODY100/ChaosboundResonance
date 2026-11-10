@@ -429,6 +429,14 @@ namespace Chaosbound.Core.Composition
                 decorationGenerator.ModifierStructurePositions,
                 modifierStructureMarkerView);
 
+            MinimapMarkerView chestMarkerView =
+                sceneContext.MinimapChestMarkerView;
+
+            minimapRuntime.AddWorldMarkers(
+                decorationGenerator.ChestPositions,
+                chestMarkerView,
+                MinimapMarkerType.Chest);
+
             //==========================================================
             // 6. Connect player position to the minimap runtime.
             //==========================================================

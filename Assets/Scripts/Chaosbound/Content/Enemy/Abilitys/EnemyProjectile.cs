@@ -1,4 +1,7 @@
-using UnityEngine;
+﻿using UnityEngine;
+#if UNITY_EDITOR
+using Chaosbound.Gameplay.Debugging.SkillGizmos;
+#endif
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(Collider))]
@@ -13,6 +16,7 @@ public sealed class EnemyProjectile : PooledBehaviour
     private float damage;
 
     private float lifetimeRemaining;
+    private float initialTravelDistance;
 
     private bool initialized;
     private bool hasImpacted;
@@ -40,6 +44,7 @@ public sealed class EnemyProjectile : PooledBehaviour
         damage = 0f;
 
         lifetimeRemaining = 0f;
+        initialTravelDistance = 0f;
 
         initialized = false;
         hasImpacted = false;
@@ -111,6 +116,7 @@ public sealed class EnemyProjectile : PooledBehaviour
 
         speed = projectileSpeed;
         lifetimeRemaining = lifetime;
+        initialTravelDistance = projectileSpeed * lifetime;
 
         damage = projectileDamage;
 
@@ -188,4 +194,36 @@ public sealed class EnemyProjectile : PooledBehaviour
 
         ReturnToPool();
     }
+
+#if UNITY_EDITOR
+    private void OnDrawGizmos()
+    {
+        if (!SkillGizmoUtility.ShouldDraw(this, false, SkillGizmoUtility.Category.Enemy))
+            return;
+
+        SkillGizmoUtility.DrawCollider(
+            GetComponent<Collider>(),
+            new Color(1f, 0.35f, 0.25f, 0.95f));
+
+        Vector3 drawDirection = initialized && direction.sqrMagnitude > 0.0001f
+            ? direction
+            : transform.forward;
+
+        float drawDistance = initialTravelDistance > 0f
+            ? initialTravelDistance
+            : speed > 0f && lifetimeRemaining > 0f
+                ? speed * lifetimeRemaining
+                : 0f;
+
+        if (drawDistance > 0f)
+        {
+            SkillGizmoUtility.DrawDirection(
+                transform.position,
+                drawDirection,
+                drawDistance,
+                new Color(1f, 0.35f, 0.25f, 0.9f));
+        }
+    }
+#endif
+
 }

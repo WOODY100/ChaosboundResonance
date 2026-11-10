@@ -32,6 +32,10 @@ public sealed class ExpeditionAssetEditor : Editor
     private SerializedProperty m_EnemyContentProperty;
     private UnityEngine.Object[] m_AddSelections = new UnityEngine.Object[8];
 
+    private bool[] m_TierFoldouts = new bool[4];
+    private bool[,] m_CombatFoldouts = new bool[4, 2];
+    private bool m_UnclassifiedFoldout;
+
     private void OnEnable()
     {
         m_ExpeditionProperty = serializedObject.FindProperty("m_expedition");
@@ -107,18 +111,26 @@ public sealed class ExpeditionAssetEditor : Editor
         {
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
 
-            EditorGUILayout.LabelField(
-                TierLabels[tierIndex],
-                EditorStyles.boldLabel);
+            int tierCount = CountVariants(Tiers[tierIndex]);
 
-            for (int combatIndex = 0;
-                 combatIndex < CombatTypes.Length;
-                 combatIndex++)
+            m_TierFoldouts[tierIndex] = EditorGUILayout.Foldout(
+                m_TierFoldouts[tierIndex],
+                TierLabels[tierIndex] + " (" + tierCount + ")",
+                true,
+                EditorStyles.foldoutHeader);
+
+            if (m_TierFoldouts[tierIndex])
             {
-                DrawCombatGroup(
-                    tierIndex,
-                    Tiers[tierIndex],
-                    CombatTypes[combatIndex]);
+                for (int combatIndex = 0;
+                     combatIndex < CombatTypes.Length;
+                     combatIndex++)
+                {
+                    DrawCombatGroup(
+                        tierIndex,
+                        combatIndex,
+                        Tiers[tierIndex],
+                        CombatTypes[combatIndex]);
+                }
             }
 
             EditorGUILayout.EndVertical();
@@ -129,30 +141,24 @@ public sealed class ExpeditionAssetEditor : Editor
 
     private void DrawCombatGroup(
         int tierIndex,
+        int combatIndex,
         EnemyTier tier,
         EnemyCombatType combatType)
     {
-        EditorGUILayout.Space(3f);
-        EditorGUILayout.LabelField(
-            combatType.ToString(),
-            EditorStyles.miniBoldLabel);
+        EditorGUILayout.Space(2f);
 
-        int matchingCount = 0;
+        int matchingCount = CountVariants(tier, combatType);
 
-        for (int i = 0; i < m_EnemyContentProperty.arraySize; i++)
-        {
-            SerializedProperty element =
-                m_EnemyContentProperty.GetArrayElementAtIndex(i);
+        m_CombatFoldouts[tierIndex, combatIndex] =
+            EditorGUILayout.Foldout(
+                m_CombatFoldouts[tierIndex, combatIndex],
+                combatType + " (" + matchingCount + ")",
+                true);
 
-            EnemyVariantData variant =
-                element.objectReferenceValue as EnemyVariantData;
+        if (!m_CombatFoldouts[tierIndex, combatIndex])
+            return;
 
-            if (variant == null || !Matches(variant, tier, combatType))
-                continue;
-
-            matchingCount++;
-            DrawVariantRow(i, variant);
-        }
+        EditorGUI.indentLevel++;
 
         if (matchingCount == 0)
         {
@@ -160,8 +166,60 @@ public sealed class ExpeditionAssetEditor : Editor
                 "Sin variantes asignadas.",
                 EditorStyles.miniLabel);
         }
+        else
+        {
+            for (int i = 0; i < m_EnemyContentProperty.arraySize; i++)
+            {
+                SerializedProperty element =
+                    m_EnemyContentProperty.GetArrayElementAtIndex(i);
+
+                EnemyVariantData variant =
+                    element.objectReferenceValue as EnemyVariantData;
+
+                if (variant != null && Matches(variant, tier, combatType))
+                    DrawVariantRow(i, variant);
+            }
+        }
 
         DrawAddField(tierIndex, combatType);
+
+        EditorGUI.indentLevel--;
+    }
+
+    private int CountVariants(EnemyTier tier)
+    {
+        int count = 0;
+
+        for (int i = 0; i < m_EnemyContentProperty.arraySize; i++)
+        {
+            EnemyVariantData variant =
+                m_EnemyContentProperty.GetArrayElementAtIndex(i)
+                    .objectReferenceValue as EnemyVariantData;
+
+            if (variant != null && variant.Tier == tier)
+                count++;
+        }
+
+        return count;
+    }
+
+    private int CountVariants(
+        EnemyTier tier,
+        EnemyCombatType combatType)
+    {
+        int count = 0;
+
+        for (int i = 0; i < m_EnemyContentProperty.arraySize; i++)
+        {
+            EnemyVariantData variant =
+                m_EnemyContentProperty.GetArrayElementAtIndex(i)
+                    .objectReferenceValue as EnemyVariantData;
+
+            if (variant != null && Matches(variant, tier, combatType))
+                count++;
+        }
+
+        return count;
     }
 
     private void DrawVariantRow(int arrayIndex, EnemyVariantData variant)
@@ -278,9 +336,18 @@ public sealed class ExpeditionAssetEditor : Editor
             return;
 
         EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-        EditorGUILayout.LabelField(
+
+        m_UnclassifiedFoldout = EditorGUILayout.Foldout(
+            m_UnclassifiedFoldout,
             "Sin clasificar / Referencias vacías",
-            EditorStyles.boldLabel);
+            true,
+            EditorStyles.foldoutHeader);
+
+        if (!m_UnclassifiedFoldout)
+        {
+            EditorGUILayout.EndVertical();
+            return;
+        }
 
         EditorGUILayout.HelpBox(
             "Estas entradas no pueden colocarse en los grupos Tier/Combat Type. " +

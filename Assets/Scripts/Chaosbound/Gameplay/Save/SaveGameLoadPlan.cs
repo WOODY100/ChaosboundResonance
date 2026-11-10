@@ -20,6 +20,8 @@ namespace Chaosbound.Gameplay.Save
 
         public SaveCurrencyLoadPlan Currency { get; }
 
+        public SaveSanctuaryPlayerData SanctuaryPlayer { get; }
+
         public SaveGameLoadPlan(
             SaveInventoryLoadPlan inventory,
             SaveEquipmentLoadPlan equipment,
@@ -28,7 +30,8 @@ namespace Chaosbound.Gameplay.Save
             int metaSkillPoints,
             SaveSkillTreeLoadPlan skillTree,
             ExpeditionProgressData expeditionProgress,
-            SaveCurrencyLoadPlan currency)
+            SaveCurrencyLoadPlan currency,
+            SaveSanctuaryPlayerData sanctuaryPlayer)
         {
             Inventory =
                 inventory ??
@@ -68,6 +71,8 @@ namespace Chaosbound.Gameplay.Save
             Currency =
                 currency ??
                 throw new ArgumentNullException(nameof(currency));
+
+            SanctuaryPlayer = sanctuaryPlayer;
         }
     }
 }

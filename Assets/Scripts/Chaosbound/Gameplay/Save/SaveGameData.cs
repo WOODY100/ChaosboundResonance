@@ -18,5 +18,9 @@ namespace Chaosbound.Gameplay.Save
         public ExpeditionProgressData ExpeditionProgress;
 
         public SaveCurrencyData Currency;
+
+        // Optional for compatibility with saves created before Sanctuary
+        // Player transform persistence was introduced.
+        public SaveSanctuaryPlayerData SanctuaryPlayer;
     }
 }

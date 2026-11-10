@@ -1,3 +1,5 @@
+using Chaosbound.Core.Composition;
+using Chaosbound.Gameplay.Items.Runtime;
 using Chaosbound.Debugging;
 using Chaosbound.Gameplay.Spawn.Execution;
 using System;
@@ -14,6 +16,28 @@ namespace Chaosbound.Gameplay.Spawn.Validation
         {
             if (enemy == null)
                 throw new ArgumentNullException(nameof(enemy));
+
+            GameContentContext contentContext =
+                GameContentContext.Current;
+
+            if (contentContext == null)
+            {
+                throw new InvalidOperationException(
+                    "GameContentContext is unavailable.");
+            }
+
+            if (contentContext.ItemContentResolver == null)
+            {
+                throw new InvalidOperationException(
+                    "ItemContentResolver is unavailable.");
+            }
+
+            ItemResolver itemResolver =
+                new ItemResolver(
+                    contentContext.ItemContentResolver);
+
+            ItemInstanceFactory itemInstanceFactory =
+                new ItemInstanceFactory();
 
             SpawnRuntimeDebugger.Step(
                 "========================================");
@@ -32,7 +56,9 @@ namespace Chaosbound.Gameplay.Spawn.Validation
                 new SpawnRuntimeValidationBootstrap();
 
             SpawnJobExecutor executor =
-                bootstrap.Build();
+                bootstrap.Build(
+                    itemResolver,
+                    itemInstanceFactory);
 
             SpawnRuntimeDebugger.Step(
                 "Executing Spawn Runtime...");

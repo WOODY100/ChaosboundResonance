@@ -43,7 +43,8 @@ namespace Chaosbound.Gameplay.Save
             PersistentMetaState metaState,
             SkillTreeRuntimeState skillTreeState,
             ExpeditionProgressRuntime expeditionProgress,
-            PersistentCurrencyState currencyState)
+            PersistentCurrencyState currencyState,
+            SaveSanctuaryPlayerData sanctuaryPlayerData)
         {
             if (expeditionProgress == null)
                 throw new ArgumentNullException(
@@ -62,7 +63,8 @@ namespace Chaosbound.Gameplay.Save
                     skillTreeDatabase,
                     skillTreeState,
                     expeditionProgress,
-                    currencyState);
+                    currencyState,
+                    sanctuaryPlayerData);
 
             string json =
                 SaveGameJsonSerializer.Serialize(
@@ -162,7 +164,8 @@ namespace Chaosbound.Gameplay.Save
                     saveData.MetaProgression.SkillPoints,
                     skillTreeLoadPlan,
                     saveData.ExpeditionProgress,
-                    currencyLoadPlan);
+                    currencyLoadPlan,
+                    saveData.SanctuaryPlayer);
 
             return true;
         }

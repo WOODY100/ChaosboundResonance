@@ -1,5 +1,10 @@
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
+using System.Collections.Generic;
+
+#if UNITY_EDITOR
+using Chaosbound.Gameplay.Debugging.SkillGizmos;
+#endif
 
 public class StormfallStrike : PooledBehaviour, IAreaStrike
 {
@@ -18,6 +23,9 @@ public class StormfallStrike : PooledBehaviour, IAreaStrike
     private ParticleSystem[] particleSystems;
 
     private static readonly Collider[] hitBuffer = new Collider[64];
+    private readonly HashSet<IDamageable> damagedTargets = new HashSet<IDamageable>();
+
+
 
     protected override void Awake()
     {
@@ -53,6 +61,7 @@ public class StormfallStrike : PooledBehaviour, IAreaStrike
         damage = 0f;
         executionId = null;
         activeRoutine = null;
+        damagedTargets.Clear();
     }
 
     public void Initialize(RuntimeSkill runtimeSkill, string castExecutionId)
@@ -120,6 +129,10 @@ public class StormfallStrike : PooledBehaviour, IAreaStrike
             GameLayers.Enemy
         );
 
+        // Cada ejecución de Stormfall puede dañar
+        // una sola vez a cada objetivo.
+        damagedTargets.Clear();
+
         for (int i = 0; i < hitCount; i++)
         {
             Collider hit = hitBuffer[i];
@@ -132,17 +145,29 @@ public class StormfallStrike : PooledBehaviour, IAreaStrike
             if (damageable == null || damageable.IsDead)
                 continue;
 
+            // Evita impactos duplicados por múltiples colliders.
+            if (!damagedTargets.Add(damageable))
+                continue;
+
             string skillId = null;
             string readableSkillId = null;
             string skillDisplayName = null;
+
 #if UNITY_EDITOR
             skillId = SkillDamageAttribution.GetSkillDefinitionId(skill.Definition);
             readableSkillId = SkillDamageAttribution.GetReadableSkillId(skill.Definition);
             skillDisplayName = SkillDamageAttribution.GetSkillDisplayName(skill.Definition);
 #endif
+
             damageable.TakeDamage(new DamageData(
-                damage, false, skillId, executionId,
-            null, readableSkillId, skillDisplayName));
+                damage,
+                false,
+                skillId,
+                executionId,
+                null,
+                readableSkillId,
+                skillDisplayName
+            ));
         }
     }
 
@@ -158,4 +183,21 @@ public class StormfallStrike : PooledBehaviour, IAreaStrike
 
         ResetPooledState();
     }
+
+#if UNITY_EDITOR
+    private void OnDrawGizmos()
+    {
+        if (skill == null || !SkillGizmoUtility.ShouldDraw(this, false, SkillGizmoUtility.Category.Player))
+            return;
+
+        SkillGizmoUtility.DrawWireSphere(
+            transform.position,
+            Mathf.Max(0.1f, skill.Stats.FinalImpactRadius),
+            new Color(1f, 0.78f, 0.15f, 0.9f));
+        SkillGizmoUtility.DrawGroundCircle(
+            transform.position,
+            Mathf.Max(0.1f, skill.Stats.FinalImpactRadius),
+            Color.cyan);
+    }
+#endif
 }

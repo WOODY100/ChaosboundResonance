@@ -37,11 +37,18 @@ MonoBehaviour:
     weight: 1
     randomYRotation: 1
     scaleRange: {x: 1, y: 1}
+  chestPrefabs:
+  - prefab: {fileID: 6455253221880988457, guid: 7ed83d2898e2923478e3de1a3bc37ac7, type: 3}
+    weight: 1
+    randomYRotation: 1
+    scaleRange: {x: 1, y: 1}
   minPropsPerTile: 1
   maxPropsPerTile: 3
   minObstaclesPerTile: 0
   maxObstaclesPerTile: 1
   maxModifierStructuresPerTile: 1
+  minChestsPerExpedition: 2
+  maxChestsPerExpedition: 2
   largeObstacleChance: 0.25
   lightChance: 0.15
   modifierStructureChance: 0.08

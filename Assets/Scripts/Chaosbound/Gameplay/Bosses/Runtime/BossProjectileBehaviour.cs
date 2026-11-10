@@ -1,4 +1,7 @@
-using UnityEngine;
+﻿using UnityEngine;
+#if UNITY_EDITOR
+using Chaosbound.Gameplay.Debugging.SkillGizmos;
+#endif
 
 [RequireComponent(typeof(PooledObject))]
 [RequireComponent(typeof(Rigidbody))]
@@ -10,6 +13,7 @@ public sealed class BossProjectileBehaviour : MonoBehaviour
     private Transform target;
     private float damage;
     private float remainingLifetime;
+    private float maxTravelDistance;
     private bool initialized;
     private bool impacted;
 
@@ -28,6 +32,7 @@ public sealed class BossProjectileBehaviour : MonoBehaviour
         target = null;
         damage = 0f;
         remainingLifetime = 0f;
+        maxTravelDistance = 0f;
 
         if (body != null)
         {
@@ -60,6 +65,7 @@ public sealed class BossProjectileBehaviour : MonoBehaviour
         target = projectileTarget;
         damage = damageAmount;
         remainingLifetime = lifetime;
+        maxTravelDistance = speed * lifetime;
 
         Vector3 normalizedDirection = direction.normalized;
         transform.rotation = Quaternion.LookRotation(normalizedDirection);
@@ -112,4 +118,20 @@ public sealed class BossProjectileBehaviour : MonoBehaviour
         else
             Destroy(gameObject);
     }
+
+#if UNITY_EDITOR
+    private void OnDrawGizmos()
+    {
+        if (!SkillGizmoUtility.ShouldDraw(this, false, SkillGizmoUtility.Category.Boss))
+            return;
+
+        SkillGizmoUtility.DrawCollider(
+            GetComponent<Collider>(), new Color(1f, 0.75f, 0.15f, 0.95f));
+        if (initialized)
+            SkillGizmoUtility.DrawDirection(
+                transform.position, transform.forward,
+                maxTravelDistance > 0f ? maxTravelDistance : 1.5f,
+                Color.cyan);
+    }
+#endif
 }

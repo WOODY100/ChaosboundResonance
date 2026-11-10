@@ -1,5 +1,8 @@
-using System;
+﻿using System;
 using UnityEngine;
+#if UNITY_EDITOR
+using Chaosbound.Gameplay.Debugging.SkillGizmos;
+#endif
 
 [RequireComponent(typeof(EnemyRuntimeContext))]
 [RequireComponent(typeof(EnemyRuntimeTargeting))]
@@ -601,4 +604,24 @@ public sealed class EnemyCombat :
     {
         Reset();
     }
+
+#if UNITY_EDITOR
+    private void OnDrawGizmos()
+    {
+        if (attackDefinition == null ||
+            !SkillGizmoUtility.ShouldDraw(this, false, SkillGizmoUtility.Category.Enemy))
+            return;
+
+        Vector3 facing = attackFacing.sqrMagnitude > 0.0001f
+            ? attackFacing
+            : transform.forward;
+        Vector3 origin = abilityOrigin != null ? abilityOrigin.position : transform.position;
+
+        SkillGizmoUtility.DrawArc(
+            origin, facing, attackDefinition.Range, attackDefinition.Angle,
+            new Color(1f, 0.35f, 0.15f, 0.95f));
+        SkillGizmoUtility.DrawGroundCircle(
+            origin, attackDefinition.Range, new Color(1f, 0.35f, 0.15f, 0.25f));
+    }
+#endif
 }

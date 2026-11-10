@@ -1,5 +1,8 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
+#if UNITY_EDITOR
+using Chaosbound.Gameplay.Debugging.SkillGizmos;
+#endif
 
 public class PersistentZone : PooledBehaviour
 {
@@ -22,9 +25,15 @@ public class PersistentZone : PooledBehaviour
     [SerializeField] private float baseSize = 1f;
     [SerializeField] private LayerMask enemyLayer;
 
+    [Header("Debug - Damage Area")]
+    [SerializeField] private bool showDamageRadiusGizmo = true;
+    [SerializeField, Min(12)] private int gizmoSegments = 64;
+
     private readonly Collider[] hits = new Collider[100];
     private readonly Dictionary<Collider, IDamageable> cache = new();
     private readonly Dictionary<IDamageable, float> accumulatedDamage = new();
+
+    private readonly HashSet<IDamageable> damagedThisTick = new();
 
     private float visualTimer;
     private readonly float visualInterval = 0.5f;
@@ -117,9 +126,14 @@ public class PersistentZone : PooledBehaviour
             enemyLayer
         );
 
+        damagedThisTick.Clear();
+
         for (int i = 0; i < count; i++)
         {
             Collider col = hits[i];
+
+            if (col == null)
+                continue;
 
             if (!cache.TryGetValue(col, out IDamageable damageable))
             {
@@ -139,6 +153,10 @@ public class PersistentZone : PooledBehaviour
                 cache.Remove(col);
                 continue;
             }
+
+            // Un mismo objetivo solamente recibe una contribución por tick.
+            if (!damagedThisTick.Add(damageable))
+                continue;
 
             if (!accumulatedDamage.ContainsKey(damageable))
                 accumulatedDamage[damageable] = 0f;
@@ -206,6 +224,7 @@ public class PersistentZone : PooledBehaviour
 
         cache.Clear();
         accumulatedDamage.Clear();
+        damagedThisTick.Clear();
 
         transform.localScale = Vector3.one;
 
@@ -215,4 +234,26 @@ public class PersistentZone : PooledBehaviour
 
         OnZoneEnded = null;
     }
+
+#if UNITY_EDITOR
+    private void OnDrawGizmos()
+    {
+        if (!showDamageRadiusGizmo || radius <= 0f ||
+            !SkillGizmoUtility.ShouldDraw(this, false, SkillGizmoUtility.Category.Player))
+            return;
+
+        Vector3 center = transform.position;
+        Color damageColor = new Color(1f, 0.78f, 0.15f, 0.9f);
+        Color footprintColor = new Color(0.1f, 0.9f, 1f, 1f);
+
+        SkillGizmoUtility.DrawWireSphere(center, radius, damageColor);
+        SkillGizmoUtility.DrawGroundCircle(center, radius, footprintColor, gizmoSegments);
+        if (SkillGizmoUtility.IsLayerEnabled(SkillGizmoUtility.VisualLayer.Geometry))
+        {
+            Gizmos.color = Color.white;
+            Gizmos.DrawLine(center - Vector3.right * 0.15f, center + Vector3.right * 0.15f);
+            Gizmos.DrawLine(center - Vector3.forward * 0.15f, center + Vector3.forward * 0.15f);
+        }
+    }
+#endif
 }

@@ -10,6 +10,7 @@ using Chaosbound.Gameplay.MiniBosses.Services;
 using Chaosbound.Gameplay.Spawn.Bootstrap;
 using Chaosbound.Gameplay.Spawn.Factories;
 using Chaosbound.Gameplay.Spawn.Runtime;
+using Chaosbound.Gameplay.Items.Runtime;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -99,9 +100,25 @@ namespace Chaosbound.Gameplay.MiniBosses.Tests
             ExpeditionRuntimeContext context =
                 contextFactory.Create();
 
+            GameContentContext contentContext =
+                GameContentContext.Current;
+
+            if (contentContext == null ||
+                contentContext.ItemContentResolver == null)
+            {
+                throw new InvalidOperationException(
+                    "GameContentContext or ItemContentResolver is unavailable.");
+            }
+
+            ItemResolver itemResolver =
+                new ItemResolver(
+                    contentContext.ItemContentResolver);
+
             SpawnRuntime spawnRuntime =
                 new SpawnRuntimeBootstrap()
-                    .Build();
+                    .Build(
+                        itemResolver,
+                        new ItemInstanceFactory());
 
             SpawnRequestEntryFactory entryFactory =
                 new SpawnRequestEntryFactory(

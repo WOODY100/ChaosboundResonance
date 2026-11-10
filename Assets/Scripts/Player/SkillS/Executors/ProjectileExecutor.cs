@@ -1,6 +1,9 @@
-
+﻿
 using System.Collections.Generic;
 using UnityEngine;
+#if UNITY_EDITOR
+using Chaosbound.Gameplay.Debugging.SkillGizmos;
+#endif
 
 public class ProjectileExecutor : MonoBehaviour, ISkillExecutor
 {
@@ -524,4 +527,18 @@ public class ProjectileExecutor : MonoBehaviour, ISkillExecutor
 
         activeProjectiles.Clear();
     }
+#if UNITY_EDITOR
+    private void OnDrawGizmos()
+    {
+        if (!SkillGizmoUtility.ShouldDraw(this, false, SkillGizmoUtility.Category.Player) ||
+            owner == null || skill == null)
+            return;
+
+        SkillGizmoUtility.DrawGroundCircle(
+            owner.position,
+            Mathf.Max(0f, skill.Stats.FinalRange),
+            new Color(0.25f, 0.85f, 1f, 0.65f));
+    }
+#endif
 }
+

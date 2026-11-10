@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Poison Traps
   m_EditorClassIdentifier: Assembly-CSharp::SkillDefinition
   displayName: Poison Traps
+  analyticsId: poison_traps
   description: "Crea zonas t\xF3xicas en el suelo que infligen da\xF1o continuo a
     los enemigos que se encuentran en ellas."
   icon: {fileID: 21300000, guid: 1d9401fdc0e1e1b4e91decddc9ba030b, type: 3}
@@ -22,7 +23,7 @@ MonoBehaviour:
   audioDefinition: {fileID: 0}
   BaseDamage: 5
   BaseCooldown: 5
-  BaseSpawnRadius: 3
+  BaseSpawnRadius: 5
   BaseImpactRadius: 1
   BaseRange: 0
   BaseDuration: 4

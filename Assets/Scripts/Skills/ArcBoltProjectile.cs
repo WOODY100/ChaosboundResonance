@@ -1,4 +1,9 @@
-using UnityEngine;
+﻿using UnityEngine;
+using System.Collections.Generic;
+
+#if UNITY_EDITOR
+using Chaosbound.Gameplay.Debugging.SkillGizmos;
+#endif
 
 [RequireComponent(typeof(Rigidbody))]
 public class ArcBoltProjectile : PooledBehaviour, IProjectile
@@ -26,6 +31,9 @@ public class ArcBoltProjectile : PooledBehaviour, IProjectile
     private bool hasImpacted;
     private float lifetimeTimer;
 
+    private readonly HashSet<IDamageable> damagedTargets =
+    new HashSet<IDamageable>();
+
     protected override void Awake()
     {
         base.Awake();
@@ -48,6 +56,8 @@ public class ArcBoltProjectile : PooledBehaviour, IProjectile
             rb.linearVelocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
         }
+
+        damagedTargets.Clear();
     }
 
     private void Update()
@@ -149,9 +159,16 @@ public class ArcBoltProjectile : PooledBehaviour, IProjectile
         if (damageable == null || damageable.IsDead)
             return;
 
+        // No volver a impactar un objetivo que este proyectil
+        // ya haya dañado, aunque tenga varios colliders.
+        if (damagedTargets.Contains(damageable))
+            return;
+
         hasImpacted = true;
 
         Vector3 hitPoint = other.ClosestPoint(transform.position);
+
+        damagedTargets.Add(damageable);
 
         ApplyDamage(damageable);
 
@@ -228,4 +245,31 @@ public class ArcBoltProjectile : PooledBehaviour, IProjectile
             readableSkillId,
             skillDisplayName));
     }
+
+#if UNITY_EDITOR
+    private void OnDrawGizmos()
+    {
+        if (!SkillGizmoUtility.ShouldDraw(this, false, SkillGizmoUtility.Category.Player))
+            return;
+
+        SkillGizmoUtility.DrawCollider(
+            GetComponent<Collider>(),
+            new Color(0.25f, 0.85f, 1f, 0.95f));
+
+        Vector3 drawDirection = initialized && rb != null &&
+            rb.linearVelocity.sqrMagnitude > 0.0001f
+                ? rb.linearVelocity.normalized
+                : transform.forward;
+
+        if (maxTravelDistance > 0f)
+        {
+            SkillGizmoUtility.DrawDirection(
+                transform.position,
+                drawDirection,
+                maxTravelDistance,
+                new Color(0.25f, 0.85f, 1f, 0.9f));
+        }
+    }
+#endif
+
 }

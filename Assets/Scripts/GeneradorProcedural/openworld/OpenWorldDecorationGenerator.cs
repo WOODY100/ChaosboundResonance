@@ -31,6 +31,7 @@ public class OpenWorldDecorationGenerator : MonoBehaviour
     private Transform obstaclesParent;
     private Transform lightsParent;
     private Transform modifierStructuresParent;
+    private Transform chestsParent;
 
     //==========================================================
     // Decoration
@@ -52,6 +53,10 @@ public class OpenWorldDecorationGenerator : MonoBehaviour
 
     private readonly List<Vector3>
         modifierStructurePositions =
+        new List<Vector3>();
+
+    private readonly List<Vector3>
+        chestPositions =
         new List<Vector3>();
 
     private RuntimeWorldConfig runtimeWorldConfig;
@@ -76,6 +81,10 @@ public class OpenWorldDecorationGenerator : MonoBehaviour
     public IReadOnlyList<Vector3>
         ModifierStructurePositions =>
         modifierStructurePositions;
+
+    public IReadOnlyList<Vector3>
+        ChestPositions =>
+        chestPositions;
 
     //==========================================================
     // Generation
@@ -102,6 +111,7 @@ public class OpenWorldDecorationGenerator : MonoBehaviour
         occupiedTiles.Clear();
         blockedTiles.Clear();
         modifierStructurePositions.Clear();
+        chestPositions.Clear();
 
         TileDecorationPoints[] tileArray =
             floorsParent.GetComponentsInChildren<
@@ -120,21 +130,43 @@ public class OpenWorldDecorationGenerator : MonoBehaviour
         ShuffleTiles(
             tiles);
 
+        // Priority 1: modifier structures (statues).
         foreach (
             TileDecorationPoints tile
             in tiles)
         {
-            if (tile == null)
+            if (tile == null || IsTileBlocked(tile))
                 continue;
 
-            if (IsTileBlocked(tile))
+            if (!TrySpawnModifierStructure(tile))
                 continue;
+
+            occupiedTiles.Add(tile);
+
+            BlockRandomNeighbors(
+                tile,
+                tiles);
+        }
+
+        // Priority 2: chests use tiles left available by statues.
+        SpawnChests(tiles);
+
+        // Priority 3: ordinary decoration uses the remaining tiles.
+        foreach (
+            TileDecorationPoints tile
+            in tiles)
+        {
+            if (tile == null ||
+                IsTileBlocked(tile) ||
+                occupiedTiles.Contains(tile))
+            {
+                continue;
+            }
 
             if (!DecorateTile(tile))
                 continue;
 
-            occupiedTiles.Add(
-                tile);
+            occupiedTiles.Add(tile);
 
             BlockRandomNeighbors(
                 tile,
@@ -164,9 +196,13 @@ public class OpenWorldDecorationGenerator : MonoBehaviour
         ClearParent(
             modifierStructuresParent);
 
+        ClearParent(
+            chestsParent);
+
         occupiedTiles.Clear();
         blockedTiles.Clear();
         modifierStructurePositions.Clear();
+        chestPositions.Clear();
     }
 
     //==========================================================
@@ -232,6 +268,21 @@ public class OpenWorldDecorationGenerator : MonoBehaviour
                 false);
         }
 
+        chestsParent =
+            decorationParent.Find("Chests");
+
+        if (chestsParent == null)
+        {
+            GameObject chestsObject =
+                new GameObject("Chests");
+
+            chestsParent = chestsObject.transform;
+
+            chestsParent.SetParent(
+                decorationParent,
+                false);
+        }
+
         if (floorsParent == null ||
             propsParent == null ||
             obstaclesParent == null ||
@@ -254,11 +305,6 @@ public class OpenWorldDecorationGenerator : MonoBehaviour
     private bool DecorateTile(
         TileDecorationPoints tile)
     {
-        if (TrySpawnModifierStructure(tile))
-        {
-            return true;
-        }
-
         if (TrySpawnLargeObstacle(tile))
         {
             return true;
@@ -322,6 +368,179 @@ public class OpenWorldDecorationGenerator : MonoBehaviour
         }
 
         return spawned;
+    }
+
+    //==========================================================
+    // Chests
+    //==========================================================
+
+    private void SpawnChests(
+        List<TileDecorationPoints> allTiles)
+    {
+        if (chestsParent == null ||
+            Decoration.ChestPrefabs == null ||
+            Decoration.ChestPrefabs.Count == 0)
+        {
+            return;
+        }
+
+        int minAmount =
+            Mathf.Max(0, Decoration.MinChestsPerExpedition);
+
+        int maxAmount =
+            Mathf.Max(minAmount, Decoration.MaxChestsPerExpedition);
+
+        if (maxAmount <= 0)
+            return;
+
+        int requestedAmount =
+            UnityEngine.Random.Range(minAmount, maxAmount + 1);
+
+        if (requestedAmount <= 0)
+            return;
+
+        List<TileDecorationPoints> candidates =
+            new List<TileDecorationPoints>();
+
+        foreach (TileDecorationPoints tile in allTiles)
+        {
+            if (tile == null ||
+                tile.CenterPoint == null ||
+                IsTileBlocked(tile) ||
+                occupiedTiles.Contains(tile))
+            {
+                continue;
+            }
+
+            candidates.Add(tile);
+        }
+
+        ShuffleTiles(candidates);
+
+        int spawnedCount = 0;
+
+        // Revalidate each candidate immediately before placement.
+        // Earlier chests may have blocked neighboring candidates.
+        for (int i = 0;
+             i < candidates.Count && spawnedCount < requestedAmount;
+             i++)
+        {
+            TileDecorationPoints tile = candidates[i];
+
+            if (tile == null ||
+                tile.CenterPoint == null ||
+                IsTileBlocked(tile) ||
+                occupiedTiles.Contains(tile))
+            {
+                continue;
+            }
+
+            DecorationPrefabEntry entry =
+                TakeRandomChestPrefab();
+
+            if (entry == null || entry.Prefab == null)
+                break;
+
+            GameObject prefab = entry.Prefab;
+
+            Vector3 spawnPosition =
+                tile.CenterPoint.position;
+
+            spawnPosition.y = Decoration.SpawnHeight;
+
+            Quaternion spawnRotation =
+                entry.RandomYRotation
+                    ? Quaternion.Euler(
+                        0f,
+                        UnityEngine.Random.Range(0f, 360f),
+                        0f)
+                    : prefab.transform.rotation;
+
+            GameObject instance =
+                Instantiate(
+                    prefab,
+                    spawnPosition,
+                    spawnRotation,
+                    chestsParent);
+
+            float scale =
+                UnityEngine.Random.Range(
+                    entry.ScaleRange.x,
+                    entry.ScaleRange.y);
+
+            instance.transform.localScale =
+                prefab.transform.localScale * scale;
+
+            chestPositions.Add(
+                instance.transform.position);
+
+            occupiedTiles.Add(tile);
+
+            BlockRandomNeighbors(
+                tile,
+                allTiles);
+
+            spawnedCount++;
+        }
+
+        if (spawnedCount < requestedAmount)
+        {
+            Debug.LogWarning(
+                "[OpenWorldDecorationGenerator] Requested " +
+                requestedAmount +
+                " chest(s), but only " +
+                spawnedCount +
+                " could be placed after revalidating spatial restrictions. " +
+                "Initial eligible candidates: " +
+                candidates.Count +
+                ".");
+        }
+    }
+
+    private DecorationPrefabEntry TakeRandomChestPrefab()
+    {
+        IReadOnlyList<DecorationPrefabEntry> entries =
+            Decoration.ChestPrefabs;
+
+        int totalWeight = 0;
+
+        foreach (DecorationPrefabEntry entry in entries)
+        {
+            if (!IsValidChestEntry(entry))
+                continue;
+
+            totalWeight += entry.Weight;
+        }
+
+        if (totalWeight <= 0)
+            return null;
+
+        int roll =
+            UnityEngine.Random.Range(0, totalWeight);
+
+        int currentWeight = 0;
+
+        foreach (DecorationPrefabEntry entry in entries)
+        {
+            if (!IsValidChestEntry(entry))
+                continue;
+
+            currentWeight += entry.Weight;
+
+            if (roll < currentWeight)
+                return entry;
+        }
+
+        return null;
+    }
+
+    private bool IsValidChestEntry(
+        DecorationPrefabEntry entry)
+    {
+        return entry != null &&
+               entry.Prefab != null &&
+               entry.Weight > 0 &&
+               entry.Prefab.GetComponent<ChestRuntime>() != null;
     }
 
     //==========================================================
