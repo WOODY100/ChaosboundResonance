@@ -1,5 +1,6 @@
 using Chaosbound.Gameplay.ExpeditionRuntime.Cleanup.Contracts;
 using Chaosbound.Gameplay.ExpeditionRuntime.Cleanup.Stages;
+using Chaosbound.Gameplay.ExpeditionRuntime.Modifiers;
 using Chaosbound.Gameplay.Spawn.Runtime;
 using System;
 using System.Collections.Generic;
@@ -20,54 +21,50 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Cleanup.Pipeline
                     nameof(spawnRuntime));
             }
 
-            IReadOnlyList<
-                IExpeditionCleanupStage> stages =
-                BuildStages(
-                    spawnRuntime);
+            IReadOnlyList<IExpeditionCleanupStage> stages =
+                BuildStages(spawnRuntime);
 
-            return new ExpeditionCleanupPipeline(
-                stages);
+            return new ExpeditionCleanupPipeline(stages);
         }
 
-        private IReadOnlyList<
-            IExpeditionCleanupStage> BuildStages(
-                SpawnRuntime spawnRuntime)
+        private IReadOnlyList<IExpeditionCleanupStage> BuildStages(
+            SpawnRuntime spawnRuntime)
         {
             return new List<IExpeditionCleanupStage>
             {
-                BuildSpawnCleanupStage(
-                    spawnRuntime),
-                 
+                // Notify modifier consumers before enemies are returned to pools.
+                BuildModifierCleanupStage(),
+
+                BuildSpawnCleanupStage(spawnRuntime),
                 BuildXPFragmentCleanupStage(),
-
                 BuildLootBagCleanupStage(),
-
                 BuildSkillCleanupStage()
             };
         }
 
-        private IExpeditionCleanupStage
-            BuildSpawnCleanupStage(
-                SpawnRuntime spawnRuntime)
+        private IExpeditionCleanupStage BuildModifierCleanupStage()
         {
-            return new SpawnCleanupStage(
-                spawnRuntime);
+            return new ExpeditionModifierCleanupStage(
+                new ExpeditionModifierDomainDirector());
         }
 
-        private IExpeditionCleanupStage
-            BuildXPFragmentCleanupStage()
+        private IExpeditionCleanupStage BuildSpawnCleanupStage(
+            SpawnRuntime spawnRuntime)
+        {
+            return new SpawnCleanupStage(spawnRuntime);
+        }
+
+        private IExpeditionCleanupStage BuildXPFragmentCleanupStage()
         {
             return new XPFragmentCleanupStage();
         }
 
-        private IExpeditionCleanupStage
-            BuildLootBagCleanupStage()
+        private IExpeditionCleanupStage BuildLootBagCleanupStage()
         {
             return new LootBagCleanupStage();
         }
 
-        private IExpeditionCleanupStage
-            BuildSkillCleanupStage()
+        private IExpeditionCleanupStage BuildSkillCleanupStage()
         {
             return new SkillCleanupStage();
         }

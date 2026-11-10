@@ -10,8 +10,8 @@ public class PlayerModifierSystem : MonoBehaviour
     private readonly Dictionary<StatType, PlayerStat> stats = new();
 
     private readonly Dictionary<string, ModifierSource> metaSources = new();
-
     private readonly Dictionary<string, ModifierSource> runSources = new();
+    private readonly Dictionary<string, ModifierSource> temporarySources = new();
 
     private readonly List<StatModifier> modifierBuffer = new(16);
 
@@ -25,16 +25,13 @@ public class PlayerModifierSystem : MonoBehaviour
     {
         CreateStat(StatType.Damage, 20f);
         CreateStat(StatType.AttackSpeed, 1f);
-
         CreateStat(StatType.CritChance, 0f);
         CreateStat(StatType.CritDamage, 2f);
-
         CreateStat(StatType.MovementSpeed, 4f);
         CreateStat(StatType.MaxHP, 1000f);
         CreateStat(StatType.HPRegen, 0f);
         CreateStat(StatType.DamageReduction, 0f);
         CreateStat(StatType.Shield, 50f);
-
         CreateStat(StatType.PickupRadius, 1.1f);
         CreateStat(StatType.Luck, 0f);
         CreateStat(StatType.XPGain, 0f);
@@ -44,7 +41,6 @@ public class PlayerModifierSystem : MonoBehaviour
     {
         PlayerStat stat = new();
         stat.SetBaseValue(baseValue);
-
         stats[type] = stat;
     }
 
@@ -52,30 +48,24 @@ public class PlayerModifierSystem : MonoBehaviour
     // ADD / REMOVE SOURCES
     // =========================
 
-    public void AddSource(
-        ModifierLayer layer,
-        ModifierSource source)
+    public void AddSource(ModifierLayer layer, ModifierSource source)
     {
         if (source == null)
-            throw new ArgumentNullException(
-                nameof(source));
+            throw new ArgumentNullException(nameof(source));
 
         if (string.IsNullOrWhiteSpace(source.SourceID))
             throw new ArgumentException(
                 "ModifierSource requires a valid SourceID.",
                 nameof(source));
 
-        var target = GetLayer(layer);
-
+        Dictionary<string, ModifierSource> target = GetLayer(layer);
         target[source.SourceID] = source;
-
         RecalculateAll();
     }
 
     public void RemoveSource(ModifierLayer layer, string sourceID)
     {
-        var target = GetLayer(layer);
-
+        Dictionary<string, ModifierSource> target = GetLayer(layer);
         if (target.Remove(sourceID))
             RecalculateAll();
     }
@@ -92,6 +82,7 @@ public class PlayerModifierSystem : MonoBehaviour
         {
             ModifierLayer.Meta => metaSources,
             ModifierLayer.Run => runSources,
+            ModifierLayer.Temporary => temporarySources,
             _ => throw new ArgumentOutOfRangeException(
                 nameof(layer),
                 layer,
@@ -105,12 +96,13 @@ public class PlayerModifierSystem : MonoBehaviour
 
     private void RecalculateAll()
     {
-        foreach (var statType in stats.Keys)
+        foreach (StatType statType in stats.Keys)
         {
             modifierBuffer.Clear();
 
             CollectModifiers(metaSources, statType, modifierBuffer);
             CollectModifiers(runSources, statType, modifierBuffer);
+            CollectModifiers(temporarySources, statType, modifierBuffer);
 
             PercentBehavior percentBehavior =
                 StatTypeRules.GetPercentBehavior(statType);
@@ -128,12 +120,12 @@ public class PlayerModifierSystem : MonoBehaviour
         StatType statType,
         List<StatModifier> result)
     {
-        foreach (var source in layer.Values)
+        foreach (ModifierSource source in layer.Values)
         {
-            foreach (var mod in source.Modifiers)
+            foreach (StatModifier modifier in source.Modifiers)
             {
-                if (mod.StatType == statType)
-                    result.Add(mod);
+                if (modifier.StatType == statType)
+                    result.Add(modifier);
             }
         }
     }
@@ -144,7 +136,7 @@ public class PlayerModifierSystem : MonoBehaviour
 
     public float GetStat(StatType type)
     {
-        if (!stats.TryGetValue(type, out var stat))
+        if (!stats.TryGetValue(type, out PlayerStat stat))
         {
             throw new InvalidOperationException(
                 $"Stat '{type}' is not registered in PlayerModifierSystem.");

@@ -4,6 +4,7 @@ using Chaosbound.Content.Expeditions.Runtime.World;
 using Chaosbound.Content.Portal.Exit;
 using Chaosbound.Gameplay.ExpeditionRuntime.Audio;
 using Chaosbound.Gameplay.ExpeditionRuntime.Runtime;
+using Chaosbound.Gameplay.ExpeditionRuntime.Modifiers.Integration;
 using Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Config;
 using Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Coordinates;
 using Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Markers;
@@ -30,6 +31,8 @@ namespace Chaosbound.Core.Composition
         private SkillEvolutionManager skillEvolutionManager;
 
         private MinimapRuntime minimapRuntime;
+
+        private ExpeditionPlayerModifierIntegration playerModifierIntegration;
 
         public ExpeditionComposition(
                 BootstrapContext bootstrapContext,
@@ -532,6 +535,29 @@ namespace Chaosbound.Core.Composition
                     "EnemyManager is missing.");
             }
 
+            PlayerModifierSystem playerModifierSystem =
+                player.GetComponent<PlayerModifierSystem>();
+
+            if (playerModifierSystem == null)
+            {
+                throw new InvalidOperationException(
+                    "PlayerModifierSystem is missing from Player.");
+            }
+
+            ExpeditionRuntimeState expeditionRuntimeState =
+                runManager.ExpeditionRuntimeState;
+
+            if (expeditionRuntimeState == null)
+            {
+                throw new InvalidOperationException(
+                    "ExpeditionRuntimeState is missing.");
+            }
+
+            playerModifierIntegration =
+                new ExpeditionPlayerModifierIntegration(
+                    expeditionRuntimeState.Modifiers,
+                    playerModifierSystem);
+
             runManager.BindPlayer(
                 player);
 
@@ -647,6 +673,9 @@ namespace Chaosbound.Core.Composition
 
         public void Cleanup()
         {
+            playerModifierIntegration?.Dispose();
+            playerModifierIntegration = null;
+
             skillEvolutionManager?.Cleanup();
             skillEvolutionManager = null;
 

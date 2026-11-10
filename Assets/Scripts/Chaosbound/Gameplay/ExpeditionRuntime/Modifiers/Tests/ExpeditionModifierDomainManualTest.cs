@@ -1,8 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Chaosbound.Gameplay.ExpeditionRuntime.Runtime;
+using Chaosbound.Gameplay.ExpeditionRuntime.Cleanup.Context;
+using Chaosbound.Gameplay.ExpeditionRuntime.Cleanup.Stages;
 using Chaosbound.Gameplay.ExpeditionRuntime.Modifiers;
 using UnityEngine;
+using Chaosbound.Gameplay.ExpeditionRuntime.Modifiers.Integration;
+using Player.Enums;
 
 namespace Chaosbound.Gameplay.ExpeditionRuntime.Modifiers.Tests
 {
@@ -12,6 +17,7 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Modifiers.Tests
     /// </summary>
     public sealed class ExpeditionModifierDomainManualTest : MonoBehaviour
     {
+        [ContextMenu("Run Expedition Modifier Domain Tests")]
         [ContextMenu("Run Expedition Modifier Domain Tests")]
         private void RunTests()
         {
@@ -36,6 +42,12 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Modifiers.Tests
             passed++;
 
             TestMultiEffectDefinition();
+            passed++;
+
+            TestCleanupStageClearsApplications();
+            passed++;
+
+            TestPlayerTemporaryIntegration();
             passed++;
 
             Debug.Log(
@@ -305,6 +317,184 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Modifiers.Tests
             DestroyDefinition(definition);
         }
 
+
+
+        private static void TestCleanupStageClearsApplications()
+        {
+            ExpeditionRuntimeState runtimeState = new ExpeditionRuntimeState();
+            ExpeditionModifierDomainDirector director =
+                new ExpeditionModifierDomainDirector();
+
+            ExpeditionModifier modifier = new ExpeditionModifier(
+                new[]
+                {
+                    new ExpeditionModifierEffect(
+                        ExpeditionModifierTarget.Player,
+                        "Damage",
+                        ModifierType.Percent,
+                        0.20f)
+                },
+                ExpeditionModifierLifetime.Expedition,
+                TimeSpan.Zero,
+                TimeSpan.Zero);
+
+            director.AddModifier(runtimeState.Modifiers, modifier);
+
+            int clearedNotifications = 0;
+            runtimeState.Modifiers.ModifiersCleared += removed =>
+            {
+                Assert(runtimeState.Modifiers.Modifiers.Count == 0,
+                    "Cleanup notification must occur after applications are cleared.");
+                Assert(removed.Count == 1,
+                    "Cleanup notification should include the removed applications.");
+                clearedNotifications++;
+            };
+
+            ExpeditionModifierCleanupStage cleanupStage =
+                new ExpeditionModifierCleanupStage(director);
+
+            cleanupStage.Execute(new ExpeditionCleanupContext(runtimeState));
+
+            Assert(runtimeState.Modifiers.Modifiers.Count == 0,
+                "Expedition cleanup must clear all modifier applications.");
+            Assert(clearedNotifications == 1,
+                "Expedition cleanup must emit one ModifiersCleared notification.");
+
+            Debug.Log("[Expedition Modifier Domain Tests] PASS: Expedition cleanup clears applications.");
+        }
+
+
+        private static void TestPlayerTemporaryIntegration()
+        {
+            GameObject playerObject = new GameObject("ModifierIntegrationTestPlayer");
+            PlayerModifierSystem playerModifiers =
+                playerObject.AddComponent<PlayerModifierSystem>();
+
+            // A Run-layer source must remain after temporary sources are removed.
+            playerModifiers.AddSource(
+                ModifierLayer.Run,
+                new ModifierSource("test.run.damage")
+                {
+                    Modifiers = new List<StatModifier>
+                    {
+                        new StatModifier
+                        {
+                            StatType = StatType.Damage,
+                            ModifierType = ModifierType.Percent,
+                            Value = 10f
+                        }
+                    }
+                });
+
+            ExpeditionModifierState state = new ExpeditionModifierState();
+            ExpeditionPlayerModifierIntegration integration =
+                new ExpeditionPlayerModifierIntegration(state, playerModifiers);
+
+            ExpeditionModifier first = new ExpeditionModifier(
+                "player-app-1",
+                "test.player.damage",
+                "test.producer",
+                new[]
+                {
+                    new ExpeditionModifierEffect(
+                        ExpeditionModifierTarget.Player,
+                        "Damage",
+                        ModifierType.Percent,
+                        0.20f)
+                },
+                ExpeditionModifierLifetime.Timed,
+                ExpeditionModifierStackingPolicy.Independent,
+                1,
+                1,
+                TimeSpan.FromSeconds(30),
+                TimeSpan.FromSeconds(30),
+                TimeSpan.FromSeconds(30),
+                TimeSpan.Zero,
+                TimeSpan.Zero);
+
+            ExpeditionModifier second = new ExpeditionModifier(
+                "player-app-2",
+                "test.player.damage",
+                "test.producer",
+                new[]
+                {
+                    new ExpeditionModifierEffect(
+                        ExpeditionModifierTarget.Player,
+                        "Damage",
+                        ModifierType.Percent,
+                        0.10f)
+                },
+                ExpeditionModifierLifetime.Timed,
+                ExpeditionModifierStackingPolicy.Independent,
+                1,
+                1,
+                TimeSpan.FromSeconds(30),
+                TimeSpan.FromSeconds(30),
+                TimeSpan.FromSeconds(30),
+                TimeSpan.Zero,
+                TimeSpan.Zero);
+
+            ExpeditionModifierDomainDirector director =
+                new ExpeditionModifierDomainDirector();
+
+            director.AddModifier(state, first);
+            director.AddModifier(state, second);
+
+            // Base 20 + Run 10% + Temporary 20% + 10% = 28.
+            AssertApproximately(
+                playerModifiers.GetStat(StatType.Damage),
+                28f,
+                "Player integration should convert fractional percentages and keep Run sources.");
+
+            ExpeditionModifier updatedSecond = new ExpeditionModifier(
+                second.ApplicationId,
+                second.DefinitionId,
+                second.SourceId,
+                new[]
+                {
+                    new ExpeditionModifierEffect(
+                        ExpeditionModifierTarget.Player,
+                        "Damage",
+                        ModifierType.Percent,
+                        0.30f)
+                },
+                second.Lifetime,
+                second.StackingPolicy,
+                second.StackCount,
+                second.MaxStacks,
+                second.BaseDuration,
+                second.RemainingDuration,
+                second.TotalGrantedDuration,
+                second.CreatedAt,
+                second.LastUpdatedAt);
+
+            state.Replace(second, updatedSecond);
+
+            AssertApproximately(
+                playerModifiers.GetStat(StatType.Damage),
+                32f,
+                "ModifierUpdated should replace the matching temporary source.");
+
+            director.RemoveModifier(state, first.ApplicationId);
+
+            AssertApproximately(
+                playerModifiers.GetStat(StatType.Damage),
+                28f,
+                "Removing one application must preserve the other temporary and Run sources.");
+
+            director.Clear(state);
+
+            AssertApproximately(
+                playerModifiers.GetStat(StatType.Damage),
+                22f,
+                "ModifiersCleared should remove only this integration's temporary sources.");
+
+            integration.Dispose();
+            UnityEngine.Object.DestroyImmediate(playerObject);
+
+            Debug.Log("[Expedition Modifier Domain Tests] PASS: Player Temporary integration.");
+        }
+        
         private static ExpeditionModifierDefinition CreateDefinition(
             string contentId,
             ExpeditionModifierLifetime lifetime,
