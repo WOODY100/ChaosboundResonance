@@ -102,7 +102,7 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Modifiers
             ExpeditionModifierTarget.Player;
         [SerializeField] private string statId;
         [SerializeField] private ModifierType operation = ModifierType.Percent;
-        [SerializeField] private float value;
+        [SerializeField, Tooltip("Percentage points: enter 20 for +20%, -10 for -10%.") ] private float value;
 
         public ExpeditionModifierTarget Target => target;
         public string StatId => statId;

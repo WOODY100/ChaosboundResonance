@@ -3,8 +3,9 @@ using System;
 namespace Chaosbound.Gameplay.ExpeditionRuntime.Modifiers
 {
     /// <summary>
-    /// A concrete runtime effect. Value is a fractional percentage
-    /// (for example, 0.20 represents +20%).
+    /// A concrete runtime effect. Percent values use percentage points,
+    /// matching the project's content authoring convention
+    /// (for example, 20 represents +20%).
     /// </summary>
     public sealed class ExpeditionModifierEffect
     {
@@ -19,8 +20,8 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Modifiers
         public ExpeditionModifierEffect(
             ExpeditionModifierTarget target,
             string statId,
-            float percent)
-            : this(target, statId, ModifierType.Percent, percent)
+            float percentPoints)
+            : this(target, statId, ModifierType.Percent, percentPoints)
         {
         }
 

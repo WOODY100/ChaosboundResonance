@@ -111,13 +111,14 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Modifiers.Integration
                     return;
                 }
 
-                // Expedition values are fractional (0.20 = +20%);
-                // PlayerModifierSystem.Percent values are percentage points (20 = +20%).
+                // Expedition Modifier values already use percentage points,
+                // matching PlayerModifierSystem and the rest of Chaosbound.
+                // PlayerStat performs the /100 conversion during calculation.
                 converted.Add(new StatModifier
                 {
                     StatType = statType,
                     ModifierType = effect.Operation,
-                    Value = effect.Value * 100f
+                    Value = effect.Value
                 });
             }
 

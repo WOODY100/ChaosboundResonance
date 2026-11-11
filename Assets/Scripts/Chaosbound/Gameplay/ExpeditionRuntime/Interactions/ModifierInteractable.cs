@@ -1,7 +1,6 @@
 using Chaosbound.Gameplay.ExpeditionRuntime.Modifiers;
 using Chaosbound.Gameplay.ExpeditionRuntime.Runtime;
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 public sealed class ModifierInteractable :
@@ -9,52 +8,51 @@ public sealed class ModifierInteractable :
     IInteractable
 {
     [Header("Identity")]
-
     [SerializeField]
     private string contentId;
 
-    [Header("Modifier")]
-
+    [Header("Modifier Definition")]
     [SerializeField]
-    private List<ModifierEffectConfiguration> effects =
-        new List<ModifierEffectConfiguration>();
+    private ExpeditionModifierDefinition modifierDefinition;
 
-    [SerializeField]
-    private ExpeditionModifierLifetime lifetime =
-        ExpeditionModifierLifetime.Expedition;
+    private readonly ExpeditionModifierDomainDirector director =
+        new ExpeditionModifierDomainDirector();
 
-    [SerializeField]
-    private float durationSeconds;
+    public string ContentId => contentId;
 
-    public string ContentId =>
-        contentId;
+    public ExpeditionModifierDefinition ModifierDefinition =>
+        modifierDefinition;
 
-    public bool IsConfigured =>
-        !string.IsNullOrWhiteSpace(contentId) &&
-        effects != null &&
-        effects.Count > 0;
+    public bool IsConfigured
+    {
+        get
+        {
+            if (string.IsNullOrWhiteSpace(contentId) ||
+                modifierDefinition == null)
+            {
+                return false;
+            }
 
-    public void Interact(
-        PlayerInteractor interactor)
+            return modifierDefinition.TryValidate(out _);
+        }
+    }
+
+    public void Interact(PlayerInteractor interactor)
     {
         if (!IsConfigured)
         {
             Debug.LogError(
-                $"ModifierInteractable '{name}' is not configured.",
+                $"ModifierInteractable '{name}' is not configured or its definition is invalid.",
                 this);
-
             return;
         }
 
-        RunManager runManager =
-            RunManager.Instance;
-
+        RunManager runManager = RunManager.Instance;
         if (runManager == null)
         {
             Debug.LogError(
                 $"ModifierInteractable '{name}' could not find RunManager.",
                 this);
-
             return;
         }
 
@@ -64,88 +62,54 @@ public sealed class ModifierInteractable :
         if (runtimeState == null)
         {
             Debug.LogWarning(
-                $"ModifierInteractable '{name}' cannot be used because " +
-                "there is no active expedition.",
+                $"ModifierInteractable '{name}' cannot be used because there is no active expedition.",
                 this);
-
             return;
         }
 
-        if (runtimeState.InteractableUsage.HasBeenUsed(
-            contentId))
-        {
-            return;
-        }
-
-        ExpeditionModifier modifier =
-            BuildModifier(
-                runtimeState.ElapsedTime);
-
-        ExpeditionModifierDomainDirector director =
-            new ExpeditionModifierDomainDirector();
-
-        director.AddModifier(
-            runtimeState.Modifiers,
-            modifier);
-
-        runtimeState.InteractableUsage.MarkUsed(
-            contentId);
+        TryApply(runtimeState);
     }
 
-    private ExpeditionModifier BuildModifier(
-        TimeSpan createdAt)
+    /// <summary>
+    /// Applies this producer's definition to an expedition.
+    /// Exposed internally so the producer contract can be regression-tested
+    /// without requiring a live RunManager or player interaction.
+    /// </summary>
+    internal bool TryApply(ExpeditionRuntimeState runtimeState)
     {
-        List<ExpeditionModifierEffect> modifierEffects =
-            new List<ExpeditionModifierEffect>();
+        if (runtimeState == null)
+            throw new ArgumentNullException(nameof(runtimeState));
 
-        foreach (
-            ModifierEffectConfiguration configuration
-            in effects)
+        if (!IsConfigured)
+            return false;
+
+        if (runtimeState.InteractableUsage.HasBeenUsed(contentId))
+            return false;
+
+        ExpeditionModifierApplyResult result =
+            director.ApplyModifier(
+                runtimeState.Modifiers,
+                modifierDefinition,
+                contentId,
+                runtimeState.ElapsedTime);
+
+        if (!result.Succeeded)
         {
-            if (configuration == null)
-                continue;
-
-            modifierEffects.Add(
-                new ExpeditionModifierEffect(
-                    configuration.Target,
-                    configuration.StatId,
-                    configuration.Percent));
+            Debug.LogWarning(
+                $"ModifierInteractable '{name}' could not apply definition " +
+                $"'{modifierDefinition.ContentId}': {result.Error}",
+                this);
+            return false;
         }
 
-        if (modifierEffects.Count == 0)
-        {
-            throw new InvalidOperationException(
-                $"ModifierInteractable '{name}' does not contain " +
-                "any valid modifier effects.");
-        }
-
-        TimeSpan duration =
-            lifetime ==
-            ExpeditionModifierLifetime.Timed
-                ? TimeSpan.FromSeconds(
-                    Mathf.Max(
-                        0f,
-                        durationSeconds))
-                : TimeSpan.Zero;
-
-        return new ExpeditionModifier(
-            modifierEffects,
-            lifetime,
-            createdAt,
-            duration);
+        runtimeState.InteractableUsage.MarkUsed(contentId);
+        return true;
     }
 
     private void OnValidate()
     {
-        if (effects == null)
-        {
-            effects =
-                new List<ModifierEffectConfiguration>();
-        }
-
-        durationSeconds =
-            Mathf.Max(
-                0f,
-                durationSeconds);
+        contentId = contentId == null
+            ? string.Empty
+            : contentId.Trim();
     }
 }

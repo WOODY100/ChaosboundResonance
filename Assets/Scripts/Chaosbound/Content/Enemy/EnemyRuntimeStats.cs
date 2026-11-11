@@ -168,7 +168,9 @@ public sealed class EnemyRuntimeStats : MonoBehaviour
                         .ExpeditionRuntime
                         .ElapsedTime);
 
-        return baseValue * (1f + totalPercent);
+        // Expedition modifier values are percentage points (20 = +20%).
+        // Convert once at the stat calculation boundary.
+        return baseValue * (1f + totalPercent / 100f);
     }
 
     private void OnDisable()

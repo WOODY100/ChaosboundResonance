@@ -52,6 +52,9 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Modifiers.Tests
             TestEnemyModifierIntegration();
             passed++;
 
+            TestModifierInteractableDefinitionProducer();
+            passed++;
+
             Debug.Log(
                 $"[Expedition Modifier Domain Tests] ALL PASSED: {passed} test groups.");
         }
@@ -64,7 +67,7 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Modifiers.Tests
                 ExpeditionModifierStackingPolicy.Independent,
                 1,
                 30f,
-                CreateEffect(ExpeditionModifierTarget.Player, "Damage", 0.20f));
+                CreateEffect(ExpeditionModifierTarget.Player, "Damage", 20f));
 
             ExpeditionModifierState state = new ExpeditionModifierState();
             ExpeditionModifierDomainDirector director = new ExpeditionModifierDomainDirector();
@@ -92,7 +95,7 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Modifiers.Tests
                 ExpeditionModifierStackingPolicy.RefreshDuration,
                 5,
                 30f,
-                CreateEffect(ExpeditionModifierTarget.Player, "Damage", 0.20f));
+                CreateEffect(ExpeditionModifierTarget.Player, "Damage", 20f));
 
             ExpeditionModifierState state = new ExpeditionModifierState();
             ExpeditionModifierDomainDirector director = new ExpeditionModifierDomainDirector();
@@ -109,7 +112,7 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Modifiers.Tests
             Assert(refreshed.Modifier.ApplicationId == first.Modifier.ApplicationId,
                 "Refresh must preserve ApplicationId.");
             Assert(refreshed.Modifier.StackCount == 1, "Refresh must preserve stack count.");
-            AssertApproximately(refreshed.Modifier.Effects[0].Value, 0.20f,
+            AssertApproximately(refreshed.Modifier.Effects[0].Value, 20f,
                 "Refresh must preserve effect magnitude.");
             Assert(refreshed.Modifier.RemainingDuration == TimeSpan.FromSeconds(30),
                 "Refresh must reset RemainingDuration to BaseDuration.");
@@ -128,7 +131,7 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Modifiers.Tests
                 ExpeditionModifierStackingPolicy.StackMagnitudeAndDuration,
                 3,
                 30f,
-                CreateEffect(ExpeditionModifierTarget.Player, "Damage", 0.20f));
+                CreateEffect(ExpeditionModifierTarget.Player, "Damage", 20f));
 
             ExpeditionModifierState state = new ExpeditionModifierState();
             ExpeditionModifierDomainDirector director = new ExpeditionModifierDomainDirector();
@@ -141,7 +144,7 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Modifiers.Tests
 
             Assert(second.Status == ExpeditionModifierApplyStatus.Updated, "Second stack should update application.");
             Assert(second.Modifier.StackCount == 2, "Second acquisition should produce two stacks.");
-            AssertApproximately(second.Modifier.Effects[0].Value, 0.40f,
+            AssertApproximately(second.Modifier.Effects[0].Value, 40f,
                 "Two stacks should double the base magnitude.");
             Assert(second.Modifier.RemainingDuration == TimeSpan.FromSeconds(50),
                 "Ten elapsed seconds from 30, plus 30 granted, should leave 50 seconds.");
@@ -154,10 +157,10 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Modifiers.Tests
                 director.ApplyModifier(state, definition, "producer.a", TimeSpan.FromSeconds(10));
 
             Assert(third.Modifier.StackCount == 3, "Third acquisition should reach MaxStacks.");
-            AssertApproximately(third.Modifier.Effects[0].Value, 0.60f,
+            AssertApproximately(third.Modifier.Effects[0].Value, 60f,
                 "Three stacks should triple base magnitude.");
             Assert(capped.Modifier.StackCount == 3, "Stack count must not exceed MaxStacks.");
-            AssertApproximately(capped.Modifier.Effects[0].Value, 0.60f,
+            AssertApproximately(capped.Modifier.Effects[0].Value, 60f,
                 "Magnitude must not increase beyond MaxStacks.");
             Assert(capped.Modifier.RemainingDuration == TimeSpan.FromSeconds(110),
                 "Duration must continue accumulating at MaxStacks.");
@@ -176,7 +179,7 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Modifiers.Tests
                 ExpeditionModifierStackingPolicy.StackMagnitudeAndDuration,
                 4,
                 30f,
-                CreateEffect(ExpeditionModifierTarget.Player, "Damage", 0.10f));
+                CreateEffect(ExpeditionModifierTarget.Player, "Damage", 10f));
 
             ExpeditionModifierState state = new ExpeditionModifierState();
             ExpeditionModifierDomainDirector director = new ExpeditionModifierDomainDirector();
@@ -215,7 +218,7 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Modifiers.Tests
                 ExpeditionModifierStackingPolicy.RefreshDuration,
                 1,
                 15f,
-                CreateEffect(ExpeditionModifierTarget.Player, "Damage", 0.15f));
+                CreateEffect(ExpeditionModifierTarget.Player, "Damage", 15f));
 
             ExpeditionModifierState state = new ExpeditionModifierState();
             ExpeditionModifierDomainDirector director = new ExpeditionModifierDomainDirector();
@@ -274,7 +277,7 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Modifiers.Tests
                 ExpeditionModifierStackingPolicy.RefreshDuration,
                 2,
                 0f,
-                CreateEffect(ExpeditionModifierTarget.Player, "Damage", 0.20f));
+                CreateEffect(ExpeditionModifierTarget.Player, "Damage", 20f));
 
             ExpeditionModifierState state = new ExpeditionModifierState();
             ExpeditionModifierApplyResult result =
@@ -298,8 +301,8 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Modifiers.Tests
                 ExpeditionModifierStackingPolicy.StackMagnitudeAndDuration,
                 3,
                 20f,
-                CreateEffect(ExpeditionModifierTarget.Player, "Damage", 0.10f),
-                CreateEffect(ExpeditionModifierTarget.Enemy, "MoveSpeed", -0.05f));
+                CreateEffect(ExpeditionModifierTarget.Player, "Damage", 10f),
+                CreateEffect(ExpeditionModifierTarget.Enemy, "MoveSpeed", -5f));
 
             ExpeditionModifierState state = new ExpeditionModifierState();
             ExpeditionModifierDomainDirector director = new ExpeditionModifierDomainDirector();
@@ -310,9 +313,9 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Modifiers.Tests
 
             Assert(stacked.Modifier.Effects.Count == 2,
                 "All effects from a definition must be present in the application.");
-            AssertApproximately(stacked.Modifier.Effects[0].Value, 0.20f,
+            AssertApproximately(stacked.Modifier.Effects[0].Value, 20f,
                 "Player effect should scale with stack count.");
-            AssertApproximately(stacked.Modifier.Effects[1].Value, -0.10f,
+            AssertApproximately(stacked.Modifier.Effects[1].Value, -10f,
                 "Enemy effect should scale with stack count and preserve sign.");
 
             Debug.Log("[Expedition Modifier Domain Tests] PASS: Multi-effect definition.");
@@ -334,7 +337,7 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Modifiers.Tests
                         ExpeditionModifierTarget.Player,
                         "Damage",
                         ModifierType.Percent,
-                        0.20f)
+                        20f)
                 },
                 ExpeditionModifierLifetime.Expedition,
                 TimeSpan.Zero,
@@ -402,7 +405,7 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Modifiers.Tests
                         ExpeditionModifierTarget.Player,
                         "Damage",
                         ModifierType.Percent,
-                        0.20f)
+                        20f)
                 },
                 ExpeditionModifierLifetime.Timed,
                 ExpeditionModifierStackingPolicy.Independent,
@@ -424,7 +427,7 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Modifiers.Tests
                         ExpeditionModifierTarget.Player,
                         "Damage",
                         ModifierType.Percent,
-                        0.10f)
+                        10f)
                 },
                 ExpeditionModifierLifetime.Timed,
                 ExpeditionModifierStackingPolicy.Independent,
@@ -446,7 +449,7 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Modifiers.Tests
             AssertApproximately(
                 playerModifiers.GetStat(StatType.Damage),
                 28f,
-                "Player integration should convert fractional percentages and keep Run sources.");
+                "Player integration should use percentage-point values and keep Run sources.");
 
             ExpeditionModifier updatedSecond = new ExpeditionModifier(
                 second.ApplicationId,
@@ -458,7 +461,7 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Modifiers.Tests
                         ExpeditionModifierTarget.Player,
                         "Damage",
                         ModifierType.Percent,
-                        0.30f)
+                        30f)
                 },
                 second.Lifetime,
                 second.StackingPolicy,
@@ -532,9 +535,9 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Modifiers.Tests
                 "test.producer",
                 new[]
                 {
-                    new ExpeditionModifierEffect(ExpeditionModifierTarget.Enemy, "MaxHealth", ModifierType.Percent, 0.20f),
-                    new ExpeditionModifierEffect(ExpeditionModifierTarget.Enemy, "Damage", ModifierType.Percent, 0.50f),
-                    new ExpeditionModifierEffect(ExpeditionModifierTarget.Enemy, "MoveSpeed", ModifierType.Percent, 0.20f)
+                    new ExpeditionModifierEffect(ExpeditionModifierTarget.Enemy, "MaxHealth", ModifierType.Percent, 20f),
+                    new ExpeditionModifierEffect(ExpeditionModifierTarget.Enemy, "Damage", ModifierType.Percent, 50f),
+                    new ExpeditionModifierEffect(ExpeditionModifierTarget.Enemy, "MoveSpeed", ModifierType.Percent, 20f)
                 },
                 ExpeditionModifierLifetime.Expedition,
                 ExpeditionModifierStackingPolicy.Independent,
@@ -563,6 +566,57 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Modifiers.Tests
             UnityEngine.Object.DestroyImmediate(variant);
 
             Debug.Log("[Expedition Modifier Domain Tests] PASS: Enemy modifier integration and health ratio.");
+        }
+
+
+        private static void TestModifierInteractableDefinitionProducer()
+        {
+            ExpeditionModifierDefinition definition = CreateDefinition(
+                "test.statue.definition",
+                ExpeditionModifierLifetime.Expedition,
+                ExpeditionModifierStackingPolicy.Independent,
+                1,
+                0f,
+                CreateEffect(
+                    ExpeditionModifierTarget.Player,
+                    "Damage",
+                    20f));
+
+            GameObject producerObject =
+                new GameObject("ModifierInteractableDefinitionTest");
+
+            ModifierInteractable interactable =
+                producerObject.AddComponent<ModifierInteractable>();
+
+            SetPrivateField(interactable, "contentId", "test.statue.instance");
+            SetPrivateField(interactable, "modifierDefinition", definition);
+
+            ExpeditionRuntimeState runtimeState =
+                new ExpeditionRuntimeState();
+
+            bool firstApply = interactable.TryApply(runtimeState);
+            bool secondApply = interactable.TryApply(runtimeState);
+
+            Assert(firstApply,
+                "A configured ModifierInteractable should apply its definition.");
+            Assert(!secondApply,
+                "A one-use ModifierInteractable should reject a second application.");
+            Assert(runtimeState.Modifiers.Modifiers.Count == 1,
+                "One-use interaction should create exactly one modifier application.");
+            Assert(
+                runtimeState.Modifiers.Modifiers[0].DefinitionId == definition.ContentId,
+                "Runtime application should reference the assigned definition ContentId.");
+            Assert(
+                runtimeState.Modifiers.Modifiers[0].SourceId == "test.statue.instance",
+                "Runtime application should preserve the producer ContentId as SourceId.");
+            Assert(
+                runtimeState.InteractableUsage.HasBeenUsed("test.statue.instance"),
+                "Producer usage should be marked only after successful application.");
+
+            UnityEngine.Object.DestroyImmediate(producerObject);
+            UnityEngine.Object.DestroyImmediate(definition);
+
+            Debug.Log("[Expedition Modifier Domain Tests] PASS: ModifierInteractable definition producer.");
         }
 
         private static ExpeditionModifierDefinition CreateDefinition(
