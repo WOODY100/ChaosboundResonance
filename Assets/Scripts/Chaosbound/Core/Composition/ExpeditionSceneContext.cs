@@ -6,6 +6,7 @@ using Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Runtime;
 using Chaosbound.Gameplay.Navigation;
 using Chaosbound.UI.ExpeditionResult;
 using Chaosbound.UI.Timeline;
+using Chaosbound.UI.Modifiers;
 using System;
 using UnityEngine;
 
@@ -80,6 +81,9 @@ namespace Chaosbound.Core.Composition
 
         [SerializeField] 
         private SkillEvolutionPanel skillEvolutionPanel;
+
+        [SerializeField]
+        private ModifierHUDController modifierHUDController;
 
 
         //==========================================================
@@ -178,6 +182,9 @@ namespace Chaosbound.Core.Composition
 
         public SkillEvolutionPanel SkillEvolutionPanel =>
             skillEvolutionPanel;
+
+        public ModifierHUDController ModifierHUDController =>
+            modifierHUDController;
 
         // Minimap
 

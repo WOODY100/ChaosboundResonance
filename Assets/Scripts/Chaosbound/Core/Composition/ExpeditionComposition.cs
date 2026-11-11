@@ -5,6 +5,7 @@ using Chaosbound.Content.Portal.Exit;
 using Chaosbound.Gameplay.ExpeditionRuntime.Audio;
 using Chaosbound.Gameplay.ExpeditionRuntime.Runtime;
 using Chaosbound.Gameplay.ExpeditionRuntime.Modifiers.Integration;
+using Chaosbound.UI.Modifiers;
 using Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Config;
 using Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Coordinates;
 using Chaosbound.Gameplay.ExpeditionRuntime.World.Minimap.Markers;
@@ -33,6 +34,8 @@ namespace Chaosbound.Core.Composition
         private MinimapRuntime minimapRuntime;
 
         private ExpeditionPlayerModifierIntegration playerModifierIntegration;
+
+        private ModifierHUDController modifierHUDController;
 
         public ExpeditionComposition(
                 BootstrapContext bootstrapContext,
@@ -69,25 +72,26 @@ namespace Chaosbound.Core.Composition
             RunManager runManager =
                 bootstrapContext.RunManager;
 
-            TimelineUI timelineUI =
-                sceneContext.TimelineUI;
-
-            if (runManager == null ||
-                timelineUI == null)
-            {
+            if (runManager == null)
                 return;
-            }
 
             ExpeditionRuntimeState runtimeState =
                 runManager.ExpeditionRuntimeState;
 
             if (runtimeState == null)
-            {
                 return;
+
+            TimelineUI timelineUI =
+                sceneContext.TimelineUI;
+
+            if (timelineUI != null)
+            {
+                timelineUI.UpdateProgress(
+                    (float)runtimeState.ElapsedTime.TotalSeconds);
             }
 
-            timelineUI.UpdateProgress(
-                (float)runtimeState.ElapsedTime.TotalSeconds);
+            modifierHUDController?.Tick(
+                runtimeState.ElapsedTime);
         }
 
         #region Validation
@@ -558,6 +562,16 @@ namespace Chaosbound.Core.Composition
                     expeditionRuntimeState.Modifiers,
                     playerModifierSystem);
 
+            modifierHUDController =
+                sceneContext.ModifierHUDController;
+
+            if (modifierHUDController != null)
+            {
+                modifierHUDController.Initialize(
+                    expeditionRuntimeState.Modifiers,
+                    expeditionRuntimeState.ElapsedTime);
+            }
+
             runManager.BindPlayer(
                 player);
 
@@ -675,6 +689,9 @@ namespace Chaosbound.Core.Composition
         {
             playerModifierIntegration?.Dispose();
             playerModifierIntegration = null;
+
+            modifierHUDController?.Cleanup();
+            modifierHUDController = null;
 
             skillEvolutionManager?.Cleanup();
             skillEvolutionManager = null;

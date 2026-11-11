@@ -5,6 +5,7 @@ using Chaosbound.Gameplay.ExpeditionRuntime.Runtime;
 using Chaosbound.Gameplay.ExpeditionRuntime.Cleanup.Context;
 using Chaosbound.Gameplay.ExpeditionRuntime.Cleanup.Stages;
 using Chaosbound.Gameplay.ExpeditionRuntime.Modifiers;
+using Chaosbound.UI.Modifiers;
 using UnityEngine;
 using Chaosbound.Gameplay.ExpeditionRuntime.Modifiers.Integration;
 using Player.Enums;
@@ -53,6 +54,12 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Modifiers.Tests
             passed++;
 
             TestModifierInteractableDefinitionProducer();
+            passed++;
+
+            TestPowerUpOrbDefinitionProducer();
+            passed++;
+
+            TestModifierHUDDurationProjection();
             passed++;
 
             Debug.Log(
@@ -617,6 +624,131 @@ namespace Chaosbound.Gameplay.ExpeditionRuntime.Modifiers.Tests
             UnityEngine.Object.DestroyImmediate(definition);
 
             Debug.Log("[Expedition Modifier Domain Tests] PASS: ModifierInteractable definition producer.");
+        }
+
+
+        private static void TestPowerUpOrbDefinitionProducer()
+        {
+            ExpeditionModifierDefinition definition = CreateDefinition(
+                "test.powerup.damage",
+                ExpeditionModifierLifetime.Timed,
+                ExpeditionModifierStackingPolicy.StackMagnitudeAndDuration,
+                3,
+                45f,
+                CreateEffect(
+                    ExpeditionModifierTarget.Player,
+                    "Damage",
+                    20f));
+
+            GameObject orbObject =
+                new GameObject("PowerUpOrbDefinitionProducerTest");
+
+            PowerUpOrb orb = orbObject.AddComponent<PowerUpOrb>();
+            SetPrivateField(orb, "modifierDefinition", definition);
+
+            ExpeditionRuntimeState runtimeState =
+                new ExpeditionRuntimeState();
+
+            bool firstApply = orb.TryApply(runtimeState);
+            bool secondApply = orb.TryApply(runtimeState);
+
+            Assert(firstApply,
+                "A configured PowerUpOrb should apply its definition.");
+            Assert(secondApply,
+                "A PowerUpOrb using StackMagnitudeAndDuration should apply again.");
+            Assert(runtimeState.Modifiers.Modifiers.Count == 1,
+                "Stacking PowerUpOrb applications should update one runtime application.");
+
+            ExpeditionModifier application =
+                runtimeState.Modifiers.Modifiers[0];
+
+            Assert(application.DefinitionId == definition.ContentId,
+                "PowerUpOrb application should reference the definition ContentId.");
+            Assert(application.StackCount == 2,
+                "The second PowerUpOrb acquisition should increment StackCount.");
+            AssertApproximately(
+                application.Effects[0].Value,
+                40f,
+                "PowerUpOrb should preserve percentage-point values while stacking.");
+            AssertApproximately(
+                (float)application.RemainingDuration.TotalSeconds,
+                90f,
+                "StackMagnitudeAndDuration should add the full base duration per acquisition.");
+
+            Assert(
+                application.SourceId.StartsWith("powerup-orb:test.powerup.damage:"),
+                "PowerUpOrb should identify itself as the application SourceId.");
+
+            UnityEngine.Object.DestroyImmediate(orbObject);
+            UnityEngine.Object.DestroyImmediate(definition);
+
+            Debug.Log("[Expedition Modifier Domain Tests] PASS: PowerUpOrb definition producer.");
+        }
+
+
+        private static void TestModifierHUDDurationProjection()
+        {
+            ExpeditionModifier timed = new ExpeditionModifier(
+                "hud-timed-app",
+                "test.hud.timed",
+                "test.producer",
+                new[]
+                {
+                    new ExpeditionModifierEffect(
+                        ExpeditionModifierTarget.Player,
+                        "Damage",
+                        ModifierType.Percent,
+                        20f)
+                },
+                ExpeditionModifierLifetime.Timed,
+                ExpeditionModifierStackingPolicy.StackMagnitudeAndDuration,
+                2,
+                3,
+                TimeSpan.FromSeconds(30),
+                TimeSpan.FromSeconds(40),
+                TimeSpan.FromSeconds(60),
+                TimeSpan.Zero,
+                TimeSpan.FromSeconds(10));
+
+            float fill = ModifierHUDIconView.CalculateFillAmount(
+                timed,
+                TimeSpan.FromSeconds(20));
+
+            AssertApproximately(
+                fill,
+                0.5f,
+                "HUD fill should use remaining duration divided by total granted duration.");
+
+            ExpeditionModifier expedition = new ExpeditionModifier(
+                "hud-expedition-app",
+                "test.hud.expedition",
+                "test.producer",
+                new[]
+                {
+                    new ExpeditionModifierEffect(
+                        ExpeditionModifierTarget.Player,
+                        "Damage",
+                        ModifierType.Percent,
+                        20f)
+                },
+                ExpeditionModifierLifetime.Expedition,
+                ExpeditionModifierStackingPolicy.Independent,
+                1,
+                1,
+                TimeSpan.Zero,
+                TimeSpan.Zero,
+                TimeSpan.Zero,
+                TimeSpan.Zero,
+                TimeSpan.Zero);
+
+            AssertApproximately(
+                ModifierHUDIconView.CalculateFillAmount(
+                    expedition,
+                    TimeSpan.FromMinutes(5)),
+                1f,
+                "Expedition-lifetime modifiers should keep a full radial fill.");
+
+            Debug.Log("[Expedition Modifier Domain Tests] PASS: Modifier HUD duration projection.");
         }
 
         private static ExpeditionModifierDefinition CreateDefinition(
